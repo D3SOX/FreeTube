@@ -1858,6 +1858,58 @@ test.describe('scroll mini player', () => {
     })
   })
 
+  test('moves the player into Document PiP and restores it when closed', async ({ app, page }) => {
+    // Playwright's Electron driver omits this binding on the first document.
+    // Ordinary app launches expose it immediately; a test-only reload does too.
+    await page.reload()
+    await expect(page.locator('.topNav')).toBeVisible()
+    await openDemoVideo({ app, page })
+    const player = page.locator('.ftVideoPlayer')
+    await player.evaluate(element => {
+      let captionContainer = element.querySelector('.shaka-text-container')
+      if (!captionContainer) {
+        captionContainer = document.createElement('div')
+        captionContainer.className = 'shaka-text-container'
+        element.append(captionContainer)
+      }
+      const caption = document.createElement('span')
+      caption.className = 'documentPipTestCaption'
+      caption.textContent = 'Document PiP caption'
+      captionContainer.append(caption)
+    })
+
+    const pipPagePromise = app.electronApp.waitForEvent('window')
+    await player.hover()
+    await player.locator('.shaka-controls-button-panel .shaka-pip-button').click()
+    const pipPage = await pipPagePromise
+
+    await expect(pipPage.locator('.ftVideoPlayer')).toBeVisible()
+    await expect(pipPage.locator('.documentPipTestCaption')).toHaveText('Document PiP caption')
+    const pipWindowState = await app.electronApp.evaluate(({ BrowserWindow }) => {
+      const pipWindow = BrowserWindow.getAllWindows().find(window => window.isAlwaysOnTop())
+      return pipWindow && {
+        fullscreenable: pipWindow.isFullScreenable(),
+        maximizable: pipWindow.isMaximizable(),
+        minimizable: pipWindow.isMinimizable()
+      }
+    })
+    expect(pipWindowState?.fullscreenable).toBe(false)
+    if (process.platform !== 'linux') {
+      expect(pipWindowState?.maximizable).toBe(false)
+      expect(pipWindowState?.minimizable).toBe(false)
+    }
+
+    const pipClosed = pipPage.waitForEvent('close')
+    await app.electronApp.evaluate(({ BrowserWindow }) => {
+      BrowserWindow.getAllWindows().find(window => window.isAlwaysOnTop())?.close()
+    })
+    await pipClosed
+
+    await expect(player).toBeVisible()
+    await expect(player.locator('.documentPipTestCaption')).toHaveText('Document PiP caption')
+    await expect.poll(() => page.evaluate(() => window.documentPictureInPicture?.window == null)).toBe(true)
+  })
+
   test('scales the captions down with the scroll mini player', async ({ app, page, attachScreenshot }) => {
     const video = await openDemoVideo({ app, page })
     await video.evaluate(element => element.pause())

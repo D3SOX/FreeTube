@@ -4582,10 +4582,8 @@ export default defineComponent({
           // we have our own ones (shaka-player's ones are quite limited)
           enableKeyboardPlaybackControls: false,
 
-          // TODO: enable this when electron gets document PiP support
-          // https://github.com/electron/electron/issues/39633
           documentPictureInPicture: {
-            enabled: false
+            enabled: true
           }
         }
 
@@ -4618,7 +4616,9 @@ export default defineComponent({
 
       syncPlayPauseControlIcons()
       syncMuteControlIcons(video.value.muted || video.value.volume === 0)
-      syncPipToggleState(document.pictureInPictureElement === video.value)
+      syncPipToggleState(
+        document.pictureInPictureElement === video.value || isPlayerInDocumentPictureInPicture()
+      )
     }
 
     function closeChaptersOverlay() {
@@ -6022,13 +6022,19 @@ export default defineComponent({
       })
     }
 
+    function isPlayerInDocumentPictureInPicture() {
+      const documentPipDocument = window.documentPictureInPicture?.window?.document
+      return documentPipDocument != null && container.value?.ownerDocument === documentPipDocument
+    }
+
     function handlePlay() {
       if (!temporaryPlaybackRateActive) setShowUiOnPaused(true)
       playerPaused.value = false
       clearPausedInterfaceReveal()
       shortsPaused.value = false
       playbackEnded.value = false
-      const isCurrentPictureInPictureVideo = document.pictureInPictureElement === video.value
+      const isCurrentPictureInPictureVideo = document.pictureInPictureElement === video.value ||
+        isPlayerInDocumentPictureInPicture()
       if (
         !isActiveTab.value &&
         !isCurrentPictureInPictureVideo &&
@@ -6624,15 +6630,28 @@ export default defineComponent({
 
     /** @type {PictureInPictureWindow | null} */
     let pipWindow = null
+    let pipWindowUsesInnerSize = false
+    let documentPipPageHideHandler = null
+    let documentPipEnterTimeout = null
     const pipWindowWidth = ref(null)
     const pipWindowHeight = ref(null)
 
     /**
-     * @param {PictureInPictureEvent} event
+     * @param {PictureInPictureWindow | Window} nextPipWindow
+     * @param {boolean} [usesInnerSize]
      */
-    function handleEnterPictureInPicture(event) {
+    function activatePictureInPicture(nextPipWindow, usesInnerSize = false) {
+      if (pipWindow && pipWindow !== nextPipWindow) {
+        pipWindow.removeEventListener('resize', handlePictureInPictureResize)
+        if (documentPipPageHideHandler) {
+          pipWindow.removeEventListener('pagehide', documentPipPageHideHandler)
+          documentPipPageHideHandler = null
+        }
+      }
+
       pictureInPictureActive.value = true
-      pipWindow = event.pictureInPictureWindow
+      pipWindow = nextPipWindow
+      pipWindowUsesInnerSize = usesInnerSize
       tabMediaCoordinator.setPictureInPicture(mediaTabId, true)
       handlePictureInPictureResize()
       pipWindow.addEventListener('resize', handlePictureInPictureResize)
@@ -6645,15 +6664,50 @@ export default defineComponent({
       syncPipToggleState(true)
     }
 
-    function handleLeavePictureInPicture() {
+    /**
+     * @param {PictureInPictureEvent} event
+     */
+    function handleEnterPictureInPicture(event) {
+      activatePictureInPicture(event.pictureInPictureWindow)
+    }
+
+    /**
+     * @param {DocumentPictureInPictureEvent} event
+     */
+    function handleEnterDocumentPictureInPicture(event) {
+      const documentPipWindow = event.window
+      if (documentPipEnterTimeout !== null) {
+        clearTimeout(documentPipEnterTimeout)
+      }
+      documentPipEnterTimeout = setTimeout(() => {
+        documentPipEnterTimeout = null
+        if (container.value?.ownerDocument !== documentPipWindow.document) return
+
+        activatePictureInPicture(documentPipWindow, true)
+        documentPipPageHideHandler = () => deactivatePictureInPicture(documentPipWindow)
+        documentPipWindow.addEventListener('pagehide', documentPipPageHideHandler, { once: true })
+      })
+    }
+
+    /**
+     * @param {PictureInPictureWindow | Window | null} expectedPipWindow
+     */
+    function deactivatePictureInPicture(expectedPipWindow) {
+      if (pipWindow !== expectedPipWindow) return
+
       pictureInPictureActive.value = false
       tabMediaCoordinator.setPictureInPicture(mediaTabId, false)
 
       if (pipWindow) {
         pipWindow.removeEventListener('resize', handlePictureInPictureResize)
+        if (documentPipPageHideHandler) {
+          pipWindow.removeEventListener('pagehide', documentPipPageHideHandler)
+        }
       }
 
       pipWindow = null
+      pipWindowUsesInnerSize = false
+      documentPipPageHideHandler = null
       pipWindowWidth.value = null
       pipWindowHeight.value = null
 
@@ -6663,11 +6717,23 @@ export default defineComponent({
       updateScrollMiniPlayer()
     }
 
-    function handlePictureInPictureResize() {
-      const devicePixelRatio = window.devicePixelRatio > 1 ? window.devicePixelRatio : 1
+    /**
+     * @param {PictureInPictureEvent} event
+     */
+    function handleLeavePictureInPicture(event) {
+      deactivatePictureInPicture(event.pictureInPictureWindow)
+    }
 
-      pipWindowWidth.value = pipWindow.width * devicePixelRatio
-      pipWindowHeight.value = pipWindow.height * devicePixelRatio
+    function handlePictureInPictureResize() {
+      if (!pipWindow) return
+
+      const pipDevicePixelRatio = pipWindowUsesInnerSize ? pipWindow.devicePixelRatio : window.devicePixelRatio
+      const devicePixelRatio = pipDevicePixelRatio > 1 ? pipDevicePixelRatio : 1
+      const width = pipWindowUsesInnerSize ? pipWindow.innerWidth : pipWindow.width
+      const height = pipWindowUsesInnerSize ? pipWindow.innerHeight : pipWindow.height
+
+      pipWindowWidth.value = width * devicePixelRatio
+      pipWindowHeight.value = height * devicePixelRatio
     }
 
     function clearDisplayedCaptions() {
@@ -10438,6 +10504,7 @@ export default defineComponent({
       // Use event delegation on document with capture phase to catch events before shaka-no-propagation stops them from bubbling
       document.addEventListener('click', handlePlaybackRateMenuClick, true)
       document.addEventListener('click', handleQualityMenuClick, true)
+      window.documentPictureInPicture?.addEventListener('enter', handleEnterDocumentPictureInPicture)
 
       // Set up IPC listener for exit fullscreen when tab becomes inactive (Electron only)
       // Only set up after UI is fully initialized
@@ -11004,10 +11071,16 @@ export default defineComponent({
       document.removeEventListener('fullscreenchange', fullscreenChangeHandler)
       document.removeEventListener('click', handlePlaybackRateMenuClick, true)
       document.removeEventListener('click', handleQualityMenuClick, true)
+      window.documentPictureInPicture?.removeEventListener('enter', handleEnterDocumentPictureInPicture)
       window.removeEventListener('blur', handleTemporaryPlaybackRateFocusLoss)
       player?.removeEventListener('textchanged', syncShortsCaptionsEnabled)
 
       cancelTemporaryPlaybackRateHolds()
+
+      if (documentPipEnterTimeout !== null) {
+        clearTimeout(documentPipEnterTimeout)
+        documentPipEnterTimeout = null
+      }
 
       // Clean up IPC listener for exit fullscreen
       if (exitFullscreenCleanup) {

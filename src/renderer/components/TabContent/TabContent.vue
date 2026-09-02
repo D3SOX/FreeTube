@@ -110,6 +110,9 @@ let pictureInPictureExitRequested = false
 
 async function disposeMountedContent() {
   const pictureInPictureElement = document.pictureInPictureElement
+  const documentPipWindow = window.documentPictureInPicture?.window
+  const documentPipPlayer = documentPipWindow?.document.querySelector('.ftVideoPlayer[data-tab-id]')
+  const ownsDocumentPictureInPicture = documentPipPlayer?.dataset.tabId === props.tab.id
   let exitPictureInPicture = Promise.resolve()
   if (
     !pictureInPictureExitRequested &&
@@ -126,6 +129,19 @@ async function disposeMountedContent() {
     } catch (error) {
       pictureInPictureExitRequested = false
       console.error(`Failed to exit Picture-in-Picture for logical tab ${props.tab.id}:`, error)
+    }
+  } else if (!pictureInPictureExitRequested && documentPipWindow && ownsDocumentPictureInPicture) {
+    pictureInPictureExitRequested = true
+    try {
+      exitPictureInPicture = new Promise(resolve => {
+        documentPipWindow.addEventListener('pagehide', resolve, { once: true })
+        documentPipWindow.close()
+      }).finally(() => {
+        pictureInPictureExitRequested = false
+      })
+    } catch (error) {
+      pictureInPictureExitRequested = false
+      console.error(`Failed to exit Document Picture-in-Picture for logical tab ${props.tab.id}:`, error)
     }
   }
 

@@ -842,8 +842,12 @@ export class TabManager {
 
   _installWindowOpenHandler() {
     this.browserWindow.webContents.setWindowOpenHandler((details) => {
-      const parsedUrl = URL.parse(details.url)
       const currentUrl = this.browserWindow.webContents.getURL()
+      if (details.disposition === 'picture-in-picture' && isOpenTubeXUrl(currentUrl)) {
+        return { action: 'allow' }
+      }
+
+      const parsedUrl = URL.parse(details.url)
 
       if (parsedUrl !== null && isOpenTubeXUrl(currentUrl)) {
         if (isOpenTubeXUrl(parsedUrl)) {
@@ -4169,11 +4173,26 @@ export async function setupTabsIPC(options = {}) {
           .find(element => element.dataset.tabId === ${JSON.stringify(tabId)})
         const detachedPlayer = Array.from(document.querySelectorAll('.ftVideoPlayer[data-tab-id]'))
           .find(element => element.dataset.tabId === ${JSON.stringify(tabId)})
-        const target = root?.querySelector('video.player') ?? detachedPlayer?.querySelector('video.player')
+        const documentPipWindow = window.documentPictureInPicture?.window
+        const documentPipPlayer = Array.from(documentPipWindow?.document.querySelectorAll('.ftVideoPlayer[data-tab-id]') ?? [])
+          .find(element => element.dataset.tabId === ${JSON.stringify(tabId)})
+        const target = root?.querySelector('video.player') ??
+          detachedPlayer?.querySelector('video.player') ??
+          documentPipPlayer?.querySelector('video.player')
         if (!target?.ui?.getControls) return false
 
         if (document.pictureInPictureElement && document.pictureInPictureElement !== target) {
           try { await document.exitPictureInPicture() } catch {}
+        }
+
+        if (documentPipWindow && !documentPipWindow.document.contains(target)) {
+          await new Promise(resolve => {
+            documentPipWindow.addEventListener('pagehide', resolve, { once: true })
+            documentPipWindow.close()
+          })
+          while (window.documentPictureInPicture?.window) {
+            await new Promise(resolve => setTimeout(resolve))
+          }
         }
 
         target.ui.getControls().togglePiP()
