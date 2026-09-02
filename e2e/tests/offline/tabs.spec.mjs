@@ -1637,6 +1637,8 @@ test.describe('tab bar', () => {
   })
 
   test('exits Document PiP when its source tab is closed', async ({ app, page }) => {
+    test.skip(!process.env.ELECTRON_OVERRIDE_DIST_PATH, 'requires the patched Electron runtime')
+
     // Playwright's Electron driver omits this binding on the first document.
     // Ordinary app launches expose it immediately; a test-only reload does too.
     await page.reload()
@@ -1682,6 +1684,8 @@ test.describe('tab bar', () => {
   })
 
   test('moves Document PiP between logical tabs', async ({ app, page }) => {
+    test.skip(!process.env.ELECTRON_OVERRIDE_DIST_PATH, 'requires the patched Electron runtime')
+
     // Playwright's Electron driver omits this binding on the first document.
     // Ordinary app launches expose it immediately; a test-only reload does too.
     await page.reload()

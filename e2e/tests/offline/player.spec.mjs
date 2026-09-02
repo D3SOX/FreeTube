@@ -1859,6 +1859,8 @@ test.describe('scroll mini player', () => {
   })
 
   test('moves the player into Document PiP and restores it when closed', async ({ app, page }) => {
+    test.skip(!process.env.ELECTRON_OVERRIDE_DIST_PATH, 'requires the patched Electron runtime')
+
     // Playwright's Electron driver omits this binding on the first document.
     // Ordinary app launches expose it immediately; a test-only reload does too.
     await page.reload()
