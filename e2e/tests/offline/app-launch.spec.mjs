@@ -19,6 +19,40 @@ test.describe('app launch', () => {
     await app.page.waitForTimeout(3000)
     expect(errors).toEqual([])
   })
+
+  test('loads the player-script evaluator from srcdoc', async ({ page }) => {
+    const sigFrame = page.locator('#sigFrame')
+    await expect(sigFrame).toHaveAttribute('srcdoc', /<script>/)
+    await expect(sigFrame).not.toHaveAttribute('src', /^data:/)
+    await expect(sigFrame).toHaveAttribute('sandbox', 'allow-scripts')
+
+    const result = await page.evaluate(async () => {
+      const iframe = document.getElementById('sigFrame')
+      const id = 'e2e-sig-frame'
+
+      return await new Promise((resolve, reject) => {
+        const timeout = window.setTimeout(() => {
+          window.removeEventListener('message', listener)
+          reject(new Error('The player-script evaluator did not respond'))
+        }, 5000)
+        const listener = (event) => {
+          if (event.source !== iframe.contentWindow || typeof event.data !== 'string') return
+
+          const message = JSON.parse(event.data)
+          if (message.id !== id) return
+
+          window.clearTimeout(timeout)
+          window.removeEventListener('message', listener)
+          resolve(message.result)
+        }
+
+        window.addEventListener('message', listener)
+        iframe.contentWindow.postMessage(JSON.stringify({ id, code: 'return 6 * 7' }), '*')
+      })
+    })
+
+    expect(result).toBe(42)
+  })
 })
 
 test.describe('startup arguments', () => {
