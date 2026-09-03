@@ -6681,6 +6681,13 @@ export default defineComponent({
      */
     function handleEnterDocumentPictureInPicture(event) {
       const documentPipWindow = event.window
+      const documentPipDocument = documentPipWindow.document
+      for (const attribute of document.documentElement.attributes) {
+        documentPipDocument.documentElement.setAttribute(attribute.name, attribute.value)
+      }
+      for (const attribute of document.body.attributes) {
+        documentPipDocument.body.setAttribute(attribute.name, attribute.value)
+      }
       if (documentPipEnterTimeout !== null) {
         clearTimeout(documentPipEnterTimeout)
       }

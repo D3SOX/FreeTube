@@ -1887,6 +1887,37 @@ test.describe('scroll mini player', () => {
 
     await expect(pipPage.locator('.ftVideoPlayer')).toBeVisible()
     await expect(pipPage.locator('.documentPipTestCaption')).toHaveText('Document PiP caption')
+
+    const pipPlayer = pipPage.locator('.ftVideoPlayer')
+    await pipPlayer.locator('video').evaluate(video => video.pause())
+    await pipPlayer.hover()
+
+    const pipLayout = await pipPage.evaluate(() => ({
+      verticalScrollbarWidth: window.innerWidth - document.documentElement.clientWidth,
+      horizontalScrollbarHeight: window.innerHeight - document.documentElement.clientHeight,
+      horizontalScrollRange: Math.max(
+        document.documentElement.scrollWidth,
+        document.body.scrollWidth
+      ) - window.innerWidth,
+      verticalScrollRange: Math.max(
+        document.documentElement.scrollHeight,
+        document.body.scrollHeight
+      ) - window.innerHeight
+    }))
+    expect(pipLayout.horizontalScrollRange).toBeLessThanOrEqual(1)
+    expect(pipLayout.verticalScrollRange).toBeLessThanOrEqual(1)
+    expect(pipLayout.verticalScrollbarWidth).toBeLessThanOrEqual(1)
+    expect(pipLayout.horizontalScrollbarHeight).toBeLessThanOrEqual(1)
+
+    const seekBar = pipPlayer.locator('.shaka-seek-bar-container')
+    await expect(seekBar).toBeVisible()
+    await expect(seekBar).toHaveCSS('opacity', '1')
+    await expect(seekBar).not.toHaveCSS('background-image', 'none')
+    const seekBarBounds = await seekBar.boundingBox()
+    const pipViewportHeight = await pipPage.evaluate(() => window.innerHeight)
+    expect(seekBarBounds.height).toBeGreaterThan(0)
+    expect(seekBarBounds.y + seekBarBounds.height).toBeLessThanOrEqual(pipViewportHeight + 1)
+
     const pipWindowState = await app.electronApp.evaluate(({ BrowserWindow }) => {
       const pipWindow = BrowserWindow.getAllWindows().find(window => window.isAlwaysOnTop())
       return pipWindow && {
