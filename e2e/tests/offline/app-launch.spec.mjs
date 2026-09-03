@@ -22,7 +22,7 @@ test.describe('app launch', () => {
 
   test('loads the player-script evaluator from srcdoc', async ({ page }) => {
     const sigFrame = page.locator('#sigFrame')
-    await expect(sigFrame).toHaveAttribute('srcdoc', /<script>/)
+    expect(await sigFrame.getAttribute('srcdoc')).toContain('<script>')
     await expect(sigFrame).not.toHaveAttribute('src', /^data:/)
     await expect(sigFrame).toHaveAttribute('sandbox', 'allow-scripts')
 

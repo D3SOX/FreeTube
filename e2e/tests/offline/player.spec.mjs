@@ -128,6 +128,44 @@ test('playback starts', async ({ app, page, attachScreenshot }) => {
   await attachScreenshot('playing video')
 })
 
+test('does not initialize Shaka after the player unmounts during platform detection', async ({ app, page }) => {
+  await app.electronApp.evaluate(({ ipcMain }) => {
+    globalThis.__e2ePlatformInfoResolvers = []
+    for (const [channel, value] of [
+      ['is-wayland-platform', false],
+      ['supports-auto-picture-in-picture-minimize', true]
+    ]) {
+      ipcMain.removeHandler(channel)
+      ipcMain.handle(channel, () => new Promise(resolve => {
+        globalThis.__e2ePlatformInfoResolvers.push(() => resolve(value))
+      }))
+    }
+  })
+
+  await page.reload()
+  await expect(page.locator('.topNav')).toBeVisible()
+  await mockPlayableWatchPage(app, page)
+  await page.locator(sel.searchInput).fill('https://www.youtube.com/watch?v=jNQXAC9IVRw')
+  await page.locator(sel.searchInput).press('Enter')
+  await expect(page).toHaveURL(/#\/watch\/jNQXAC9IVRw/)
+
+  const sourceTabId = await page.locator(activeTab).getAttribute('data-tab-id')
+  const player = page.locator(`.ftVideoPlayer[data-tab-id="${sourceTabId}"]`)
+  await expect(player).toBeAttached()
+  const videoElement = await player.locator('video').elementHandle()
+  expect(videoElement).not.toBeNull()
+  await page.evaluate(() => document.querySelector('#app').__vue_app__.unmount())
+  await expect(player).toHaveCount(0)
+
+  await app.electronApp.evaluate(() => {
+    for (const resolve of globalThis.__e2ePlatformInfoResolvers) resolve()
+    delete globalThis.__e2ePlatformInfoResolvers
+  })
+  await page.waitForTimeout(100)
+  expect(await videoElement.evaluate(element => element.ui == null)).toBe(true)
+  await videoElement.dispose()
+})
+
 test('shows the replay icon when playback ends before Shaka updates its play icon', async ({ app, page }) => {
   const video = await openDemoVideo({ app, page })
   const watchComponent = await page.evaluateHandle(findWatchComponent)
@@ -1941,6 +1979,34 @@ test.describe('scroll mini player', () => {
     await expect(player).toBeVisible()
     await expect(player.locator('.documentPipTestCaption')).toHaveText('Document PiP caption')
     await expect.poll(() => page.evaluate(() => window.documentPictureInPicture?.window == null)).toBe(true)
+  })
+
+  test('ignores Document PiP activation when pagehide precedes it', async ({ app, page }) => {
+    test.skip(!process.env.ELECTRON_OVERRIDE_DIST_PATH, 'requires the patched Electron runtime')
+
+    await page.reload()
+    await expect(page.locator('.topNav')).toBeVisible()
+    await openDemoVideo({ app, page })
+    await page.evaluate(() => {
+      window.documentPictureInPicture.addEventListener('enter', event => {
+        queueMicrotask(() => event.window.dispatchEvent(new Event('pagehide')))
+      }, { once: true })
+    })
+    const player = page.locator('.ftVideoPlayer')
+    const pipButton = player.locator('.shaka-controls-button-panel .shaka-pip-button')
+
+    await player.hover()
+    const pipButtonElement = await pipButton.elementHandle()
+    expect(pipButtonElement).not.toBeNull()
+    await pipButton.click()
+    await page.waitForTimeout(100)
+
+    expect(await pipButtonElement.getAttribute('aria-pressed')).not.toBe('true')
+    await pipButtonElement.dispose()
+
+    await app.electronApp.evaluate(({ BrowserWindow }) => {
+      BrowserWindow.getAllWindows().find(window => window.isAlwaysOnTop())?.close()
+    })
   })
 
   test('scales the captions down with the scroll mini player', async ({ app, page, attachScreenshot }) => {
