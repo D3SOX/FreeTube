@@ -78,7 +78,6 @@ import {
 import { addOverlayScrollbars, removeOverlayScrollbars } from '../../helpers/overlayScrollbars'
 import { setFullscreenOrientation } from '../../helpers/capacitorUi'
 import { isReducedMotionEnabled } from '../../helpers/reducedMotion'
-import { initializePlatformInfo, isLinuxWayland } from '../../helpers/platform'
 import {
   enterAndroidPictureInPicture,
   setAndroidStatusBarVisible,
@@ -91,7 +90,6 @@ import { getDefaultAudioVariants } from '../../helpers/player/defaultAudioTrack'
 import { MUSIC_MEDIA_TYPE } from '../../helpers/player/musicMediaType'
 import { resolveSegmentPrefetchLimit } from '../../helpers/player/segmentPrefetch'
 import { AUTO_QUALITY_FALLBACK, streamsSupportAutoQuality } from '../../helpers/player/autoQuality'
-import { shouldEnableDocumentPictureInPicture } from '../../helpers/player/documentPictureInPicture'
 import { setupSabrScheme } from '../../helpers/player/SabrSchemePlugin'
 import { prepareGoogleVideoRequest } from '../../helpers/player/playbackRequestPolicy'
 import { getRememberedPlayerVolume, setRememberedPlayerVolume } from '../../helpers/player/volume-storage'
@@ -4585,10 +4583,7 @@ export default defineComponent({
           enableKeyboardPlaybackControls: false,
 
           documentPictureInPicture: {
-            enabled: shouldEnableDocumentPictureInPicture(
-              process.env.IS_ELECTRON,
-              isLinuxWayland.value
-            )
+            enabled: true
           }
         }
 
@@ -10368,7 +10363,6 @@ export default defineComponent({
       voiceOverTranslation.attach(videoElement)
 
       await initializeActiveTab()
-      await initializePlatformInfo()
 
       if (disposed) return
 
