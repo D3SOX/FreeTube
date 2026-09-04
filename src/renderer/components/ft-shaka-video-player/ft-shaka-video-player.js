@@ -6634,7 +6634,6 @@ export default defineComponent({
     let documentPipPageHideHandler = null
     let documentPipPageHideWindow = null
     let documentPipEnterTimeout = null
-    let disposed = false
     const pipWindowWidth = ref(null)
     const pipWindowHeight = ref(null)
 
@@ -10362,9 +10361,7 @@ export default defineComponent({
 
       voiceOverTranslation.attach(videoElement)
 
-      await initializeActiveTab()
-
-      if (disposed) return
+      initializeActiveTab()
 
       const localPlayer = process.env.IS_CAPACITOR
         ? createAndroidPlayer(videoElement, container.value, () => ({
@@ -11068,7 +11065,6 @@ export default defineComponent({
     // #region tear down
 
     onBeforeUnmount(() => {
-      disposed = true
       screenWakeBinding?.destroy()
       screenWakeBinding = null
       nativePlaybackCleanup?.()

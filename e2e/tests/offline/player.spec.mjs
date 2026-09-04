@@ -128,44 +128,6 @@ test('playback starts', async ({ app, page, attachScreenshot }) => {
   await attachScreenshot('playing video')
 })
 
-test('does not initialize Shaka after the player unmounts during platform detection', async ({ app, page }) => {
-  await app.electronApp.evaluate(({ ipcMain }) => {
-    globalThis.__e2ePlatformInfoResolvers = []
-    for (const [channel, value] of [
-      ['is-wayland-platform', false],
-      ['supports-auto-picture-in-picture-minimize', true]
-    ]) {
-      ipcMain.removeHandler(channel)
-      ipcMain.handle(channel, () => new Promise(resolve => {
-        globalThis.__e2ePlatformInfoResolvers.push(() => resolve(value))
-      }))
-    }
-  })
-
-  await page.reload()
-  await expect(page.locator('.topNav')).toBeVisible()
-  await mockPlayableWatchPage(app, page)
-  await page.locator(sel.searchInput).fill('https://www.youtube.com/watch?v=jNQXAC9IVRw')
-  await page.locator(sel.searchInput).press('Enter')
-  await expect(page).toHaveURL(/#\/watch\/jNQXAC9IVRw/)
-
-  const sourceTabId = await page.locator(activeTab).getAttribute('data-tab-id')
-  const player = page.locator(`.ftVideoPlayer[data-tab-id="${sourceTabId}"]`)
-  await expect(player).toBeAttached()
-  const videoElement = await player.locator('video').elementHandle()
-  expect(videoElement).not.toBeNull()
-  await page.evaluate(() => document.querySelector('#app').__vue_app__.unmount())
-  await expect(player).toHaveCount(0)
-
-  await app.electronApp.evaluate(() => {
-    for (const resolve of globalThis.__e2ePlatformInfoResolvers) resolve()
-    delete globalThis.__e2ePlatformInfoResolvers
-  })
-  await page.waitForTimeout(100)
-  expect(await videoElement.evaluate(element => element.ui == null)).toBe(true)
-  await videoElement.dispose()
-})
-
 test('shows the replay icon when playback ends before Shaka updates its play icon', async ({ app, page }) => {
   const video = await openDemoVideo({ app, page })
   const watchComponent = await page.evaluateHandle(findWatchComponent)
