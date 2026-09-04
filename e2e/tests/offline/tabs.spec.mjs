@@ -2133,24 +2133,22 @@ test.describe('background tab shortcuts', () => {
     }
   })
 
-  test('reload shortcuts refresh the current feed on an active subscriptions tab', async ({ page }) => {
-    await expect(page.getByText(/disabled automatic subscription fetching/i)).toBeVisible()
-    await page.route(/^https?:\/\//, (route) => route.abort())
+  for (const [label, shortcut] of [['Ctrl+R', 'Control+r'], ['F5', 'F5']]) {
+    test(`${label} refreshes the current feed on an active subscriptions tab`, async ({ page }) => {
+      await expect(page.getByText(/disabled automatic subscription fetching/i)).toBeVisible()
+      await page.route(/^https?:\/\//, (route) => route.abort())
 
-    const externalRequests = []
-    page.on('request', (request) => {
-      if (/^https?:/.test(request.url())) {
-        externalRequests.push(request.url())
-      }
+      const externalRequests = []
+      page.on('request', (request) => {
+        if (/^https?:/.test(request.url())) {
+          externalRequests.push(request.url())
+        }
+      })
+
+      await page.keyboard.press(shortcut)
+      await expect.poll(() => externalRequests.length).toBeGreaterThan(0)
     })
-
-    await page.keyboard.press('Control+r')
-    await expect.poll(() => externalRequests.length).toBeGreaterThan(0)
-
-    externalRequests.length = 0
-    await page.keyboard.press('F5')
-    await expect.poll(() => externalRequests.length).toBeGreaterThan(0)
-  })
+  }
 
   // Regression: the document-level subscriptions listener refreshed a hidden
   // tab when R was pressed in a different tab (d20ff948f).
