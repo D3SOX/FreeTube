@@ -3386,6 +3386,68 @@ html[data-reduced-motion='reduce'] .musicVisualizerCanvas {
   opacity: 1;
 }
 
+.documentPipWindowControls {
+  position: absolute;
+  z-index: 12;
+  inset-block-start: 8px;
+  inset-inline-end: 8px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 150ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .documentPipWindowControls {
+    transition: none;
+  }
+}
+
+:where(.documentPictureInPicture.playerControlsShown) .documentPipWindowControls {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.documentPipWindowControls:focus-within {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+html[data-reduced-motion='reduce'] .documentPipWindowControls {
+  transition: none;
+}
+
+.documentPipCloseButton {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgb(0 0 0 / 65%);
+  color: #fff;
+  cursor: pointer;
+}
+
+.documentPipCloseButton:hover {
+  background: rgb(0 0 0 / 80%);
+}
+
+.documentPipCloseButton:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+.documentPipCloseButton :deep(svg) {
+  width: 20px;
+  height: 20px;
+}
+
+.ftVideoPlayer.documentPictureInPicture :deep(.shaka-fullscreen-button),
+.ftVideoPlayer.documentPictureInPicture :deep(.full-window-button) {
+  display: none !important;
+}
+
 .ftVideoPlayer:is(:is(:fullscreen, [data-native-player-screen]), .fullWindow).playerPaused.hideVideoTitleWhenPaused
 :deep(.playerFullscreenTitleOverlay) {
   transition-duration: 150ms, 150ms;

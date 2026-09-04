@@ -667,6 +667,7 @@ Settings:
       Volume: Glasnost
       Hint: Podrsajte navzgor ali navzdol ob strani videoposnetka.
       Unavailable: Kontrolnikov predvajanja ni bilo mogoče prilagoditi.
+    Use Document Picture-in-Picture: "Uporabi sliko v sliki dokumenta (poskusno)"
     yt-dlp Streaming: "Pretakanje z yt-dlp"
     Continue Playback When Screen Is Locked: 'Nadaljuj predvajanje, ko je zaslon zaklenjen'
     Music Visualizer: Glasbeni vizualizator
@@ -1928,6 +1929,7 @@ Tooltips:
   Proxy Settings:
     IP Block Recovery Script Path: Pot do skriptne datoteke, ki se zažene ob zaznani blokadi naslova IP. OpenTubeX počaka, da se izvajanje konča, nato znova naloži videoposnetek. Če je omogočen nadomestni način, se skript zažene le, kadar tudi ta ne uspe.
   Player Settings:
+    Use Document Picture-in-Picture: "Prikaže kontrolnike predvajalnika in podnapise aplikacije v načinu slike v sliki. Izklopite za uporabo sistemskega okna slike v sliki za video."
     Continue Playback When Screen Is Locked: 'Nadaljuje predvajanje zvoka v ozadju in omogoča predstavnostne kontrolnike Android. Izklopite, da se predvajanje začasno ustavi, ko aplikacija ni več vidna.'
     Enable Caption Translations: Ko je možnost omogočena in videoposnetek nima ustrezne izvirne sledi, imata gumb za podnapise in bližnjica C prednostno samodejno prevedeno sled v prednostnem jeziku podnapisov.
     Proxy Videos Through Invidious: Za posredovanje videoposnetkov se poveže z Invidiousom namesto neposredno z YouTubom.

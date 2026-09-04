@@ -475,6 +475,7 @@ Settings:
       Volume: Volum
       Hint: Glisează în sus sau în jos pe o parte a videoclipului.
       Unavailable: Nu s-au putut ajusta comenzile de redare.
+    Use Document Picture-in-Picture: "Folosește imagine în imagine pentru document (experimental)"
     yt-dlp Streaming: "Streaming yt-dlp"
     Continue Playback When Screen Is Locked: 'Continuă redarea când ecranul este blocat'
     Music Visualizer: Vizualizator muzical
@@ -1474,6 +1475,7 @@ Tooltips:
   Proxy Settings:
     IP Block Recovery Script Path: Calea fișierului script care se rulează când este detectată blocarea IP-ului. OpenTubeX așteaptă finalizarea acestuia, apoi reîncarcă videoclipul. Dacă este activată sursa de rezervă, scriptul rulează numai când și aceasta eșuează.
   Player Settings:
+    Use Document Picture-in-Picture: "Afișează comenzile playerului și subtitrările aplicației în modul imagine în imagine. Dezactivează pentru a folosi fereastra video imagine în imagine a sistemului."
     Continue Playback When Screen Is Locked: 'Menține redarea audio în fundal și oferă comenzi media Android. Dezactivează pentru a întrerupe redarea când aplicația nu mai este vizibilă.'
     Enable Caption Translations: Când opțiunea este activată, butonul de subtitrări și comanda rapidă C preferă o pistă tradusă automat în limba preferată dacă videoclipul nu oferă o pistă originală corespunzătoare.
     Use Quick Playback Speed Bar: Afișează o bară rapidă pentru viteza de redare în partea dreaptă a comenzilor playerului. Dacă este activată salvarea manuală a vitezei de redare pentru fiecare canal, bara include și butonul pentru salvarea vitezei canalului curent.

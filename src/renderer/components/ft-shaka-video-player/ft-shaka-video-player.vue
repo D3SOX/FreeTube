@@ -67,6 +67,7 @@
         scrollMiniPlayerStashedRight: scrollMiniPlayerStashedSide === 'right',
         scrollMiniPlayerAnimating,
         scrollMiniPlayerDismissed,
+        documentPictureInPicture: documentPictureInPictureActive,
         fullscreenMetadataOpen: showFullscreenMetadata,
         fullscreenTranscriptOpen: showFullscreenTranscript,
         fullscreenSponsorBlockOpen: showFullscreenSponsorBlock,
@@ -205,6 +206,21 @@
           :src="thumbnail"
           alt=""
         >
+      </div>
+      <div
+        v-if="documentPictureInPictureActive"
+        class="documentPipWindowControls shaka-no-propagation"
+      >
+        <button
+          type="button"
+          class="documentPipCloseButton"
+          :aria-label="$t('Close')"
+          :title="$t('Close')"
+          @click.stop="closeDocumentPictureInPicture"
+          @dblclick.stop
+        >
+          <FtIcon :icon="['fas', 'xmark']" />
+        </button>
       </div>
       <div
         v-if="audioPlayerMode"

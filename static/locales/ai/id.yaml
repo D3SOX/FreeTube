@@ -477,6 +477,7 @@ Settings:
       Volume: Volume
       Hint: Usap ke atas atau bawah di salah satu sisi video.
       Unavailable: Tidak dapat menyesuaikan kontrol pemutaran.
+    Use Document Picture-in-Picture: "Gunakan Gambar-dalam-Gambar Dokumen (eksperimental)"
     yt-dlp Streaming: "Streaming yt-dlp"
     Continue Playback When Screen Is Locked: 'Lanjutkan pemutaran saat layar terkunci'
     Music Visualizer: Visualisator musik
@@ -1466,6 +1467,7 @@ Tooltips:
   Proxy Settings:
     IP Block Recovery Script Path: Jalur berkas skrip yang dijalankan saat blokir IP terdeteksi. OpenTubeX menunggu skrip selesai, lalu memuat ulang video. Jika metode cadangan diaktifkan, skrip hanya berjalan ketika metode cadangan juga gagal.
   Player Settings:
+    Use Document Picture-in-Picture: "Menampilkan kontrol pemutar dan teks layar aplikasi dalam mode Gambar-dalam-Gambar. Nonaktifkan untuk menggunakan jendela Gambar-dalam-Gambar video sistem."
     Continue Playback When Screen Is Locked: 'Menjaga audio tetap diputar di latar belakang dan menyediakan kontrol media Android. Nonaktifkan untuk menjeda saat aplikasi tidak lagi terlihat.'
     Enable Caption Translations: Jika diaktifkan, tombol takarir dan pintasan C akan memilih trek yang diterjemahkan otomatis ke bahasa takarir pilihan jika video tidak menyediakan trek asli yang cocok.
     Use Quick Playback Speed Bar: Menampilkan bilah kecepatan pemutaran cepat di sisi kanan kontrol pemutar. Jika penyimpanan kecepatan pemutaran manual per saluran diaktifkan, bilah juga memuat tombol untuk menyimpan kecepatan bagi saluran saat ini.

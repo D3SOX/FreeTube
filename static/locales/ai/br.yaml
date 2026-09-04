@@ -473,6 +473,7 @@ Settings:
       Volume: Ampled
       Hint: Riklit war-zu al laez pe an traoñ war gostez ar video.
       Unavailable: N'eus ket bet gallet reizhañ ar reolerezhioù lenn.
+    Use Document Picture-in-Picture: "Arverañ Skeudenn-er-Skeudenn an teul (arnodel)"
     yt-dlp Streaming: "Skignañ yt-dlp"
     Continue Playback When Screen Is Locked: 'Kenderc’hel da lenn pa vez prennet ar skramm'
     Music Visualizer: Gweladur sonerezh
@@ -1449,6 +1450,7 @@ Tooltips:
   Proxy Settings:
     IP Block Recovery Script Path: "Hent ar restr skript da erounit pa vez dinoet ur stankadur IP. Gortoz a ra OpenTubeX ma vo echu, hag adkargañ a ra ar video. Ma vez gweredekaet an diskoulm erlec'hiañ ne vez erounit ar skript nemet pa c'hwit an diskoulm-se ivez."
   Player Settings:
+    Use Document Picture-in-Picture: "Diskouez a ra reolerezhioù al lenner hag istitloù an arload er prenestr Skeudenn-er-Skeudenn. Diweredekait evit implijout prenestr video Skeudenn-er-Skeudenn ar reizhiad e-lec'h."
     Continue Playback When Screen Is Locked: 'Dalc’h a ra ar son o vont en-dro en drekleur ha reiñ a ra reolerezhioù media Android. Diweredekait evit lakaat war ehan pa ne vez ket mui gwelet an arload.'
     Enable Caption Translations: "Pa vez gweredekaet e tibab bouton an istitloù hag ar verradenn C ur roudenn troet ent emgefreek er yezh istitloù gwellañ-garet, ma ne bourchas ket ar video ur roudenn orin o klotañ."
     Use Quick Playback Speed Bar: "Diskouez ur varrenn prim evit an tizh lenn e reolerezhioù al lenner war an tu dehou. Ma vez gweredekaet enrollañ tizh lenn pep chadenn gant an dorn, enderc'hel a ra ar varrenn ivez ar bouton da enrollañ an tizh evit ar chadenn vremanel."

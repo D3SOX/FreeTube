@@ -573,6 +573,7 @@ Settings:
       Volume: Volumen
       Hint: Desliza hacia arriba o abajo en un lado del video.
       Unavailable: No se pudieron ajustar los controles de reproducción.
+    Use Document Picture-in-Picture: "Usar imagen en imagen de documento (experimental)"
     yt-dlp Streaming: "Streaming con yt-dlp"
     Continue Playback When Screen Is Locked: 'Continuar la reproducción con la pantalla bloqueada'
     Music Visualizer: Visualizador de música
@@ -1776,6 +1777,7 @@ Tooltips:
   Proxy Settings:
     IP Block Recovery Script Path: Ruta del archivo de script que se ejecutará al detectar un bloqueo de IP. OpenTubeX espera a que termine y después recarga el video. Si la fuente alternativa está activada, solo se ejecuta cuando esta también falla.
   Player Settings:
+    Use Document Picture-in-Picture: "Muestra los controles del reproductor y los subtítulos de la aplicación en imagen en imagen. Desactiva esta opción para usar en su lugar la ventana de video en imagen en imagen del sistema."
     Continue Playback When Screen Is Locked: 'Mantiene el audio reproduciéndose en segundo plano y ofrece controles multimedia de Android. Desactiva esta opción para pausar cuando la aplicación deje de estar visible.'
     Enable Caption Translations: Al activarlo, el botón de subtítulos y el atajo C prefieren una pista traducida automáticamente al idioma de subtítulos elegido cuando el video no ofrece una pista original coincidente.
     Use Quick Playback Speed Bar: Muestra una barra rápida de velocidad de reproducción en los controles situados a la derecha del reproductor. Si está activado el guardado manual de la velocidad por canal, la barra también incluye un botón para guardar la velocidad del canal actual.

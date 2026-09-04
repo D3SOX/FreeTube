@@ -477,6 +477,7 @@ Settings:
       Volume: Volume
       Hint: Veeg omhoog of omlaag aan een zijkant van de video.
       Unavailable: De afspeelbediening kon niet worden aangepast.
+    Use Document Picture-in-Picture: "Document-beeld-in-beeld gebruiken (experimenteel)"
     yt-dlp Streaming: "yt-dlp-streaming"
     Continue Playback When Screen Is Locked: 'Doorgaan met afspelen wanneer het scherm is vergrendeld'
     Music Visualizer: Muziekvisualisatie
@@ -1483,6 +1484,7 @@ Tooltips:
   Proxy Settings:
     IP Block Recovery Script Path: Pad naar het scriptbestand dat wordt uitgevoerd wanneer een IP-blokkade wordt gedetecteerd. OpenTubeX wacht tot het klaar is en laadt daarna de video opnieuw. Als terugvallen is ingeschakeld, wordt het alleen uitgevoerd wanneer ook dat mislukt.
   Player Settings:
+    Use Document Picture-in-Picture: "Toont de afspeelknoppen en ondertiteling van de app in beeld-in-beeld. Schakel dit uit om in plaats daarvan het beeld-in-beeld-venster voor video van het systeem te gebruiken."
     Continue Playback When Screen Is Locked: 'Blijft audio op de achtergrond afspelen en biedt Android-mediabediening. Schakel dit uit om te pauzeren wanneer de app niet meer zichtbaar is.'
     Enable Caption Translations: Als dit is ingeschakeld en de video geen overeenkomend oorspronkelijk ondertitelingsspoor heeft, geven de ondertitelingsknop en sneltoets C de voorkeur aan een automatisch vertaald spoor in de voorkeurstaal voor ondertiteling.
     Use Quick Playback Speed Bar: Toont rechts in de spelerbediening een balk om snel de afspeelsnelheid te kiezen. Als het handmatig opslaan van afspeelsnelheid per kanaal is ingeschakeld, bevat de balk ook een knop om de snelheid voor het huidige kanaal op te slaan.

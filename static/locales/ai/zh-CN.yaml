@@ -473,6 +473,7 @@ Settings:
       Volume: 音量
       Hint: 在视频任意一侧上下滑动。
       Unavailable: 无法调整播放控件。
+    Use Document Picture-in-Picture: "使用文档画中画（实验性）"
     yt-dlp Streaming: "yt-dlp 流媒体"
     Continue Playback When Screen Is Locked: '屏幕锁定时继续播放'
     Music Visualizer: 音乐可视化
@@ -1435,6 +1436,7 @@ Tooltips:
   Proxy Settings:
     IP Block Recovery Script Path: 检测到 IP 被封锁时要运行的脚本文件路径。OpenTubeX 会等待脚本运行完毕，然后重新加载视频。如果启用了备用方案，则仅在备用方案也失败时运行脚本。
   Player Settings:
+    Use Document Picture-in-Picture: "在画中画窗口中显示应用的播放器控件和字幕。关闭此选项后将改用系统的视频画中画窗口。"
     Continue Playback When Screen Is Locked: '在后台继续播放音频并提供 Android 媒体控件。关闭此选项后，应用不再可见时将暂停播放。'
     Enable Caption Translations: 启用后，如果视频没有与首选字幕语言匹配的原始字幕轨道，字幕按钮和 C 快捷键将优先使用自动翻译的字幕轨道。
     Use Quick Playback Speed Bar: 在播放器控件右侧显示快速播放速度栏。如果启用了手动保存每个频道的播放速度，该栏还会显示用于保存当前频道播放速度的按钮。

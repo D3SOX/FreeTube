@@ -691,6 +691,7 @@ Settings:
       Volume: Volum
       Hint: Llisca amunt o avall a un costat del vídeo.
       Unavailable: No s’han pogut ajustar els controls de reproducció.
+    Use Document Picture-in-Picture: "Utilitza la imatge en imatge de document (experimental)"
     yt-dlp Streaming: "Reproducció en continu amb yt-dlp"
     Continue Playback When Screen Is Locked: 'Continua la reproducció amb la pantalla bloquejada'
     Music Visualizer: Visualitzador de música
@@ -1967,6 +1968,7 @@ Tooltips:
   Proxy Settings:
     IP Block Recovery Script Path: Camí de l'script que s'executa quan es detecta un bloqueig d'IP. L'OpenTubeX espera que acabi i després torna a carregar el vídeo. Si l'alternativa està activada, només s'executa quan també falla.
   Player Settings:
+    Use Document Picture-in-Picture: "Mostra els controls del reproductor i els subtítols de l'aplicació en el mode d'imatge en imatge. Desactiveu-ho per utilitzar la finestra d'imatge en imatge de vídeo del sistema."
     Continue Playback When Screen Is Locked: 'Manté l’àudio reproduint-se en segon pla i proporciona controls multimèdia d’Android. Desactiveu-ho per posar en pausa quan l’aplicació deixi de ser visible.'
     Enable Caption Translations: Si s'activa i el vídeo no proporciona cap pista original coincident, el botó de subtítols i la drecera C prefereixen una pista traduïda automàticament a la llengua de subtítols preferida.
     Proxy Videos Through Invidious: Es connecta a Invidious per servir els vídeos en lloc de connectar-se directament a YouTube.

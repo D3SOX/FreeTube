@@ -477,6 +477,7 @@ Settings:
       Volume: Hljóðstyrkur
       Hint: Strjúktu upp eða niður við hlið myndskeiðsins.
       Unavailable: Ekki tókst að stilla spilunarstýringar.
+    Use Document Picture-in-Picture: "Nota skjal í mynd-í-mynd (tilraunaaðgerð)"
     yt-dlp Streaming: "yt-dlp-streymi"
     Continue Playback When Screen Is Locked: 'Halda spilun áfram þegar skjárinn er læstur'
     Music Visualizer: Tónlistarmyndgerð
@@ -1473,6 +1474,7 @@ Tooltips:
   Proxy Settings:
     IP Block Recovery Script Path: Slóð að skriftuskrá sem keyra skal þegar vart verður við að IP-tölu hafi verið lokað. OpenTubeX bíður eftir að keyrslu ljúki og endurhleður síðan myndbandinu. Ef varaleið er virk er skriftan aðeins keyrð þegar varaleiðin bregst einnig.
   Player Settings:
+    Use Document Picture-in-Picture: "Sýnir stjórntæki spilarans og skjátexta forritsins í mynd-í-mynd. Slökktu á þessu til að nota mynd-í-mynd-glugga kerfisins fyrir myndskeið í staðinn."
     Continue Playback When Screen Is Locked: 'Heldur hljóði í spilun í bakgrunni og birtir miðlunarstýringar Android. Slökktu á þessu til að gera hlé þegar forritið er ekki lengur sýnilegt.'
     Enable Caption Translations: Þegar þetta er virkt velja skjátextahnappurinn og flýtileiðin C sjálfkrafa þýddan texta á völdu tungumáli ef myndbandið býður ekki upp á samsvarandi frumtexta.
     Use Quick Playback Speed Bar: Sýnir stiku til að breyta spilunarhraða hratt hægra megin í stjórntækjum spilarans. Ef kveikt er á handvirkri vistun spilunarhraða fyrir hverja rás birtist þar einnig hnappur til að vista hraðann fyrir núverandi rás.

@@ -220,6 +220,7 @@ const state = {
   // Combinable triggers for automatically entering Picture-in-Picture: 'tab', 'minimize', 'blur'
   autoPictureInPictureTriggers: [],
   androidAutoPictureInPicture: false,
+  documentPictureInPictureEnabled: true,
   scrollMiniPlayerEnabled: true,
   scrollMiniPlayerOnAllTabs: false,
   scrollMiniPlayerSavedRect: '',
@@ -777,6 +778,8 @@ export const NON_TRANSFERABLE_SETTINGS = new Set([
   'settingsPassword',
   'screenshotAskPath',
   'screenshotFolderPath',
+  // Document PiP support depends on the browser runtime and window system.
+  'documentPictureInPictureEnabled',
   'syncServerEnabled',
   'syncServerUrl',
   'syncServerUsername',

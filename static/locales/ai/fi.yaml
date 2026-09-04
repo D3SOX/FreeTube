@@ -477,6 +477,7 @@ Settings:
       Volume: Äänenvoimakkuus
       Hint: Pyyhkäise ylös tai alas videon reunalla.
       Unavailable: Toiston säätimiä ei voitu säätää.
+    Use Document Picture-in-Picture: "Käytä asiakirjan kuva kuvassa -tilaa (kokeellinen)"
     yt-dlp Streaming: "yt-dlp-suoratoisto"
     Continue Playback When Screen Is Locked: 'Jatka toistoa näytön ollessa lukittuna'
     Music Visualizer: Musiikkivisualisointi
@@ -1472,6 +1473,7 @@ Tooltips:
   Proxy Settings:
     IP Block Recovery Script Path: Komentosarjatiedosto, joka suoritetaan IP-eston havaitsemisen jälkeen. OpenTubeX odottaa suorituksen päättymistä ja lataa sitten videon uudelleen. Jos varamenetelmä on käytössä, komentosarja suoritetaan vain, jos myös varamenetelmä epäonnistuu.
   Player Settings:
+    Use Document Picture-in-Picture: "Näyttää sovelluksen toistosäätimet ja tekstitykset kuva kuvassa -tilassa. Poista tämä käytöstä, jos haluat käyttää järjestelmän videon kuva kuvassa -ikkunaa."
     Continue Playback When Screen Is Locked: 'Jatkaa äänen toistamista taustalla ja tarjoaa Androidin mediasäätimet. Poista tämä käytöstä, jos haluat keskeyttää toiston, kun sovellus ei enää ole näkyvissä.'
     Enable Caption Translations: Kun asetus on käytössä, tekstityspainike ja C-pikanäppäin suosivat automaattisesti käännettyä tekstitysraitaa ensisijaisella tekstityskielellä, jos videossa ei ole vastaavaa alkuperäistä raitaa.
     Use Quick Playback Speed Bar: Näyttää toistonopeuden pikapalkin soittimen säätimien oikeassa reunassa. Jos kanavakohtaisen toistonopeuden manuaalinen tallennus on käytössä, palkissa on myös painike nykyisen kanavan nopeuden tallentamiseen.
