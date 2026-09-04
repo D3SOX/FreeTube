@@ -325,7 +325,10 @@ function keyboardShortcutHandler(event) {
       (
         process.env.IS_ELECTRON &&
         store.getters.getSelectedTabIds.length <= 1 &&
-        matchesKeyboardShortcut(event, KeyboardShortcuts.APP.GENERAL.RELOAD_TAB)
+        [
+          KeyboardShortcuts.APP.GENERAL.RELOAD_TAB,
+          KeyboardShortcuts.APP.GENERAL.RELOAD_TAB_ALT,
+        ].some(shortcut => matchesKeyboardShortcut(event, shortcut))
       )
     ) &&
     !displayIsLoading.value &&

@@ -333,6 +333,7 @@ const DefaultKeyboardShortcuts = {
       NEW_TAB: 'ctrl+T',
       CLOSE_TAB: 'ctrl+W',
       RELOAD_TAB: 'ctrl+R',
+      RELOAD_TAB_ALT: 'f5',
       NEXT_TAB: 'control+tab',
       PREV_TAB: 'control+shift+tab',
       RESTORE_CLOSED_TAB: 'ctrl+shift+T',

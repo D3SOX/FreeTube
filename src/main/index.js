@@ -5513,6 +5513,19 @@ function runApp() {
   async function setMenu() {
     const keyboardShortcutsSetting = await baseHandlers.settings._findOne('keyboardShortcuts')
     const keyboardShortcuts = getConfiguredKeyboardShortcuts(keyboardShortcutsSetting?.value)
+    const reloadTabs = (_menuItem, browserWindow) => {
+      if (browserWindow && !appShortcutBlockedWindows.has(browserWindow)) {
+        const tabManager = TabManager.getForWindow(browserWindow.id)
+        if (tabManager) {
+          const tabIds = tabManager.selectedTabIds.length > 1
+            ? tabManager.selectedTabIds
+            : [tabManager.activeTabId]
+          for (const tabId of tabIds) {
+            tabManager.requestReload(tabId)
+          }
+        }
+      }
+    }
 
     const template = [
       ...process.platform === 'darwin'
@@ -5826,19 +5839,13 @@ function runApp() {
           {
             label: 'Reload Tab',
             accelerator: getElectronAccelerator(keyboardShortcuts.APP.GENERAL.RELOAD_TAB),
-            click: (_menuItem, browserWindow) => {
-              if (browserWindow && !appShortcutBlockedWindows.has(browserWindow)) {
-                const tabManager = TabManager.getForWindow(browserWindow.id)
-                if (tabManager) {
-                  const tabIds = tabManager.selectedTabIds.length > 1
-                    ? tabManager.selectedTabIds
-                    : [tabManager.activeTabId]
-                  for (const tabId of tabIds) {
-                    tabManager.requestReload(tabId)
-                  }
-                }
-              }
-            }
+            click: reloadTabs,
+          },
+          {
+            label: 'Reload Tab',
+            accelerator: getElectronAccelerator(keyboardShortcuts.APP.GENERAL.RELOAD_TAB_ALT),
+            click: reloadTabs,
+            visible: false,
           },
           {
             label: 'Reopen Closed Tab',

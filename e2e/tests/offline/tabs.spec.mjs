@@ -537,7 +537,7 @@ test.describe('tab bar', () => {
       beforeReload.tabs.map(tab => [tab.id, tab.refreshKey])
     )
 
-    await page.keyboard.press('Control+r')
+    await page.keyboard.press('F5')
     await expect.poll(async () => {
       const state = await page.evaluate(() => window.ftElectron.tabs.getState())
       return Object.fromEntries(state.tabs.map(tab => [tab.id, tab.refreshKey]))
@@ -2133,7 +2133,7 @@ test.describe('background tab shortcuts', () => {
     }
   })
 
-  test('Ctrl+R refreshes the current feed on an active subscriptions tab', async ({ page }) => {
+  test('reload shortcuts refresh the current feed on an active subscriptions tab', async ({ page }) => {
     await expect(page.getByText(/disabled automatic subscription fetching/i)).toBeVisible()
     await page.route(/^https?:\/\//, (route) => route.abort())
 
@@ -2145,6 +2145,10 @@ test.describe('background tab shortcuts', () => {
     })
 
     await page.keyboard.press('Control+r')
+    await expect.poll(() => externalRequests.length).toBeGreaterThan(0)
+
+    externalRequests.length = 0
+    await page.keyboard.press('F5')
     await expect.poll(() => externalRequests.length).toBeGreaterThan(0)
   })
 
