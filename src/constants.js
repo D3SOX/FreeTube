@@ -407,11 +407,7 @@ const KeyboardShortcuts = getConfiguredKeyboardShortcuts()
  * @returns {typeof DefaultKeyboardShortcuts}
  */
 function getConfiguredKeyboardShortcuts(overrides = {}) {
-  const parsedOverrides = parseKeyboardShortcutOverrides(overrides)
-  const editableOverrides = filterEditableKeyboardShortcutOverrides(
-    DefaultKeyboardShortcuts,
-    parsedOverrides
-  )
+  const editableOverrides = getEditableKeyboardShortcutOverrides(overrides)
 
   return mergeKeyboardShortcutOverrides(DefaultKeyboardShortcuts, editableOverrides)
 }
@@ -423,10 +419,30 @@ function getConfiguredKeyboardShortcuts(overrides = {}) {
  * @returns {string}
  */
 function sanitizeKeyboardShortcutOverrides(overrides) {
-  return JSON.stringify(filterEditableKeyboardShortcutOverrides(
+  return JSON.stringify(getEditableKeyboardShortcutOverrides(overrides))
+}
+
+/**
+ * @param {string | object} overrides
+ * @returns {object}
+ */
+function getEditableKeyboardShortcutOverrides(overrides) {
+  const editableOverrides = filterEditableKeyboardShortcutOverrides(
     DefaultKeyboardShortcuts,
     parseKeyboardShortcutOverrides(overrides)
-  ))
+  )
+  const appShortcuts = editableOverrides.APP?.GENERAL
+
+  // Older settings may already replace Ctrl/Cmd+R with F5. Keep that choice
+  // without adding the same F5 binding a second time.
+  if (
+    appShortcuts?.RELOAD_TAB?.toLowerCase() === DefaultKeyboardShortcuts.APP.GENERAL.RELOAD_TAB_ALT &&
+    !Object.hasOwn(appShortcuts, 'RELOAD_TAB_ALT')
+  ) {
+    appShortcuts.RELOAD_TAB_ALT = ''
+  }
+
+  return editableOverrides
 }
 
 /**
