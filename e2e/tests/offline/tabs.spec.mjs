@@ -2138,6 +2138,9 @@ test.describe('background tab shortcuts', () => {
       await expect(page.getByText(/disabled automatic subscription fetching/i)).toBeVisible()
       await page.route(/^https?:\/\//, (route) => route.abort())
 
+      const beforeRefresh = await page.evaluate(() => window.ftElectron.tabs.getState())
+      const refreshKey = beforeRefresh.tabs.find(tab => tab.id === beforeRefresh.activeTabId).refreshKey
+
       const externalRequests = []
       page.on('request', (request) => {
         if (/^https?:/.test(request.url())) {
@@ -2147,6 +2150,10 @@ test.describe('background tab shortcuts', () => {
 
       await page.keyboard.press(shortcut)
       await expect.poll(() => externalRequests.length).toBeGreaterThan(0)
+      await expect.poll(async () => {
+        const state = await page.evaluate(() => window.ftElectron.tabs.getState())
+        return state.tabs.find(tab => tab.id === state.activeTabId).refreshKey
+      }).toBe(refreshKey)
     })
   }
 
