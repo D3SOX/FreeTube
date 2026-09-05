@@ -1,10 +1,179 @@
-import { test, expect, goToSettingsSection } from '../../helpers/app.mjs'
+import { readFile } from 'node:fs/promises'
+import path from 'node:path'
+
+import { test, expect, goToSettingsSection, latestSettings } from '../../helpers/app.mjs'
 import { DEFAULT_QUICK_SETTINGS } from '../../../src/renderer/helpers/quickSettings.js'
 
 const ALL_QUICK_SETTINGS = [
   ...DEFAULT_QUICK_SETTINGS,
   'useProxy',
 ]
+
+const ADDITIONAL_QUICK_SETTINGS = [
+  ['rememberHistory', 'Remember Watch History', 'Privacy'],
+  ['rememberSearchHistory', 'Remember Search History', 'Privacy'],
+  ['ambientMode', 'Ambient Mode', 'Appearance'],
+  ['autoplayVideos', 'Start Videos Automatically', 'Playback'],
+  ['autoplayPlaylists', 'Autoplay Playlist Videos', 'Playback'],
+  ['defaultPlayback', 'Default Playback Rate', 'Playback'],
+  ['scrollMiniPlayerEnabled', 'Keep a mini player on screen when scrolling down', 'Playback'],
+  ['defaultVideoFormat', 'Default Video Format', 'Playback'],
+  ['useDeArrowTitles', 'Use DeArrow Video Titles', 'Add-ons'],
+  ['useDeArrowThumbnails', 'Use DeArrow for thumbnails', 'Add-ons'],
+  ['hideLiveChat', 'Hide Live Chat', 'Content'],
+  ['hideLiveChatReplay', 'Hide Live Chat Replay', 'Content'],
+  ['showThumbnailPreviews', 'Show thumbnail previews', 'Content'],
+  ['hideSubscriptionsShorts', 'Hide Subscriptions Shorts', 'Content'],
+  ['blurThumbnails', 'Blur thumbnails', 'Content'],
+  ['enableCaptionTranslations', 'Enable Caption Translations', 'Language and region'],
+  ['enableCommentTranslations', 'Enable comment translations', 'Language and region'],
+]
+
+test.describe('additional quick settings', () => {
+  test.use({ seed: { settings: { quickSettings: [], uiScale: 125 } } })
+
+  test('adds all suggested controls, groups them, and persists changes across restart', async ({ app, page }, testInfo) => {
+    test.setTimeout(120_000)
+    const appearance = await goToSettingsSection(page, 'appearance')
+    await appearance.getByRole('button', { name: 'Customize quick settings' }).click()
+    await page.getByRole('button', { name: 'Add setting' }).click()
+    const search = page.getByPlaceholder('Search settings')
+    for (const [, label] of ADDITIONAL_QUICK_SETTINGS) {
+      await search.fill(label)
+      await page.locator('.settingPicker .optionWrapper').getByText(new RegExp(`^${label}$`, 'i')).click()
+    }
+    await search.press('Escape')
+    await page.locator('.settingsCloseButton').click()
+    await page.locator('.profileTrigger').click()
+    const menu = page.getByRole('dialog', { name: 'Quick settings' })
+    const expected = {}
+
+    for (const [id, label, section] of ADDITIONAL_QUICK_SETTINGS) {
+      const control = menu.locator(`[data-setting-id="${id}"]`)
+      await expect(control.locator('..').getByRole('heading'))
+        .toHaveText(section)
+      if (id === 'defaultPlayback') {
+        const slider = control.getByRole('slider')
+        await slider.press('ArrowRight')
+        expected[id] = 1.25
+        await expect(slider).toHaveValue('1.25')
+      } else if (id === 'defaultVideoFormat') {
+        await control.getByRole('combobox', { name: new RegExp(`^${label}$`, 'i') }).click()
+        await page.getByRole('option', { name: /^Audio Formats$/i }).click()
+        expected[id] = 'audio'
+      } else {
+        const toggle = control.getByRole('checkbox')
+        expected[id] = !await toggle.isChecked()
+        await control.locator('label.switch-label').click()
+        await expect(toggle).toBeChecked({ checked: expected[id] })
+      }
+      await expect(menu).toBeVisible()
+    }
+
+    const ids = ADDITIONAL_QUICK_SETTINGS.map(([id]) => id)
+    await expect.poll(async () => {
+      const saved = latestSettings(await readFile(path.join(app.userDataDir, 'settings.db'), 'utf8'))
+      return Object.fromEntries(['quickSettings', ...ids].map(id => [id, saved[id]]))
+    }).toEqual({ quickSettings: ids, ...expected })
+
+    ;({ page } = await app.relaunch())
+    await page.locator('.profileTrigger').click()
+    const reopened = page.getByRole('dialog', { name: 'Quick settings' })
+    await expect(reopened.getByRole('heading', { name: 'Privacy', exact: true })
+      .locator('[data-icon="lock"]')).toBeVisible()
+    await expect.poll(() => reopened.locator('.quickSettingControl').evaluateAll(controls => (
+      controls.map(control => control.dataset.settingId)
+    ))).toEqual(ids)
+    for (const [id, value] of Object.entries(expected)) {
+      const control = reopened.locator(`[data-setting-id="${id}"]`)
+      if (typeof value === 'boolean') {
+        await expect(control.getByRole('checkbox')).toBeChecked({ checked: value })
+      } else if (typeof value === 'number') {
+        await expect(control.getByRole('slider')).toHaveValue(String(value))
+      } else {
+        await expect(control.getByRole('combobox')).toContainText(/Audio Formats/i)
+      }
+    }
+    const bounds = await reopened.boundingBox()
+    const viewport = await page.evaluate(() => ({ width: innerWidth, height: innerHeight }))
+    expect(bounds.x).toBeGreaterThanOrEqual(0)
+    expect(bounds.x + bounds.width).toBeLessThanOrEqual(viewport.width)
+    expect(bounds.y + bounds.height).toBeLessThanOrEqual(viewport.height)
+    // Electron capturePage includes the entire window at non-100% zoom.
+    const screenshot = await app.electronApp.evaluate(async ({ BrowserWindow }) => (
+      (await BrowserWindow.getAllWindows()[0].webContents.capturePage()).toDataURL()
+    ))
+    await testInfo.attach('expanded quick settings catalog at 125 percent scale', {
+      body: Buffer.from(screenshot.split(',')[1], 'base64'),
+      contentType: 'image/png',
+    })
+  })
+})
+
+test.describe('quick playback speed', () => {
+  test.use({
+    seed: {
+      settings: {
+        quickSettings: ['defaultPlayback'],
+        videoPlaybackRateInterval: 0.1,
+        maxVideoPlaybackRate: 5,
+      }
+    }
+  })
+
+  test('uses the configured speed interval and maximum', async ({ page }) => {
+    await page.locator('.profileTrigger').click()
+    const slider = page.getByRole('dialog', { name: 'Quick settings' }).getByRole('slider')
+    await expect(slider).toHaveAttribute('min', '0.1')
+    await expect(slider).toHaveAttribute('max', '5')
+    await expect(slider).toHaveAttribute('step', '0.1')
+    await slider.press('Home')
+    await slider.press('ArrowRight')
+    await expect(slider).toHaveValue('0.2')
+    await slider.press('End')
+    await expect.poll(() => page.evaluate(() => (
+      document.querySelector('#app').__vue_app__.config.globalProperties.$store.getters.getDefaultPlayback
+    ))).toBe(5)
+  })
+})
+
+test.describe('quick thumbnail blur', () => {
+  test.use({ seed: { settings: { quickSettings: ['blurThumbnails'] } } })
+
+  test('reflects the quick toggle and reset in the full thumbnail selector', async ({ page }) => {
+    for (const preference of ['blur', 'middle']) {
+      const appearance = await goToSettingsSection(page, 'appearance')
+      const select = appearance.locator('.select').filter({
+        has: page.getByRole('combobox', { name: 'Thumbnail Preference' })
+      }).locator('select')
+      await select.selectOption(preference)
+      await expect(select).toHaveValue(preference)
+      await page.locator('.settingsCloseButton').click()
+      await page.locator('.profileTrigger').click()
+      const menu = page.getByRole('dialog', { name: 'Quick settings' })
+      const toggle = menu.getByRole('checkbox', { name: 'Blur thumbnails' })
+      const label = menu.locator('label.switch-label')
+
+      if (preference === 'middle') {
+        await label.click()
+        await expect(toggle).toBeChecked()
+      }
+      await label.click()
+      await expect(toggle).not.toBeChecked()
+      await label.click()
+      await expect(toggle).toBeChecked()
+      await menu.getByRole('button', { name: 'Reset this setting to its default' }).click()
+      await expect(toggle).not.toBeChecked()
+
+      await menu.getByRole('button', { name: 'All Settings' }).click()
+      const reopened = await goToSettingsSection(page, 'appearance')
+      const reopenedSelect = reopened.locator('.select').filter({
+        has: page.getByRole('combobox', { name: 'Thumbnail Preference' })
+      }).locator('select')
+      await expect(reopenedSelect).toHaveValue(preference === 'blur' ? '' : preference)
+    }
+  })
+})
 
 test.describe('quick settings menu', () => {
   test.use({ seed: { settings: { quickSettings: ALL_QUICK_SETTINGS } } })

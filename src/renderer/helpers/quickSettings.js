@@ -4,6 +4,7 @@ const CORE_QUICK_SETTINGS = [
   ['uiScale', 'appearance', 'Settings.Theme Settings.UI Scale', { control: 'slider', electronOnly: true, icon: ['fas', 'sliders-h'] }],
   ['thumbnailSize', 'appearance', 'Settings.Theme Settings.Thumbnail Size', { control: 'slider', icon: ['fas', 'photo-film'] }],
   ['defaultQuality', 'playback', 'Settings.Player Settings.Default Quality.Default Quality', { control: 'select', icon: ['fas', 'photo-film'] }],
+  ['defaultPlayback', 'playback', 'Settings.Player Settings.Default Playback Rate', { control: 'slider', icon: ['fas', 'gauge-high'] }],
   ['playNextVideo', 'playback', 'Settings.Player Settings.Play Next Video', { control: 'toggle', icon: ['fas', 'step-forward'] }],
   ['enableSubtitlesByDefault', 'playback', 'Settings.Player Settings.Turn on Subtitles by Default', { control: 'toggle', icon: ['fas', 'closed-captioning'] }],
   ['listType', 'content', 'Settings.General Settings.Video View Type.Video View Type', { control: 'select', icon: ['fas', 'grip'] }],
@@ -16,6 +17,19 @@ const CORE_QUICK_SETTINGS = [
 ]
 
 export const BASIC_QUICK_SETTING_DEFINITIONS = Object.freeze([
+  {
+    id: 'defaultVideoFormat',
+    section: 'playback',
+    labelKey: 'Settings.Player Settings.Default Video Format.Default Video Format',
+    control: 'select',
+    values: ['dash', 'legacy', 'audio'],
+    optionLabelKeys: [
+      'Settings.Player Settings.Default Video Format.Dash Formats',
+      'Settings.Player Settings.Default Video Format.Legacy Formats',
+      'Settings.Player Settings.Default Video Format.Audio Formats',
+    ],
+    icon: ['fas', 'file-video'],
+  },
   {
     id: 'iconPack',
     section: 'appearance',
@@ -56,6 +70,21 @@ export const BASIC_QUICK_SETTING_DEFINITIONS = Object.freeze([
   ['showToastTimeoutIndicator', 'Settings.Theme Settings.Show Toast Timeout Indicator', 'appearance', ['fas', 'message']],
   ['useSponsorBlock', 'Settings.SponsorBlock Settings.Enable SponsorBlock', 'add-ons', ['fas', 'forward']],
   ['useReturnYouTubeDislikes', 'Settings.Return YouTube Dislike Settings.Enable Return YouTube Dislike', 'add-ons', ['fas', 'thumbs-down']],
+  ['rememberHistory', 'Settings.Privacy Settings.Remember History', 'privacy', ['fas', 'history']],
+  ['rememberSearchHistory', 'Settings.Privacy Settings.Remember Search History', 'privacy', ['fas', 'search']],
+  ['autoplayVideos', 'Settings.Player Settings.Autoplay Videos', 'playback', ['fas', 'play']],
+  ['autoplayPlaylists', 'Settings.Player Settings.Autoplay Playlists', 'playback', ['fas', 'list']],
+  ['useDeArrowTitles', 'Settings.SponsorBlock Settings.UseDeArrowTitles', 'add-ons', ['fas', 'pen']],
+  ['useDeArrowThumbnails', 'Settings.SponsorBlock Settings.UseDeArrowThumbnails', 'add-ons', ['fas', 'photo-film']],
+  ['scrollMiniPlayerEnabled', 'Settings.Player Settings.Scroll Mini Player.When Scrolling Down', 'playback', ['fas', 'compress']],
+  ['ambientMode', 'Global.Ambient Mode', 'appearance', ['fas', 'palette']],
+  ['hideLiveChat', 'Settings.Distraction Free Settings.Hide Live Chat', 'content', ['fas', 'comment']],
+  ['hideLiveChatReplay', 'Settings.Distraction Free Settings.Hide Live Chat Replay', 'content', ['fas', 'comment']],
+  ['showThumbnailPreviews', 'Settings.General Settings.Show Thumbnail Previews', 'content', ['fas', 'photo-film']],
+  ['enableCaptionTranslations', 'Settings.Player Settings.Caption Appearance.Enable Translations', 'language', ['fas', 'closed-captioning']],
+  ['enableCommentTranslations', 'Settings.General Settings.Comment Translation.Enable', 'language', ['fas', 'language']],
+  ['hideSubscriptionsShorts', 'Settings.Distraction Free Settings.Hide Subscriptions Shorts', 'content', ['fas', 'eye-slash']],
+  ['blurThumbnails', 'Settings.General Settings.Blur Thumbnails', 'content', ['fas', 'eye-slash']],
 ].map(definition => Object.freeze(Array.isArray(definition)
   ? {
       id: definition[0],
@@ -100,6 +129,10 @@ const SECTION_DEFINITIONS = Object.freeze({
   advanced: Object.freeze({
     labelKey: 'Settings.Categories.Advanced',
     icon: Object.freeze(['fas', 'flask']),
+  }),
+  privacy: Object.freeze({
+    labelKey: 'Settings.Privacy Settings.Privacy Settings',
+    icon: Object.freeze(['fas', 'lock']),
   }),
 })
 

@@ -226,6 +226,7 @@ Settings:
       Network: netværk
       Disk: diskplads
   General Settings:
+    Blur Thumbnails: Slør miniaturebilleder
     Navigation:
       Navigation: Navigation
       Customize Navigation: Tilpas navigation

@@ -215,6 +215,7 @@ Settings:
       Network: nettverk
       Disk: disk
   General Settings:
+    Blur Thumbnails: Gjør miniatyrbilder uskarpe
     Navigation:
       Navigation: Navigasjon
       Customize Navigation: Tilpass navigasjon

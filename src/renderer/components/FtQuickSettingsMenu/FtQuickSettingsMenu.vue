@@ -248,6 +248,17 @@
                     compact
                     @change="updateSetting('PlayNextVideo', $event)"
                   />
+                  <FtSlider
+                    v-else-if="setting.id === 'defaultPlayback'"
+                    :label="t('Settings.Player Settings.Default Playback Rate')"
+                    :default-value="store.getters.getDefaultPlayback"
+                    setting-key="defaultPlayback"
+                    :min-value="store.getters.getVideoPlaybackRateInterval"
+                    :max-value="store.getters.getMaxVideoPlaybackRate"
+                    :step="store.getters.getVideoPlaybackRateInterval"
+                    value-extension="x"
+                    @change="updateSetting('DefaultPlayback', $event)"
+                  />
                   <FtToggleSwitch
                     v-else-if="setting.id === 'enableSubtitlesByDefault'"
                     :label="t('Settings.Player Settings.Turn on Subtitles by Default')"

@@ -219,6 +219,7 @@ Settings:
       Network: شبكة
       Disk: القرص
   General Settings:
+    Blur Thumbnails: تمويه الصور المصغرة
     Navigation:
       Navigation: التنقل
       Customize Navigation: تخصيص التنقل

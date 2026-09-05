@@ -214,6 +214,7 @@ Settings:
       Network: network
       Disk: disk
   General Settings:
+    Blur Thumbnails: Blur thumbnails
     Navigation:
       Navigation: Navigation
       Customize Navigation: Customise navigation

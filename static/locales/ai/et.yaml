@@ -215,6 +215,7 @@ Settings:
       Network: võrgu
       Disk: ketta
   General Settings:
+    Blur Thumbnails: Hägusta pisipildid
     Navigation:
       Navigation: Navigeerimine
       Customize Navigation: Kohanda navigeerimist

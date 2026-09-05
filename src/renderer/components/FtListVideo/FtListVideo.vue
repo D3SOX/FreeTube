@@ -594,8 +594,6 @@ let thumbnailPreviewLoader = null
 let thumbnailPreviewLoaderUrl = null
 let thumbnailPreviewTimer = null
 const deArrowTogglePinned = ref(false)
-const showDeArrowTitle = ref(false)
-const showDeArrowThumbnail = ref(false)
 const showCollaboratorsPrompt = ref(false)
 const isFetchingCollaborators = ref(false)
 const sponsorBlockFullVideoCategory = ref(null)
@@ -1519,6 +1517,9 @@ const useDeArrowTitles = computed(() => store.getters.getUseDeArrowTitles)
 /** @type {import('vue').ComputedRef<boolean>} */
 const useDeArrowThumbnails = computed(() => store.getters.getUseDeArrowThumbnails)
 
+const showDeArrowTitle = computed(() => useDeArrowTitles.value && !deArrowTogglePinned.value)
+const showDeArrowThumbnail = computed(() => useDeArrowThumbnails.value && !deArrowTogglePinned.value)
+
 const deArrowChangedContent = computed(() => {
   return (useDeArrowThumbnails.value && deArrowCache.value?.thumbnail) ||
       (useDeArrowTitles.value && deArrowCache.value?.title &&
@@ -1673,14 +1674,6 @@ function toggleDeArrow() {
   }
 
   deArrowTogglePinned.value = !deArrowTogglePinned.value
-
-  if (useDeArrowTitles.value) {
-    showDeArrowTitle.value = !showDeArrowTitle.value
-  }
-
-  if (useDeArrowThumbnails.value) {
-    showDeArrowThumbnail.value = !showDeArrowThumbnail.value
-  }
 }
 
 function markSubscriptionVideoAsSeen() {
@@ -2067,16 +2060,26 @@ function onDragStart(event) {
 watch(() => props.data, parseVideoData, { immediate: true })
 watch([locale, dateFormat, timeFormat], updateUploadedTime)
 
-showDeArrowTitle.value = useDeArrowTitles.value
-showDeArrowThumbnail.value = useDeArrowThumbnails.value
+watch([useDeArrowTitles, useDeArrowThumbnails], ([titles, thumbnails]) => {
+  if (!titles && !thumbnails) deArrowTogglePinned.value = false
+})
 
-if ((showDeArrowTitle.value || showDeArrowThumbnail.value) && !deArrowCache.value) {
-  fetchDeArrowData()
-}
+let fetchingDeArrowData = false
+watch([showDeArrowTitle, showDeArrowThumbnail], async ([titles, thumbnails]) => {
+  if (!titles && !thumbnails) return
 
-if (showDeArrowThumbnail.value && deArrowCache.value && deArrowCache.value.thumbnail == null) {
-  debounceGetDeArrowThumbnail()
-}
+  if (!deArrowCache.value) {
+    if (fetchingDeArrowData) return
+    fetchingDeArrowData = true
+    try {
+      await fetchDeArrowData()
+    } finally {
+      fetchingDeArrowData = false
+    }
+  } else if (thumbnails && deArrowCache.value.thumbnail == null) {
+    debounceGetDeArrowThumbnail()
+  }
+}, { immediate: true })
 
 watch(premiereTimestamp, schedulePremiereStartInvalidation, { immediate: true })
 watch([id, premiereTimestamp], syncLiveReminder, { immediate: true })

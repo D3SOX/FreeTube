@@ -215,6 +215,7 @@ Settings:
       Network: sieť
       Disk: disk
   General Settings:
+    Blur Thumbnails: Rozmazať miniatúry
     Navigation:
       Navigation: Navigácia
       Customize Navigation: Prispôsobiť navigáciu

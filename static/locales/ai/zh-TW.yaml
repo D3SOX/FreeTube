@@ -215,6 +215,7 @@ Settings:
       Network: 網路
       Disk: 磁碟
   General Settings:
+    Blur Thumbnails: 模糊縮圖
     Navigation:
       Navigation: 導覽
       Customize Navigation: 自訂導覽

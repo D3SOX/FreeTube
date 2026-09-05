@@ -686,7 +686,10 @@ const blurThumbnails = computed(() => store.getters.getBlurThumbnails)
 
 /** @type {import('vue').ComputedRef<'' | 'start' | 'middle' | 'end' | 'hidden' | 'blur'>} */
 const thumbnailPreference = computed(() => {
-  return blurThumbnails.value ? 'blur' : store.getters.getThumbnailPreference
+  if (blurThumbnails.value) return 'blur'
+  // Quick settings can turn blurring off independently of the thumbnail style.
+  const preference = store.getters.getThumbnailPreference
+  return preference === 'blur' ? '' : preference
 })
 
 const thumbnailPreferenceChanged = computed(() => (

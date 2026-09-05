@@ -215,6 +215,7 @@ Settings:
       Network: le réseau
       Disk: le disque
   General Settings:
+    Blur Thumbnails: Flouter les miniatures
     Navigation:
       Navigation: Navigation
       Customize Navigation: Personnaliser la navigation

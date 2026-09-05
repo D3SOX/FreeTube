@@ -219,6 +219,7 @@ Settings:
       Network: netwerk
       Disk: schijf
   General Settings:
+    Blur Thumbnails: Miniaturen vervagen
     Navigation:
       Navigation: Navigatie
       Customize Navigation: Navigatie aanpassen

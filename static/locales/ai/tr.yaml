@@ -215,6 +215,7 @@ Settings:
       Network: ağ
       Disk: disk
   General Settings:
+    Blur Thumbnails: Küçük resimleri bulanıklaştır
     Navigation:
       Navigation: Gezinme
       Customize Navigation: Gezinmeyi özelleştir
