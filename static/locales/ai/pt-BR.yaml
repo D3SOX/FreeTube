@@ -215,6 +215,7 @@ Settings:
       Network: rede
       Disk: disco
   General Settings:
+    Blur Thumbnails: Desfocar miniaturas
     Navigation:
       Navigation: Navegação
       Customize Navigation: Personalizar navegação

@@ -1,5 +1,7 @@
 import assert from 'node:assert/strict'
+import { readFileSync } from 'node:fs'
 import test from 'node:test'
+import { load } from 'js-yaml'
 
 import {
   createQuickSettingSections,
@@ -27,6 +29,23 @@ test('keeps the original quick settings as defaults', () => {
   ])
 })
 
+test('localizes every quick setting, select option, and category in English and German', () => {
+  for (const locale of ['en-US', 'de-DE']) {
+    const messages = load(readFileSync(new URL(`../../static/locales/${locale}.yaml`, import.meta.url), 'utf8'))
+    const translate = key => {
+      const value = key.split('.').reduce((object, part) => object?.[part], messages)
+      assert.equal(typeof value, 'string', `${locale}: ${key}`)
+      assert.ok(value.length > 0, `${locale}: ${key}`)
+      return value
+    }
+    const sections = createQuickSettingSections(translate, true)
+    assert.ok(sections.some(section => section.id === 'privacy'))
+    for (const setting of QUICK_SETTING_DEFINITIONS) {
+      for (const key of setting.optionLabelKeys ?? []) translate(key)
+    }
+  }
+})
+
 test('gives every customizable setting an icon', () => {
   for (const setting of QUICK_SETTING_DEFINITIONS) {
     assert.equal(Array.isArray(setting.icon) && setting.icon.length, 2, setting.id)
@@ -45,6 +64,7 @@ test('uses the settings category icons for quick setting sections', () => {
     language: ['fas', 'globe'],
     advanced: ['fas', 'flask'],
     'add-ons': ['fas', 'puzzle-piece'],
+    privacy: ['fas', 'lock'],
   })
 })
 

@@ -194,6 +194,7 @@ Settings:
       Network: сеть
       Disk: диск
   General Settings:
+    Blur Thumbnails: Размывать миниатюры
     Navigation:
       Navigation: Навигация
       Customize Navigation: Настроить навигацию

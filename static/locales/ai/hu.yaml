@@ -215,6 +215,7 @@ Settings:
       Network: hálózat
       Disk: lemez
   General Settings:
+    Blur Thumbnails: Bélyegképek elhomályosítása
     Navigation:
       Navigation: Navigáció
       Customize Navigation: Navigáció testreszabása

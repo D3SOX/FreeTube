@@ -219,6 +219,7 @@ Settings:
       Network: verkko
       Disk: levytila
   General Settings:
+    Blur Thumbnails: Sumenna pikkukuvat
     Navigation:
       Navigation: Navigointi
       Customize Navigation: Mukauta navigointia

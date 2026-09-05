@@ -219,6 +219,7 @@ Settings:
       Network: nets
       Disk: disks
   General Settings:
+    Blur Thumbnails: Þoka smámyndir
     Navigation:
       Navigation: Leiðsögn
       Customize Navigation: Sérsníða leiðsögn
