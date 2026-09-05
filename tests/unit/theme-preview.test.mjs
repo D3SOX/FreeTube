@@ -3,7 +3,6 @@ import { test } from 'node:test'
 
 import { DEFAULT_CUSTOM_THEME } from '../../src/customTheme.js'
 import {
-  cleanupPreviewUploads,
   findPreviewComment,
   PREVIEW_MARKER,
   previewRequest,
@@ -11,7 +10,7 @@ import {
   renderPreviewComment,
   SCREENSHOTS_START,
   SCREENSHOTS_END,
-  unusedPreviewViews,
+  uploadPreviewImage,
 } from '../../_scripts/themePreview.mjs'
 
 function discussion({ theme = DEFAULT_CUSTOM_THEME, screenshots = '', markers = true, fence = '```' } = {}) {
@@ -155,35 +154,27 @@ test('finds an existing bot comment beyond the first page', () => {
   assert.deepEqual(cursors, [null, 'next'])
 })
 
-test('cleanup preserves images referenced by the bot after an uncertain publication result', () => {
-  const post = discussion()
-  const request = { repository: 'OpenTubeX/OpenTubeX', number: 123 }
-  const comments = [{
-    id: 'bot',
-    body: renderPreviewComment('hash', urls),
-    author: { login: 'github-actions', __typename: 'Bot' },
-  }]
-  assert.deepEqual(unusedPreviewViews(request, urls, fakeApi(post, comments).query), [])
-  assert.deepEqual(unusedPreviewViews(request, urls, fakeApi(post).query), ['subscriptions', 'watch', 'settings'])
-  const retryUrls = { ...urls, watch: 'https://example.com/retry-watch.png' }
-  assert.deepEqual(unusedPreviewViews(request, retryUrls, fakeApi(post, comments).query), ['watch'])
-  assert.throws(() => unusedPreviewViews(request, urls, () => { throw new Error('API unavailable') }), /API unavailable/)
+test('uploads a screenshot as a native attachment for the source repository', () => {
+  const url = 'https://github.com/user-attachments/assets/example'
+  const result = uploadPreviewImage('123', '/tmp/preview images/watch.png', args => {
+    const endpoint = new URL(args[1])
+    assert.equal(endpoint.origin, 'https://uploads.github.com')
+    assert.equal(endpoint.pathname, '/user-attachments/assets')
+    assert.equal(endpoint.searchParams.get('repository_id'), '123')
+    assert.equal(endpoint.searchParams.get('name'), 'watch.png')
+    assert.equal(endpoint.searchParams.get('content_type'), 'image/png')
+    assert.deepEqual(args.slice(2), [
+      '--method', 'POST', '--input', '/tmp/preview images/watch.png',
+      '-H', 'Content-Type: application/octet-stream', '-H', 'Accept: application/vnd.github+json',
+    ])
+    return JSON.stringify({ url })
+  })
+  assert.equal(result, url)
 })
 
-test('cleanup finds uploads on later asset pages and deletes only this attempt by asset ID', () => {
-  const calls = []
-  cleanupPreviewUploads({ tag: 'attachments', names: ['this-attempt.png', 'never-uploaded.png'] }, args => {
-    calls.push(args)
-    if (args.includes('--jq')) return '123'
-    if (args.includes('--paginate')) {
-      assert.ok(args.includes('--slurp'))
-      return JSON.stringify([
-        [{ id: 1, name: 'older-preview.png' }],
-        [{ id: 2, name: 'this-attempt.png' }, { id: 3, name: 'another-attempt.png' }],
-      ])
-    }
-    assert.deepEqual(args, ['api', 'repos/OpenTubeX/media/releases/assets/2', '--method', 'DELETE'])
-    return ''
-  })
-  assert.equal(calls.length, 3)
+test('rejects missing or unexpected attachment URLs and propagates upload failures', () => {
+  for (const response of [{}, { url: 'https://example.com/image.png' }]) {
+    assert.throws(() => uploadPreviewImage('123', '/tmp/watch.png', () => JSON.stringify(response)), /attachment URL/)
+  }
+  assert.throws(() => uploadPreviewImage('123', '/tmp/watch.png', () => { throw new Error('Forbidden') }), /Forbidden/)
 })

@@ -18,19 +18,24 @@ Adding screenshots or text to the Screenshots section prevents new captures.
 Existing bot previews stay in their comment. Editing the JSON refreshes that
 comment while the section remains empty. The bot rechecks the current discussion
 before posting so an edit during capture does not publish stale previews.
-If publication is skipped or fails, the workflow removes unused uploads from
-that attempt after checking whether the bot comment references them. If GitHub
-cannot confirm that, it keeps the images to avoid breaking a published comment.
+Images are native GitHub attachments, uploaded through the same endpoint as
+GitHub CLI's `--attach` flag. Discussion commands do not expose that flag yet,
+so the script calls the endpoint with `gh api` and includes the returned URLs in
+the bot comment. No media repository or release is needed.
 
-Images use the existing `attachments` releases in `OpenTubeX/media`, including
-the release rollover helper used by release-note media. The repository's existing
-`PUSH_TOKEN` secret needs Contents write access there. Discussion comments use
-`GITHUB_TOKEN` with Discussions write permission. Neither token is passed to
-Electron. No additional service is needed.
+GitHub requires a user token for attachment uploads; the built-in Actions token
+is not supported. The existing `PUSH_TOKEN` only needs write access to this
+repository. Discussion comments use `GITHUB_TOKEN` with Discussions write
+permission. Neither token is passed to Electron.
+
+Like attachments uploaded through `gh --attach`, native uploads cannot be
+removed through the CLI. If publication fails or the discussion changes during
+capture, unused attachments can remain, but the bot does not post stale previews.
 
 After the workflow lands on the default branch, run **Theme previews** manually
 with a discussion number to fill in older posts, or retry a failed capture.
-Normal runs skip themes already captured by the bot.
+Normal runs skip themes already captured by the bot. Manual runs use the selected
+workflow ref; discussion events always use the default branch.
 
 To verify captures locally, put an exported theme in a temporary directory as
 `theme.json`, then run:

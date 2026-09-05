@@ -32,7 +32,9 @@ jobs:
     - name: Check out trusted capture code
       uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       with:
-        ref: ${{ github.event.repository.default_branch }}
+        # Manual dispatch already executes workflow code from the selected ref.
+        # Discussion events always use the trusted default branch.
+        ref: ${{ github.event_name == 'workflow_dispatch' && github.ref || github.event.repository.default_branch }}
         persist-credentials: false
 
     - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
@@ -69,33 +71,19 @@ jobs:
         LANGUAGE: en_US
       run: xvfb-run -a -s '-screen 0 1920x1080x24' pnpm exec playwright test -c e2e/theme-previews/playwright.config.mjs
 
-    - name: Upload permanent images
-      id: upload
+    - name: Upload discussion attachments
       if: steps.request.outputs.enabled == 'true'
       env:
-        # The existing cross-repository token needs Contents write on OpenTubeX/media.
+        # Native attachments require a user token with write access to this repo.
+        # GitHub does not support attachment uploads with GITHUB_TOKEN.
         GH_TOKEN: ${{ secrets.PUSH_TOKEN }}
       run: node _scripts/themePreview.mjs upload "$THEME_PREVIEW_DIR"
 
     - name: Add or update the bot's discussion comment
-      id: publish
       if: steps.request.outputs.enabled == 'true'
       env:
         GH_TOKEN: ${{ github.token }}
       run: node _scripts/themePreview.mjs publish "$THEME_PREVIEW_DIR"
-
-    - name: Check for unused uploads
-      if: always() && steps.upload.outcome != 'skipped' && steps.publish.outputs.published != 'true'
-      id: cleanup
-      env:
-        GH_TOKEN: ${{ github.token }}
-      run: node _scripts/themePreview.mjs check-cleanup "$THEME_PREVIEW_DIR"
-
-    - name: Remove unused images from this attempt
-      if: always() && steps.cleanup.outputs.enabled == 'true'
-      env:
-        GH_TOKEN: ${{ secrets.PUSH_TOKEN }}
-      run: node _scripts/themePreview.mjs cleanup "$THEME_PREVIEW_DIR"
 
     - name: Keep failed capture diagnostics
       if: failure() && steps.request.outputs.enabled == 'true'
