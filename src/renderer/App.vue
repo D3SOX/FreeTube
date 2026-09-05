@@ -3002,8 +3002,9 @@ function handleKeyboardShortcuts(event) {
       return
     }
 
-    // Ctrl+R: Reload tab (unless the current view handles refresh itself)
-    if (matchesKeyboardShortcut(event, shortcuts.RELOAD_TAB)) {
+    // Reload tab unless the current view handles refresh itself
+    if ([shortcuts.RELOAD_TAB, shortcuts.RELOAD_TAB_ALT]
+      .some(shortcut => matchesKeyboardShortcut(event, shortcut))) {
       const tabIds = getShortcutTabIds()
       if (tabIds.length === 1 && route.path.startsWith('/subscriptions')) {
         event.preventDefault()

@@ -50,6 +50,35 @@ test('opens downloads with Ctrl or Command+J by default', () => {
   assert.equal(getConfiguredKeyboardShortcuts().APP.GENERAL.NAVIGATE_TO_DOWNLOADS, 'ctrl+J')
 })
 
+test('reloads tabs with Ctrl or Command+R and F5 by default', () => {
+  const shortcuts = getConfiguredKeyboardShortcuts().APP.GENERAL
+
+  assert.equal(shortcuts.RELOAD_TAB, 'ctrl+R')
+  assert.equal(shortcuts.RELOAD_TAB_ALT, 'f5')
+})
+
+test('does not duplicate an existing F5 reload override', () => {
+  const overrides = {
+    APP: {
+      GENERAL: {
+        RELOAD_TAB: 'F5',
+      }
+    }
+  }
+  const shortcuts = getConfiguredKeyboardShortcuts(overrides).APP.GENERAL
+
+  assert.equal(shortcuts.RELOAD_TAB, 'F5')
+  assert.equal(shortcuts.RELOAD_TAB_ALT, '')
+  assert.deepEqual(JSON.parse(sanitizeKeyboardShortcutOverrides(overrides)), {
+    APP: {
+      GENERAL: {
+        RELOAD_TAB: 'F5',
+        RELOAD_TAB_ALT: '',
+      }
+    }
+  })
+})
+
 test('allows the tab organizer shortcut to be configured', () => {
   assert.equal(getConfiguredKeyboardShortcuts().APP.GENERAL.OPEN_TAB_ORGANIZER, '')
   assert.equal(getConfiguredKeyboardShortcuts({

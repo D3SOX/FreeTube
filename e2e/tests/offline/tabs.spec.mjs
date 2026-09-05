@@ -537,7 +537,7 @@ test.describe('tab bar', () => {
       beforeReload.tabs.map(tab => [tab.id, tab.refreshKey])
     )
 
-    await page.keyboard.press('Control+r')
+    await page.keyboard.press('F5')
     await expect.poll(async () => {
       const state = await page.evaluate(() => window.ftElectron.tabs.getState())
       return Object.fromEntries(state.tabs.map(tab => [tab.id, tab.refreshKey]))
@@ -2133,20 +2133,29 @@ test.describe('background tab shortcuts', () => {
     }
   })
 
-  test('Ctrl+R refreshes the current feed on an active subscriptions tab', async ({ page }) => {
-    await expect(page.getByText(/disabled automatic subscription fetching/i)).toBeVisible()
-    await page.route(/^https?:\/\//, (route) => route.abort())
+  for (const [label, shortcut] of [['Ctrl+R', 'Control+r'], ['F5', 'F5']]) {
+    test(`${label} refreshes the current feed on an active subscriptions tab`, async ({ page }) => {
+      await expect(page.getByText(/disabled automatic subscription fetching/i)).toBeVisible()
+      await page.route(/^https?:\/\//, (route) => route.abort())
 
-    const externalRequests = []
-    page.on('request', (request) => {
-      if (/^https?:/.test(request.url())) {
-        externalRequests.push(request.url())
-      }
+      const beforeRefresh = await page.evaluate(() => window.ftElectron.tabs.getState())
+      const refreshKey = beforeRefresh.tabs.find(tab => tab.id === beforeRefresh.activeTabId).refreshKey
+
+      const externalRequests = []
+      page.on('request', (request) => {
+        if (/^https?:/.test(request.url())) {
+          externalRequests.push(request.url())
+        }
+      })
+
+      await page.keyboard.press(shortcut)
+      await expect.poll(() => externalRequests.length).toBeGreaterThan(0)
+      await expect.poll(async () => {
+        const state = await page.evaluate(() => window.ftElectron.tabs.getState())
+        return state.tabs.find(tab => tab.id === state.activeTabId).refreshKey
+      }).toBe(refreshKey)
     })
-
-    await page.keyboard.press('Control+r')
-    await expect.poll(() => externalRequests.length).toBeGreaterThan(0)
-  })
+  }
 
   // Regression: the document-level subscriptions listener refreshed a hidden
   // tab when R was pressed in a different tab (d20ff948f).
