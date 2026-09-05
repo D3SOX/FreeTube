@@ -24,7 +24,7 @@ jobs:
     timeout-minutes: 20
     permissions:
       contents: read
-      discussions: write
+      discussions: read
     env:
       THEME_PREVIEW_DIR: .tmp/theme-preview
       DISCUSSION_NUMBER: ${{ github.event.discussion.number || inputs.discussion }}
@@ -82,7 +82,8 @@ jobs:
     - name: Fill the Screenshots section in the discussion
       if: steps.request.outputs.enabled == 'true'
       env:
-        GH_TOKEN: ${{ github.token }}
+        # GITHUB_TOKEN cannot edit another author's discussion body.
+        GH_TOKEN: ${{ secrets.PUSH_TOKEN }}
       run: node _scripts/themePreview.mjs publish "$THEME_PREVIEW_DIR"
 
     - name: Keep failed capture diagnostics

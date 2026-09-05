@@ -28,9 +28,10 @@ so the script calls the endpoint with `gh api` and includes the returned URLs in
 the discussion body. No media repository or release is needed.
 
 GitHub requires a user token for attachment uploads; the built-in Actions token
-is not supported. The existing `PUSH_TOKEN` only needs write access to this
-repository. Discussion edits use `GITHUB_TOKEN` with Discussions write
-permission. Neither token is passed to Electron.
+is not supported. The existing `PUSH_TOKEN` needs write access to this repository
+and Discussions write permission for editing the original post. The built-in
+`GITHUB_TOKEN` reads discussions but cannot edit another author's post.
+Neither token is passed to Electron.
 
 Like attachments uploaded through `gh --attach`, native uploads cannot be
 removed through the CLI. If publication fails or the discussion changes during
