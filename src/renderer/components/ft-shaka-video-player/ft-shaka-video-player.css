@@ -2531,7 +2531,7 @@ html[data-reduced-motion='reduce'] .musicVisualizerCanvas {
 }
 
 /* Keep SponsorBlock notices above the mobile action dock while it is visible. */
-:global(.capacitorTabs .ftVideoPlayer:is(:fullscreen, .fullWindow).actionDockVisible > .skippedSegmentsWrapper) {
+:global(.capacitorTabs .ftVideoPlayer:is(:fullscreen, .fullWindow)[data-action-dock-visible='true'] > .skippedSegmentsWrapper) {
   bottom: calc(
     var(--mobile-fullscreen-actions-block-end) +
     var(--mobile-fullscreen-actions-block-size) +
@@ -2544,7 +2544,7 @@ html[data-reduced-motion='reduce'] .musicVisualizerCanvas {
   z-index: auto;
 }
 
-:global(.capacitorTabs .ftVideoPlayer.playerControlsShown :is(
+:global(.capacitorTabs .ftVideoPlayer[data-player-controls-shown='true'] :is(
   .shaka-top-controls,
   .shaka-bottom-controls,
   .shaka-big-buttons-container
