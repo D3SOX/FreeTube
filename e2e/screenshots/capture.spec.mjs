@@ -1,13 +1,11 @@
-import { copyFile, mkdir } from 'node:fs/promises'
 import path from 'node:path'
 
-import { test, expect, goTo, goToSettingsSection, repoRoot, sel } from '../helpers/app.mjs'
-import { expectImagesLoaded } from '../helpers/visual-fixtures.mjs'
+import { test, expect, goTo, repoRoot, sel } from '../helpers/app.mjs'
+import { captureAppScreenshot, copyScreenshots, openScreenshotSettings, sizeScreenshotWindow } from '../helpers/screenshots.mjs'
 
 // Keep both themes on the same video and decoded frame across future updates.
 const VIDEO_ID = 'AY5qcIq5u2g'
 const TIMESTAMP = 3 * 3600 + 41 * 60 + 58
-const SIZE = { width: 1710, height: 1026 }
 const THEMES = ['dark', 'light']
 
 test.use({
@@ -40,19 +38,6 @@ async function setTheme(app, theme) {
   await expect(app.page.locator('body')).toHaveClass(new RegExp(`\\b${theme}\\b`))
 }
 
-async function waitForVisibleImages(page) {
-  await expect.poll(() => page.locator('img').evaluateAll(images => images
-    .filter(image => {
-      const rect = image.getBoundingClientRect()
-      return rect.width > 0 && rect.height > 0 && rect.bottom > 0 &&
-        rect.right > 0 && rect.top < innerHeight && rect.left < innerWidth &&
-        image.checkVisibility()
-    })
-    .every(image => image.complete && image.naturalWidth > 0)), {
-    message: 'visible thumbnails and avatars must finish loading',
-  }).toBe(true)
-}
-
 async function expectPausedFrame(video) {
   await expect.poll(() => video.evaluate(element => ({
     paused: element.paused,
@@ -67,52 +52,18 @@ test('refresh README screenshots from the live app', async ({ app, page }, testI
   await tutorial.getByRole('button', { name: 'Skip', exact: true }).click()
   await expect(tutorial).toBeHidden()
 
-  // Fix content dimensions too, since native window decorations vary by OS.
-  await app.electronApp.evaluate(({ BrowserWindow }, size) => {
-    BrowserWindow.getAllWindows()[0].setContentSize(size.width, size.height)
-  }, SIZE)
-  await expect.poll(() => page.evaluate(() => ({ width: innerWidth, height: innerHeight })))
-    .toEqual(SIZE)
+  await sizeScreenshotWindow(app)
 
   const captures = []
   async function capture(number, theme) {
-    // Settings has no required imagery. Content scenes must contain their
-    // expected images, even if a regression removes the img elements entirely.
-    if (number === 1) {
-      for (let index = 0; index < 12; index++) {
-        const thumbnail = page.locator('.ft-list-video').nth(index).locator('img.thumbnailImage').first()
-        await expect(thumbnail).toBeVisible()
-        await expectImagesLoaded(thumbnail)
-      }
-    } else if (number === 2) {
-      const avatar = page.locator('.watchVideoInfo img.channelThumbnail').first()
-      await expect(avatar).toBeVisible()
-      await expectImagesLoaded(avatar)
-      const recommendation = page.locator('.watchVideoRecommendations img.thumbnailImage').first()
-      await expect(recommendation).toBeVisible()
-      await expectImagesLoaded(recommendation)
-    }
-    await waitForVisibleImages(page)
-    await page.evaluate(async () => {
-      await document.fonts.ready
-      document.activeElement?.blur()
-    })
-    await page.mouse.move(0, 0)
-    await expect(page.locator('[data-sonner-toast]')).toHaveCount(0)
     const name = `OpenTubeX${number}-${theme}.png`
-    await page.screenshot({ path: testInfo.outputPath(name), animations: 'disabled' })
+    const view = { 1: 'subscriptions', 2: 'watch', 3: 'settings' }[number]
+    await captureAppScreenshot(page, view, testInfo.outputPath(name))
     captures.push(name)
   }
 
   await test.step('maximized settings in both themes', async () => {
-    await goToSettingsSection(page, 'general')
-    const dialog = page.locator('.settingsWindow')
-    await dialog.getByRole('button', { name: 'Maximize', exact: true }).click()
-    await expect(dialog).toHaveClass(/maximized/)
-    await expect.poll(async () => {
-      const { width, height } = await dialog.boundingBox()
-      return { width, height }
-    }).toEqual(SIZE)
+    const dialog = await openScreenshotSettings(page)
     for (const theme of THEMES) {
       await setTheme(app, theme)
       await expect(dialog.locator('.changedSettingIndicator')).toHaveCount(0)
@@ -176,9 +127,5 @@ test('refresh README screenshots from the live app', async ({ app, page }, testI
 
   // A blocked stream or missing image must not replace the README with an
   // error page or leave it with only some of this run's captures.
-  const destination = path.join(repoRoot, 'docs', 'screenshots')
-  await mkdir(destination, { recursive: true })
-  for (const name of captures) {
-    await copyFile(testInfo.outputPath(name), path.join(destination, name))
-  }
+  await copyScreenshots(testInfo, captures, path.join(repoRoot, 'docs', 'screenshots'))
 })

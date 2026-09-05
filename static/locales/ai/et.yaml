@@ -359,7 +359,7 @@ Settings:
       Share Description Heading: Kirjeldus
       Share Description Prompt: Kirjelda teemat ja lisa kõik, mida peaks enne selle kasutamist teadma.
       Share Screenshots Heading: Kuvatõmmised
-      Share Screenshots Prompt: Lohista siia vähemalt üks kuvatõmmis.
+      Share Screenshots Prompt: "Lohista siia vähemalt üks kuvatõmmis. Jäta see jaotis tühjaks, et bot lisaks kolm eelvaadet näidissisuga, ilma sinu isikuandmeteta."
       Share Code Summary: Teema JSON
       Delete Theme: Kustuta teema
       Delete Theme Confirmation: Kas kustutada „{name}”? Seda ei saa tagasi võtta.

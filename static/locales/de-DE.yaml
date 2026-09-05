@@ -600,7 +600,7 @@ Settings:
       Share Description Heading: Beschreibung
       Share Description Prompt: Beschreibe das Design und was andere vor der Verwendung wissen sollten.
       Share Screenshots Heading: Screenshots
-      Share Screenshots Prompt: Ziehe einen oder mehrere Screenshots hierher.
+      Share Screenshots Prompt: "Ziehe einen oder mehrere Screenshots hierher. Lass diesen Abschnitt leer, damit der Bot drei Vorschaubilder mit Beispielinhalten und ohne deine persönlichen Daten hinzufügt."
       Share Code Summary: Design-JSON
       Delete Theme: Design löschen
       Delete Theme Confirmation: „{name}“ löschen? Dies kann nicht rückgängig gemacht werden.

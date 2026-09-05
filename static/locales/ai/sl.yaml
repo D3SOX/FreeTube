@@ -502,7 +502,7 @@ Settings:
       Share Description Heading: Opis
       Share Description Prompt: Opišite temo in navedite vse, kar morajo uporabniki vedeti pred uporabo.
       Share Screenshots Heading: Posnetki zaslona
-      Share Screenshots Prompt: Sem povlecite enega ali več posnetkov zaslona.
+      Share Screenshots Prompt: "Sem povlecite enega ali več posnetkov zaslona. Pustite ta razdelek prazen, da bo bot dodal tri predoglede z vzorčno vsebino, brez vaših osebnih podatkov."
       Share Code Summary: JSON teme
       Delete Theme: Izbriši temo
       Delete Theme Confirmation: Izbrisati »{name}«? Tega ni mogoče razveljaviti.

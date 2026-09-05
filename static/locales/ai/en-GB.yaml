@@ -346,7 +346,7 @@ Settings:
       Share Description Heading: Description
       Share Description Prompt: Describe the theme and anything people should know before using it.
       Share Screenshots Heading: Screenshots
-      Share Screenshots Prompt: Drag and drop one or more screenshots here.
+      Share Screenshots Prompt: "Drag and drop one or more screenshots here. Leave this section empty for the bot to add three previews using sample content, without your personal data."
       Share Code Summary: Theme JSON
       Delete Theme: Delete theme
       Delete Theme Confirmation: Delete “{name}”? This cannot be undone.

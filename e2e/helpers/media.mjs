@@ -141,10 +141,11 @@ export function demoPlayerResponse(videoId, overrides = {}) {
  * asks for byte ranges, so honour `Range` to keep seeking working.
  *
  * @param {import('@playwright/test').Page} page
+ * @param {Buffer} [mediaBody] optional sample media, served with the same byte-range handling
  */
-export async function routeDemoMedia(page) {
+export async function routeDemoMedia(page, mediaBody) {
   await page.route(/googlevideo\.com\/videoplayback/, async (route) => {
-    const body = await readDemoMedia()
+    const body = mediaBody ?? await readDemoMedia()
     const range = /bytes=(\d*)-(\d*)/.exec(route.request().headers().range ?? '')
 
     if (!range) {

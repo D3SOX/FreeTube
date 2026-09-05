@@ -359,7 +359,7 @@ Settings:
       Share Description Heading: Leírás
       Share Description Prompt: Írja le a témát és mindazt, amit másoknak érdemes tudniuk a használata előtt.
       Share Screenshots Heading: Képernyőképek
-      Share Screenshots Prompt: Húzzon ide egy vagy több képernyőképet.
+      Share Screenshots Prompt: "Húzzon ide egy vagy több képernyőképet. Hagyd üresen ezt a részt, és a bot három előnézetet ad hozzá mintatartalommal, a személyes adataid nélkül."
       Share Code Summary: Téma JSON-kódja
       Delete Theme: Téma törlése
       Delete Theme Confirmation: Törli a(z) „{name}” témát? Ez nem vonható vissza.

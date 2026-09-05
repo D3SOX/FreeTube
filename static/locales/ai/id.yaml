@@ -363,7 +363,7 @@ Settings:
       Share Description Heading: Deskripsi
       Share Description Prompt: Jelaskan tema dan hal yang perlu diketahui sebelum menggunakannya.
       Share Screenshots Heading: Tangkapan layar
-      Share Screenshots Prompt: Seret dan lepas satu atau beberapa tangkapan layar di sini.
+      Share Screenshots Prompt: "Seret dan lepas satu atau beberapa tangkapan layar di sini. Biarkan bagian ini kosong agar bot menambahkan tiga pratinjau dengan konten contoh, tanpa data pribadi Anda."
       Share Code Summary: JSON tema
       Delete Theme: Hapus tema
       Delete Theme Confirmation: Hapus “{name}”? Tindakan ini tidak dapat dibatalkan.
