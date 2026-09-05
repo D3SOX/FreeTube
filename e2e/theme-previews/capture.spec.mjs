@@ -48,8 +48,9 @@ test.use({
 
 test('captures the submitted theme in three views with sample content', async ({ app, page }, testInfo) => {
   await mockPlayableWatchPage(app, page)
-  await page.route(/https:\/\/.*(?:ytimg\.com|ggpht\.com|googleusercontent\.com)\//, route =>
-    route.request().url().includes('ytimg.com')
+  await page.route(url => ['ytimg.com', 'ggpht.com', 'googleusercontent.com']
+    .some(domain => url.hostname === domain || url.hostname.endsWith(`.${domain}`)), route =>
+    /(^|\.)ytimg\.com$/.test(new URL(route.request().url()).hostname)
       ? route.fulfill({ body: thumbnail, contentType: 'image/svg+xml' })
       : fulfillVisualFixture(route, 'avatar'))
   await routeDemoMedia(page, media)

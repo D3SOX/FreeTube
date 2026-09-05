@@ -23,7 +23,8 @@ export function previewRequest(discussion) {
   const themes = []
   let hasImage = false
   marked.walkTokens(tokens, token => {
-    if (token.type === 'image' || (token.type === 'html' && /<(?:img|picture|video)\b/i.test(token.text.replaceAll(/<!--[\s\S]*?-->/g, '')))) hasImage = true
+    if (token.type === 'image' || (token.type === 'html' && token.text.split(/<!--[\s\S]*?-->/g)
+      .some(text => /<(?:img|picture|video)\b/i.test(text)))) hasImage = true
     if (token.type === 'code' && token.lang?.toLowerCase() === 'json') themes.push(token.text)
   })
   if (hasImage || themes.length !== 1) return null
@@ -45,7 +46,7 @@ export function previewRequest(discussion) {
     screenshots = prefix.slice(heading.index + heading[0].length)
   }
   // Text, attachment links, and unfamiliar markup all count as supplied content.
-  if (screenshots.replaceAll(/<!--[\s\S]*?-->/g, '').trim()) return null
+  if (screenshots.split(/<!--[\s\S]*?-->/g).some(text => text.trim())) return null
   const theme = normalizeCustomTheme(JSON.parse(themes[0]))
   const hash = createHash('sha256').update(JSON.stringify(theme)).digest('hex')
   return { theme, hash }
