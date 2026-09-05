@@ -67,7 +67,7 @@ for (const uiScale of [100, 95]) {
       })).toBeLessThan(1)
       const expectInlinePosition = async () => {
         await player.hover()
-        await expect(player).toHaveClass(/actionDockVisible/)
+        await expect(player).toHaveAttribute('data-action-dock-visible', 'true')
         await expectDefaultNoticePosition()
       }
       await expectInlinePosition()
@@ -76,7 +76,7 @@ for (const uiScale of [100, 95]) {
         if (mode === 'fullscreen') await setPlayerFullscreen(page, true)
         else await page.locator('body').press('s')
         await player.hover()
-        await expect(player).toHaveClass(/actionDockVisible/)
+        await expect(player).toHaveAttribute('data-action-dock-visible', 'true')
         await expect.poll(async () => {
           const noticeBox = await notice.boundingBox()
           const dockBox = await player.locator('.fullscreenActions').boundingBox()
@@ -85,7 +85,7 @@ for (const uiScale of [100, 95]) {
 
         // Hidden controls remove the dock offset even while a notice is showing.
         await player.locator('.shaka-controls-container').evaluate(element => element.removeAttribute('shown'))
-        await expect(player).not.toHaveClass(/actionDockVisible/)
+        await expect(player).toHaveAttribute('data-action-dock-visible', 'false')
         await expectDefaultNoticePosition()
         if (mode === 'fullscreen') await setPlayerFullscreen(page, false)
         else await page.locator('body').press('s')
