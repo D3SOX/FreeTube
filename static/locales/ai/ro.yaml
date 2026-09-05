@@ -361,7 +361,7 @@ Settings:
       Share Description Heading: Descriere
       Share Description Prompt: Descrieți tema și orice ar trebui știut înainte de utilizare.
       Share Screenshots Heading: Capturi de ecran
-      Share Screenshots Prompt: Trageți și plasați aici una sau mai multe capturi de ecran.
+      Share Screenshots Prompt: "Trageți și plasați aici una sau mai multe capturi de ecran. Lăsați această secțiune goală pentru ca botul să adauge trei previzualizări cu conținut demonstrativ, fără datele dvs. personale."
       Share Code Summary: JSON-ul temei
       Delete Theme: Șterge tema
       Delete Theme Confirmation: Ștergeți „{name}”? Această acțiune nu poate fi anulată.

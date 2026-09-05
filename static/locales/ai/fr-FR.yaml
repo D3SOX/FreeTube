@@ -359,7 +359,7 @@ Settings:
       Share Description Heading: Description
       Share Description Prompt: Décrivez le thème et tout ce qu’il faut savoir avant de l’utiliser.
       Share Screenshots Heading: Captures d’écran
-      Share Screenshots Prompt: Glissez-déposez une ou plusieurs captures d’écran ici.
+      Share Screenshots Prompt: "Glissez-déposez une ou plusieurs captures d’écran ici. Laissez cette section vide pour que le bot ajoute trois aperçus avec du contenu d’exemple, sans vos données personnelles."
       Share Code Summary: JSON du thème
       Delete Theme: Supprimer le thème
       Delete Theme Confirmation: Supprimer « {name} » ? Cette action est irréversible.

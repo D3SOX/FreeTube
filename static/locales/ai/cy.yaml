@@ -361,7 +361,7 @@ Settings:
       Share Description Heading: Disgrifiad
       Share Description Prompt: Disgrifiwch y thema ac unrhyw beth y dylai pobl ei wybod cyn ei defnyddio.
       Share Screenshots Heading: Lluniau sgrin
-      Share Screenshots Prompt: Llusgwch a gollwng un neu ragor o luniau sgrin yma.
+      Share Screenshots Prompt: "Llusgwch a gollwng un neu ragor o luniau sgrin yma. Gadewch yr adran hon yn wag i'r bot ychwanegu tri rhagolwg gan ddefnyddio cynnwys enghreifftiol, heb eich data personol."
       Share Code Summary: JSON y thema
       Delete Theme: Dileu thema
       Delete Theme Confirmation: 'Dileu "{name}"? Nid oes modd dadwneud hyn.'

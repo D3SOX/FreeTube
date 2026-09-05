@@ -470,7 +470,7 @@ Settings:
       Share Description Heading: 설명
       Share Description Prompt: 테마와 사용 전에 알아야 할 내용을 설명하세요.
       Share Screenshots Heading: 스크린샷
-      Share Screenshots Prompt: 여기에 스크린샷을 하나 이상 끌어다 놓으세요.
+      Share Screenshots Prompt: "여기에 스크린샷을 하나 이상 끌어다 놓으세요. 이 섹션을 비워 두면 봇이 개인 데이터 없이 샘플 콘텐츠로 미리보기 세 장을 추가합니다."
       Share Code Summary: 테마 JSON
       Delete Theme: 테마 삭제
       Delete Theme Confirmation: '"{name}"을(를) 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.'

@@ -359,7 +359,7 @@ Settings:
       Share Description Heading: 説明
       Share Description Prompt: テーマの説明と、使用前に知っておくべきことを入力してください。
       Share Screenshots Heading: スクリーンショット
-      Share Screenshots Prompt: 1枚以上のスクリーンショットをここにドラッグ＆ドロップしてください。
+      Share Screenshots Prompt: "1枚以上のスクリーンショットをここにドラッグ＆ドロップしてください。 このセクションを空欄にすると、ボットが個人データを使わず、サンプルコンテンツで3枚のプレビューを追加します。"
       Share Code Summary: テーマJSON
       Delete Theme: テーマを削除
       Delete Theme Confirmation: 「{name}」を削除しますか？この操作は元に戻せません。

@@ -363,7 +363,7 @@ Settings:
       Share Description Heading: Beschrijving
       Share Description Prompt: Beschrijf het thema en wat gebruikers moeten weten voordat ze het gebruiken.
       Share Screenshots Heading: Schermafbeeldingen
-      Share Screenshots Prompt: Sleep een of meer schermafbeeldingen hierheen.
+      Share Screenshots Prompt: "Sleep een of meer schermafbeeldingen hierheen. Laat dit gedeelte leeg zodat de bot drie voorbeelden toevoegt met voorbeeldinhoud, zonder je persoonlijke gegevens."
       Share Code Summary: Thema-JSON
       Delete Theme: Thema verwijderen
       Delete Theme Confirmation: “{name}” verwijderen? Dit kan niet ongedaan worden gemaakt.

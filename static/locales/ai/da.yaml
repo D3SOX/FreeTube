@@ -372,7 +372,7 @@ Settings:
       Share Description Heading: Beskrivelse
       Share Description Prompt: Beskriv temaet og det, andre bør vide, før de bruger det.
       Share Screenshots Heading: Skærmbilleder
-      Share Screenshots Prompt: Træk et eller flere skærmbilleder hertil.
+      Share Screenshots Prompt: "Træk et eller flere skærmbilleder hertil. Lad dette afsnit være tomt, så tilføjer botten tre forhåndsvisninger med eksempelindhold uden dine personlige data."
       Share Code Summary: Tema-JSON
       Delete Theme: Slet tema
       Delete Theme Confirmation: Slet “{name}”? Det kan ikke fortrydes.

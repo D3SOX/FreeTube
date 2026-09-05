@@ -363,7 +363,7 @@ Settings:
       Share Description Heading: Kuvaus
       Share Description Prompt: Kuvaile teemaa ja kerro, mitä käyttäjän on hyvä tietää ennen sen käyttöönottoa.
       Share Screenshots Heading: Kuvakaappaukset
-      Share Screenshots Prompt: Vedä ja pudota tähän yksi tai useampi kuvakaappaus.
+      Share Screenshots Prompt: "Vedä ja pudota tähän yksi tai useampi kuvakaappaus. Jätä tämä osio tyhjäksi, niin botti lisää kolme esikatselua esimerkkisisällöllä ilman henkilötietojasi."
       Share Code Summary: Teeman JSON
       Delete Theme: Poista teema
       Delete Theme Confirmation: Poistetaanko ”{name}”? Toimintoa ei voi kumota.
