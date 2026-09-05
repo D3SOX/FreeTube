@@ -131,6 +131,14 @@ export function unusedPreviewViews(request, urls, query = graphql) {
   return PREVIEW_VIEWS.filter(view => !comment?.body.includes(urls[view]))
 }
 
+export function cleanupPreviewUploads({ tag, names }, runGh = gh) {
+  const releaseId = runGh(['api', `repos/${MEDIA_REPOSITORY}/releases/tags/${tag}`, '--jq', '.id'])
+  const pages = JSON.parse(runGh(['api', `repos/${MEDIA_REPOSITORY}/releases/${releaseId}/assets?per_page=100`, '--paginate', '--slurp']))
+  for (const asset of pages.flat().filter(asset => names.includes(asset.name))) {
+    runGh(['api', `repos/${MEDIA_REPOSITORY}/releases/assets/${asset.id}`, '--method', 'DELETE'])
+  }
+}
+
 async function main() {
   const [command, directory] = process.argv.slice(2)
   if (!directory) throw new Error('Usage: themePreview.mjs prepare|upload|publish|check-cleanup|cleanup DIRECTORY')
@@ -194,11 +202,7 @@ async function main() {
     await writeFile(cleanupPath, JSON.stringify({ tag, names: names.filter((_, index) => unused.includes(PREVIEW_VIEWS[index])) }))
     if (process.env.GITHUB_OUTPUT) await appendFile(process.env.GITHUB_OUTPUT, `enabled=${unused.length > 0}\n`)
   } else if (command === 'cleanup') {
-    const { tag, names } = JSON.parse(await readFile(cleanupPath, 'utf8'))
-    const { assets } = JSON.parse(gh(['release', 'view', tag, '--repo', MEDIA_REPOSITORY, '--json', 'assets']))
-    for (const asset of assets.filter(asset => names.includes(asset.name))) {
-      gh(['release', 'delete-asset', tag, asset.name, '--repo', MEDIA_REPOSITORY, '--yes'])
-    }
+    cleanupPreviewUploads(JSON.parse(await readFile(cleanupPath, 'utf8')))
   } else {
     throw new Error(`Unknown command: ${command}`)
   }

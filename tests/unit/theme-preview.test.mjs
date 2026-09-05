@@ -3,6 +3,7 @@ import { test } from 'node:test'
 
 import { DEFAULT_CUSTOM_THEME } from '../../src/customTheme.js'
 import {
+  cleanupPreviewUploads,
   findPreviewComment,
   PREVIEW_MARKER,
   previewRequest,
@@ -167,4 +168,22 @@ test('cleanup preserves images referenced by the bot after an uncertain publicat
   const retryUrls = { ...urls, watch: 'https://example.com/retry-watch.png' }
   assert.deepEqual(unusedPreviewViews(request, retryUrls, fakeApi(post, comments).query), ['watch'])
   assert.throws(() => unusedPreviewViews(request, urls, () => { throw new Error('API unavailable') }), /API unavailable/)
+})
+
+test('cleanup finds uploads on later asset pages and deletes only this attempt by asset ID', () => {
+  const calls = []
+  cleanupPreviewUploads({ tag: 'attachments', names: ['this-attempt.png', 'never-uploaded.png'] }, args => {
+    calls.push(args)
+    if (args.includes('--jq')) return '123'
+    if (args.includes('--paginate')) {
+      assert.ok(args.includes('--slurp'))
+      return JSON.stringify([
+        [{ id: 1, name: 'older-preview.png' }],
+        [{ id: 2, name: 'this-attempt.png' }, { id: 3, name: 'another-attempt.png' }],
+      ])
+    }
+    assert.deepEqual(args, ['api', 'repos/OpenTubeX/media/releases/assets/2', '--method', 'DELETE'])
+    return ''
+  })
+  assert.equal(calls.length, 3)
 })
