@@ -2,35 +2,39 @@
 
 Sharing a theme from the editor opens a discussion with the theme JSON and a
 Screenshots section. People can attach their own screenshots or leave that
-section empty. The bot then posts three previews in a comment: subscriptions,
-the watch page, and maximized settings, matching the views in the README gallery.
+section empty. The bot then edits the original post to fill that section with
+three previews: subscriptions, the watch page, and maximized settings, matching
+the views in the README gallery.
 
 The capture uses an isolated Electron profile, bundled sample thumbnails, and an
 offline demo video. Both this capture and the README capture use
 `e2e/helpers/screenshots.mjs` for window sizing, maximized settings, image
-readiness, capture, and copying completed image sets. It never reads the author's subscriptions, history, or other
-settings. Only inline theme JSON is imported, through the app's theme validator.
+readiness, capture, and copying completed image sets. It never reads the author's
+subscriptions, history, or other settings. Only inline theme JSON is imported,
+through the app's theme validator.
 Invalid JSON fails the workflow without posting screenshots. Fixing the JSON and
 saving the discussion triggers another attempt.
 
 The workflow runs on theme discussion creation, edits, and category changes.
 Adding screenshots or text to the Screenshots section prevents new captures.
-Existing bot previews stay in their comment. Editing the JSON refreshes that
-comment while the section remains empty. The bot rechecks the current discussion
+Editing the JSON refreshes the generated previews in that section. Editing the
+generated image block itself or adding your own screenshots stops automatic
+updates; the bot preserves that content. The bot rechecks the current discussion
 before posting so an edit during capture does not publish stale previews.
+
 Images are native GitHub attachments, uploaded through the same endpoint as
 GitHub CLI's `--attach` flag. Discussion commands do not expose that flag yet,
 so the script calls the endpoint with `gh api` and includes the returned URLs in
-the bot comment. No media repository or release is needed.
+the discussion body. No media repository or release is needed.
 
 GitHub requires a user token for attachment uploads; the built-in Actions token
 is not supported. The existing `PUSH_TOKEN` only needs write access to this
-repository. Discussion comments use `GITHUB_TOKEN` with Discussions write
+repository. Discussion edits use `GITHUB_TOKEN` with Discussions write
 permission. Neither token is passed to Electron.
 
 Like attachments uploaded through `gh --attach`, native uploads cannot be
 removed through the CLI. If publication fails or the discussion changes during
-capture, unused attachments can remain, but the bot does not post stale previews.
+capture, unused attachments can remain, but the bot does not insert stale previews.
 
 After the workflow lands on the default branch, run **Theme previews** manually
 with a discussion number to fill in older posts, or retry a failed capture.

@@ -79,7 +79,7 @@ jobs:
         GH_TOKEN: ${{ secrets.PUSH_TOKEN }}
       run: node _scripts/themePreview.mjs upload "$THEME_PREVIEW_DIR"
 
-    - name: Add or update the bot's discussion comment
+    - name: Fill the Screenshots section in the discussion
       if: steps.request.outputs.enabled == 'true'
       env:
         GH_TOKEN: ${{ github.token }}
