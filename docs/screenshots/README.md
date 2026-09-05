@@ -43,3 +43,9 @@ The capture sequence, channel, video, timestamp, and dimensions live in
 `e2e/screenshots/capture.spec.mjs`. If you already packed the current source,
 run `node _scripts/screenshots.mjs` to repeat the capture without repacking.
 The regular E2E suites do not update these files.
+
+The Flatpark submission and official Flatpak release workflows reuse these
+committed images through `_scripts/syncAppStreamScreenshots.mjs`. The helper
+updates the AppStream gallery with both themes, reads dimensions from the PNGs,
+and pins image URLs to the checked-out OpenTubeX commit. It preserves the rest
+of each package's metadata. Package releases do not run the capture command.

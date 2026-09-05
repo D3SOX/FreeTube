@@ -226,6 +226,8 @@ jobs:
         node opentubex/_scripts/syncFlatpakFinishArgs.mjs \
           official-flatpak/org.opentubex.OpenTubeX.yml \
           "$manifest"
+        node opentubex/_scripts/syncAppStreamScreenshots.mjs \
+          "$metainfo" "$(git -C opentubex rev-parse HEAD)"
 
         expected_changes="$(printf '%s\n' \
           'registry/org.opentubex.OpenTubeX/org.opentubex.OpenTubeX.metainfo.xml' \
@@ -454,6 +456,8 @@ jobs:
         FlatPark's current pin updater downloaded both release assets and calculated their SHA-256 hashes and sizes before the organization fork was updated.
 
         The sandbox permissions were copied from OpenTubeX's [official Flatpak manifest](https://github.com/OpenTubeX/flatpak/blob/${official_flatpak_sha}/org.opentubex.OpenTubeX.yml) so both packages use the same release permissions.
+
+        The AppStream gallery uses the generated README screenshots in dark and light themes, with URLs pinned to the OpenTubeX automation revision.
         EOF
 
         pr_url="$(gh pr create \
