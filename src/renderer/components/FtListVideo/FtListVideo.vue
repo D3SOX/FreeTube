@@ -1626,13 +1626,12 @@ function handleChannelLinkClick(event) {
 }
 
 async function fetchDeArrowThumbnail() {
-  if (thumbnailPreference.value === 'hidden') { return }
+  if (thumbnailPreference.value === 'hidden' || !showDeArrowThumbnail.value || !deArrowCache.value) { return }
 
-  const videoId = id.value
-  const thumbnail = await deArrowThumbnail(videoId, deArrowCache.value.thumbnailTimestamp)
+  const deArrowCacheClone = deepCopy(deArrowCache.value)
+  const thumbnail = await deArrowThumbnail(deArrowCacheClone.videoId, deArrowCacheClone.thumbnailTimestamp)
 
   if (thumbnail) {
-    const deArrowCacheClone = deepCopy(deArrowCache.value)
     deArrowCacheClone.thumbnail = thumbnail
     store.commit('addThumbnailToDeArrowCache', deArrowCacheClone)
   }
@@ -1640,8 +1639,7 @@ async function fetchDeArrowThumbnail() {
 
 const debounceGetDeArrowThumbnail = debounce(fetchDeArrowThumbnail, 1000)
 
-async function fetchDeArrowData() {
-  const videoId = id.value
+async function fetchDeArrowData(videoId) {
   const cacheData = { videoId, title: null, videoDuration: null, thumbnail: null, thumbnailTimestamp: null }
 
   const data = await deArrowData(videoId)
@@ -1663,7 +1661,7 @@ async function fetchDeArrowData() {
   store.commit('addVideoToDeArrowCache', cacheData)
 
   // fetch dearrow thumbnails if enabled
-  if (showDeArrowThumbnail.value && deArrowCache.value?.thumbnail === null) {
+  if (id.value === videoId && showDeArrowThumbnail.value && deArrowCache.value?.thumbnail === null) {
     debounceGetDeArrowThumbnail()
   }
 }
@@ -2064,17 +2062,22 @@ watch([useDeArrowTitles, useDeArrowThumbnails], ([titles, thumbnails]) => {
   if (!titles && !thumbnails) deArrowTogglePinned.value = false
 })
 
-let fetchingDeArrowData = false
-watch([showDeArrowTitle, showDeArrowThumbnail], async ([titles, thumbnails]) => {
-  if (!titles && !thumbnails) return
+watch(id, () => {
+  deArrowTogglePinned.value = false
+  debounceGetDeArrowThumbnail.cancel()
+})
+
+const fetchingDeArrowData = new Set()
+watch([id, showDeArrowTitle, showDeArrowThumbnail], async ([videoId, titles, thumbnails]) => {
+  if (!videoId || (!titles && !thumbnails)) return
 
   if (!deArrowCache.value) {
-    if (fetchingDeArrowData) return
-    fetchingDeArrowData = true
+    if (fetchingDeArrowData.has(videoId)) return
+    fetchingDeArrowData.add(videoId)
     try {
-      await fetchDeArrowData()
+      await fetchDeArrowData(videoId)
     } finally {
-      fetchingDeArrowData = false
+      fetchingDeArrowData.delete(videoId)
     }
   } else if (thumbnails && deArrowCache.value.thumbnail == null) {
     debounceGetDeArrowThumbnail()
@@ -2093,6 +2096,7 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
+  debounceGetDeArrowThumbnail.cancel()
   resetThumbnailPreview()
   clearPremiereStartTimer()
   removeLiveReminderUpdatedListener?.()
