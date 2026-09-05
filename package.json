@@ -35,6 +35,7 @@
     "get-regions": "node _scripts/getRegions.mjs",
     "generate-iconify-bundle": "node _scripts/generateIconifyBundle.mjs",
     "release-note-promo": "node _scripts/releaseNotePromo.mjs",
+    "screenshots": "pnpm run test:e2e:pack && node _scripts/screenshots.mjs",
     "lint-all": "pnpm run \"/^(lint|lint-json)$/\"",
     "lint": "pnpm run \"/^(eslint-lint|lint-style)$/\"",
     "lint-fix": "pnpm run \"/^(eslint-lint|lint-style)-fix$/\"",
