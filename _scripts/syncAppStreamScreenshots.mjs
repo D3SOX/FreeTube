@@ -10,8 +10,8 @@ const pngSignature = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10])
 
 /** Replace only the screenshot gallery, preserving the package's other metadata. */
 export async function syncAppStreamScreenshots(metainfo, revision) {
-  if (!/^[a-f0-9]{40}$/.test(revision)) {
-    throw new Error('Screenshot revision must be a full Git commit SHA')
+  if (revision !== 'development' && !/^v[0-9]+\.[0-9]+\.[0-9]+-beta$/.test(revision)) {
+    throw new Error('Screenshot reference must be development or a beta release tag')
   }
   const blocks = [...metainfo.matchAll(/<screenshots>[^]*?<\/screenshots>/g)]
   if (blocks.length !== 1) {
@@ -47,7 +47,7 @@ export async function syncAppStreamScreenshots(metainfo, revision) {
 async function main() {
   const [metainfoPath, revision, ...extra] = process.argv.slice(2)
   if (!metainfoPath || !revision || extra.length > 0) {
-    throw new Error('Usage: syncAppStreamScreenshots.mjs METAINFO_XML SCREENSHOT_COMMIT_SHA')
+    throw new Error('Usage: syncAppStreamScreenshots.mjs METAINFO_XML SCREENSHOT_REF')
   }
   const metainfo = await readFile(metainfoPath, 'utf8')
   const updated = await syncAppStreamScreenshots(metainfo, revision)

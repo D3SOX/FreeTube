@@ -3,7 +3,7 @@ import test from 'node:test'
 
 import { syncAppStreamScreenshots } from '../../_scripts/syncAppStreamScreenshots.mjs'
 
-const revision = '1234567890abcdef1234567890abcdef12345678'
+const revision = 'development'
 const before = '<?xml version="1.0"?>\n<component>\n  <id>org.opentubex.OpenTubeX</id>\n  '
 const after = '\n  <releases><release version="0.33.0-beta"/></releases>\n</component>\n'
 const metainfo = `${before}<screenshots>
@@ -30,14 +30,16 @@ test('replaces old package screenshots with all six committed README images', as
 test('is idempotent and updates an existing gallery to a newer screenshot revision', async () => {
   const updated = await syncAppStreamScreenshots(metainfo, revision)
   assert.equal(await syncAppStreamScreenshots(updated, revision), updated)
-  const nextRevision = 'abcdef1234567890abcdef1234567890abcdef12'
+  const nextRevision = 'v0.33.0-beta'
   const next = await syncAppStreamScreenshots(updated, nextRevision)
   assert.equal(next.split(nextRevision).length - 1, 6)
   assert.ok(!next.includes(revision))
 })
 
-test('rejects mutable refs and missing or ambiguous galleries', async () => {
-  await assert.rejects(syncAppStreamScreenshots(metainfo, 'development'), /full Git commit SHA/)
+test('rejects unsupported references and missing or ambiguous galleries', async () => {
+  for (const invalid of ['', 'main', 'v0.33.0-beta/../development', 'v0.33.0-beta"><injected/>']) {
+    await assert.rejects(syncAppStreamScreenshots(metainfo, invalid), /development or a beta release tag/)
+  }
   await assert.rejects(syncAppStreamScreenshots('<component/>', revision), /exactly one/)
   await assert.rejects(syncAppStreamScreenshots(metainfo + metainfo, revision), /exactly one/)
 })
