@@ -70,6 +70,7 @@ jobs:
       run: xvfb-run -a -s '-screen 0 1920x1080x24' pnpm exec playwright test -c e2e/theme-previews/playwright.config.mjs
 
     - name: Upload permanent images
+      id: upload
       if: steps.request.outputs.enabled == 'true'
       env:
         # The existing cross-repository token needs Contents write on OpenTubeX/media.
@@ -77,10 +78,24 @@ jobs:
       run: node _scripts/themePreview.mjs upload "$THEME_PREVIEW_DIR"
 
     - name: Add or update the bot's discussion comment
+      id: publish
       if: steps.request.outputs.enabled == 'true'
       env:
         GH_TOKEN: ${{ github.token }}
       run: node _scripts/themePreview.mjs publish "$THEME_PREVIEW_DIR"
+
+    - name: Check for unused uploads
+      if: always() && steps.upload.outcome != 'skipped' && steps.publish.outputs.published != 'true'
+      id: cleanup
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: node _scripts/themePreview.mjs check-cleanup "$THEME_PREVIEW_DIR"
+
+    - name: Remove unused images from this attempt
+      if: always() && steps.cleanup.outputs.enabled == 'true'
+      env:
+        GH_TOKEN: ${{ secrets.PUSH_TOKEN }}
+      run: node _scripts/themePreview.mjs cleanup "$THEME_PREVIEW_DIR"
 
     - name: Keep failed capture diagnostics
       if: failure() && steps.request.outputs.enabled == 'true'

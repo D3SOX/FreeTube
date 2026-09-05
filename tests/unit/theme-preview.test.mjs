@@ -10,6 +10,7 @@ import {
   renderPreviewComment,
   SCREENSHOTS_START,
   SCREENSHOTS_END,
+  unusedPreviewViews,
 } from '../../_scripts/themePreview.mjs'
 
 function discussion({ theme = DEFAULT_CUSTOM_THEME, screenshots = '', markers = true, fence = '```' } = {}) {
@@ -151,4 +152,19 @@ test('finds an existing bot comment beyond the first page', () => {
   })
   assert.deepEqual(found, comment)
   assert.deepEqual(cursors, [null, 'next'])
+})
+
+test('cleanup preserves images referenced by the bot after an uncertain publication result', () => {
+  const post = discussion()
+  const request = { repository: 'OpenTubeX/OpenTubeX', number: 123 }
+  const comments = [{
+    id: 'bot',
+    body: renderPreviewComment('hash', urls),
+    author: { login: 'github-actions', __typename: 'Bot' },
+  }]
+  assert.deepEqual(unusedPreviewViews(request, urls, fakeApi(post, comments).query), [])
+  assert.deepEqual(unusedPreviewViews(request, urls, fakeApi(post).query), ['subscriptions', 'watch', 'settings'])
+  const retryUrls = { ...urls, watch: 'https://example.com/retry-watch.png' }
+  assert.deepEqual(unusedPreviewViews(request, retryUrls, fakeApi(post, comments).query), ['watch'])
+  assert.throws(() => unusedPreviewViews(request, urls, () => { throw new Error('API unavailable') }), /API unavailable/)
 })

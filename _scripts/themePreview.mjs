@@ -123,11 +123,21 @@ export function publishPreview(request, urls, query = graphql) {
   return true
 }
 
+export function unusedPreviewViews(request, urls, query = graphql) {
+  const discussion = loadDiscussion(request.repository, request.number, query)
+  const comment = discussion && findPreviewComment(discussion.id, query)
+  // Re-read after a failed mutation too: GitHub may have saved the comment
+  // even if the runner did not receive its response.
+  return PREVIEW_VIEWS.filter(view => !comment?.body.includes(urls[view]))
+}
+
 async function main() {
   const [command, directory] = process.argv.slice(2)
-  if (!directory) throw new Error('Usage: themePreview.mjs prepare|upload|publish DIRECTORY')
+  if (!directory) throw new Error('Usage: themePreview.mjs prepare|upload|publish|check-cleanup|cleanup DIRECTORY')
   const requestPath = path.join(directory, 'request.json')
   const urlsPath = path.join(directory, 'urls.json')
+  const uploadPath = path.join(directory, 'upload.json')
+  const cleanupPath = path.join(directory, 'cleanup.json')
   if (command === 'prepare') {
     const repository = process.env.GITHUB_REPOSITORY
     const number = Number(process.env.DISCUSSION_NUMBER)
@@ -161,12 +171,34 @@ async function main() {
       files.push(destination)
       urls[view] = `https://github.com/${MEDIA_REPOSITORY}/releases/download/${tag}/${name}`
     }
-    gh(['release', 'upload', tag, ...files, '--repo', MEDIA_REPOSITORY])
+    // Record intended assets first so partial uploads can also be cleaned up.
+    await writeFile(uploadPath, JSON.stringify({ tag, names: files.map(file => path.basename(file)) }))
     await writeFile(urlsPath, JSON.stringify(urls))
+    gh(['release', 'upload', tag, ...files, '--repo', MEDIA_REPOSITORY])
   } else if (command === 'publish') {
     const request = JSON.parse(await readFile(requestPath, 'utf8'))
     const urls = JSON.parse(await readFile(urlsPath, 'utf8'))
-    console.log(publishPreview(request, urls) ? 'Published theme previews.' : 'Skipped unchanged or stale previews.')
+    const published = publishPreview(request, urls)
+    if (process.env.GITHUB_OUTPUT) await appendFile(process.env.GITHUB_OUTPUT, `published=${published}\n`)
+    console.log(published ? 'Published theme previews.' : 'Skipped unchanged or stale previews.')
+  } else if (command === 'check-cleanup') {
+    const upload = await readFile(uploadPath, 'utf8').catch(error => {
+      if (error.code !== 'ENOENT') throw error
+      return null
+    })
+    if (!upload) return
+    const request = JSON.parse(await readFile(requestPath, 'utf8'))
+    const urls = JSON.parse(await readFile(urlsPath, 'utf8'))
+    const unused = unusedPreviewViews(request, urls)
+    const { tag, names } = JSON.parse(upload)
+    await writeFile(cleanupPath, JSON.stringify({ tag, names: names.filter((_, index) => unused.includes(PREVIEW_VIEWS[index])) }))
+    if (process.env.GITHUB_OUTPUT) await appendFile(process.env.GITHUB_OUTPUT, `enabled=${unused.length > 0}\n`)
+  } else if (command === 'cleanup') {
+    const { tag, names } = JSON.parse(await readFile(cleanupPath, 'utf8'))
+    const { assets } = JSON.parse(gh(['release', 'view', tag, '--repo', MEDIA_REPOSITORY, '--json', 'assets']))
+    for (const asset of assets.filter(asset => names.includes(asset.name))) {
+      gh(['release', 'delete-asset', tag, asset.name, '--repo', MEDIA_REPOSITORY, '--yes'])
+    }
   } else {
     throw new Error(`Unknown command: ${command}`)
   }

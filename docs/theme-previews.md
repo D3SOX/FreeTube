@@ -18,6 +18,9 @@ Adding screenshots or text to the Screenshots section prevents new captures.
 Existing bot previews stay in their comment. Editing the JSON refreshes that
 comment while the section remains empty. The bot rechecks the current discussion
 before posting so an edit during capture does not publish stale previews.
+If publication is skipped or fails, the workflow removes unused uploads from
+that attempt after checking whether the bot comment references them. If GitHub
+cannot confirm that, it keeps the images to avoid breaking a published comment.
 
 Images use the existing `attachments` releases in `OpenTubeX/media`, including
 the release rollover helper used by release-note media. The repository's existing
