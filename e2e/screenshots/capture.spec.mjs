@@ -2,6 +2,7 @@ import { copyFile, mkdir } from 'node:fs/promises'
 import path from 'node:path'
 
 import { test, expect, goTo, goToSettingsSection, repoRoot, sel } from '../helpers/app.mjs'
+import { expectImagesLoaded } from '../helpers/visual-fixtures.mjs'
 
 // Keep both themes on the same video and decoded frame across future updates.
 const VIDEO_ID = 'AY5qcIq5u2g'
@@ -75,6 +76,22 @@ test('refresh README screenshots from the live app', async ({ app, page }, testI
 
   const captures = []
   async function capture(number, theme) {
+    // Settings has no required imagery. Content scenes must contain their
+    // expected images, even if a regression removes the img elements entirely.
+    if (number === 1) {
+      for (let index = 0; index < 12; index++) {
+        const thumbnail = page.locator('.ft-list-video').nth(index).locator('img.thumbnailImage').first()
+        await expect(thumbnail).toBeVisible()
+        await expectImagesLoaded(thumbnail)
+      }
+    } else if (number === 2) {
+      const avatar = page.locator('.watchVideoInfo img.channelThumbnail').first()
+      await expect(avatar).toBeVisible()
+      await expectImagesLoaded(avatar)
+      const recommendation = page.locator('.watchVideoRecommendations img.thumbnailImage').first()
+      await expect(recommendation).toBeVisible()
+      await expectImagesLoaded(recommendation)
+    }
     await waitForVisibleImages(page)
     await page.evaluate(async () => {
       await document.fonts.ready

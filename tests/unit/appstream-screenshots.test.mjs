@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
+import { readFile } from 'node:fs/promises'
 
-import { syncAppStreamScreenshots } from '../../_scripts/syncAppStreamScreenshots.mjs'
+import { getPngDimensions, syncAppStreamScreenshots } from '../../_scripts/syncAppStreamScreenshots.mjs'
 
 const revision = 'development'
 const before = '<?xml version="1.0"?>\n<component>\n  <id>org.opentubex.OpenTubeX</id>\n  '
@@ -42,4 +43,18 @@ test('rejects unsupported references and missing or ambiguous galleries', async 
   }
   await assert.rejects(syncAppStreamScreenshots('<component/>', revision), /exactly one/)
   await assert.rejects(syncAppStreamScreenshots(metainfo + metainfo, revision), /exactly one/)
+})
+
+test('rejects truncated or corrupted PNGs while accepting a complete screenshot', async () => {
+  const filename = 'OpenTubeX1-dark.png'
+  const png = await readFile(new URL(`../../docs/screenshots/${filename}`, import.meta.url))
+  assert.deepEqual(getPngDimensions(png, filename), { width: 1710, height: 1026 })
+  for (const length of [24, 33, png.length - 12, png.length - 1]) {
+    assert.throws(() => getPngDimensions(png.subarray(0, length), filename), /Invalid PNG/)
+  }
+  const withoutImageData = Buffer.concat([png.subarray(0, 33), png.subarray(-12)])
+  assert.throws(() => getPngDimensions(withoutImageData, filename), /Invalid PNG/)
+  const corrupted = Buffer.from(png)
+  corrupted[29] ^= 1 // Corrupt the IHDR checksum.
+  assert.throws(() => getPngDimensions(corrupted, filename), /Invalid PNG/)
 })
