@@ -73,6 +73,11 @@ unexpected player failures still fail normally.
 
 ## Screenshots
 
+To update the full-window README images in both themes, run
+`pnpm run screenshots`. See [the screenshot instructions](../docs/screenshots/README.md)
+for prerequisites and the fixed video timestamp. This capture runs separately
+from the test suites below.
+
 Failures always attach a screenshot. Passing tests do not need to attach
 screenshots, including tests with visual assertions.
 

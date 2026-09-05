@@ -438,17 +438,29 @@ https://github.com/user-attachments/assets/0df65773-8f13-4c5e-90d6-2db9106dea98
 
 <a id="screenshots"></a>
 ## 📸 Screenshots
-| The main OpenTubeX window                                                                         |
-|--------------------------------------------------------------------------------------------------|
-| ![](docs/screenshots/OpenTubeX1.png)                                                            |
+The main OpenTubeX window
 
-| Watching a video                                                                                 |
-|--------------------------------------------------------------------------------------------------|
-| ![](docs/screenshots/OpenTubeX2.png)                                                            |
+<picture>
+  <source media="(prefers-color-scheme: light)" srcset="docs/screenshots/OpenTubeX1-light.png">
+  <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/OpenTubeX1-dark.png">
+  <img alt="OpenTubeX subscriptions" src="docs/screenshots/OpenTubeX1-dark.png">
+</picture>
 
-| Settings                                                                                         |
-|--------------------------------------------------------------------------------------------------|
-| ![](docs/screenshots/OpenTubeX3.png)                                                            |
+Watching a video
+
+<picture>
+  <source media="(prefers-color-scheme: light)" srcset="docs/screenshots/OpenTubeX2-light.png">
+  <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/OpenTubeX2-dark.png">
+  <img alt="OpenTubeX playing Flying over Japan, paused at 3:41:58" src="docs/screenshots/OpenTubeX2-dark.png">
+</picture>
+
+Settings
+
+<picture>
+  <source media="(prefers-color-scheme: light)" srcset="docs/screenshots/OpenTubeX3-light.png">
+  <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/OpenTubeX3-dark.png">
+  <img alt="OpenTubeX settings dialog maximized" src="docs/screenshots/OpenTubeX3-dark.png">
+</picture>
 
 <a id="how-does-it-work"></a>
 ## ⚙️ How does it work?
