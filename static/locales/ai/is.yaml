@@ -1547,6 +1547,8 @@ CommandPalette:
     Download Finished: Þetta niðurhal er ekki lengur í gangi
     Video: Opnaðu myndband fyrst
 Downloads:
+  Export Failed: "Ekki tókst að vista niðurhalaða skrá. Veldu niðurhalsmöppu með skrifaðgangi og reyndu aftur."
+  Remove File Permanently Warning: "Þetta eyðir „{title}“ varanlega."
   Download: Niðurhal
   Download Video: Sækja myndband
   Download Playlist: Sækja spilunarlista

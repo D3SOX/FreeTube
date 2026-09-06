@@ -1,3 +1,5 @@
+import { ytDlp } from './ytDlp'
+import { supportsYtDlp } from './ytDlpCapabilities'
 import store from '../store/index'
 import { getDownloadTemplateOptions } from './downloadTemplates'
 import {
@@ -29,7 +31,7 @@ export function releaseAutomaticDownloadSchedule(download) {
  * @param {'videos' | 'shorts' | 'live'} source
  */
 export function includeAutomaticDownloadChannels(activeSubscriptions, source) {
-  if (!process.env.IS_ELECTRON || !store.getters.getEnableDownloads) {
+  if (!supportsYtDlp || !store.getters.getEnableDownloads) {
     return activeSubscriptions
   }
 
@@ -76,7 +78,7 @@ function getThumbnail(video) {
  * @param {string | null} refreshOwnerTabId
  */
 export async function startAutomaticDownloadsForChannel(channel, videos, source, t, refreshOwnerTabId) {
-  if (!process.env.IS_ELECTRON || !store.getters.getEnableDownloads || !Array.isArray(videos)) {
+  if (!supportsYtDlp || !store.getters.getEnableDownloads || !Array.isArray(videos)) {
     return
   }
 
@@ -111,7 +113,7 @@ export async function startAutomaticDownloadsForChannel(channel, videos, source,
       : source === 'live' || video.liveNow === true ? 'livestream' : 'video'
     let result
     try {
-      result = await window.ftElectron.ytDlpDownload({
+      result = await ytDlp.ytDlpDownload({
         ...templateOptions,
         videoId: video.videoId,
         title,

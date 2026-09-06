@@ -1522,6 +1522,8 @@ CommandPalette:
     Download Finished: Denne nedlastingen pågår ikke lenger
     Video: Åpne en video først
 Downloads:
+  Export Failed: "Kunne ikke lagre den nedlastede filen. Velg en nedlastingsmappe med skrivetilgang og prøv igjen."
+  Remove File Permanently Warning: "Dette sletter «{title}» permanent."
   Download: Last ned
   Download Video: Last ned video
   Download Playlist: Last ned spilleliste

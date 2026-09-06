@@ -81,7 +81,7 @@
           @click="handleExternalPlayer"
         />
         <FtIconButton
-          v-if="IS_ELECTRON && enableDownloads && playlistMetadata.videoCount > 0"
+          v-if="supportsYtDlp && enableDownloads && playlistMetadata.videoCount > 0"
           :title="t('Downloads.Download Playlist')"
           :icon="['fas', 'download']"
           theme="base-no-default"
@@ -123,6 +123,7 @@
 </template>
 
 <script setup>
+import { supportsYtDlp } from '../../helpers/ytDlpCapabilities'
 import { FtIcon } from '@opentubex/icons'
 import { computed, ref, toRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -153,7 +154,6 @@ const props = defineProps({
 })
 
 const { t } = useI18n()
-const IS_ELECTRON = process.env.IS_ELECTRON
 const showDownloadPrompt = ref(false)
 const enableDownloads = computed(() => store.getters.getEnableDownloads)
 

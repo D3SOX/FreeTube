@@ -120,7 +120,7 @@
       v-if="pendingRemoval !== null"
       autosize
       :label="t('Downloads.Remove File Confirmation')"
-      :extra-labels="[t('Downloads.Remove File Warning', { title: pendingRemoval.title })]"
+      :extra-labels="[IS_CAPACITOR ? t('Downloads.Remove File Permanently Warning', { title: pendingRemoval.title }) : t('Downloads.Remove File Warning', { title: pendingRemoval.title })]"
       :option-names="[t('Downloads.Remove File'), t('Cancel')]"
       :option-values="['remove', 'cancel']"
       is-first-option-destructive
@@ -130,6 +130,7 @@
 </template>
 
 <script setup>
+import { ytDlp } from '../../helpers/ytDlp'
 import { FtIcon } from '@opentubex/icons'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -142,6 +143,7 @@ import { formatBytes } from '../../helpers/fileSize'
 import { showToast } from '../../helpers/utils'
 
 const { t } = useI18n()
+const IS_CAPACITOR = !!process.env.IS_CAPACITOR
 const router = useRouter()
 const pendingRemoval = ref(null)
 const retryingDownloadIds = ref([])
@@ -168,7 +170,7 @@ const totalSizeBytes = computed(() => downloads.value.reduce((total, download) =
 const formattedTotalSize = computed(() => formatBytes(totalSizeBytes.value))
 
 async function refreshDownloads() {
-  const records = await window.ftElectron.ytDlpListDownloads()
+  const records = await ytDlp.ytDlpListDownloads()
   for (const download of records) store.commit('upsertYtDlpDownload', download)
   return records
 }
@@ -188,23 +190,23 @@ watch(
 )
 
 async function clearDownload(id) {
-  await window.ftElectron.ytDlpClearDownloads([id])
+  await ytDlp.ytDlpClearDownloads([id])
   store.commit('removeYtDlpDownload', id)
 }
 async function clearFailedAndMissing() {
   const ids = clearableDownloads.value.map(download => download.id)
-  await window.ftElectron.ytDlpClearDownloads(ids)
+  await ytDlp.ytDlpClearDownloads(ids)
   ids.forEach(id => store.commit('removeYtDlpDownload', id))
 }
 async function controlDownload(id, action, value) {
-  await window.ftElectron.ytDlpControlDownload(id, action, value)
+  await ytDlp.ytDlpControlDownload(id, action, value)
 }
 async function queueAction(action) {
-  await window.ftElectron.ytDlpQueueAction(action)
+  await ytDlp.ytDlpQueueAction(action)
   await refreshDownloads()
 }
 async function openDownload(id) {
-  if (!await window.ftElectron.ytDlpOpenDownload(id)) {
+  if (!await ytDlp.ytDlpOpenDownload(id)) {
     await refreshDownloads()
     showToast({ message: t('Downloads.File Not Found'), icon: ['fas', 'circle-exclamation'] })
   }
@@ -248,7 +250,7 @@ async function retryDownload(download) {
       }
   let result
   try {
-    result = await window.ftElectron.ytDlpDownload(retryPayload, download.id)
+    result = await ytDlp.ytDlpDownload(retryPayload, download.id)
   } catch (error) {
     console.error('Could not retry download', error)
   } finally {
@@ -259,10 +261,10 @@ async function retryDownload(download) {
     return
   }
 
-  await clearDownload(download.id)
+  if (result.id !== download.id) await clearDownload(download.id)
 }
 async function removeDownload(id) {
-  if (await window.ftElectron.ytDlpRemoveDownload(id)) {
+  if (await ytDlp.ytDlpRemoveDownload(id)) {
     store.commit('removeYtDlpDownload', id)
   } else {
     await refreshDownloads()

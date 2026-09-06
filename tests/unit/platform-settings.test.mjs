@@ -24,6 +24,8 @@ test('platform-specific settings stay local to every device', () => {
     'showProgressBarToast',
     'showTabPreviews',
     'tabBarPosition',
+    'ytDlpDownloadFolderPath',
+    'ytDlpPlaybackCookiesPath',
     'videoVolumeMouseScroll',
   ])
 

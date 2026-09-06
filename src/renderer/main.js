@@ -1,3 +1,5 @@
+import { ytDlp } from './helpers/ytDlp'
+import { supportsYtDlp } from './helpers/ytDlpCapabilities'
 import { createApp } from 'vue'
 import i18n from './i18n/index'
 import router from './router/index'
@@ -82,10 +84,12 @@ if (process.env.IS_ELECTRON) {
       })
     }
   )
+}
 
+if (supportsYtDlp) {
   const removedDownloadIds = new Set()
 
-  window.ftElectron.handleYtDlpDownloadStatus((download) => {
+  ytDlp.handleYtDlpDownloadStatus((download) => {
     store.commit('upsertYtDlpDownload', download)
     releaseAutomaticDownloadSchedule(download)
 
@@ -104,14 +108,14 @@ if (process.env.IS_ELECTRON) {
     }
   })
 
-  window.ftElectron.handleYtDlpDownloadsRemoved((ids) => {
+  ytDlp.handleYtDlpDownloadsRemoved((ids) => {
     for (const id of ids) {
       removedDownloadIds.add(id)
       store.commit('removeYtDlpDownload', id)
     }
   })
 
-  window.ftElectron.ytDlpListDownloads().then(downloads => {
+  ytDlp.ytDlpListDownloads().then(downloads => {
     for (const download of downloads) {
       if (!removedDownloadIds.has(download.id)) store.commit('upsertYtDlpDownload', download)
     }

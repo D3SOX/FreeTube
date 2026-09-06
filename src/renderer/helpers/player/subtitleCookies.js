@@ -3,16 +3,23 @@ import { isYouTubeSubtitleUrl } from '../../../youtubeSubtitle.js'
 /**
  * @param {string} url
  * @param {Record<string, unknown>} getters
- * @param {{ ytDlpGetSubtitle: (url: string) => Promise<string | { error: string } | null> }} [electron]
+ * @param {{ ytDlpGetSubtitle: (url: string) => Promise<string | { error: string } | null> } | null} [bridge]
  * @returns {Promise<string>}
  */
-export async function getSubtitleRequestUrl(url, getters, electron = globalThis.window?.ftElectron) {
-  if (!electron || !(getters.getYtDlpPlaybackAlwaysUseCookies || getters.getYtDlpSubtitleUseCookies) ||
+export async function getSubtitleRequestUrl(url, getters, bridge) {
+  if (!(getters.getYtDlpPlaybackAlwaysUseCookies || getters.getYtDlpSubtitleUseCookies) ||
     !isYouTubeSubtitleUrl(url)) {
     return url
   }
 
-  const result = await electron.ytDlpGetSubtitle(url)
+  if (bridge === undefined) {
+    bridge = process.env.IS_CAPACITOR
+      ? (await import('../ytDlp')).ytDlp
+      : globalThis.window?.ftElectron
+  }
+  if (!bridge) return url
+
+  const result = await bridge.ytDlpGetSubtitle(url)
   if (result === null) return url
   if (typeof result !== 'string') throw new Error(result.error)
   const params = new URL(url).searchParams

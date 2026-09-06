@@ -1514,6 +1514,8 @@ CommandPalette:
     Download Finished: Bu indirme artık çalışmıyor
     Video: Önce bir video açın
 Downloads:
+  Export Failed: "İndirilen dosya kaydedilemedi. Yazma izni olan bir indirme klasörü seçip yeniden deneyin."
+  Remove File Permanently Warning: "Bu işlem \"{title}\" dosyasını kalıcı olarak silecek."
   Download: İndir
   Download Video: Videoyu İndir
   Download Playlist: Oynatma Listesini İndir

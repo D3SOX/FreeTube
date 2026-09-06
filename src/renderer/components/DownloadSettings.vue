@@ -74,6 +74,7 @@
 </template>
 
 <script setup>
+import { ytDlp } from '../helpers/ytDlp'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -139,7 +140,7 @@ function updateYtDlpDownloadBandwidthLimit(value) {
 }
 
 async function chooseDownloadFolder() {
-  const path = await window.ftElectron.ytDlpChooseDownloadFolder(ytDlpDownloadFolderPath.value)
+  const path = await ytDlp.ytDlpChooseDownloadFolder(ytDlpDownloadFolderPath.value)
 
   if (typeof path === 'string' && path.length > 0) {
     store.dispatch('updateYtDlpDownloadFolderPath', path)

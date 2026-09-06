@@ -21,6 +21,8 @@
             android:foregroundServiceType="mediaPlayback"
             android:stopWithTask="true" />
 
+        <receiver android:name=".YtDlpCancelReceiver" android:exported="false" />
+
         <receiver
             android:name=".SubscriptionRefreshCancelReceiver"
             android:exported="false" />

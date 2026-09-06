@@ -190,7 +190,7 @@
             @click="showExportPrompt = true"
           />
           <FtIconButton
-            v-if="IS_ELECTRON && enableDownloads && !editMode && videoCount > 0"
+            v-if="supportsYtDlp && enableDownloads && !editMode && videoCount > 0"
             :title="t('Downloads.Download Playlist')"
             :icon="['fas', 'download']"
             theme="secondary"
@@ -306,6 +306,7 @@
 </template>
 
 <script setup>
+import { supportsYtDlp } from '../../helpers/ytDlpCapabilities'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, useTemplateRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
@@ -444,7 +445,6 @@ const props = defineProps({
 const emit = defineEmits(['enter-edit-mode', 'exit-edit-mode', 'search-video-query-change', 'prompt-open', 'prompt-close', 'toggle-playlist-bookmark', 'preload-playlist'])
 
 const { locale, t } = useI18n()
-const IS_ELECTRON = process.env.IS_ELECTRON
 const enableDownloads = computed(() => store.getters.getEnableDownloads)
 
 const query = ref('')

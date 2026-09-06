@@ -437,7 +437,7 @@ let reminderLoadGeneration = 0
 const sectionLayout = computed(() => normalizeHomeSectionLayout(store.getters.getHomeSectionLayout))
 const supportedSectionIds = computed(() => new Set(sectionLayout.value
   .map(section => section.id)
-  .filter(id => IS_ELECTRON || id !== 'recentDownloads')
+  .filter(id => IS_ELECTRON || process.env.IS_CAPACITOR || id !== 'recentDownloads')
   .filter(id => supportsLiveReminders || id !== 'reminders')))
 const configurableSections = computed(() => (
   sectionLayout.value.filter(section => supportedSectionIds.value.has(section.id))

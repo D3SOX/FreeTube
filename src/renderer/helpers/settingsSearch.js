@@ -51,7 +51,7 @@ export function findSettingsSearchTab(match) {
 }
 
 function getSettingsSearchSourceValues(source, options) {
-  if (source.electronOnly && !options.usingElectron) return []
+  if (source.electronOnly && !options.usingElectron && !(options.isCapacitor && ['external-software', 'download', 'yt-dlp-streaming'].includes(source.type))) return []
   return flattenSettingsSearchMessageValues(
     options.tm(source.key),
     SETTINGS_SEARCH_SELECT_GROUP_LABELS[source.type],
@@ -113,6 +113,7 @@ function isSettingsSearchMessageVisible(sectionType, path, options) {
   }
 
   if (sectionType === 'general') {
+    if (group === 'Stream Extraction Method') return usingElectron || isCapacitor
     if (group === 'Mobile Layout') {
       return isCapacitor
     }
@@ -233,10 +234,14 @@ function isSettingsSearchMessageVisible(sectionType, path, options) {
   }
 
   if (sectionType === 'storage') {
-    if (group === 'Playback URL Cache Entry Size') return usingElectron
+    if (group === 'Playback URL Cache Entry Size') return usingElectron || isCapacitor
   }
 
   if (sectionType === 'external-software') {
+    if (isCapacitor) {
+      if (['yt-dlp Source', 'yt-dlp Executable Path', 'FFmpeg Source', 'FFmpeg Executable Path', 'Download FFmpeg and FFprobe', 'Update FFmpeg and FFprobe', 'Browser for Cookies', 'Browser Profile'].includes(group)) return false
+      if (['yt-dlp Channel', 'Managed Tool Updates'].includes(group)) return true
+    }
     if (group === 'yt-dlp Channel') return store.getters.getYtDlpSource === 'managed'
     if (group === 'Managed Tool Updates') {
       return store.getters.getYtDlpSource === 'managed' ||

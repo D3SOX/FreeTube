@@ -350,6 +350,7 @@
 </template>
 
 <script setup>
+import { ytDlp } from '../../helpers/ytDlp'
 import { isAppHidden } from '../../helpers/appVisibility.js'
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -673,7 +674,7 @@ async function refreshUsage() {
     if (USING_ELECTRON) {
       const [nextUsage, nextDownloads] = await Promise.all([
         window.ftElectron.storage.getUsage(),
-        window.ftElectron.ytDlpListDownloads()
+        ytDlp.ytDlpListDownloads()
       ])
       usage.value = nextUsage
       downloads.value = nextDownloads
@@ -718,7 +719,7 @@ async function performCleanup(action) {
   switch (action) {
     case 'download-records': {
       const ids = finishedDownloads.value.map(download => download.id)
-      await requireCleanupSuccess(window.ftElectron.ytDlpClearDownloads(ids))
+      await requireCleanupSuccess(ytDlp.ytDlpClearDownloads(ids))
       ids.forEach(id => store.commit('removeYtDlpDownload', id))
       break
     }

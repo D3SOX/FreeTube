@@ -348,6 +348,7 @@
 </template>
 
 <script setup>
+import { supportsYtDlp } from '../../helpers/ytDlpCapabilities'
 import { FtIcon } from '@opentubex/icons'
 import {
   computed,
@@ -587,7 +588,7 @@ const settingsComponentsData = computed(() => [
     icon: ['fas', 'users'],
     component: SubscriptionCategorySettings
   },
-  ...(process.env.IS_ELECTRON
+  ...(supportsYtDlp
     ? [{
         type: 'download',
         title: t('Settings.Download Settings.Download Settings'),

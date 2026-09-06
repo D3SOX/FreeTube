@@ -249,7 +249,7 @@
         </span>
         <span class="videoOptionsMobileRow">
           <FtIconButton
-            v-if="USING_ELECTRON && enableDownloads && !isUpcoming"
+            v-if="supportsYtDlp && enableDownloads && !isUpcoming"
             :title="t('Downloads.Download Video')"
             :icon="['fas', 'download']"
             theme="secondary"
@@ -290,7 +290,7 @@
       :audio-available="audioAvailable"
       :local-file-playback="localFilePlayback"
       :local-playback-downloads="localPlaybackDownloads"
-      :can-change-playback-engine="USING_ELECTRON"
+      :can-change-playback-engine="supportsYtDlp"
       @change-format="changeFormat"
       @change-playback-engine="changePlaybackEngine"
       @use-local-source="emit('use-local-source', $event)"
@@ -313,6 +313,8 @@
 </template>
 
 <script setup>
+import { ytDlp } from '../../helpers/ytDlp'
+import { supportsYtDlp } from '../../helpers/ytDlpCapabilities'
 import { FtIcon } from '@opentubex/icons'
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -745,9 +747,9 @@ function changeFormat(value) {
 }
 
 async function openFormatPrompt() {
-  if (USING_ELECTRON) {
+  if (supportsYtDlp) {
     try {
-      const downloads = await window.ftElectron.ytDlpListDownloads()
+      const downloads = await ytDlp.ytDlpListDownloads()
       downloads.forEach(download => store.commit('upsertYtDlpDownload', download))
     } catch (error) {
       console.warn('Could not refresh downloads for the media format selector', error)

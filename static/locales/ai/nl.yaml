@@ -1559,6 +1559,8 @@ CommandPalette:
     Download Finished: Deze download wordt niet meer uitgevoerd
     Video: Open eerst een video
 Downloads:
+  Export Failed: "Het gedownloade bestand kon niet worden opgeslagen. Kies een downloadmap met schrijfrechten en probeer het opnieuw."
+  Remove File Permanently Warning: "Hiermee wordt \"{title}\" definitief verwijderd."
   Download: Downloaden
   Download Video: Video downloaden
   Download Playlist: Afspeellijst downloaden

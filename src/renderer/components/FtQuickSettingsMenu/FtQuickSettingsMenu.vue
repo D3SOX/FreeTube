@@ -527,7 +527,7 @@ const proxyUrl = computed(() => (
   `${store.getters.getProxyProtocol}://${store.getters.getProxyHostname}:${store.getters.getProxyPort}`
 ))
 const showDownloadsShortcut = computed(() => (
-  USING_ELECTRON &&
+  (USING_ELECTRON || process.env.IS_CAPACITOR) &&
   store.getters.getEnableDownloads &&
   !store.getters.getMoveDownloadsToAppHeader
 ))

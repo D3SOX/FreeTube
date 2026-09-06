@@ -1,3 +1,4 @@
+import { ytDlp } from './ytDlp'
 import {
   DefaultKeyboardShortcuts,
   getConfiguredKeyboardShortcuts,
@@ -185,7 +186,7 @@ export function createCommandPaletteRegistry(context) {
     command('downloads.open', t('Settings.Download Settings.Download Settings'), groups.downloads, {
       aliases: ['files', 'yt-dlp'],
       icon: ['fas', 'download'],
-      disabledReason: !isElectron ? t('CommandPalette.Unavailable.Desktop') : '',
+      disabledReason: !isElectron && !process.env.IS_CAPACITOR ? t('CommandPalette.Unavailable.Desktop') : '',
       run: () => openSettingsView('downloads'),
     })
   )
@@ -420,7 +421,7 @@ function addPlaylistCommands(commands, { t, groups, store, navigate }) {
 }
 
 function addDownloadCommands(commands, { t, groups, store, isElectron }) {
-  if (!isElectron) return
+  if (!isElectron && !process.env.IS_CAPACITOR) return
   const activeStatuses = new Set(['downloading', 'processing'])
   for (const download of Object.values(store.getters.getYtDlpDownloads)) {
     commands.push(command(`downloads.cancel.${download.id}`, t('CommandPalette.Cancel Download', {
@@ -431,7 +432,7 @@ function addDownloadCommands(commands, { t, groups, store, isElectron }) {
       disabledReason: activeStatuses.has(download.status)
         ? ''
         : t('CommandPalette.Unavailable.Download Finished'),
-      run: () => window.ftElectron.ytDlpCancelDownload(download.id),
+      run: () => ytDlp.ytDlpCancelDownload(download.id),
       contextual: true,
     }))
   }

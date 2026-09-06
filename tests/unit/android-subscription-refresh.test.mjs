@@ -179,3 +179,26 @@ test('acknowledges malformed stored payloads without dropping transient cache fa
   )
   assert.deepEqual(acknowledged, ['result-1'])
 })
+
+test('closed-app refresh includes subscribed automatic-download channels filtered out of a profile', () => {
+  const configuration = createAndroidSubscriptionRefreshConfiguration({
+    profiles: [
+      { _id: 'all', subscriptions: [{ id: 'UC-auto', feedTypes: ['posts'] }] },
+      { _id: 'filtered', subscriptions: [] }
+    ],
+    automaticDownloadRules: {
+      'UC-auto': { includeVideos: true, includeShorts: true, includeLivestreams: false },
+      'UC-unsubscribed': { includeVideos: true }
+    },
+    closedAppRefreshEnabled: true,
+    intervals: { videos: 1800000, shorts: 1800000, live: 0, posts: 0 },
+    hiddenFeedTypes: [],
+    instanceUrl: 'https://example.invalid',
+    authorization: null,
+    titles: {},
+    cancelLabel: 'Cancel'
+  })
+  assert.deepEqual(configuration.profiles[1].channels, {
+    videos: ['UC-auto'], shorts: ['UC-auto'], live: [], posts: []
+  })
+})

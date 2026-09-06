@@ -89,7 +89,7 @@
     </div>
     <div class="switchGrid generalSelectGrid">
       <FtSelect
-        v-if="mode === 'providers' && USING_ELECTRON"
+        v-if="mode === 'providers' && supportsYtDlp"
         :placeholder="t('Settings.General Settings.Stream Extraction Method.Stream Extraction Method')"
         :value="videoPlaybackEngine"
         setting-key="videoPlaybackEngine"
@@ -323,6 +323,7 @@
 </template>
 
 <script setup>
+import { supportsYtDlp } from '../../helpers/ytDlpCapabilities'
 import { computed, onBeforeUnmount } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
@@ -726,7 +727,7 @@ const extraThumbnailActionValues = computed(() => [
   'history',
   'copyYoutube',
   'openYoutube',
-  ...(process.env.IS_ELECTRON && enableDownloads.value ? ['download'] : [])
+  ...(supportsYtDlp && enableDownloads.value ? ['download'] : [])
 ])
 
 const extraThumbnailActionNames = computed(() => [
@@ -734,7 +735,7 @@ const extraThumbnailActionNames = computed(() => [
   t('Settings.General Settings.Extra Thumbnail Action Button.Mark as Watched'),
   t('Settings.General Settings.Extra Thumbnail Action Button.Copy YouTube Link'),
   t('Settings.General Settings.Extra Thumbnail Action Button.Open in YouTube'),
-  ...(process.env.IS_ELECTRON && enableDownloads.value ? [t('Downloads.Download Video')] : [])
+  ...(supportsYtDlp && enableDownloads.value ? [t('Downloads.Download Video')] : [])
 ])
 
 /**

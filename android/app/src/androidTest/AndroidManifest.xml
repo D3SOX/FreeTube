@@ -1,0 +1,11 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application>
+        <receiver android:name="org.opentubex.app.YtDlpTestDocumentsProvider$GrantReceiver" android:exported="true" />
+        <provider
+            android:name="org.opentubex.app.YtDlpTestDocumentsProvider"
+            android:authorities="org.opentubex.app.nightly.test.documents"
+            android:permission="android.permission.MANAGE_DOCUMENTS"
+            android:exported="true"
+            android:grantUriPermissions="true" />
+    </application>
+</manifest>
