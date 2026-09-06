@@ -16,6 +16,7 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.PluginCall;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -26,6 +27,11 @@ import java.util.function.BooleanSupplier;
 @RunWith(AndroidJUnit4.class)
 public class SubscriptionRefreshLifecycleTest {
     private final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+
+    @Before
+    public void resetCoordinator() {
+        SubscriptionRefreshCoordinator.resetForTest();
+    }
 
     @Test
     public void removingTaskFinishesRefreshButBackgroundingDoesNot() throws Exception {
