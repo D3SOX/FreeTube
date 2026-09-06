@@ -7218,7 +7218,7 @@ export default defineComponent({
             () => captionSettings.value,
             updateCaptionAppearance,
             resetCaptionAppearance,
-            () => props.captionTranslations,
+            () => controls.getPlayer().isLive() ? [] : props.captionTranslations,
             caption => Boolean(findMatchingTextTrack(controls.getPlayer().getTextTracks(), caption)?.active),
             caption => selectCaptionTranslation(caption, controls.getPlayer()),
             rootElement,
@@ -7258,6 +7258,10 @@ export default defineComponent({
      * @returns {Promise<boolean>}
      */
     async function selectCaptionTranslation(caption, captionPlayer) {
+      if (captionPlayer.isLive()) {
+        return false
+      }
+
       const selectionGeneration = ++captionTranslationSelectionGeneration
       let track = findMatchingTextTrack(captionPlayer.getTextTracks(), caption)
 
@@ -9708,10 +9712,11 @@ export default defineComponent({
 
       logShakaError(error, context, props.videoId, details)
 
-      // text related errors aren't serious (captions and seek bar thumbnails), so we should just log them
-      // TODO: consider only emitting when the severity is crititcal?
+      // Caption loading can also fail with MANIFEST errors (e.g. 4033).
+      // Log caption and thumbnail failures without triggering video recovery.
       if (
         !ignoreErrors &&
+        context !== 'addTextTrackAsync' &&
         error.category !== shaka.util.Error.Category.TEXT &&
         !(error.code === shaka.util.Error.Code.BAD_HTTP_STATUS && error.data[0].startsWith('https://www.youtube.com/api/timedtext'))
       ) {
@@ -10411,8 +10416,10 @@ export default defineComponent({
         sabrManifest = player.getManifest()
       }
 
-      // For SABR we include the thumbnails, chapters and subtitles in the manifest
-      if (!process.env.SUPPORTS_LOCAL_API || props.format === 'legacy' || props.manifestMimeType !== MANIFEST_TYPE_SABR) {
+      // Shaka cannot add external text tracks to a live presentation. Keep any
+      // captions supplied by the live manifest instead. SABR already includes
+      // the thumbnails, chapters and subtitles in its manifest.
+      if (!isLive.value && (!process.env.SUPPORTS_LOCAL_API || props.format === 'legacy' || props.manifestMimeType !== MANIFEST_TYPE_SABR)) {
         const promises = []
 
         for (const caption of props.captions) {
