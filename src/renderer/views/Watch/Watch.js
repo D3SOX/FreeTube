@@ -77,7 +77,11 @@ import {
   MANIFEST_TYPE_DASH,
   MANIFEST_TYPE_HLS
 } from '../../helpers/player/utils'
-import { getYtDlpPlaybackSource, invalidateYtDlpPlaybackSource } from '../../helpers/player/ytDlpPlayback'
+import {
+  checkYtDlpPlaybackUrl,
+  getYtDlpPlaybackSource,
+  invalidateYtDlpPlaybackSource
+} from '../../helpers/player/ytDlpPlayback'
 import {
   buildYtDlpPlaybackCacheKey,
   preloadYtDlpPlaybackSources,
@@ -4755,9 +4759,10 @@ export default defineComponent({
      * Refreshes yt-dlp's streams and recreates only the player. The watch-page
      * metadata and the built-in fallback source stay loaded.
      * @param {string} specificError
+     * @param {unknown} [playbackUrl] exact URL to verify after a timeout
      * @returns {Promise<boolean>} whether recovery handled the error
      */
-    reloadYtDlpPlayerAfterStreamErrorOnce: async function (specificError) {
+    reloadYtDlpPlayerAfterStreamErrorOnce: async function (specificError, playbackUrl) {
       if (!this.beginStreamErrorRecoveryOnce(specificError)) {
         return false
       }
@@ -4782,6 +4787,21 @@ export default defineComponent({
         playbackEngineSwitchGeneration !== this.playbackEngineSwitchGeneration
       ) {
         return true
+      }
+
+      const playbackUrlStatus = playbackUrl === undefined
+        ? 'inconclusive'
+        : await checkYtDlpPlaybackUrl(playbackUrl)
+
+      if (
+        !this.isCurrentVideoLoad(loadGeneration, videoId) ||
+        playbackEngineSwitchGeneration !== this.playbackEngineSwitchGeneration
+      ) {
+        return true
+      }
+
+      if (playbackUrlStatus === 'rejected') {
+        invalidateYtDlpPlaybackSource(videoId)
       }
 
       this.ytDlpStreamsPending = true
@@ -4834,14 +4854,12 @@ export default defineComponent({
       // URL or extraction. Refresh those streams once before changing format or
       // restoring the cached built-in source (which may use SABR).
       if (this.activePlaybackEngine === 'yt-dlp') {
-        // A timeout says nothing about whether the cached source is stale. Keep
-        // valid cached streams for that reload so recovery does not needlessly
-        // run yt-dlp again, while other failures retain the existing refresh.
         if (error.code !== Code.TIMEOUT) {
           invalidateYtDlpPlaybackSource(this.videoId)
         }
         const status = error.code === Code.BAD_HTTP_STATUS ? error.data[1] : error.code
-        if (await this.reloadYtDlpPlayerAfterStreamErrorOnce(`[PLAYER_ERROR: ${status}]`)) {
+        const playbackUrl = error.code === Code.TIMEOUT ? error.data?.[0] : undefined
+        if (await this.reloadYtDlpPlayerAfterStreamErrorOnce(`[PLAYER_ERROR: ${status}]`, playbackUrl)) {
           return
         }
       }

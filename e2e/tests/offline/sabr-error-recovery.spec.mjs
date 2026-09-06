@@ -396,8 +396,13 @@ test('yt-dlp playback refreshes once then prefers built-in SABR over legacy', as
   })
 })
 
-test('yt-dlp player reload keeps metadata and reuses cache while a rejected source is invalidated', async ({ app, page }) => {
+test('yt-dlp player reload reuses cache unless the timed-out URL is rejected', async ({ app, page }) => {
+  const rejectedStreamUrl = 'https://example.invalid/rejected-yt-dlp-stream'
   await mockPlayableWatchPage(app, page)
+  await page.route(rejectedStreamUrl, route => route.fulfill({
+    status: 403,
+    headers: { 'access-control-allow-origin': '*' }
+  }))
   await goTo(page, 'history')
   await page.getByText('SABR test video').click()
   await expect(page).toHaveURL(/#\/watch\/jNQXAC9IVRw/)
@@ -405,7 +410,6 @@ test('yt-dlp player reload keeps metadata and reuses cache while a rejected sour
 
   const watchView = await watchViewHandle(page)
   const result = await watchView.evaluate(async (view) => {
-    const BAD_HTTP_STATUS = 1001
     const TIMEOUT = 1003
     const useAuthentication = view.alwaysUseYtDlpPlaybackCookies
     const cacheKey = JSON.stringify([view.ytDlpPlaybackCacheKey, useAuthentication])
@@ -499,7 +503,7 @@ test('yt-dlp player reload keeps metadata and reuses cache while a rejected sour
       throw new Error('Unable to restore the yt-dlp playback cache')
     }
     view.streamErrorReloadAttemptedForCurrentVideo = false
-    await view.handlePlayerError({ code: BAD_HTTP_STATUS, data: ['https://example.invalid/video', 403] })
+    await view.handlePlayerError({ code: TIMEOUT, data: ['https://example.invalid/rejected-yt-dlp-stream'] })
     await waitForCacheLookup(2)
 
     return {
@@ -530,6 +534,63 @@ test('yt-dlp player reload keeps metadata and reuses cache while a rejected sour
     metadataPreserved: true,
     reloads: 0
   })
+})
+
+test('a stale yt-dlp rejection probe preserves a newer cache entry', async ({ app, page }) => {
+  await mockPlayableWatchPage(app, page)
+  await goTo(page, 'history')
+  await page.getByText('SABR test video').click()
+  await expect(page).toHaveURL(/#\/watch\/jNQXAC9IVRw/)
+  await expect(page.locator('.ftVideoPlayer')).toBeVisible({ timeout: 30_000 })
+
+  const watchView = await watchViewHandle(page)
+  const result = await watchView.evaluate(async (view) => {
+    const rejectedStreamUrl = 'https://example.invalid/stale-rejected-yt-dlp-stream'
+    const useAuthentication = view.alwaysUseYtDlpPlaybackCookies
+    const cacheKey = JSON.stringify([view.ytDlpPlaybackCacheKey, useAuthentication])
+    const source = {
+      manifestSrc: 'data:application/dash+xml;charset=UTF-8,newer',
+      manifestMimeType: 'application/dash+xml',
+      legacyFormats: [],
+      title: 'Newer timeout recovery',
+      isLive: false,
+      subtitlesIncluded: true,
+      version: 'test'
+    }
+    const originalFetch = window.fetch
+
+    window.fetch = async (url, options) => {
+      if (url !== rejectedStreamUrl) return originalFetch(url, options)
+
+      view.videoLoadGeneration++
+      if (!await window.ftElectron.ytDlpPlaybackCacheSet(
+        view.videoId,
+        cacheKey,
+        Date.now() + 60 * 60 * 1000,
+        source
+      )) {
+        throw new Error('Unable to seed the newer yt-dlp playback cache')
+      }
+      return new Response('', { status: 403 })
+    }
+
+    try {
+      await view.reloadYtDlpPlayerAfterStreamErrorOnce(
+        '[PLAYER_ERROR: 1003]',
+        rejectedStreamUrl
+      )
+    } finally {
+      window.fetch = originalFetch
+    }
+
+    return {
+      cacheEntry: await window.ftElectron.ytDlpPlaybackCacheGet(view.videoId, cacheKey),
+      loadGeneration: view.videoLoadGeneration
+    }
+  })
+
+  expect(result.cacheEntry?.source.title).toBe('Newer timeout recovery')
+  expect(result.loadGeneration).toBeGreaterThan(0)
 })
 
 test('yt-dlp recovery remounts only the player and preserves playback state', async ({ app, page }) => {
