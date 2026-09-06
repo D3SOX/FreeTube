@@ -736,6 +736,46 @@ test('the overflow menu can turn the zoom off again', async ({ app, page, attach
   await watchComponent.dispose()
 })
 
+for (const uiScale of [100, 95]) {
+  test.describe(`mobile player menus at ${uiScale}% UI scale`, () => {
+    test.use({ seed: { settings: { ...PLAYER_SEED, uiScale } } })
+
+    test('options and submenus stay above the center play button', async ({ app, page, attachScreenshot }) => {
+      await mockPlayableWatchPage(app, page)
+      await page.locator('.app').evaluate(element => {
+        const applyMobileClass = () => element.classList.add('capacitorTabs')
+        new MutationObserver(() => {
+          if (!element.classList.contains('capacitorTabs')) applyMobileClass()
+        }).observe(element, { attributeFilter: ['class'] })
+        applyMobileClass()
+      })
+      const video = await openMockedVideo(page)
+      await video.evaluate(element => element.pause())
+      await setWindowSize(app, page, { width: 450, height: 850 })
+
+      const player = page.locator(`${activeTab} .ftVideoPlayer`)
+      const centerButton = player.locator('.shaka-big-buttons-container .shaka-play-button')
+      await player.hover()
+      await expect(centerButton).toBeVisible()
+      await player.getByRole('button', { name: 'More settings' }).click()
+      const menu = player.locator('.shaka-overflow-menu')
+      await attachScreenshot('mobile options menu above center play button')
+      await expectOverlayAbovePlayer(centerButton, menu)
+
+      await menu.getByRole('button', { name: 'Zoom' }).click()
+      const submenu = player.locator('.video-zoom-menu')
+      await expectOverlayAbovePlayer(centerButton, submenu)
+      await submenu.getByRole('button', { name: 'Off', exact: true }).click()
+      await expect(submenu).toBeHidden()
+      await expect(menu).toBeVisible()
+      await player.getByRole('button', { name: 'More settings' }).click()
+      await expect(menu).toBeHidden()
+      await centerButton.click()
+      await expect.poll(() => video.evaluate(element => element.paused)).toBe(false)
+    })
+  })
+}
+
 test('mobile fullscreen keeps menus and SponsorBlock notices above the action dock', async ({ app, page }) => {
   await openDemoVideo({ app, page })
   await page.locator('.app').evaluate(element => element.classList.add('capacitorTabs'))
