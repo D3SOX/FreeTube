@@ -687,7 +687,7 @@ Tooltips:
     Browser for Cookies: Obsługiwane przeglądarki są odczytywane z wybranego pliku wykonywalnego yt-dlp. Gdy potrzebne jest uwierzytelnione odtwarzanie, OpenTubeX zleca yt-dlp odczytanie ciasteczek z tej przeglądarki.
     Browser Profile: Opcjonalna nazwa lub folder profilu przeglądarki. Pozostaw puste pole, aby użyć ostatnio otwieranego profilu.
     Always Use Cookies: "Używa skonfigurowanych ciasteczek przy każdym pobieraniu strumieni przez yt-dlp. Nie zmienia to metody pobierania strumienia na yt-dlp. Po wybraniu yt-dlp mogą być dostępne formaty przeznaczone tylko dla kont, w tym wyższa szybkość transmisji bitów YouTube Premium, jeśli konto ma do niej dostęp. Używaj skonfigurowanych plików cookie do napisów i tłumaczeń automatycznych."
-    Use cookies for subtitles: "Używaj skonfigurowanych plików cookie do napisów i tłumaczeń automatycznych. Włącza się także przez „Zawsze używaj plików cookie”."
+    Use cookies for subtitles: "Używaj skonfigurowanych plików cookie do napisów i tłumaczeń automatycznych. Włącza się także przez „Zawsze używaj ciasteczek”."
   Distraction Free Settings:
     Shorten View Counts: Pokazuje liczbę wyświetleń i polubień komentarzy w skróconej postaci zaokrąglonej przez YouTube, na przykład 14 tys. zamiast 14 000. Dokładne wartości są zawsze wyświetlane w całości.
   Subscription Settings:

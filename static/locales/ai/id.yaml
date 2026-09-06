@@ -642,7 +642,7 @@ Settings:
     Always Use Cookies: Selalu Gunakan Kuki
     Restricted Playback Authentication Hint: Secara bawaan, OpenTubeX hanya meneruskan kuki ini ke yt-dlp setelah Anda memilih "Coba dengan kuki yang telah dikonfigurasi" pada video dengan batasan usia atau khusus anggota.
     Restricted Playback Authentication Warning: Menggunakan yt-dlp dengan akun Google dapat menyebabkan pembatasan akun sementara atau permanen.
-    Use cookies for subtitles: "Gunakan cookie untuk subtitel"
+    Use cookies for subtitles: "Gunakan kuki untuk takarir"
   Privacy Settings:
     Automatic History Retention: Penyimpanan Riwayat Otomatis (Hari)
     Automatic History Retention Placeholder: Biarkan kosong untuk menyimpan selamanya
@@ -1452,9 +1452,9 @@ Tooltips:
     Cookie File: Pilih berkas kuki berformat Netscape untuk pemutaran terautentikasi.
     Browser for Cookies: Dukungan peramban dibaca dari program yt-dlp yang dipilih. OpenTubeX meminta yt-dlp membaca peramban ini saat pemutaran terautentikasi diminta.
     Browser Profile: Nama atau folder profil peramban opsional. Biarkan kosong untuk menggunakan profil yang terakhir diakses.
-    Always Use Cookies: "Gunakan kuki yang telah dikonfigurasi setiap kali yt-dlp mengekstrak stream. Opsi ini tidak mengubah metode ekstraksi stream menjadi yt-dlp. Jika yt-dlp dipilih, format khusus akun mungkin tersedia, termasuk laju bit lebih tinggi YouTube Premium jika akun memiliki akses. Gunakan cookie yang dikonfigurasi untuk subtitel dan terjemahan otomatis."
+    Always Use Cookies: "Gunakan kuki yang telah dikonfigurasi setiap kali yt-dlp mengekstrak stream. Opsi ini tidak mengubah metode ekstraksi stream menjadi yt-dlp. Jika yt-dlp dipilih, format khusus akun mungkin tersedia, termasuk laju bit lebih tinggi YouTube Premium jika akun memiliki akses. Gunakan kuki yang dikonfigurasi untuk takarir dan terjemahan otomatis."
     FFmpeg Executable Path: FFmpeg diperlukan untuk menggabungkan stream video dan audio terpisah serta mengonversi audio. Secara bawaan, OpenTubeX menganggap FFmpeg dapat ditemukan melalui variabel lingkungan PATH. Jika perlu, tentukan jalur khusus di sini.
-    Use cookies for subtitles: "Gunakan cookie yang dikonfigurasi untuk subtitel dan terjemahan otomatis. Juga diaktifkan oleh \"Selalu Gunakan Cookie\"."
+    Use cookies for subtitles: "Gunakan kuki yang dikonfigurasi untuk takarir dan terjemahan otomatis. Juga diaktifkan oleh \"Selalu Gunakan Kuki\"."
   Distraction Free Settings:
     Shorten View Counts: Menampilkan jumlah penayangan dan suka komentar yang telah dibulatkan YouTube dalam bentuk singkat, misalnya 14 rb, bukan 14.000. Jumlah persis selalu ditampilkan penuh.
   Subscription Settings:

@@ -1927,7 +1927,7 @@ Tooltips:
     Browser Profile: Izbirno ime ali mapa profila brskalnika. Če želite uporabiti nazadnje uporabljeni profil, pustite prazno.
     Always Use Cookies: "Uporabi nastavljene piškotke vsakič, ko yt-dlp pridobiva pretoke. S tem se način pridobivanja pretoka ne preklopi na yt-dlp. Ko je izbran yt-dlp, so lahko na voljo oblike, dostopne samo z računom, vključno z izboljšano bitno hitrostjo storitve YouTube Premium, če ima račun dostop. Uporabi nastavljene piškotke za podnapise in samodejne prevode."
     FFmpeg Executable Path: FFmpeg je potreben za združevanje ločenih video- in zvočnih pretokov ter pretvarjanje zvoka. OpenTubeX privzeto predvideva, da je FFmpeg mogoče najti prek okoljske spremenljivke PATH. Po potrebi lahko tukaj nastavite pot po meri.
-    Use cookies for subtitles: "Uporabi nastavljene piškotke za podnapise in samodejne prevode. Omogoči tudi možnost »Vedno uporabi piškotke«."
+    Use cookies for subtitles: "Uporabi nastavljene piškotke za podnapise in samodejne prevode. To možnost omogoči tudi nastavitev »Vedno uporabi piškotke«."
   Distraction Free Settings:
     Shorten View Counts: Prikaže število ogledov in všečkov komentarjev v skrajšani obliki, ki jo je YouTube že zaokrožil, npr. 14 tis. namesto 14.000. Natančno število je vedno prikazano v celoti.
     Hide Channels: Vnesite ID kanala, da skrijete vse njegove videoposnetke in sezname predvajanja ter sam kanal iz iskanja, priljubljenih in najbolj gledanih vsebin ter priporočil. Vneseni ID kanala se mora popolnoma ujemati in razlikuje med velikimi in malimi črkami.
