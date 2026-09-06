@@ -83,6 +83,37 @@ function headerBoxes (page) {
 }
 
 test.describe('subscriptions header layout', () => {
+  test('keeps keyboard focus in visual order when the header changes layout', async ({ app, page }) => {
+    await goTo(page, 'subscriptions')
+    await page.locator('[data-subscription-feed-tab="all"]').click()
+    await expect(page.locator('.headerSortSelect')).toBeVisible()
+
+    const markAllSeen = page.locator('.markAllSeenButton')
+    for (const width of [375, 1600, 640, 1600]) {
+      await markAllSeen.focus()
+      await setWindowWidth(app, page, width)
+      const compact = width <= 680
+      await expect(markAllSeen.locator('xpath=..')).toHaveClass(compact ? /headerActions/ : /tabsRow/)
+      await expect(markAllSeen).toBeFocused()
+      const controls = [
+        '.headerViewToggle .iconButton',
+        '.headerSortSelect .select-text'
+      ]
+      if (compact) {
+        controls.push('.markAllSeenButton')
+      } else {
+        controls.unshift('.markAllSeenButton')
+      }
+      controls.push('.refreshButton .iconButton')
+
+      await page.locator('[data-subscription-feed-tab="all"]').focus()
+      for (const selector of controls) {
+        await page.keyboard.press('Tab')
+        await expect(page.locator(selector)).toBeFocused()
+      }
+    }
+  })
+
   for (const uiScale of [100, 95]) {
     test(`keeps Mark all as seen beside the desktop feed tabs at ${uiScale}% scale`, async ({ app, page, attachScreenshot }) => {
       await app.electronApp.evaluate(({ BrowserWindow }, scale) => {

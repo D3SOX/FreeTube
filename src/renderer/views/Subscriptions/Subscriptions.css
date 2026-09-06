@@ -46,7 +46,7 @@
   display: flex;
   flex: 1 1 auto;
   flex-wrap: wrap;
-  gap: 12px 8px;
+  gap: 12px 20px;
   min-inline-size: 0;
 }
 
@@ -228,16 +228,7 @@
 }
 
 .subscriptionsHeader.singleRow .headerActions {
-  flex: 1 0 auto;
-  justify-content: flex-end;
-}
-
-.subscriptionsHeader.singleRow .markAllSeenButton {
-  margin-inline-end: auto;
-}
-
-.subscriptionsHeader.singleRow .headerSortSelect {
-  flex: 0 0 220px;
+  margin-inline-start: auto;
 }
 
 .selectedTab {

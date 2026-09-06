@@ -185,18 +185,6 @@
               v-if="currentTabPanel !== null"
               class="headerActions"
             >
-              <button
-                v-if="currentTabHasNewContent"
-                class="markAllSeenButton"
-                type="button"
-                :disabled="markingSeenTab !== null || currentTabRefreshing"
-                @click="markAllAsSeen(currentTab)"
-              >
-                <FtIcon :icon="['fas', 'check']" />
-                <span class="markAllSeenLabel">
-                  {{ $t('Subscriptions.Mark All as Seen') }}
-                </span>
-              </button>
               <FtIconButton
                 v-if="currentTab === 'new'"
                 class="headerViewToggle"
@@ -221,6 +209,23 @@
                 :icon="newFeedSortByIcon"
                 @change="updateNewFeedSortBy"
               />
+              <Teleport
+                v-if="currentTabHasNewContent"
+                :to="tabsRowRef"
+                :disabled="!headerFitsOneRow"
+              >
+                <button
+                  class="markAllSeenButton"
+                  type="button"
+                  :disabled="markingSeenTab !== null || currentTabRefreshing"
+                  @click="markAllAsSeen(currentTab)"
+                >
+                  <FtIcon :icon="['fas', 'check']" />
+                  <span class="markAllSeenLabel">
+                    {{ $t('Subscriptions.Mark All as Seen') }}
+                  </span>
+                </button>
+              </Teleport>
               <FtRefreshWidget
                 embedded
                 class="headerRefreshWidget subscriptionsHeaderRefreshWidget"
@@ -1186,8 +1191,7 @@ function updateHeaderFitsOneRow() {
     return child === tabs ? singleLineWidth(tabs) : child.getBoundingClientRect().width
   })
   const feedTabsControlsRowWidth = singleLineWidth(feedTabsControlsRow, child => {
-    // The actions stretch to keep Mark all as seen beside the tabs on desktop.
-    return child === tabsRow ? tabsRowWidth : singleLineWidth(child)
+    return child === tabsRow ? tabsRowWidth : child.getBoundingClientRect().width
   })
   const requiredWidth = singleLineWidth(row, child => {
     // The grouped row stretches across the header in the split layout
@@ -1223,10 +1227,6 @@ function observeHeaderRow() {
     headerResizeObserver.observe(child)
   }
 
-  for (const child of row.querySelectorAll('.headerActions > *')) {
-    headerResizeObserver.observe(child)
-  }
-
   for (const child of tabsRowRef.value?.children ?? []) {
     headerResizeObserver.observe(child)
   }
@@ -1238,10 +1238,17 @@ function observeHeaderRow() {
 
 // Which elements exist changes with the panel (the refresh widget is only
 // rendered once it is mounted) and with the Mark all as seen button
-watch([currentTabPanel, currentTabHasNewContent], () => nextTick(() => {
-  observeHeaderRow()
-  updateHeaderFitsOneRow()
-}))
+watch([currentTabPanel, currentTabHasNewContent, headerFitsOneRow], () => {
+  const restoreFocus = headerRowRef.value?.querySelector('.markAllSeenButton') === document.activeElement
+  nextTick(() => {
+    observeHeaderRow()
+    updateHeaderFitsOneRow()
+    // Moving the button between rows must preserve keyboard focus.
+    if (restoreFocus) {
+      headerRowRef.value?.querySelector('.markAllSeenButton')?.focus({ preventScroll: true })
+    }
+  })
+})
 
 // ===== Sliding feed tab indicator =====
 const tabsContainerRef = useTemplateRef('tabsContainerRef')
