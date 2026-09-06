@@ -4789,18 +4789,19 @@ export default defineComponent({
         return true
       }
 
-      if (
-        playbackUrl !== undefined &&
-        await checkYtDlpPlaybackUrl(playbackUrl) === 'rejected'
-      ) {
-        invalidateYtDlpPlaybackSource(videoId)
-      }
+      const playbackUrlStatus = playbackUrl === undefined
+        ? 'inconclusive'
+        : await checkYtDlpPlaybackUrl(playbackUrl)
 
       if (
         !this.isCurrentVideoLoad(loadGeneration, videoId) ||
         playbackEngineSwitchGeneration !== this.playbackEngineSwitchGeneration
       ) {
         return true
+      }
+
+      if (playbackUrlStatus === 'rejected') {
+        invalidateYtDlpPlaybackSource(videoId)
       }
 
       this.ytDlpStreamsPending = true

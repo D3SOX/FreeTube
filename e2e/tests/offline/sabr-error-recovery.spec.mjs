@@ -536,6 +536,63 @@ test('yt-dlp player reload reuses cache unless the timed-out URL is rejected', a
   })
 })
 
+test('a stale yt-dlp rejection probe preserves a newer cache entry', async ({ app, page }) => {
+  await mockPlayableWatchPage(app, page)
+  await goTo(page, 'history')
+  await page.getByText('SABR test video').click()
+  await expect(page).toHaveURL(/#\/watch\/jNQXAC9IVRw/)
+  await expect(page.locator('.ftVideoPlayer')).toBeVisible({ timeout: 30_000 })
+
+  const watchView = await watchViewHandle(page)
+  const result = await watchView.evaluate(async (view) => {
+    const rejectedStreamUrl = 'https://example.invalid/stale-rejected-yt-dlp-stream'
+    const useAuthentication = view.alwaysUseYtDlpPlaybackCookies
+    const cacheKey = JSON.stringify([view.ytDlpPlaybackCacheKey, useAuthentication])
+    const source = {
+      manifestSrc: 'data:application/dash+xml;charset=UTF-8,newer',
+      manifestMimeType: 'application/dash+xml',
+      legacyFormats: [],
+      title: 'Newer timeout recovery',
+      isLive: false,
+      subtitlesIncluded: true,
+      version: 'test'
+    }
+    const originalFetch = window.fetch
+
+    window.fetch = async (url, options) => {
+      if (url !== rejectedStreamUrl) return originalFetch(url, options)
+
+      view.videoLoadGeneration++
+      if (!await window.ftElectron.ytDlpPlaybackCacheSet(
+        view.videoId,
+        cacheKey,
+        Date.now() + 60 * 60 * 1000,
+        source
+      )) {
+        throw new Error('Unable to seed the newer yt-dlp playback cache')
+      }
+      return new Response('', { status: 403 })
+    }
+
+    try {
+      await view.reloadYtDlpPlayerAfterStreamErrorOnce(
+        '[PLAYER_ERROR: 1003]',
+        rejectedStreamUrl
+      )
+    } finally {
+      window.fetch = originalFetch
+    }
+
+    return {
+      cacheEntry: await window.ftElectron.ytDlpPlaybackCacheGet(view.videoId, cacheKey),
+      loadGeneration: view.videoLoadGeneration
+    }
+  })
+
+  expect(result.cacheEntry?.source.title).toBe('Newer timeout recovery')
+  expect(result.loadGeneration).toBeGreaterThan(0)
+})
+
 test('yt-dlp recovery remounts only the player and preserves playback state', async ({ app, page }) => {
   await mockPlayableWatchPage(app, page)
   await goTo(page, 'history')
