@@ -2552,6 +2552,16 @@ html[data-reduced-motion='reduce'] .musicVisualizerCanvas {
   z-index: 3;
 }
 
+/* Menus must also clear the raised controls inside the same container. */
+:global(.capacitorTabs .ftVideoPlayer :is(
+  .shaka-overflow-menu,
+  .shaka-settings-menu,
+  .shaka-sub-menu,
+  .shaka-context-menu
+)) {
+  z-index: 4;
+}
+
 :global(.capacitorTabs .ftVideoPlayer .shaka-controls-container:has(
   .shaka-overflow-menu:not(.shaka-hidden),
   .shaka-settings-menu:not(.shaka-hidden),
