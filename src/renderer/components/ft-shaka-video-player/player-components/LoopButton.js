@@ -54,9 +54,10 @@ export class LoopButton extends shaka.ui.Element {
     this.loopVisible_ = this.isLoopVisible_()
 
     /** @private */
-    this.statePoller_ = window.setInterval(() => {
-      this.updateState_()
-    }, 250)
+    this.loopObserver_ = new MutationObserver(() => this.updateState_())
+    // HTMLMediaElement.loop reflects the attribute, including changes from
+    // shortcuts and other controls. A-B repeat uses the context subscription.
+    this.loopObserver_.observe(controls.getLocalVideo(), { attributes: true, attributeFilter: ['loop'] })
 
     /** @private */
     this.button_ = document.createElement('button')
@@ -129,7 +130,7 @@ export class LoopButton extends shaka.ui.Element {
   }
 
   release() {
-    window.clearInterval(this.statePoller_)
+    this.loopObserver_.disconnect()
     this.stopStateWatch_?.()
     super.release()
   }

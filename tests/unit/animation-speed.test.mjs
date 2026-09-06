@@ -91,3 +91,28 @@ test('applies speed to newly started unmanaged animations', async () => {
 
   assert.deepEqual(playbackRates, [2, 2])
 })
+
+test('lets CSS run at its default speed without querying animations for each event', async () => {
+  let queries = 0
+  const target = new FakeElement()
+  target.getAnimations = () => { queries++; return [] }
+  setAnimationSpeed(100)
+  for (let index = 0; index < 100; index++) {
+    listeners.get('animationstart')({ target })
+    listeners.get('transitionrun')({ target })
+  }
+  await Promise.resolve()
+  assert.equal(queries, 0)
+})
+
+test('restores existing animations when returning to default speed', () => {
+  const playbackRates = []
+  activeAnimations.push({
+    effect: { target: new FakeElement() },
+    updatePlaybackRate: rate => playbackRates.push(rate),
+  })
+  setAnimationSpeed(200)
+  setAnimationSpeed(100)
+  assert.deepEqual(playbackRates, [2, 1])
+  activeAnimations.length = 0
+})
