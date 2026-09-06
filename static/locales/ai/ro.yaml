@@ -753,7 +753,7 @@ Settings:
     Sections:
       Visible While Paused: Vizibile în pauză în fereastră completă / pe ecran complet
     Hide Channel Avatars: Ascunde avatarurile canalelor
-    Shorten View Counts: Abreviază numărul de vizionări și aprecieri ale comentariilor
+    Shorten View Counts: Abreviază numărul de vizionări, comentarii și aprecieri ale comentariilor
     Hide Home: Ascunde pagina principală
     Hide Live Chat Replay: Ascunde reluarea chatului în direct
     Disable A-B Repeat: Dezactivează repetarea A-B
@@ -1464,7 +1464,7 @@ Tooltips:
     FFmpeg Executable Path: FFmpeg este necesar pentru îmbinarea fluxurilor video și audio separate și pentru conversia audio. În mod implicit, OpenTubeX presupune că FFmpeg poate fi găsit prin variabila de mediu PATH. Dacă este necesar, puteți seta aici o cale personalizată.
     Use cookies for subtitles: "Folosește cookie-urile configurate pentru subtitrări și traduceri automate. Se activează și prin „Folosește întotdeauna cookie-uri”."
   Distraction Free Settings:
-    Shorten View Counts: Afișează în formă abreviată numărul de vizionări și de aprecieri ale comentariilor pe care YouTube le-a rotunjit deja, de exemplu 14 K în loc de 14.000. Valorile exacte sunt afișate întotdeauna integral.
+    Shorten View Counts: Afișează în formă abreviată numărul de vizionări, de comentarii și de aprecieri ale comentariilor pe care YouTube le-a rotunjit deja, de exemplu 14 K în loc de 14.000. Valorile exacte sunt afișate întotdeauna integral.
   Subscription Settings:
     Fetch Feed on Startup: Când opțiunea este activată, OpenTubeX preia automat fluxul de abonamente la pornire și la deschiderea unei ferestre noi.
     Show New Content Feed: Afișează o filă Nou cu elementele din fluxul de abonamente care nu existau la preluarea anterioară.

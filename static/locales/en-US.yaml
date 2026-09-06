@@ -1286,7 +1286,7 @@ Settings:
       Visible While Paused: Visible While Paused in Full Window / Full Screen
     Hide Video Views: Hide Video Views
     Hide Channel Avatars: Hide Channel Avatars
-    Shorten View Counts: Shorten View and Comment Like Counts
+    Shorten View Counts: Shorten View, Comment and Comment Like Counts
     Hide Video Likes And Dislikes: Hide Video Likes And Dislikes
     Hide Channel Subscribers: Hide Channel Subscribers
     Hide Comment Likes: Hide Comment Likes
@@ -2518,7 +2518,7 @@ Tooltips:
       via the PATH environment variable. If needed, a custom path can be set here.
     Use cookies for subtitles: "Use the configured cookies for subtitles and automatic translations. Also enabled by \"Always Use Cookies\"."
   Distraction Free Settings:
-    Shorten View Counts: Shows view and comment like counts that YouTube has already rounded in a shortened form, e.g. 14K instead of 14,000. Exact counts are always shown in full.
+    Shorten View Counts: Shows view, comment and comment like counts that YouTube has already rounded in a shortened form, e.g. 14K instead of 14,000. Exact counts are always shown in full.
     Hide Channels: Enter a channel ID to hide all videos, playlists and the channel itself from appearing in search, trending, most popular and recommended.
        The channel ID entered must be a complete match and is case sensitive.
     Hide Subscriptions Live: 'This setting is overridden by the app-wide "{appWideSetting}" setting, in the "{subsection}" section of the "{settingsSection}"'

@@ -968,7 +968,7 @@ Settings:
       Subscriptions Page: Prenumeratų puslapis
       Visible While Paused: Rodoma pristabdžius viso lango arba viso ekrano režimu
     Hide Channel Avatars: Slėpti kanalų pseudoportretus
-    Shorten View Counts: Trumpinti peržiūrų ir komentarų patiktukų skaičius
+    Shorten View Counts: Trumpinti peržiūrų, komentarų ir komentarų patiktukų skaičius
     Hide Home: Slėpti pradžios puslapį
     Hide Live Chat Replay: Slėpti tiesioginio pokalbio įrašą
     Hide Profile Pictures in Comments: Slėpti profilio nuotraukas komentaruose
@@ -1835,7 +1835,7 @@ Tooltips:
     FFmpeg Executable Path: FFmpeg reikalingas atskiriems vaizdo ir garso srautams sujungti bei garsui konvertuoti. Pagal numatymą OpenTubeX laikys, kad FFmpeg galima rasti naudojant PATH aplinkos kintamąjį. Jei reikia, čia galima nurodyti pasirinktinį kelią.
     Use cookies for subtitles: "Naudoti sukonfigūruotus slapukus subtitrams ir automatiniams vertimams. Taip pat įjungiama pasirinkus „Visada naudoti slapukus“."
   Distraction Free Settings:
-    Shorten View Counts: Sutrumpintai rodo peržiūrų ir komentarų teigiamų įvertinimų skaičius, kuriuos YouTube jau suapvalino, pvz., 14 tūkst. vietoje 14 000. Tikslūs skaičiai visada rodomi nesutrumpinti.
+    Shorten View Counts: Sutrumpintai rodo peržiūrų, komentarų ir komentarų teigiamų įvertinimų skaičius, kuriuos YouTube jau suapvalino, pvz., 14 tūkst. vietoje 14 000. Tikslūs skaičiai visada rodomi nesutrumpinti.
     Hide Channels: Įveskite kanalo ID, kad visi vaizdo įrašai, grojaraščiai ir pats kanalas nebūtų rodomi paieškoje, tarp populiarėjančių, populiariausių ir rekomenduojamų elementų. Įvestas kanalo ID turi tiksliai sutapti, taip pat skiriamos didžiosios ir mažosios raidės.
     Hide Subscriptions Live: Šį nustatymą pakeičia visai programai taikomas nustatymas „{appWideSetting}“, esantis „{settingsSection}“ skiltyje „{subsection}“
     Hide Videos, Playlists and Channels Containing Text: Įveskite žodį, žodžio dalį arba frazę (didžiosios ir mažosios raidės neskiriamos), kad visoje OpenTubeX nebūtų rodomi vaizdo įrašai, grojaraščiai ir kanalai, kurių originaliuose pavadinimuose yra šis tekstas. Filtras netaikomas tik istorijai, jūsų grojaraščiams ir grojaraščiuose esantiems vaizdo įrašams.

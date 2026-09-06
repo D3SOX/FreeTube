@@ -749,7 +749,7 @@ Settings:
     Sections:
       Visible While Paused: Szüneteltetéskor látható teljes ablakos vagy teljes képernyős módban
     Hide Channel Avatars: Csatornaavatarok elrejtése
-    Shorten View Counts: Megtekintések és hozzászóláskedvelések számának rövidítése
+    Shorten View Counts: Megtekintések, hozzászólások és hozzászóláskedvelések számának rövidítése
     Hide Live Chat Replay: Élő csevegés visszajátszásának elrejtése
     Hide Home: Kezdőlap elrejtése
     Disable A-B Repeat: A-B ismétlés letiltása
@@ -1434,7 +1434,7 @@ Tooltips:
     FFmpeg Executable Path: Az FFmpeg szükséges a különálló videó- és hangadatfolyamok egyesítéséhez, valamint a hangkonvertáláshoz. Az OpenTubeX alapértelmezés szerint azt feltételezi, hogy az FFmpeg megtalálható a PATH környezeti változó alapján. Szükség esetén itt egyéni elérési út adható meg.
     Use cookies for subtitles: "A beállított sütik használata a feliratokhoz és az automatikus fordításokhoz. A „Sütik használata mindig” beállítás is engedélyezi."
   Distraction Free Settings:
-    Shorten View Counts: A YouTube által már kerekített megtekintés- és hozzászóláskedvelési számok rövidített megjelenítése, például 14 E a 14 000 helyett. A pontos számok mindig teljesen jelennek meg.
+    Shorten View Counts: A YouTube által már kerekített megtekintés-, hozzászólás- és hozzászóláskedvelési számok rövidített megjelenítése, például 14 E a 14 000 helyett. A pontos számok mindig teljesen jelennek meg.
   Subscription Settings:
     Fetch Feed on Startup: Bekapcsolva az OpenTubeX automatikusan lekéri a feliratkozási hírfolyamot indításkor és új ablak megnyitásakor.
     Show New Content Feed: Egy Új lap megjelenítése azokkal a feliratkozási hírfolyamelemekkel, amelyek az előző lekéréskor még nem szerepeltek.

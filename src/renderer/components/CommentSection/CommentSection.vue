@@ -595,7 +595,7 @@ import FtTimestampCatcher from '../FtTimestampCatcher.vue'
 
 import store from '../../store/index'
 
-import { copyToClipboard, formatNumber, formatViewCount, getRelativeTimeFromDate, showApiErrorToast, showToast } from '../../helpers/utils'
+import { copyToClipboard, formatViewCount, getRelativeTimeFromDate, showApiErrorToast, showToast } from '../../helpers/utils'
 import { useRelativeTimeClock } from '../../composables/useRelativeTimeClock'
 import {
   getCommentReplyAccessibleLabel,
@@ -1456,7 +1456,7 @@ const formattedCommentCount = computed(() => {
     return ''
   }
 
-  return formatNumber(commentCount.value)
+  return formatViewCount(commentCount.value, shortenViewCounts.value)
 })
 
 const commentsTitle = computed(() => {

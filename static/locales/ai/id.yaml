@@ -757,7 +757,7 @@ Settings:
     Sections:
       Visible While Paused: Terlihat Saat Dijeda dalam Jendela Penuh / Layar Penuh
     Hide Channel Avatars: Sembunyikan Avatar Saluran
-    Shorten View Counts: Persingkat Jumlah Penayangan dan Suka Komentar
+    Shorten View Counts: Persingkat Jumlah Penayangan, Komentar dan Suka Komentar
     Hide Live Chat Replay: Sembunyikan Pemutaran Ulang Chat Langsung
     Hide Home: Sembunyikan Beranda
     Disable A-B Repeat: Nonaktifkan Pengulangan A-B
@@ -1456,7 +1456,7 @@ Tooltips:
     FFmpeg Executable Path: FFmpeg diperlukan untuk menggabungkan stream video dan audio terpisah serta mengonversi audio. Secara bawaan, OpenTubeX menganggap FFmpeg dapat ditemukan melalui variabel lingkungan PATH. Jika perlu, tentukan jalur khusus di sini.
     Use cookies for subtitles: "Gunakan kuki yang dikonfigurasi untuk takarir dan terjemahan otomatis. Juga diaktifkan oleh \"Selalu Gunakan Kuki\"."
   Distraction Free Settings:
-    Shorten View Counts: Menampilkan jumlah penayangan dan suka komentar yang telah dibulatkan YouTube dalam bentuk singkat, misalnya 14 rb, bukan 14.000. Jumlah persis selalu ditampilkan penuh.
+    Shorten View Counts: Menampilkan jumlah penayangan, komentar dan suka komentar yang telah dibulatkan YouTube dalam bentuk singkat, misalnya 14 rb, bukan 14.000. Jumlah persis selalu ditampilkan penuh.
   Subscription Settings:
     Fetch Feed on Startup: Jika diaktifkan, OpenTubeX otomatis mengambil umpan langganan saat aplikasi dimulai dan ketika jendela baru dibuka.
     Show New Content Feed: Menampilkan tab Baru yang berisi item umpan langganan yang belum ada saat pengambilan sebelumnya.

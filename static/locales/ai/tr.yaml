@@ -749,7 +749,7 @@ Settings:
     Sections:
       Visible While Paused: Tam Pencere / Tam Ekranda Duraklatıldığında Görünür
     Hide Channel Avatars: Kanal Avatarlarını Gizle
-    Shorten View Counts: İzlenme ve Yorum Beğeni Sayılarını Kısalt
+    Shorten View Counts: İzlenme, Yorum ve Yorum Beğeni Sayılarını Kısalt
     Hide Live Chat Replay: Canlı Sohbet Tekrarını Gizle
     Hide Home: Ana Sayfayı Gizle
     Disable A-B Repeat: A-B Tekrarını Devre Dışı Bırak
@@ -1430,7 +1430,7 @@ Tooltips:
     FFmpeg Executable Path: Ayrı video ve ses akışlarını birleştirmek ve ses dönüştürmek için FFmpeg gereklidir. OpenTubeX varsayılan olarak FFmpeg'in PATH ortam değişkeni üzerinden bulunabildiğini varsayar. Gerekirse buradan özel bir yol ayarlayabilirsiniz.
     Use cookies for subtitles: "Altyazılar ve otomatik çeviriler için yapılandırılmış çerezleri kullan. \"Her zaman çerezleri kullan\" seçeneği de bunu etkinleştirir."
   Distraction Free Settings:
-    Shorten View Counts: YouTube'un zaten yuvarlayarak kısalttığı izlenme ve yorum beğeni sayılarını gösterir, örneğin 14.000 yerine 14 B. Kesin sayılar her zaman tam gösterilir.
+    Shorten View Counts: YouTube'un zaten yuvarlayarak kısalttığı izlenme, yorum ve yorum beğeni sayılarını gösterir, örneğin 14.000 yerine 14 B. Kesin sayılar her zaman tam gösterilir.
   Subscription Settings:
     Fetch Feed on Startup: Etkinleştirildiğinde OpenTubeX, başlangıçta ve yeni pencere açıldığında abonelik akışınızı otomatik olarak getirir.
     Show New Content Feed: Önceki getirme sırasında bulunmayan abonelik akışı öğelerini içeren Yeni sekmesini gösterir.

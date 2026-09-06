@@ -751,7 +751,7 @@ Settings:
     Sections:
       Visible While Paused: Yn weladwy wrth oedi mewn ffenestr lawn / sgrin lawn
     Hide Channel Avatars: Cuddio afatarau sianeli
-    Shorten View Counts: Byrhau cyfrif gwylwyr a hoffiadau sylwadau
+    Shorten View Counts: Byrhau cyfrif gwylwyr, sylwadau a hoffiadau sylwadau
     Hide Home: Cuddio'r hafan
     Hide Live Chat Replay: Cuddio ailchwarae sgwrs fyw
     Disable A-B Repeat: Analluogi ailadrodd A-B
@@ -1447,7 +1447,7 @@ Tooltips:
     FFmpeg Executable Path: Mae angen FFmpeg i uno ffrydiau fideo a sain ar wahân ac i drosi sain. Yn ddiofyn, bydd OpenTubeX yn tybio bod modd canfod FFmpeg drwy'r newidyn amgylchedd PATH. Os oes angen, gallwch osod llwybr personol yma.
     Use cookies for subtitles: "Defnyddio’r cwcis wedi’u ffurfweddu ar gyfer isdeitlau a chyfieithiadau awtomatig. Mae “Defnyddio cwcis bob amser” hefyd yn galluogi hyn."
   Distraction Free Settings:
-    Shorten View Counts: Mae'n dangos cyfrif gwylwyr a hoffiadau sylwadau y mae YouTube eisoes wedi'u talgrynnu ar ffurf fer, e.e. 14K yn lle 14,000. Dangosir yr union gyfrifon yn llawn bob amser.
+    Shorten View Counts: Mae'n dangos cyfrif gwylwyr, sylwadau a hoffiadau sylwadau y mae YouTube eisoes wedi'u talgrynnu ar ffurf fer, e.e. 14K yn lle 14,000. Dangosir yr union gyfrifon yn llawn bob amser.
   Subscription Settings:
     Fetch Feed on Startup: Pan fydd wedi'i alluogi, bydd OpenTubeX yn cyrchu eich ffrwd tanysgrifiadau'n awtomatig wrth gychwyn a phan agorir ffenestr newydd.
     Show New Content Feed: Mae'n dangos tab Newydd sy'n cynnwys eitemau o'r ffrwd tanysgrifiadau nad oeddent yn bresennol yn ystod y cyrchiad blaenorol.

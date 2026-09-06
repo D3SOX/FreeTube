@@ -757,7 +757,7 @@ Settings:
     Sections:
       Visible While Paused: Sýnilegt þegar gert er hlé í heilum glugga eða á öllum skjánum
     Hide Channel Avatars: Fela auðkennismyndir rása
-    Shorten View Counts: Stytta tölur yfir áhorf og líkar við athugasemdir
+    Shorten View Counts: Stytta tölur yfir áhorf, athugasemdir og líkar við athugasemdir
     Hide Live Chat Replay: Fela endurspilun beinspjalls
     Hide Home: Fela heimasíðu
     Disable A-B Repeat: Slökkva á A-B-endurtekningu
@@ -1463,7 +1463,7 @@ Tooltips:
     FFmpeg Executable Path: FFmpeg er nauðsynlegt til að sameina aðskilið mynd- og hljóðstreymi og til að umbreyta hljóði. Sjálfgefið gerir OpenTubeX ráð fyrir að FFmpeg finnist með PATH-umhverfisbreytunni. Hér má velja sérsniðna slóð ef þess þarf.
     Use cookies for subtitles: "Nota stilltar vafrakökur fyrir skjátexta og sjálfvirkar þýðingar. Virkjast einnig með „Nota alltaf vafrakökur“."
   Distraction Free Settings:
-    Shorten View Counts: Sýnir fjölda áhorfa og fjölda þeirra sem líka við athugasemdir á styttu formi ef YouTube hefur þegar námundað tölurnar, t.d. 14 þ. í stað 14.000. Nákvæmur fjöldi er alltaf sýndur fullskrifaður.
+    Shorten View Counts: Sýnir fjölda áhorfa, athugasemda og fjölda þeirra sem líka við athugasemdir á styttu formi ef YouTube hefur þegar námundað tölurnar, t.d. 14 þ. í stað 14.000. Nákvæmur fjöldi er alltaf sýndur fullskrifaður.
   Subscription Settings:
     Fetch Feed on Startup: Þegar þetta er virkt sækir OpenTubeX áskriftarstreymið sjálfkrafa við ræsingu og þegar nýr gluggi er opnaður.
     Show New Content Feed: Sýnir flipann Nýtt með færslum í áskriftarstreymi sem voru ekki til staðar þegar það var síðast sótt.

@@ -762,7 +762,7 @@ Settings:
     Sections:
       Visible While Paused: Näkyvissä keskeytyksen aikana koko ikkunan tai koko näytön tilassa
     Hide Channel Avatars: Piilota kanavien profiilikuvat
-    Shorten View Counts: Lyhennä katselukertojen ja kommenttien tykkäysten määrät
+    Shorten View Counts: Lyhennä katselukertojen, kommenttien ja kommenttien tykkäysten määrät
     Hide Live Chat Replay: Piilota livekeskustelun tallenne
     Hide Home: Piilota etusivu
     Disable A-B Repeat: Poista A-B-toisto käytöstä
@@ -1462,7 +1462,7 @@ Tooltips:
     FFmpeg Executable Path: FFmpeg tarvitaan erillisten video- ja äänivirtojen yhdistämiseen sekä äänen muuntamiseen. OpenTubeX olettaa oletusarvoisesti, että FFmpeg löytyy PATH-ympäristömuuttujan avulla. Tarvittaessa voit määrittää oman polun tässä.
     Use cookies for subtitles: "Käytä määritettyjä evästeitä tekstityksiin ja automaattisiin käännöksiin. Myös ”Käytä aina evästeitä” ottaa tämän käyttöön."
   Distraction Free Settings:
-    Shorten View Counts: Näyttää katselu- ja kommenttien tykkäysmäärät YouTuben valmiiksi pyöristämässä lyhyessä muodossa, esimerkiksi 14 t. 14 000:n sijaan. Tarkat määrät näytetään aina kokonaisina.
+    Shorten View Counts: Näyttää katselu-, kommentti- ja kommenttien tykkäysmäärät YouTuben valmiiksi pyöristämässä lyhyessä muodossa, esimerkiksi 14 t. 14 000:n sijaan. Tarkat määrät näytetään aina kokonaisina.
   Subscription Settings:
     Fetch Feed on Startup: Kun asetus on käytössä, OpenTubeX hakee tilausnäkymän automaattisesti käynnistyessään ja uuden ikkunan avautuessa.
     Show New Content Feed: Näyttää Uudet-välilehden, joka sisältää tilausnäkymän kohteet, joita ei ollut edellisellä hakukerralla.

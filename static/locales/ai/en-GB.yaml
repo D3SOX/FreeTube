@@ -733,7 +733,7 @@ Settings:
     Refresh Subscriptions While App Is Closed: "Refresh Subscriptions While App Is Closed"
   Distraction Free Settings:
     Hide Channel Avatars: Hide Channel Avatars
-    Shorten View Counts: Shorten View and Comment Like Counts
+    Shorten View Counts: Shorten View, Comment and Comment Like Counts
     Hide Home: Hide Home
     Hide Live Chat Replay: Hide Live Chat Replay
     Disable A-B Repeat: Disable A-B Repeat
@@ -1405,7 +1405,7 @@ Tooltips:
     FFmpeg Executable Path: FFmpeg is required for merging separate video and audio streams and for audio conversion. By default, OpenTubeX will assume that FFmpeg can be found via the PATH environment variable. If needed, a custom path can be set here.
     Use cookies for subtitles: "Use the configured cookies for subtitles and automatic translations. Also enabled by \"Always Use Cookies\"."
   Distraction Free Settings:
-    Shorten View Counts: Shows view and comment like counts that YouTube has already rounded in a shortened form, e.g. 14K instead of 14,000. Exact counts are always shown in full.
+    Shorten View Counts: Shows view, comment and comment like counts that YouTube has already rounded in a shortened form, e.g. 14K instead of 14,000. Exact counts are always shown in full.
   Subscription Settings:
     Show New Content Feed: Shows a New tab containing subscription feed items that were not present during the previous fetch.
     Show New Content Indicators: Shows a small dot beside subscription feed items that were not present during the previous fetch.

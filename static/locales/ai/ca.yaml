@@ -1022,7 +1022,7 @@ Settings:
       General: General
       Visible While Paused: Visible durant la pausa a finestra completa o pantalla completa
     Hide Channel Avatars: Oculta els avatars dels canals
-    Shorten View Counts: Abreuja els recomptes de visualitzacions i de m'agrades dels comentaris
+    Shorten View Counts: Abreuja els recomptes de visualitzacions, de comentaris i de m'agrades dels comentaris
     Hide Home: Oculta l'inici
     Hide Live Chat Replay: Oculta la repetició del xat en directe
     Hide Video Description: Oculta la descripció del vídeo
@@ -1969,7 +1969,7 @@ Tooltips:
     FFmpeg Executable Path: FFmpeg és necessari per combinar fluxos de vídeo i àudio separats i per convertir àudio. De manera predeterminada, l'OpenTubeX suposa que es pot trobar FFmpeg mitjançant la variable d'entorn PATH. Si cal, podeu definir aquí un camí personalitzat.
     Use cookies for subtitles: "Utilitza les galetes configurades per als subtítols i les traduccions automàtiques. També s’activa amb «Utilitza sempre galetes»."
   Distraction Free Settings:
-    Shorten View Counts: Mostra en format abreujat els recomptes de visualitzacions i de m'agrades dels comentaris que YouTube ja ha arrodonit, p. ex. 14K en lloc de 14.000. Els recomptes exactes sempre es mostren sencers.
+    Shorten View Counts: Mostra en format abreujat els recomptes de visualitzacions, de comentaris i de m'agrades dels comentaris que YouTube ja ha arrodonit, p. ex. 14K en lloc de 14.000. Els recomptes exactes sempre es mostren sencers.
     Hide Channels: Introduïu un ID de canal per ocultar tots els seus vídeos i llistes de reproducció, així com el canal mateix, de la cerca, les tendències, els més populars i les recomanacions. L'ID introduït ha de coincidir completament i distingeix entre majúscules i minúscules.
     Hide Subscriptions Live: L'opció general "{appWideSetting}", de la secció "{subsection}" de "{settingsSection}", substitueix aquesta opció
     Hide Videos, Playlists and Channels Containing Text: Introduïu una paraula, un fragment de paraula o una frase, sense distinció entre majúscules i minúscules, per ocultar a tot l'OpenTubeX els vídeos, les llistes de reproducció i els canals que la continguin al títol original. Només s'exclouen Historial, Les vostres llistes de reproducció i els vídeos dins de llistes.

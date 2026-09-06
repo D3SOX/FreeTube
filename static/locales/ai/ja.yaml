@@ -749,7 +749,7 @@ Settings:
     Sections:
       Visible While Paused: 全ウィンドウ表示・全画面表示で一時停止中に表示
     Hide Channel Avatars: チャンネルのアバターを非表示
-    Shorten View Counts: 視聴回数とコメントの高評価数を省略表示
+    Shorten View Counts: 視聴回数、コメント数、コメントの高評価数を省略表示
     Hide Home: ホームを非表示
     Hide Live Chat Replay: ライブチャットのリプレイを非表示
     Disable A-B Repeat: A-Bリピートを無効化
@@ -1430,7 +1430,7 @@ Tooltips:
     FFmpeg Executable Path: FFmpegは、分離された動画と音声ストリームの結合や音声変換に必要です。既定では、PATH環境変数からFFmpegが見つかるものとみなします。必要に応じて、ここでカスタムパスを指定できます。
     Use cookies for subtitles: "設定した Cookie を字幕と自動翻訳に使用します。「常に Cookie を使用」でも有効になります。"
   Distraction Free Settings:
-    Shorten View Counts: YouTubeですでに丸められた視聴回数とコメントの高評価数を、14,000ではなく14Kのように省略表示します。正確な数値は常に省略せず表示します。
+    Shorten View Counts: YouTubeですでに丸められた視聴回数、コメント数、コメントの高評価数を、14,000ではなく14Kのように省略表示します。正確な数値は常に省略せず表示します。
   Subscription Settings:
     Fetch Feed on Startup: 有効にすると、OpenTubeXの起動時と新しいウィンドウを開いたときに登録チャンネルのフィードを自動取得します。
     Show New Content Feed: 前回の取得時にはなかった登録チャンネルのフィード項目を「新着」タブに表示します。

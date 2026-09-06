@@ -749,7 +749,7 @@ Settings:
     Sections:
       Visible While Paused: 全窗口或全屏暂停时显示
     Hide Channel Avatars: 隐藏频道头像
-    Shorten View Counts: 简写观看次数和评论点赞数
+    Shorten View Counts: 简写观看次数、评论数和评论点赞数
     Hide Home: 隐藏首页
     Hide Live Chat Replay: 隐藏直播聊天回放
     Disable A-B Repeat: 禁用 A-B 循环
@@ -1430,7 +1430,7 @@ Tooltips:
     FFmpeg Executable Path: 合并独立的视频流和音频流以及转换音频需要 FFmpeg。默认情况下，OpenTubeX 假定可通过 PATH 环境变量找到 FFmpeg。如有需要，可在此设置自定义路径。
     Use cookies for subtitles: "使用已配置的 Cookie 获取字幕和自动翻译。启用“始终使用 Cookie”也会开启此功能。"
   Distraction Free Settings:
-    Shorten View Counts: 以缩写形式显示 YouTube 已取整的观看次数和评论点赞数，例如显示 14K 而不是 14,000。精确计数始终完整显示。
+    Shorten View Counts: 以缩写形式显示 YouTube 已取整的观看次数、评论数和评论点赞数，例如显示 14K 而不是 14,000。精确计数始终完整显示。
   Subscription Settings:
     Fetch Feed on Startup: 启用后，OpenTubeX 会在启动时和打开新窗口时自动获取订阅动态。
     Show New Content Feed: 显示“新内容”标签页，其中包含上次获取时尚未出现的订阅动态项目。

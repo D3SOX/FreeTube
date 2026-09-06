@@ -751,7 +751,7 @@ Settings:
     Sections:
       Visible While Paused: Ikusgai pausatuta dagoenean leiho osoan edo pantaila osoan
     Hide Channel Avatars: Ezkutatu kanalen abatarrak
-    Shorten View Counts: Laburtu ikustaldien eta iruzkinetako atsegiteen kopuruak
+    Shorten View Counts: Laburtu ikustaldien, iruzkinen eta iruzkinetako atsegiteen kopuruak
     Hide Live Chat Replay: Ezkutatu zuzeneko txataren errepikapena
     Hide Home: Ezkutatu hasiera
     Disable A-B Repeat: Desgaitu A-B errepikapena
@@ -1447,7 +1447,7 @@ Tooltips:
     FFmpeg Executable Path: FFmpeg beharrezkoa da bideo- eta audio-korronte bereiziak bateratzeko eta audioa bihurtzeko. Modu lehenetsian, OpenTubeX aplikazioak FFmpeg PATH ingurune-aldagaiaren bidez aurki daitekeela joko du. Behar izanez gero, bide-izen pertsonalizatu bat ezar daiteke hemen.
     Use cookies for subtitles: "Erabili konfiguratutako cookieak azpitituluetarako eta itzulpen automatikoetarako. «Erabili beti cookieak» aukerak ere gaitzen du."
   Distraction Free Settings:
-    Shorten View Counts: YouTube-k dagoeneko biribildu dituen ikustaldi- eta iruzkinetako atsegite-kopuruak modu laburtuan erakusten ditu; adibidez, 14K, 14.000 ordez. Kopuru zehatzak osorik erakusten dira beti.
+    Shorten View Counts: YouTube-k dagoeneko biribildu dituen ikustaldi-, iruzkin- eta iruzkinetako atsegite-kopuruak modu laburtuan erakusten ditu; adibidez, 14K, 14.000 ordez. Kopuru zehatzak osorik erakusten dira beti.
   Subscription Settings:
     Fetch Feed on Startup: Gaituta dagoenean, OpenTubeX aplikazioak harpidetza-jarioa automatikoki eskuratuko du abioan eta leiho berri bat irekitzean.
     Show New Content Feed: Berria fitxa erakusten du, aurreko eskuratzean ez zeuden harpidetza-jarioko elementuekin.

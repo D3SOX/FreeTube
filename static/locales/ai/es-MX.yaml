@@ -882,7 +882,7 @@ Settings:
       General: General
       Visible While Paused: Visible al pausar en ventana completa o pantalla completa
     Hide Channel Avatars: Ocultar avatares de canales
-    Shorten View Counts: Abreviar recuentos de visualizaciones y «Me gusta» en comentarios
+    Shorten View Counts: Abreviar recuentos de visualizaciones, comentarios y «Me gusta» en comentarios
     Hide Live Chat Replay: Ocultar repetición del chat en directo
     Hide Video Description: Ocultar la descripción del video
     Hide Comments: Ocultar comentarios
@@ -1770,7 +1770,7 @@ Tooltips:
     FFmpeg Executable Path: FFmpeg es necesario para combinar emisiones de video y audio separadas y para convertir audio. De forma predeterminada, OpenTubeX presupone que FFmpeg se puede encontrar mediante la variable de entorno PATH. Si hace falta, puedes definir aquí una ruta personalizada.
     Use cookies for subtitles: "Usa las cookies configuradas para los subtítulos y las traducciones automáticas. También se activa con «Usar siempre cookies»."
   Distraction Free Settings:
-    Shorten View Counts: Muestra de forma abreviada los recuentos de visualizaciones y «Me gusta» en comentarios que YouTube ya ha redondeado, p. ej., 14K en lugar de 14.000. Los recuentos exactos siempre se muestran completos.
+    Shorten View Counts: Muestra de forma abreviada los recuentos de visualizaciones, comentarios y «Me gusta» en comentarios que YouTube ya ha redondeado, p. ej., 14K en lugar de 14.000. Los recuentos exactos siempre se muestran completos.
     Hide Channels: Introduzca un ID del canal para ocultar todos los videos, listas de reproducción y el propio canal para que no aparezcan en las búsquedas, tendencias, más populares y recomendados. El ID del canal introducido debe coincidir completamente y se debe distinguir entre mayúsculas y minúsculas.
     Hide Videos, Playlists and Channels Containing Text: Introduzca una palabra, fragmento de palabra o frase (sin distinguir mayúsculas de minúsculas) para ocultar todos los videos y listas de reproducción cuyos títulos originales la contengan en todo OpenTubeX, excluyendo únicamente Historial, Tus listas de reproducción y los videos dentro de las listas de reproducción.
     Hide Videos on Watch: Oculta los videos vistos de las pestañas de Videos, Shorts y En directo en las páginas de Suscripciones y Canales. Esto no afecta a la pestaña de inicio en las páginas de Canales

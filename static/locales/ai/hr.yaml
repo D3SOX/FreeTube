@@ -751,7 +751,7 @@ Settings:
     Sections:
       Visible While Paused: Vidljivo tijekom pauze u punom prozoru / preko cijelog zaslona
     Hide Channel Avatars: Sakrij avatare kanala
-    Shorten View Counts: Skrati prikaz broja pregleda i oznaka „sviđa mi se” na komentarima
+    Shorten View Counts: Skrati prikaz broja pregleda, komentara i oznaka „sviđa mi se” na komentarima
     Hide Live Chat Replay: Sakrij ponovnu reprodukciju razgovora uživo
     Hide Home: Sakrij početnu
     Disable A-B Repeat: Onemogući A-B ponavljanje
@@ -1442,7 +1442,7 @@ Tooltips:
     FFmpeg Executable Path: FFmpeg je potreban za spajanje odvojenih tokova videozapisa i zvuka te za pretvorbu zvuka. OpenTubeX prema zadanim postavkama pretpostavlja da se FFmpeg može pronaći putem varijable okruženja PATH. Ovdje po potrebi možete postaviti prilagođenu putanju.
     Use cookies for subtitles: "Koristi postavljene kolačiće za titlove i automatske prijevode. Uključuje se i opcijom „Uvijek koristi kolačiće”."
   Distraction Free Settings:
-    Shorten View Counts: Prikazuje skraćene brojeve pregleda i oznaka sviđanja komentara koje je YouTube već zaokružio, primjerice 14 tis. umjesto 14.000. Točni brojevi uvijek se prikazuju u cijelosti.
+    Shorten View Counts: Prikazuje skraćene brojeve pregleda, komentara i oznaka sviđanja komentara koje je YouTube već zaokružio, primjerice 14 tis. umjesto 14.000. Točni brojevi uvijek se prikazuju u cijelosti.
   Subscription Settings:
     Fetch Feed on Startup: Kada je omogućeno, OpenTubeX automatski dohvaća sažetak pretplata pri pokretanju i otvaranju novog prozora.
     Show New Content Feed: Prikazuje karticu Novo sa stavkama sažetka pretplata kojih nije bilo pri prethodnom dohvaćanju.
