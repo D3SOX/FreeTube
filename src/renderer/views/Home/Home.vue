@@ -250,7 +250,9 @@
           </FtAutoGrid>
           <FtButton
             v-if="recommendations.length > 0"
+            class="recommendationLoadMore"
             :label="t('Subscriptions.Load More Videos')"
+            :icon="['fas', 'angle-down']"
             :disabled="recommendationsLoading"
             @click="loadMoreRecommendations"
           />

@@ -28,6 +28,10 @@
   flex-direction: column;
 }
 
+.recommendationLoadMore {
+  margin-inline: auto;
+}
+
 .recommendationEntry :deep(.ft-list-video) {
   flex: 1;
   block-size: auto;
