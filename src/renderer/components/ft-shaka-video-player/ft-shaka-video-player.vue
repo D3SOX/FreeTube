@@ -43,10 +43,15 @@
       to="#cross-tab-mini-player-layer"
       :disabled="!scrollMiniPlayerDetached"
     >
+    <!-- Keep controls visibility out of :class: Vue would erase Shaka's
+         no-cursor class when the controls time out. -->
     <div
       ref="container"
       class="ftVideoPlayer shaka-video-container"
       :data-tab-id="tabId"
+      :data-action-dock-visible="actionDockVisible"
+      :data-player-controls-shown="playerControlsShown"
+      :data-submenu-opened="isSubMenuOpened"
       :inert="scrollMiniPlayerDismissed"
       :aria-hidden="scrollMiniPlayerDismissed ? 'true' : undefined"
       :class="{
@@ -85,10 +90,7 @@
         pausedInterfaceRevealed,
         hidePlayerControlsWhenPaused: !showPlayerControlsWhenPaused,
         hideVideoTitleWhenPaused: !showVideoTitleWhenPaused,
-        hideFullscreenActionsWhenPaused: !showFullscreenActionsWhenPaused,
-        actionDockVisible,
-        playerControlsShown,
-        isSubMenuOpened
+        hideFullscreenActionsWhenPaused: !showFullscreenActionsWhenPaused
       }"
       :style="[
         captionCssVariables,
