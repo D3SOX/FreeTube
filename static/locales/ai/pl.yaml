@@ -819,3 +819,5 @@ Playlist:
   Playlist Preload Complete: "Wstępnie wczytane filmy: {count}."
   Playlist Preload Partial: "Wstępnie wczytano {preloaded} z {requested} filmów. Nie udało się wczytać {failed}."
   Playlist Preload Pagination Failed: "Nie udało się wczytać całej playlisty, więc anulowano wstępne wczytywanie."
+Channels:
+  Load More Channels: "Wczytaj więcej kanałów"

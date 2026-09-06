@@ -2287,6 +2287,7 @@ Screenshot Success: Screenshot wurde gespeichert
 Screenshot Error: Screenshot fehlgeschlagen. {error}
 New Window: Neues Fenster
 Channels:
+  Load More Channels: "Weitere Kanäle laden"
   Channels: Kanäle
   Title: Kanal-Liste
   Search bar placeholder: Kanäle durchsuchen
