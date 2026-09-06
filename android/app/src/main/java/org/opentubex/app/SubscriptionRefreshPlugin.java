@@ -24,6 +24,8 @@ import androidx.core.content.ContextCompat;
 public class SubscriptionRefreshPlugin extends Plugin {
     private BroadcastReceiver cancellationReceiver;
     private Consumer<Boolean> rendererActiveListener;
+    private String rendererToken;
+    private boolean destroyed;
 
     @Override
     public void load() {
@@ -48,8 +50,15 @@ public class SubscriptionRefreshPlugin extends Plugin {
     }
 
     @Override
-    protected void handleOnDestroy() {
+    protected synchronized void handleOnDestroy() {
+        destroyed = true;
         SubscriptionRefreshWorker.removeRendererActiveListener(rendererActiveListener);
+        // The renderer cannot finish its refresh once its WebView is destroyed.
+        // Only release work acquired by this plugin, leaving scheduled work alone.
+        if (rendererToken != null) {
+            SubscriptionRefreshWorker.finish(getContext(), rendererToken);
+            rendererToken = null;
+        }
         if (cancellationReceiver != null) {
             getContext().unregisterReceiver(cancellationReceiver);
             cancellationReceiver = null;
@@ -58,7 +67,11 @@ public class SubscriptionRefreshPlugin extends Plugin {
     }
 
     @PluginMethod
-    public void start(PluginCall call) {
+    public synchronized void start(PluginCall call) {
+        if (destroyed) {
+            call.reject("The subscription refresh renderer was destroyed");
+            return;
+        }
         String title = call.getString("title");
         if (title == null || title.trim().isEmpty()) {
             call.reject("A notification title is required");
@@ -68,6 +81,7 @@ public class SubscriptionRefreshPlugin extends Plugin {
         String token = UUID.randomUUID().toString();
         String cancelLabel = call.getString("cancelLabel", "Cancel");
         boolean acquired = SubscriptionRefreshWorker.start(getContext(), token, title, cancelLabel);
+        if (acquired) rendererToken = token;
         JSObject result = new JSObject();
         result.put("token", token);
         result.put("acquired", acquired);
@@ -153,7 +167,7 @@ public class SubscriptionRefreshPlugin extends Plugin {
     }
 
     @PluginMethod
-    public void update(PluginCall call) {
+    public synchronized void update(PluginCall call) {
         String token = call.getString("token");
         Integer progress = call.getInt("progress");
         if (token == null || progress == null) {
@@ -166,7 +180,7 @@ public class SubscriptionRefreshPlugin extends Plugin {
     }
 
     @PluginMethod
-    public void finish(PluginCall call) {
+    public synchronized void finish(PluginCall call) {
         String token = call.getString("token");
         if (token == null) {
             call.reject("A token is required");
