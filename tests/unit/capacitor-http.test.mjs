@@ -4,6 +4,8 @@ import { readFile } from 'node:fs/promises'
 import vm from 'node:vm'
 
 import { createAbortError } from '../../src/renderer/helpers/api/requestErrors.js'
+import { classifyRequestFailure } from '../../src/renderer/helpers/api/requestDiagnostics.js'
+import { createSubscriptionNetworkRecovery, SubscriptionNetworkError } from '../../src/renderer/helpers/subscriptionNetworkRecovery.js'
 
 import {
   capacitorHttpFetch,
@@ -239,23 +241,26 @@ test('rejects invalid native avatar responses', async () => {
   }
 })
 
-test('bounds native connection and stalled reads while retaining JavaScript cancellation', async () => {
+async function loadNativeHttp(request) {
   const source = (await readFile(new URL('../../src/renderer/helpers/api/capacitor-http.js', import.meta.url), 'utf8'))
     .replace(/^import .* from .*\n/gm, '')
     .replace(/^export /gm, '')
-  const requests = []
   const context = vm.createContext({
-    CapacitorHttp: {
-      request(options) {
-        requests.push(options)
-        return new Promise(() => {})
-      },
-    },
+    CapacitorHttp: { request },
     createAbortError, Request, Response, Headers, URL, URLSearchParams, setTimeout, clearTimeout,
   })
   vm.runInContext(`${source}\nglobalThis.fetchNative = capacitorHttpFetch`, context)
+  return context.fetchNative
+}
+
+test('bounds native connection and stalled reads while retaining JavaScript cancellation', async () => {
+  const requests = []
+  const fetchNative = await loadNativeHttp(options => {
+    requests.push(options)
+    return new Promise(() => {})
+  })
   const controller = new AbortController()
-  const pending = context.fetchNative('https://www.youtube.com/watch?v=test', {
+  const pending = fetchNative('https://www.youtube.com/watch?v=test', {
     signal: controller.signal,
     nativeTimeoutMs: 15_000,
   })
@@ -270,3 +275,50 @@ test('bounds native connection and stalled reads while retaining JavaScript canc
     await rejected
   }
 })
+
+for (const timeoutOption of ['connectTimeout', 'readTimeout']) {
+  test(`a stalled native ${timeoutOption} releases subscription recovery without a caller timeout`, async t => {
+    t.mock.timers.enable({ apis: ['setTimeout'] })
+    let attempts = 0
+    const fetchNative = await loadNativeHttp(options => {
+      attempts++
+      if (attempts > 1) return Promise.resolve({ status: 200, data: 'recovered', headers: {} })
+      return new Promise((resolve, reject) => {
+        // Android's socket timeout of zero or an omitted timeout waits forever.
+        if (options[timeoutOption] > 0) {
+          setTimeout(() => reject(Object.assign(new Error('Read timed out'), {
+            code: 'SocketTimeoutException'
+          })), options[timeoutOption])
+        }
+      })
+    })
+    const controller = new AbortController()
+    const recovery = createSubscriptionNetworkRecovery({ eventTarget: new EventTarget(), isOnline: () => true })
+    let body
+    const pending = recovery.run(async () => {
+      try {
+        body = await (await fetchNative('https://www.youtube.com/youtubei/v1/browse', {
+          signal: controller.signal
+        })).text()
+      } catch (error) {
+        if (classifyRequestFailure(error) === 'network') throw new SubscriptionNetworkError(error)
+        throw error
+      }
+    })
+    const flush = async () => { for (let i = 0; i < 30; i++) await Promise.resolve() }
+    try {
+      await flush()
+      t.mock.timers.tick(30_000)
+      await flush()
+      t.mock.timers.tick(5000)
+      await flush()
+      assert.equal(attempts, 2, 'the timed-out channel must retry instead of holding the queue forever')
+      await pending
+      assert.equal(body, 'recovered')
+    } finally {
+      recovery.cancel()
+      controller.abort()
+      await pending.catch(() => {})
+    }
+  })
+}

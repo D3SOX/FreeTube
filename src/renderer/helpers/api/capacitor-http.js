@@ -18,6 +18,7 @@ const AVATAR_MIME_TYPES = new Set([
 const MAX_AVATAR_BYTES = 2 * 1024 * 1024
 const MAX_AVATAR_BASE64_LENGTH = Math.ceil(MAX_AVATAR_BYTES / 3) * 4
 const DNS_RETRY_DELAYS_MS = [150, 500]
+const DEFAULT_NATIVE_TIMEOUT_MS = 30_000
 const REDIRECT_STATUSES = new Set([301, 302, 303, 307, 308])
 
 /**
@@ -99,7 +100,8 @@ async function getRequestBody(input, init) {
  * cannot rely on WebView CORS access. Media requests must keep using the
  * WebView so their response bodies are streamed instead of copied through the
  * JavaScript bridge as base64. nativeTimeoutMs bounds connection and read
- * inactivity on Android; signal still limits the JavaScript wait.
+ * inactivity on Android, defaulting to 30 seconds so stalled requests release
+ * the subscription queue. signal still limits the JavaScript wait.
  * @param {RequestInfo | URL} input
  * @param {RequestInit & { nativeTimeoutMs?: number }} [init]
  * @returns {Promise<Response>}
@@ -130,8 +132,8 @@ export async function capacitorHttpFetch(input, init = undefined) {
     data: await getRequestBody(input, init),
     responseType: 'text',
     disableRedirects: redirect !== 'follow',
-    connectTimeout: init?.nativeTimeoutMs,
-    readTimeout: init?.nativeTimeoutMs,
+    connectTimeout: init?.nativeTimeoutMs ?? DEFAULT_NATIVE_TIMEOUT_MS,
+    readTimeout: init?.nativeTimeoutMs ?? DEFAULT_NATIVE_TIMEOUT_MS,
   }, signal)
 
   if (redirect === 'error' && REDIRECT_STATUSES.has(nativeResponse.status)) {
