@@ -45,7 +45,6 @@ const LEGACY_ENCRYPTED_COLLECTIONS = [
   'subscriptions',
   'playlists',
   'history',
-  'playbackSpeeds',
   'profiles',
   'playlistBookmarks',
 ]
@@ -296,7 +295,12 @@ async function runSync(context, { allowDataLoss = false } = {}) {
         remote,
         uploadCollections,
       } = await runStage('download', async () => {
-        const manifest = await networkClient.getEncryptedSyncManifest()
+        // The snapshot is saved only after successful collection uploads.
+        // Never infer completed migration from unrelated encrypted settings.
+        const playbackSpeedsInSettings = settings.syncServerSyncSettings &&
+          isSettingSyncEnabled(settings, 'channelPlaybackSpeeds') &&
+          Boolean(previous.settings?.channelPlaybackSpeeds)
+        const manifest = await networkClient.getEncryptedSyncManifest({ playbackSpeedsInSettings })
         const legacyEncrypted = manifest.legacy_encrypted_data
           ? await networkClient.getLegacyEncryptedSync()
           : null
@@ -323,6 +327,8 @@ async function runSync(context, { allowDataLoss = false } = {}) {
           ...compatibilityCollections,
         ]))
         const document = createEmptySyncDocument()
+        // Legacy speeds are read for migration into settings, never uploaded.
+        document.playbackSpeeds = legacy.playbackSpeeds ?? []
         const original = {}
         const entries = await Promise.all(downloadCollections.map(async collection => {
           const response = await networkClient.getEncryptedSyncCollection(collection)

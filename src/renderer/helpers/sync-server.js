@@ -235,8 +235,9 @@ export class SyncServerClient {
     })
   }
 
-  getEncryptedSyncManifest() {
-    return this.request('/v1/encrypted_sync', { timeoutMs: MAX_ENCRYPTED_SYNC_TIMEOUT_MS })
+  getEncryptedSyncManifest({ playbackSpeedsInSettings = false } = {}) {
+    const query = playbackSpeedsInSettings ? '?playback_speeds_in_settings=true' : ''
+    return this.request(`/v1/encrypted_sync${query}`, { timeoutMs: MAX_ENCRYPTED_SYNC_TIMEOUT_MS })
   }
 
   getEncryptedSyncCollection(collection) {

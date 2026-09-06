@@ -3,6 +3,10 @@ import { readFile } from 'node:fs/promises'
 import test from 'node:test'
 import vm from 'node:vm'
 
+import { encryptLegacyDocument } from '../helpers/encrypt-legacy-sync-document.mjs'
+import { CUSTOM_THEMES_SYNC_KEY, normalizeCustomThemes } from '../../src/customTheme.js'
+import { mergeSettingEntry, resolveMergedThemeEntry } from '../../src/renderer/helpers/sync-settings-conflict.js'
+
 import * as errors from '../../src/renderer/helpers/sync-server-errors.js'
 import * as privacy from '../../src/renderer/helpers/sync-server-privacy.js'
 import { isRecentSync } from '../../src/renderer/helpers/sync-server-scheduling.js'
@@ -10,7 +14,7 @@ import { createSyncServerRequestHeaders } from '../../src/renderer/helpers/sync-
 
 // These modules use webpack imports. Keep their actual request, merge, and store
 // code while replacing platform dependencies and the network with local fixtures.
-function withoutImports(source) {
+function withoutImports (source) {
   return source.replace(/^import[\s\S]*? from ['"][^'"]+['"]\n/gm, '')
     .replace(/^export \{[\s\S]*?\}\n/gm, '')
     .replace(/^export (?=(async )?(function|class|const))/gm, '')
@@ -19,7 +23,7 @@ function withoutImports(source) {
 const helperSource = await readFile(new URL('../../src/renderer/helpers/sync-server.js', import.meta.url), 'utf8')
 const storeSource = await readFile(new URL('../../src/renderer/store/modules/sync-server.js', import.meta.url), 'utf8')
 
-function fixture(overrides = {}, { encrypted = false } = {}) {
+function fixture (overrides = {}, { encrypted = false, respond } = {}) {
   const requests = []
   const commits = []
   const settings = {
@@ -39,15 +43,33 @@ function fixture(overrides = {}, { encrypted = false } = {}) {
     ...errors,
     ...privacy,
     isRecentSync,
-    crypto, URL, Headers, Response, AbortController, setTimeout, clearTimeout,
-    structuredClone, TextEncoder, TextDecoder,
+    crypto,
+    URL,
+    Headers,
+    Response,
+    AbortController,
+    setTimeout,
+    clearTimeout,
+    structuredClone,
+    TextEncoder,
+    TextDecoder,
     process: { env: {} },
     packageDetails: { version: 'test' },
     MAIN_PROFILE_ID: 'main',
     deepCopy: structuredClone,
     createSyncServerRequestHeaders,
+    CUSTOM_THEMES_SYNC_KEY,
+    normalizeCustomThemes,
+    mergeSettingEntry,
+    resolveMergedThemeEntry,
+    getSyncableSettingKeys: () => ['channelPlaybackSpeeds'],
+    isSettingSyncEnabled: (settings, key) => !settings.syncServerSettingsExcluded?.includes(key),
     fetch: async (url, options) => {
       requests.push({ url, method: options.method ?? 'GET', body: options.body })
+      if (respond) {
+        const response = await respond(url, options)
+        if (response !== undefined) return new Response(JSON.stringify(response))
+      }
       let result = null
       if (url.endsWith('/health')) result = encrypted ? { capabilities: { encrypted_sync: 1 } } : 'OK'
       else if (url.endsWith('/account/login')) result = { jwt: 'new-token' }
@@ -58,12 +80,13 @@ function fixture(overrides = {}, { encrypted = false } = {}) {
     },
   }
   const helper = vm.createContext({ ...common })
-  vm.runInContext(withoutImports(helperSource) + '\nglobalThis.exports = { SyncServerClient, syncSubscriptions, normalizeSyncServerUrl };', helper)
+  vm.runInContext(withoutImports(helperSource) + '\nglobalThis.exports = { SyncServerClient, syncSubscriptions, syncSettings, normalizeSyncServerUrl };', helper)
   const store = vm.createContext({ ...common, ...helper.exports, getSavedOtherDeviceSessions: () => [] })
   vm.runInContext(withoutImports(storeSource).replace('export default { state, getters, actions, mutations }', 'globalThis.exports = { state, actions, mutations }'), store)
   const context = {
     rootState: {
       settings,
+      utils: { customThemes: [] },
       profiles: { profileList: [{ _id: 'main', subscriptions: [{ id: 'private-channel', name: 'Private subscription' }] }] },
     },
     rootGetters: {},
@@ -77,6 +100,7 @@ function fixture(overrides = {}, { encrypted = false } = {}) {
         const key = action.slice(6)
         settings[key[0].toLowerCase() + key.slice(1)] = value
       }
+      if (action === 'updateChannelPlaybackSpeeds') settings.channelPlaybackSpeeds = value
       if (action === 'replaceSyncServerToken') settings.syncServerToken = value
       if (action === 'syncWithSyncServer') return store.exports.actions.syncWithSyncServer(context, value)
     },
@@ -130,8 +154,13 @@ test('manual sync uses encryption when a saved key survives an earlier downgrade
 })
 
 const credentials = {
-  mode: 'login', serverUrl: 'https://sync.example', username: 'alice', password: 'account-password',
-  deviceId: 'device', deviceName: 'Laptop', deviceSystemInfo: { platform: 'linux' },
+  mode: 'login',
+  serverUrl: 'https://sync.example',
+  username: 'alice',
+  password: 'account-password',
+  deviceId: 'device',
+  deviceName: 'Laptop',
+  deviceSystemInfo: { platform: 'linux' },
 }
 
 test('reauthentication cannot downgrade the same encrypted account', async () => {
@@ -158,3 +187,85 @@ test('connecting a different legacy account does not inherit the previous accoun
   assert.equal(f.settings.syncServerUsername, 'bob')
   assert.ok(f.requests.some(request => request.url.endsWith('/account/login')))
 })
+
+for (const source of ['plaintext', 'single document', 'collection']) {
+  test(`migrates ${source} playback speeds into settings without recreating the deleted collection`, async () => {
+    const collections = new Map()
+    const speeds = [{ channel_id: 'legacy-channel', playback_speed: 1.5 }]
+    // Retain the legacy migration flag on subsequent runs, as an older server
+    // does when playbackSpeeds is missing or plaintext data remains.
+    const f = fixture({
+      syncServerSyncSettings: true,
+      channelPlaybackSpeeds: JSON.stringify({ 'local-channel': 2 }),
+    }, {
+      encrypted: true,
+      respond: (url, options) => {
+        const path = new URL(url).pathname
+        if (path === '/v1/encrypted_sync') {
+          return {
+            collections: [...collections].map(([collection, entry]) => ({ collection, revision: entry.revision })),
+            legacy_data: source === 'plaintext',
+            legacy_encrypted_data: source === 'single document',
+          }
+        }
+        if (path === '/v1/encrypted_sync/legacy') return { revision: 1, payload: legacyPayload }
+        if (path.startsWith('/v1/encrypted_sync/')) {
+          const collection = path.split('/').at(-1)
+          if (options.method === 'PUT') {
+            const entry = JSON.parse(options.body)
+            assert.equal(entry.revision, collections.get(collection)?.revision ?? 0)
+            collections.set(collection, { revision: entry.revision + 1, payload: entry.payload })
+          }
+          return collections.get(collection) ?? { revision: 0, payload: null }
+        }
+        if (path === '/v1/channel_playback_speeds/') return speeds
+        if (path.startsWith('/v1/')) return []
+      },
+    })
+    const legacyPayload = await encryptLegacyDocument({
+      ...privacy.createEmptySyncDocument(), playbackSpeeds: speeds,
+    }, { key: f.settings.syncServerPrivacyKey, salt: f.settings.syncServerPrivacySalt })
+    if (source === 'collection') {
+      collections.set('playbackSpeeds', {
+        revision: 1,
+        payload: await privacy.encryptSyncDocument(speeds, f.settings.syncServerPrivacyKey, f.settings.syncServerPrivacySalt),
+      })
+    }
+
+    const expected = { 'legacy-channel': 1.5, 'local-channel': 2 }
+    for (let run = 0; run < 2; run++) {
+      await f.actions.syncWithSyncServer(f.context)
+      const manifests = f.requests.filter(request => new URL(request.url).pathname === '/v1/encrypted_sync')
+      assert.equal(new URL(manifests.at(-1).url).searchParams.get('playback_speeds_in_settings'), run === 1 ? 'true' : null)
+      assert.equal(f.context.state.syncServerError, '')
+      assert.equal(f.requests.some(request => request.method === 'PUT' &&
+        request.url.endsWith('/encrypted_sync/playbackSpeeds')), false)
+      const settings = await privacy.decryptSyncDocument(
+        collections.get('settings').payload, f.settings.syncServerPrivacyKey
+      )
+      assert.deepEqual(JSON.parse(settings.find(entry => entry.key === 'channelPlaybackSpeeds').value), expected)
+      assert.deepEqual(JSON.parse(f.settings.channelPlaybackSpeeds), expected)
+      if (run === 0) collections.delete('playbackSpeeds')
+    }
+    assert.equal(collections.has('playbackSpeeds'), false)
+    assert.equal(f.requests.some(request => request.method === 'GET' &&
+      request.url.endsWith('/encrypted_sync/playbackSpeeds')), source === 'collection')
+  })
+}
+
+for (const overrides of [
+  { syncServerSyncSettings: false },
+  { syncServerSyncSettings: true, syncServerSettingsExcluded: ['channelPlaybackSpeeds'] },
+]) {
+  test(`does not acknowledge playback-speed migration with disabled sync: ${JSON.stringify(overrides)}`, async () => {
+    const f = fixture({
+      ...overrides,
+      channelPlaybackSpeeds: '{}',
+      syncServerSnapshot: JSON.stringify({ settings: { channelPlaybackSpeeds: { value: '{}', updatedAt: 1 } } }),
+    }, { encrypted: true })
+    await f.actions.syncWithSyncServer(f.context)
+    assert.equal(f.context.state.syncServerError, '')
+    assert.ok(f.requests.some(request => request.url.endsWith('/v1/encrypted_sync')))
+    assert.equal(f.requests.some(request => request.url.includes('playback_speeds_in_settings')), false)
+  })
+}
