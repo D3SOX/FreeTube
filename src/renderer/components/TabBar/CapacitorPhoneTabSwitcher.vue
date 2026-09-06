@@ -248,7 +248,7 @@
                     @keydown.end.prevent="selectOtherDeviceSessionAt(otherDeviceSessions.length - 1, true)"
                   >
                     <FtIcon
-                      :icon="session.syncPlatform === 'mobile' ? ['fas', 'layer-group'] : ['fas', 'display']"
+                      :icon="session.syncPlatform === 'mobile' ? ['fas', 'smartphone'] : ['fas', 'display']"
                       aria-hidden="true"
                     />
                     <strong>{{ formatDeviceSessionLabel(session, t) }}</strong>

@@ -213,6 +213,26 @@ test('restores the previous session when synced-tab presentation fails', async (
   assert.equal(store.getters.getPresentedTabId, 'tab-a')
 })
 
+for (const action of ['openSyncedSession', 'applySyncSessions']) {
+  test(`${action} opens Electron hash routes on mobile`, async () => {
+    const store = createStore(createLoadedSession())
+    const service = new CapacitorTabService(createRouter(), store, createNavigation(store, true))
+    const synced = {
+      activeTabId: 'desktop-watch',
+      tabs: [{
+        id: 'desktop-watch',
+        title: 'Desktop video',
+        url: 'app://bundle/index.html#/watch/video?timestamp=42#details',
+        isPinned: true
+      }]
+    }
+
+    assert.equal(await service[action](action === 'applySyncSessions' ? [synced] : synced), true)
+    assert.equal(store.getters.getActiveTab.route.fullPath, '/watch/video?timestamp=42#details')
+    assert.equal(store.getters.getActiveTab.isPinned, true)
+  })
+}
+
 test('uses tab actions on Android WebViews without Array.toReversed', async () => {
   let session = createLoadedSession()
   session = addCapacitorTab(session, createCapacitorTab(WATCH_ROUTE, 'Video', 'tab-b'))

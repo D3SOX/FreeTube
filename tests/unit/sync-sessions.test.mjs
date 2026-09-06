@@ -5,6 +5,7 @@ import {
   formatDeviceSessionLabel,
   getOtherDeviceSessions,
   getPreviousSyncSessions,
+  getSyncTabRoute,
   mergeSyncSessions,
   normalizeSyncSessionsDocument,
   removeSyncSession,
@@ -16,6 +17,26 @@ const session = (id, updatedAt, url = `https://opentubex.local/${id}`) => ({
   updatedAt,
   activeTabId: `${id}-tab`,
   tabs: [{ id: `${id}-tab`, url }],
+})
+
+test('extracts synced routes from desktop, mobile, and relative URLs', () => {
+  const route = '/watch/video?timestamp=42&list=PL123#details'
+  for (const prefix of [
+    'app://bundle/index.html#',
+    'app://bundle/#',
+    'http://localhost:9080/#',
+    'https://localhost',
+    'capacitor://localhost',
+    '',
+  ]) {
+    assert.equal(getSyncTabRoute(`${prefix}${route}`), route)
+  }
+  assert.equal(getSyncTabRoute('app://bundle/index.html#/subscriptions'), '/subscriptions')
+  assert.equal(getSyncTabRoute('https://localhost/watch/video#/details'), '/watch/video#/details')
+  assert.equal(getSyncTabRoute('/search/a%20b?searchQuery=a%2Fb'), '/search/a%20b?searchQuery=a%2Fb')
+  for (const value of [null, undefined, '', {}, 'https://[invalid']) {
+    assert.equal(getSyncTabRoute(value), '/')
+  }
 })
 
 test('formats device session labels with localized tab plurals', () => {

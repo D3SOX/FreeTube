@@ -14,6 +14,7 @@ import {
   unloadCapacitorTab
 } from './capacitorTabState.js'
 import { tabMediaCoordinator } from './TabMediaCoordinator.js'
+import { getSyncTabRoute } from '../helpers/sync-sessions.js'
 
 const STORAGE_KEY = 'opentubex-capacitor-tabs'
 const PERSISTED_MUTATIONS = new Set([
@@ -178,7 +179,7 @@ export class CapacitorTabService {
 
     const previous = this.currentSession()
     const tabs = synced.tabs.map(tab => createCapacitorTab(
-      this.router.resolve(syncTabRoute(tab.url)),
+      this.router.resolve(getSyncTabRoute(tab.url)),
       tab.title,
       tab.id
     )).map((tab, index) => ({
@@ -203,7 +204,7 @@ export class CapacitorTabService {
     if (!Array.isArray(session?.tabs) || session.tabs.length === 0) return false
 
     for (const tab of session.tabs) {
-      const tabId = await this.createTab(syncTabRoute(tab.url), tab.title)
+      const tabId = await this.createTab(getSyncTabRoute(tab.url), tab.title)
       if (!tabId) return false
       if (tab.isPinned === true) this.setPinned(tabId, true)
     }
@@ -403,15 +404,6 @@ function toPersistedSession(session) {
     activeTabId: session.activeTabId,
     selectionRevision: session.selectionRevision,
     updatedAt: session.updatedAt
-  }
-}
-
-function syncTabRoute(value) {
-  try {
-    const url = new URL(value, window.location.origin)
-    return `${url.pathname}${url.search}${url.hash}`
-  } catch {
-    return '/'
   }
 }
 

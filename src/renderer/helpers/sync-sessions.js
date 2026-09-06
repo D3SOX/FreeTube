@@ -2,6 +2,21 @@ import { areJsonValuesEqual } from './jsonValues.js'
 
 export const SYNC_SESSIONS_VERSION = 1
 
+export function getSyncTabRoute(value) {
+  if (typeof value !== 'string' || value.length === 0) return '/'
+
+  try {
+    const url = new URL(value, 'https://opentubex.invalid')
+    // Electron stores the route in the app shell's hash; Capacitor uses paths.
+    if ((url.pathname === '/' || url.pathname === '/index.html') && url.hash.startsWith('#/')) {
+      return url.hash.slice(1)
+    }
+    return `${url.pathname}${url.search}${url.hash}`
+  } catch {
+    return '/'
+  }
+}
+
 function clone(value) {
   return structuredClone(value)
 }
