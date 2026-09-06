@@ -717,13 +717,18 @@ test.describe('OpenTubeX sync server', () => {
     expect(envelope.compression).toEqual({ name: 'gzip' })
     expect(envelope).not.toHaveProperty('payload_length')
     expect(legacyHistoryDownloads).toBe(1)
-    expect(encryptedUploadResponses).toHaveLength(8)
+    // Playback speeds migrate into settings without recreating their retired collection.
+    expect(encryptedUploadResponses).toHaveLength(7)
     const encryptedUploadBodies = await Promise.all(
       encryptedUploadResponses.map(response => response.json())
     )
     expect(encryptedUploadBodies).toEqual(expect.arrayContaining([
       { collection: 'subscriptions', revision: 1, payload: null },
+      { collection: 'playlists', revision: 1, payload: null },
+      { collection: 'playlistBookmarks', revision: 1, payload: null },
+      { collection: 'history', revision: 1, payload: null },
       { collection: 'profiles', revision: 1, payload: null },
+      { collection: 'sessionsV2', revision: 1, payload: null },
       { collection: 'settings', revision: 1, payload: null }
     ]))
 
