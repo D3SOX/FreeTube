@@ -2286,8 +2286,8 @@ test.describe('tab organizer', () => {
           syncPlatform: 'mobile',
           sessionId: 'mobile-session-e2e',
           tabs: [
-            { id: 'synced-watch', title: 'Synced watch tab', url: '/watch/synced-video' },
-            { id: 'synced-history', title: 'Synced history tab', url: '/history' },
+            { id: 'synced-watch', title: 'Synced watch tab', url: 'https://localhost/watch/synced-video?timestamp=42#details' },
+            { id: 'synced-history', title: 'Synced history tab', url: 'https://localhost/history' },
           ],
         },
         {
@@ -2295,7 +2295,7 @@ test.describe('tab organizer', () => {
           syncPlatform: 'desktop',
           sessionId: 'desktop-session-e2e',
           tabs: [
-            { id: 'synced-desktop', title: 'Desktop synced tab', url: '/subscriptions' },
+            { id: 'synced-desktop', title: 'Desktop synced tab', url: 'app://bundle/index.html#/subscriptions' },
           ],
         },
       ])
@@ -2325,12 +2325,13 @@ test.describe('tab organizer', () => {
     await expect(sessionTabs.getByRole('tab')).toHaveCount(2)
     await expect(mobileTab).toHaveAttribute('aria-selected', 'true')
     await expect(desktopTab).toHaveAttribute('aria-selected', 'false')
-    await expect(sessionTabs.locator('[data-icon="layer-group"]')).toBeVisible()
+    await expect(mobileTab.locator('[data-icon="smartphone"]')).toBeVisible()
     await expect(sessionTabs.locator('[data-icon="display"]')).toBeVisible()
     await expect(syncedSet.locator('[data-icon="clapperboard"]')).toBeVisible()
     await expect(syncedSet.locator('[data-icon="clock-rotate-left"]')).toBeVisible()
     await expect(syncedSet.locator('[data-icon="arrow-up-right-from-square"]')).toHaveCount(2)
     await expect(syncedSet).not.toContainText('Desktop synced tab')
+    await expect(syncedSet.locator('small')).toHaveText(['/watch/synced-video?timestamp=42#details', '/history'])
 
     encryptedPhoneInfo = await encryptSyncServerDeviceInfo(
       { ...phoneDeviceInfo, name: 'Stale phone' },
@@ -2367,6 +2368,7 @@ test.describe('tab organizer', () => {
     await expect(desktopTab).toBeFocused()
     await expect(desktopTab).toHaveAttribute('aria-selected', 'true')
     await expect(syncedSet).toContainText('Desktop synced tab')
+    await expect(syncedSet.locator('small')).toHaveText(['/subscriptions'])
     await expect(syncedSet).not.toContainText('Synced watch tab')
 
     await desktopTab.press('Home')
@@ -2407,6 +2409,63 @@ test.describe('tab organizer', () => {
       return store.getters.getSyncServerToken
     })).toBe('replacement-token')
   })
+
+  for (const iconPack of ['material', 'remix']) {
+    test(`opens synced mobile and desktop routes with ${iconPack} device icons`, async ({ page }, testInfo) => {
+      await page.evaluate(async (pack) => {
+        const store = document.querySelector('#app').__vue_app__.config.globalProperties.$store
+        await store.dispatch('updateIconPack', pack)
+        store.commit('setSyncServerEnabled', true)
+        store.commit('setSyncServerToken', 'e2e-token')
+        store.commit('setSyncServerPrivacyMode', 'enhanced')
+        store.commit('setSyncServerSyncSessions', true)
+        store.commit('setSyncServerSharedTabs', false)
+        store.commit('setSyncServerOtherDeviceSessions', [
+          {
+            syncDeviceId: 'phone-e2e',
+            syncPlatform: 'mobile',
+            sessionId: 'phone-session',
+            tabs: [{ id: 'phone-tab', title: 'Subscriptions', url: 'https://localhost/subscriptions' }],
+          },
+          {
+            syncDeviceId: 'desktop-e2e',
+            syncPlatform: 'desktop',
+            sessionId: 'desktop-session',
+            tabs: [
+              { id: 'desktop-history', title: 'History', url: 'app://bundle/index.html#/history' },
+              { id: 'desktop-playlists', title: 'Playlists', url: 'app://bundle/index.html#/playlists' },
+            ],
+          },
+        ])
+      }, iconPack)
+
+      await page.locator(sel.tabOrganizerButton).click()
+      const organizer = page.getByRole('dialog', { name: 'Tab Organizer' })
+      const syncedSection = organizer.locator('.syncedTabsSection')
+      const phoneIcon = syncedSection.getByRole('tab', { name: 'Mobile · 1 tab', exact: true })
+        .locator('[data-icon="smartphone"]')
+      await expect(phoneIcon).toBeVisible()
+      await expect(phoneIcon).toHaveAttribute('data-icon-pack', iconPack)
+      await expect(syncedSection.locator('small')).toHaveText(['/subscriptions'])
+      const screenshot = testInfo.outputPath(`synced-tabs-${iconPack}.png`)
+      await syncedSection.screenshot({ path: screenshot })
+      await testInfo.attach(`Synced tabs with ${iconPack} icons`, { path: screenshot, contentType: 'image/png' })
+
+      await syncedSection.locator('.syncedTabTarget').click()
+      await expect.poll(() => page.evaluate(() => window.ftElectron.tabs.getState().then(state => (
+        state.tabs.find(tab => tab.id === state.activeTabId)?.route.fullPath
+      )))).toBe('/subscriptions')
+
+      await syncedSection.getByRole('tab', { name: 'Desktop · 2 tabs', exact: true }).click()
+      await expect(syncedSection.locator('small')).toHaveText(['/history', '/playlists'])
+      await syncedSection.getByRole('button', { name: 'Open all tabs' }).click()
+      await expect.poll(() => page.evaluate(() => window.ftElectron.tabs.getState().then(state => (
+        state.tabs.slice(-3).map(tab => tab.route.fullPath)
+      )))).toEqual(['/subscriptions', '/history', '/playlists'])
+      await organizer.locator('.tabOrganizerHeader .iconButton').click()
+      await expect.poll(() => page.evaluate(() => window.location.hash)).toBe('#/playlists')
+    })
+  }
 
   test('clamps scroll after switching to a shorter synced session at fractional UI scale', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 800 })

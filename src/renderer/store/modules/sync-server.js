@@ -31,7 +31,7 @@ import {
   loadSyncServerDeviceNames,
 } from '../../helpers/sync-server-sessions'
 import { mergePlaylistBookmarkConflict } from '../../helpers/playlist-bookmarks'
-import { getPreviousSyncSessions, removeSyncSession } from '../../helpers/sync-sessions'
+import { getPreviousSyncSessions, getSyncTabRoute, removeSyncSession } from '../../helpers/sync-sessions'
 import {
   AUTO_SYNC_INTERVAL_MS,
   isRecentSync,
@@ -464,13 +464,8 @@ const actions = {
     if (!process.env.IS_ELECTRON) return false
 
     for (const [index, tab] of session.tabs.entries()) {
-      let route = '/'
-      try {
-        const url = new URL(tab.url, window.location.origin)
-        route = `${url.pathname}${url.search}${url.hash}`
-      } catch {}
       await window.ftElectron.tabs.create({
-        route,
+        route: getSyncTabRoute(tab.url),
         title: tab.title ?? '',
         makeActive: index === session.tabs.length - 1,
       })

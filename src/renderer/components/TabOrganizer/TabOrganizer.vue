@@ -466,7 +466,7 @@
                 >
                   <span class="syncedSessionIcon">
                     <FtIcon
-                      :icon="session.syncPlatform === 'mobile' ? ['fas', 'layer-group'] : ['fas', 'display']"
+                      :icon="session.syncPlatform === 'mobile' ? ['fas', 'smartphone'] : ['fas', 'display']"
                       aria-hidden="true"
                     />
                   </span>
@@ -533,8 +533,8 @@
                           />
                         </span>
                         <span class="syncedTabIdentity">
-                          <span dir="auto">{{ formatTabTitle(tab.title || tab.url) }}</span>
-                          <small>{{ tab.url }}</small>
+                          <span dir="auto">{{ formatTabTitle(tab.title || getSyncTabRoute(tab.url)) }}</span>
+                          <small>{{ getSyncTabRoute(tab.url) }}</small>
                         </span>
                         <FtIcon
                           class="syncedTabOpenIcon"
@@ -623,7 +623,7 @@ import { useI18n } from 'vue-i18n'
 
 import { getTabAccentColor } from '../../constants/tabColors'
 import { clampOverlayScrollTop, restoreOverlayScrollTop } from '../../helpers/overlayScrollbars'
-import { formatDeviceSessionLabel, shouldShowOtherDeviceSessions } from '../../helpers/sync-sessions'
+import { formatDeviceSessionLabel, getSyncTabRoute, shouldShowOtherDeviceSessions } from '../../helpers/sync-sessions'
 import { showToast } from '../../helpers/utils'
 import store from '../../store/index'
 import { getTabAvatarUrl, getTabPageIcon } from '../../tabs/tabPreview'
@@ -839,7 +839,7 @@ function handleTabAvatarError(tab) {
 
 function syncedTabPreview(tab) {
   try {
-    const url = new URL(tab.url, window.location.origin)
+    const url = new URL(getSyncTabRoute(tab.url), window.location.origin)
     return { ...tab, route: { path: url.pathname } }
   } catch {
     return tab
