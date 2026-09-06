@@ -6,6 +6,60 @@
   padding-block-end: 60px;
 }
 
+.recommendationHeading {
+  display: flex;
+  align-items: center;
+  min-inline-size: 0;
+  gap: 4px;
+}
+
+.recommendationInfo {
+  flex: none;
+}
+
+.recommendationInfo :deep(.button) {
+  min-inline-size: 44px;
+  min-block-size: 44px;
+}
+
+.recommendationEntry {
+  display: flex;
+  min-inline-size: 0;
+  flex-direction: column;
+}
+
+.recommendationEntry :deep(.ft-list-video) {
+  flex: 1;
+  block-size: auto;
+}
+
+.recommendationHeaderActions,
+.recommendationDetails,
+.recommendationActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.recommendationHeaderActions {
+  flex: none;
+  gap: 4px;
+}
+
+.recommendationDetails {
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin-block-end: 12px;
+}
+
+.recommendationReason {
+  flex: 1 1 180px;
+  margin-block: 8px;
+  color: var(--secondary-text-color);
+  font-size: 0.85em;
+  overflow-wrap: anywhere;
+}
+
 .homeIntro,
 .homeSection,
 .emptyState {

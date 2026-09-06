@@ -117,6 +117,28 @@ Stats:
   Hours: '{hours} val.'
   Hours and minutes: '{hours} val. {minutes} min.'
 Home Page:
+  Familiar description: "Teikti pirmenybę nežiūrėtiems vaizdo įrašams iš jau mėgstamų kanalų."
+  Balanced description: "Derinti pažįstamus kanalus su naujais, atitinkančiais jūsų pomėgius."
+  Explore description: "Skirti daugiau vietos naujiems kanalams, susijusiems su jūsų pomėgiais."
+  Turn off recommendations: Išjungti rekomendacijas
+  Recommended for you: "Rekomenduojama jums"
+  Recommendations description: "Rikiuokite vaizdo įrašus savo įrenginyje pagal žiūrėjimo istoriją. Kanalų identifikatoriai ir paieškos pagal temas siunčiami į pasirinktą posistemę vaizdo įrašams rasti."
+  Enable recommendations: "Įjungti rekomendacijas"
+  Recommendations need history: "Peržiūrėkite kelis vaizdo įrašus su įjungta istorija, kad gautumėte rekomendacijų."
+  No recommendations: "Rekomendacijų nerasta. Pabandykite atnaujinti peržiūrėję daugiau vaizdo įrašų."
+  Recommendations unavailable: "Nepavyko įkelti rekomendacijų. Bandykite dar kartą vėliau."
+  More like this: "Daugiau panašaus turinio"
+  Not interested: "Nedomina"
+  Hide this channel: "Slėpti šį kanalą"
+  Reset recommendations: "Atkurti rekomendacijas"
+  Discovery: "Atradimai"
+  Familiar: "Pažįstama"
+  Balanced: "Subalansuota"
+  Explore: "Tyrinėti"
+  Related to: "Susiję su {title}"
+  More from: "Daugiau iš {channel}"
+  Matches interest: "Atitinka jūsų susidomėjimą tema {topic}"
+  Related discovery privacy: "Susijusiems vaizdo įrašams rasti taip pat siunčiami vaizdo įrašų identifikatoriai."
   Home: Pradžia
   Description: Tęskite nuo ten, kur baigėte, ir peržiūrėkite naujausią veiklą.
   Customize: Tinkinti pradžios puslapį

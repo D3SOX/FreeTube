@@ -95,6 +95,28 @@ Stats:
   Hours: '{hours} sa'
   Hours and minutes: '{hours} sa {minutes} dk'
 Home Page:
+  Familiar description: "Zaten sevdiğiniz kanallardan izlemediğiniz videolara öncelik verin."
+  Balanced description: "Tanıdık kanalları ilgi alanlarınıza uyan yeni kanallarla harmanlayın."
+  Explore description: "İlgi alanlarınızla ilgili yeni kanallara daha fazla yer verin."
+  Turn off recommendations: Önerileri kapat
+  Recommended for you: "Size önerilenler"
+  Recommendations description: "Videoları izleme geçmişinize göre cihazınızda sıralayın. Videoları bulmak için kanal kimlikleri ve konu aramaları seçtiğiniz arka uca gönderilir."
+  Enable recommendations: "Önerileri etkinleştir"
+  Recommendations need history: "Öneri almak için geçmiş etkin durumdayken birkaç video izleyin."
+  No recommendations: "Öneri bulunamadı. Daha fazla video izledikten sonra yenilemeyi deneyin."
+  Recommendations unavailable: "Öneriler yüklenemedi. Daha sonra tekrar deneyin."
+  More like this: "Bunun gibi daha fazla"
+  Not interested: "İlgilenmiyorum"
+  Hide this channel: "Bu kanalı gizle"
+  Reset recommendations: "Önerileri sıfırla"
+  Discovery: "Keşif"
+  Familiar: "Tanıdık"
+  Balanced: "Dengeli"
+  Explore: "Keşfet"
+  Related to: "{title} ile ilgili"
+  More from: "{channel} kanalından daha fazla"
+  Matches interest: "{topic} konusundaki ilginizle eşleşiyor"
+  Related discovery privacy: "İlgili videoları bulmak için video kimlikleri de gönderilir."
   Home: Ana Sayfa
   Description: Kaldığınız yerden devam edin ve son etkinlikleri görün.
   Customize: Ana Sayfayı Özelleştir

@@ -2,6 +2,7 @@ import { Capacitor } from '@capacitor/core'
 import { ytDlp } from '../../helpers/ytDlp'
 import { supportsYtDlp } from '../../helpers/ytDlpCapabilities'
 import { isAppHidden } from '../../helpers/appVisibility.js'
+import { sampleRecommendationPlayback } from '../../../recommendation-learning'
 import { defineComponent } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { mapActions } from 'vuex'
@@ -465,6 +466,8 @@ export default defineComponent({
       sabrErrorRecoveryPlayedSeconds: 0,
       /** @type {number|null} */
       watchTimeLastTick: null,
+      recommendationPlaybackSample: null,
+      recommendationWatchSession: null,
       /** @type {Record<string, number>} */
       pendingWatchTimeByDate: {},
       historyLastTouchedAt: 0,
@@ -3792,6 +3795,7 @@ export default defineComponent({
      * @param {number} currentSeconds
      */
     updateCurrentChapter: function (currentSeconds) {
+      this.trackRecommendationWatch(currentSeconds)
       this.trackWatchTime()
       this.markAsWatchedIfFinished(currentSeconds)
       this.keepHistoryEntryAlive(currentSeconds)
@@ -4026,6 +4030,7 @@ export default defineComponent({
       this._saveWatchProgress()
     },
     handleVideoPause() {
+      this.recommendationPlaybackSample = null
       // A reload remembers whether the outgoing player was playing, but the
       // user can still pause it before the replacement starts loading. Do not
       // let that stale snapshot restart the replacement player. Ignore pauses
@@ -4056,6 +4061,54 @@ export default defineComponent({
     clearPendingWatchTime() {
       this.watchTimeLastTick = null
       this.pendingWatchTimeByDate = {}
+    },
+    trackRecommendationWatch(time) {
+      if (!this.rememberHistory || !this.$store.getters.getEnableHomeRecommendations || this.isLoading || !this.$refs.player?.hasLoaded) {
+        this.recommendationPlaybackSample = null
+        this.recommendationWatchSession = null
+        return
+      }
+      const epoch = this.$store.getters.getRecommendationEpoch
+      if (!epoch) {
+        this.$store.dispatch('loadRecommendations').catch(error => console.error('Could not load recommendation learning', error))
+        return
+      }
+      if (this.recommendationWatchSession?.videoId !== this.videoId || this.recommendationWatchSession.epoch !== epoch) {
+        this.recommendationWatchSession = { videoId: this.videoId, epoch, sessionId: crypto.randomUUID(), seconds: 0, savedSeconds: 0 }
+        this.recommendationPlaybackSample = null
+      }
+      const { current, seconds } = sampleRecommendationPlayback(this.recommendationPlaybackSample, {
+        videoId: this.videoId,
+        time,
+        now: Date.now(),
+        playing: !this.$refs.player.isPaused(),
+        rate: this.currentPlaybackRate ?? 1,
+      })
+      this.recommendationPlaybackSample = current
+      this.recommendationWatchSession.seconds += seconds
+      if (this.recommendationWatchSession.seconds - this.recommendationWatchSession.savedSeconds >= 30) this.flushRecommendationWatch()
+    },
+    async flushRecommendationWatch() {
+      const session = this.recommendationWatchSession
+      if (!session || session.videoId !== this.videoId || session.seconds <= session.savedSeconds) return
+      session.savedSeconds = session.seconds
+      try {
+        await this.$store.dispatch('recordRecommendationEvent', {
+          ...session,
+          type: 'watch',
+          video: {
+            videoId: this.videoId,
+            title: this.videoTitle,
+            author: this.channelName,
+            authorId: this.channelId,
+            description: this.videoDescription,
+            lengthSeconds: this.videoLengthSeconds,
+            isShort: this.isShort,
+          },
+        })
+      } catch (error) {
+        console.error('Could not save recommendation learning', error)
+      }
     },
     trackWatchTime() {
       if (!this.rememberHistory || !this.enableWatchStats || this.$refs.player?.isPaused()) {
@@ -4090,16 +4143,17 @@ export default defineComponent({
       }
     },
     async flushWatchTime() {
+      const learning = this.flushRecommendationWatch()
       this.watchTimeLastTick = null
       const pending = this.pendingWatchTimeByDate
       this.pendingWatchTimeByDate = {}
 
-      await Promise.all(Object.entries(pending).map(([date, milliseconds]) => {
+      await Promise.all([learning, ...Object.entries(pending).map(([date, milliseconds]) => {
         return this.$store.dispatch('recordWatchTime', {
           date,
           seconds: milliseconds / 1000,
         })
-      }))
+      })])
     },
     /**
      * Whether this tab is currently the presented one. Without a logical-tab

@@ -95,6 +95,28 @@ Stats:
   Hours: '{hours} klst.'
   Hours and minutes: '{hours} klst. {minutes} mín.'
 Home Page:
+  Familiar description: "Veldu frekar óséð myndskeið frá rásum sem þér líkar þegar við."
+  Balanced description: "Blandaðu kunnuglegum rásum við nýjar sem passa við áhugamál þín."
+  Explore description: "Gefðu nýjum rásum sem tengjast áhugamálum þínum meira vægi."
+  Turn off recommendations: Slökkva á meðmælum
+  Recommended for you: "Mælt með fyrir þig"
+  Recommendations description: "Raðaðu myndskeiðum á tækinu þínu út frá áhorfsferlinum þínum. Auðkenni rása og efnisleitir eru send á bakendann sem þú valdir til að finna myndskeið."
+  Enable recommendations: "Virkja meðmæli"
+  Recommendations need history: "Horfðu á nokkur myndskeið með kveikt á áhorfsferli til að fá meðmæli."
+  No recommendations: "Engin meðmæli fundust. Prófaðu að endurhlaða eftir að hafa horft á fleiri myndskeið."
+  Recommendations unavailable: "Ekki tókst að hlaða meðmælum. Reyndu aftur síðar."
+  More like this: "Meira af svipuðu"
+  Not interested: "Hef ekki áhuga"
+  Hide this channel: "Fela þessa rás"
+  Reset recommendations: "Endurstilla tillögur"
+  Discovery: "Uppgötvun"
+  Familiar: "Kunnuglegt"
+  Balanced: "Jafnvægi"
+  Explore: "Kanna"
+  Related to: "Tengt við {title}"
+  More from: "Meira frá {channel}"
+  Matches interest: "Passar við áhuga þinn á {topic}"
+  Related discovery privacy: "Auðkenni myndskeiða eru einnig send til að finna tengd myndskeið."
   Home: Heim
   Description: Haltu áfram þar sem frá var horfið og skoðaðu nýlegar aðgerðir.
   Customize: Sérsníða heimasíðu

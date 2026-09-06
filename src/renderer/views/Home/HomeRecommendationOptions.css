@@ -1,0 +1,149 @@
+.iconDropdown.recommendationOptionsPopover {
+  inline-size: min(360px, calc(100vw - 16px));
+  border: 1px solid var(--border-color);
+  border-radius: calc(12px * var(--ui-roundness));
+  background: var(--card-bg-color);
+  color: var(--primary-text-color);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 20%);
+  font-size: 14px;
+  text-align: start;
+}
+
+.recommendationSettings {
+  padding-block: 4px 16px;
+  padding-inline: 16px;
+}
+
+.recommendationDiscovery {
+  min-inline-size: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.recommendationDiscoveryHeading {
+  padding-block: 16px 8px;
+  padding-inline: 16px;
+  font-weight: 600;
+}
+
+.recommendationDiscoveryChoices {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid var(--border-color);
+  border-radius: calc(10px * var(--ui-roundness));
+  background: var(--side-nav-color);
+}
+
+.recommendationDiscoveryChoice {
+  position: relative;
+  display: flex;
+  min-inline-size: 0;
+  cursor: pointer;
+}
+
+.recommendationDiscoveryChoice input {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.recommendationDiscoveryChoice > span {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-block-size: 56px;
+  padding-block: 6px;
+  padding-inline: 4px;
+  border-radius: calc(6px * var(--ui-roundness));
+  overflow-wrap: anywhere;
+  text-align: center;
+  pointer-events: none;
+}
+
+.recommendationDiscoveryChoice .ft-icon {
+  font-size: 20px;
+}
+
+.recommendationDiscoveryDescriptions {
+  display: grid;
+  margin-block-start: 12px;
+  color: var(--secondary-text-color);
+  line-height: 1.5;
+}
+
+/* Reserve space for every description so changing modes does not move the actions. */
+.recommendationDiscoveryDescriptions p {
+  grid-area: 1 / 1;
+  margin: 0;
+  visibility: hidden;
+}
+
+.recommendationDiscoveryDescriptions .active {
+  visibility: visible;
+}
+
+.recommendationDiscoveryChoice:hover > span {
+  background: var(--side-nav-hover-color);
+  color: var(--side-nav-hover-text-color);
+}
+
+.recommendationDiscoveryChoice input:checked + span {
+  background: var(--primary-color);
+  color: var(--text-with-main-color);
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 15%);
+}
+
+.recommendationDiscoveryChoice input:focus-visible + span {
+  outline: 2px solid var(--primary-text-color);
+  outline-offset: 2px;
+}
+
+.recommendationSettingsActions {
+  display: grid;
+  gap: 4px;
+  margin-block-start: 16px;
+  padding-block-start: 12px;
+  border-block-start: 1px solid var(--border-color);
+}
+
+.recommendationSettingsActions button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-block-size: 44px;
+  padding: 10px;
+  border: 0;
+  border-radius: calc(6px * var(--ui-roundness));
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  line-height: 1.4;
+  text-align: start;
+  cursor: pointer;
+}
+
+.recommendationSettingsActions .ft-icon {
+  flex-shrink: 0;
+  font-size: 18px;
+}
+
+.recommendationSettingsActions button:hover {
+  background: var(--side-nav-hover-color);
+  color: var(--side-nav-hover-text-color);
+}
+
+.recommendationSettingsActions button:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}

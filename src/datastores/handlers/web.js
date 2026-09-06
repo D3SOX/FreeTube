@@ -39,6 +39,7 @@ export { Settings as settings }
 export {
   history,
   watchStats,
+  recommendations,
   profiles,
   playlists,
   searchHistory,

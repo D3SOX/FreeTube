@@ -95,6 +95,28 @@ Stats:
   Hours: '{hours} awr'
   Hours and minutes: '{hours} awr {minutes} mun'
 Home Page:
+  Familiar description: "Ffafrio fideos heb eu gwylio o sianeli rydych eisoes yn eu mwynhau."
+  Balanced description: "Cymysgu sianeli cyfarwydd â rhai newydd sy’n cyd-fynd â’ch diddordebau."
+  Explore description: "Rhoi mwy o le i sianeli newydd sy’n gysylltiedig â’ch diddordebau."
+  Turn off recommendations: Diffodd argymhellion
+  Recommended for you: "Argymhellion i chi"
+  Recommendations description: "Trefnwch fideos ar eich dyfais yn ôl eich hanes gwylio. Anfonir dynodwyr sianeli a chwiliadau pwnc i'r gwasanaeth cefn rydych wedi'i ddewis i ddod o hyd i fideos."
+  Enable recommendations: "Galluogi argymhellion"
+  Recommendations need history: "Gwyliwch rai fideos gyda'r hanes wedi'i alluogi i gael argymhellion."
+  No recommendations: "Heb ddod o hyd i argymhellion. Rhowch gynnig ar adnewyddu ar ôl gwylio mwy o fideos."
+  Recommendations unavailable: "Methu llwytho argymhellion. Rhowch gynnig arall arni yn nes ymlaen."
+  More like this: "Mwy fel hyn"
+  Not interested: "Dim diddordeb"
+  Hide this channel: "Cuddio’r sianel hon"
+  Reset recommendations: "Ailosod argymhellion"
+  Discovery: "Darganfod"
+  Familiar: "Cyfarwydd"
+  Balanced: "Cytbwys"
+  Explore: "Archwilio"
+  Related to: "Yn gysylltiedig â {title}"
+  More from: "Mwy gan {channel}"
+  Matches interest: "Yn cyfateb i’ch diddordeb yn {topic}"
+  Related discovery privacy: "Anfonir dynodwyr fideos hefyd i ddod o hyd i fideos cysylltiedig."
   Home: Hafan
   Description: Parhewch o'r man lle gwnaethoch chi stopio a gweld gweithgarwch diweddar.
   Customize: Addasu'r hafan

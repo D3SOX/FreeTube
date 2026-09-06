@@ -95,6 +95,28 @@ Stats:
   Hours: '{hours} שע׳'
   Hours and minutes: '{hours} שע׳ {minutes} דק׳'
 Home Page:
+  Familiar description: "העדפת סרטונים שטרם נצפו מערוצים שכבר אהבת."
+  Balanced description: "שילוב ערוצים מוכרים עם ערוצים חדשים שתואמים לתחומי העניין שלך."
+  Explore description: "מתן יותר מקום לערוצים חדשים הקשורים לתחומי העניין שלך."
+  Turn off recommendations: כיבוי המלצות
+  Recommended for you: "מומלץ עבורך"
+  Recommendations description: "דירוג סרטונים במכשיר שלך לפי היסטוריית הצפייה שלך. מזהי ערוצים וחיפושים לפי נושא נשלחים לשירות צד השרת שבחרת כדי למצוא סרטונים."
+  Enable recommendations: "הפעלת המלצות"
+  Recommendations need history: "כדי לקבל המלצות, יש לצפות בכמה סרטונים כששמירת ההיסטוריה מופעלת."
+  No recommendations: "לא נמצאו המלצות. כדאי לנסות לרענן לאחר צפייה בסרטונים נוספים."
+  Recommendations unavailable: "לא ניתן לטעון המלצות. יש לנסות שוב מאוחר יותר."
+  More like this: "עוד תוכן דומה"
+  Not interested: "לא מעניין אותי"
+  Hide this channel: "הסתרת הערוץ הזה"
+  Reset recommendations: "איפוס ההמלצות"
+  Discovery: "גילוי"
+  Familiar: "מוכר"
+  Balanced: "מאוזן"
+  Explore: "חקירה"
+  Related to: "קשור ל־{title}"
+  More from: "עוד מאת {channel}"
+  Matches interest: "תואם לעניין שלך בנושא {topic}"
+  Related discovery privacy: "גם מזהי סרטונים נשלחים כדי למצוא סרטונים קשורים."
   Home: דף הבית
   Description: המשיכו מהמקום שבו הפסקתם וצפו בפעילות האחרונה.
   Customize: התאמה אישית של דף הבית

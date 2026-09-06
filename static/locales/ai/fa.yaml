@@ -105,6 +105,28 @@ Stats:
   Hours: '{hours} ساعت'
   Hours and minutes: '{hours} ساعت و {minutes} دقیقه'
 Home Page:
+  Familiar description: "ویدیوهای ندیده از کانال‌هایی را ترجیح دهید که از قبل دوست دارید."
+  Balanced description: "کانال‌های آشنا را با کانال‌های جدید متناسب با علایقتان ترکیب کنید."
+  Explore description: "فضای بیشتری به کانال‌های جدید مرتبط با علایقتان بدهید."
+  Turn off recommendations: خاموش کردن پیشنهادها
+  Recommended for you: "پیشنهادهایی برای شما"
+  Recommendations description: "ویدیوها را روی دستگاه خود بر اساس سابقهٔ تماشایتان رتبه‌بندی کنید. شناسه‌های کانال و جستجوهای موضوعی برای یافتن ویدیو به بک‌اند انتخابی شما ارسال می‌شوند."
+  Enable recommendations: "فعال کردن پیشنهادها"
+  Recommendations need history: "برای دریافت پیشنهاد، چند ویدیو با سابقهٔ تماشای فعال ببینید."
+  No recommendations: "پیشنهادی یافت نشد. پس از تماشای ویدیوهای بیشتر، تازه‌سازی را امتحان کنید."
+  Recommendations unavailable: "بارگیری پیشنهادها ممکن نشد. بعداً دوباره تلاش کنید."
+  More like this: "موارد مشابه بیشتر"
+  Not interested: "علاقه‌ای ندارم"
+  Hide this channel: "پنهان کردن این کانال"
+  Reset recommendations: "بازنشانی پیشنهادها"
+  Discovery: "کشف"
+  Familiar: "آشنا"
+  Balanced: "متعادل"
+  Explore: "کاوش"
+  Related to: "مرتبط با {title}"
+  More from: "بیشتر از {channel}"
+  Matches interest: "متناسب با علاقهٔ شما به {topic}"
+  Related discovery privacy: "شناسه‌های ویدیو نیز برای یافتن ویدیوهای مرتبط ارسال می‌شوند."
   Home: صفحهٔ اصلی
   Description: از جایی که متوقف شدید ادامه دهید و فعالیت‌های اخیر را ببینید.
   Customize: سفارشی‌سازی صفحهٔ اصلی

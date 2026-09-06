@@ -95,6 +95,28 @@ Stats:
   Hours: '{hours} óra'
   Hours and minutes: '{hours} óra {minutes} perc'
 Home Page:
+  Familiar description: "Még nem látott videók előnyben részesítése már kedvelt csatornákról."
+  Balanced description: "Ismert csatornák keverése az érdeklődésedhez illő újakkal."
+  Explore description: "Több hely az érdeklődésedhez kapcsolódó új csatornáknak."
+  Turn off recommendations: Ajánlások kikapcsolása
+  Recommended for you: "Neked ajánlott"
+  Recommendations description: "Rangsorold a videókat az eszközödön a megtekintési előzményeid alapján. A csatornaazonosítókat és a témák szerinti kereséseket a kiválasztott háttérszolgáltatás kapja meg a videók kereséséhez."
+  Enable recommendations: "Ajánlások engedélyezése"
+  Recommendations need history: "Nézz meg néhány videót bekapcsolt előzményekkel, hogy ajánlásokat kapj."
+  No recommendations: "Nem találhatók ajánlások. Próbálj frissíteni, miután több videót megnéztél."
+  Recommendations unavailable: "Nem sikerült betölteni az ajánlásokat. Próbáld újra később."
+  More like this: "Több hasonlót"
+  Not interested: "Nem érdekel"
+  Hide this channel: "Csatorna elrejtése"
+  Reset recommendations: "Ajánlások alaphelyzetbe állítása"
+  Discovery: "Felfedezés"
+  Familiar: "Ismerős"
+  Balanced: "Kiegyensúlyozott"
+  Explore: "Felfedezés"
+  Related to: "Kapcsolódik ehhez: {title}"
+  More from: "Több ettől: {channel}"
+  Matches interest: "Megfelel a(z) {topic} iránti érdeklődésednek"
+  Related discovery privacy: "A kapcsolódó videók kereséséhez videóazonosítók is elküldésre kerülnek."
   Home: Kezdőlap
   Description: Folytassa onnan, ahol abbahagyta, és tekintse meg a legutóbbi tevékenységeket.
   Customize: Kezdőlap testreszabása

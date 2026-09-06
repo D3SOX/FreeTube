@@ -95,6 +95,28 @@ Stats:
   Hours: '{hours} giờ'
   Hours and minutes: '{hours} giờ {minutes} phút'
 Home Page:
+  Familiar description: "Ưu tiên video chưa xem từ các kênh bạn đã yêu thích."
+  Balanced description: "Kết hợp các kênh quen thuộc với kênh mới phù hợp với sở thích của bạn."
+  Explore description: "Dành thêm chỗ cho các kênh mới liên quan đến sở thích của bạn."
+  Turn off recommendations: Tắt đề xuất
+  Recommended for you: "Đề xuất cho bạn"
+  Recommendations description: "Xếp hạng video trên thiết bị của bạn dựa vào lịch sử xem. Mã nhận dạng kênh và các truy vấn tìm kiếm theo chủ đề được gửi đến backend mà bạn đã chọn để tìm video."
+  Enable recommendations: "Bật đề xuất"
+  Recommendations need history: "Xem một vài video khi đã bật lịch sử để nhận đề xuất."
+  No recommendations: "Không tìm thấy đề xuất nào. Hãy thử làm mới sau khi xem thêm video."
+  Recommendations unavailable: "Không thể tải đề xuất. Vui lòng thử lại sau."
+  More like this: "Thêm nội dung tương tự"
+  Not interested: "Không quan tâm"
+  Hide this channel: "Ẩn kênh này"
+  Reset recommendations: "Đặt lại đề xuất"
+  Discovery: "Khám phá"
+  Familiar: "Quen thuộc"
+  Balanced: "Cân bằng"
+  Explore: "Khám phá mới"
+  Related to: "Liên quan đến {title}"
+  More from: "Thêm từ {channel}"
+  Matches interest: "Phù hợp với sự quan tâm của bạn về {topic}"
+  Related discovery privacy: "Mã video cũng được gửi để tìm các video liên quan."
   Home: Trang chủ
   Description: Tiếp tục từ nơi bạn dừng lại và xem hoạt động gần đây.
   Customize: Tùy chỉnh Trang chủ

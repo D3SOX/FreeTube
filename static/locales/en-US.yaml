@@ -211,6 +211,28 @@ Stats:
   Hours and minutes: '{hours} hr {minutes} min'
 
 Home Page:
+  Familiar description: "Favor unwatched videos from channels you already enjoy."
+  Balanced description: "Mix familiar channels with new ones that match your interests."
+  Explore description: "Give more space to new channels related to your interests."
+  Turn off recommendations: Turn off recommendations
+  Recommended for you: "Recommended for you"
+  Recommendations description: "Rank videos on your device using your watch history. Channel IDs and topic searches are sent to your selected backend to find videos."
+  Enable recommendations: "Enable recommendations"
+  Recommendations need history: "Watch some videos with history enabled to get recommendations."
+  No recommendations: "No recommendations found. Try refreshing after watching more videos."
+  Recommendations unavailable: "Could not load recommendations. Try again later."
+  More like this: "More like this"
+  Not interested: "Not interested"
+  Hide this channel: "Hide this channel"
+  Reset recommendations: "Reset recommendations"
+  Discovery: "Discovery"
+  Familiar: "Familiar"
+  Balanced: "Balanced"
+  Explore: "Explore"
+  Related to: "Related to {title}"
+  More from: "More from {channel}"
+  Matches interest: "Matches your interest in {topic}"
+  Related discovery privacy: "Video IDs are also sent to find related videos."
   Home: Home
   Description: Pick up where you left off and see recent activity.
   Customize: Customize Home

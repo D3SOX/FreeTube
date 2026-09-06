@@ -525,6 +525,7 @@ const props = defineProps({
 })
 
 const emit = defineEmits([
+  'display-title-change',
   'move-video-down',
   'move-video-to-the-bottom',
   'move-video-to-the-top',
@@ -2066,6 +2067,7 @@ function onDragStart(event) {
 }
 
 watch(() => props.data, parseVideoData, { immediate: true })
+watch(displayTitle, title => emit('display-title-change', title), { immediate: true })
 watch([locale, dateFormat, timeFormat], updateUploadedTime)
 
 watch([useDeArrowTitles, useDeArrowThumbnails], ([titles, thumbnails]) => {

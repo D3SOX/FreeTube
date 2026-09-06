@@ -95,6 +95,28 @@ Stats:
   Hours: '{hours} ч'
   Hours and minutes: '{hours} ч {minutes} мин'
 Home Page:
+  Familiar description: "Предпочитане на негледани видеоклипове от канали, които вече харесвате."
+  Balanced description: "Смесване на познати канали с нови, които отговарят на интересите ви."
+  Explore description: "Повече място за нови канали, свързани с интересите ви."
+  Turn off recommendations: Изключване на препоръките
+  Recommended for you: "Препоръчано за вас"
+  Recommendations description: "Подреждайте видеоклиповете на устройството си според историята на гледане. Идентификаторите на каналите и заявките за търсене по теми се изпращат до избрания от вас бекенд за намиране на видеоклипове."
+  Enable recommendations: "Включване на препоръките"
+  Recommendations need history: "Гледайте няколко видеоклипа с включена история на гледане, за да получите препоръки."
+  No recommendations: "Не са намерени препоръки. Опитайте да опресните, след като изгледате още видеоклипове."
+  Recommendations unavailable: "Препоръките не можаха да се заредят. Опитайте отново по-късно."
+  More like this: "Още подобни"
+  Not interested: "Не ме интересува"
+  Hide this channel: "Скриване на този канал"
+  Reset recommendations: "Нулиране на препоръките"
+  Discovery: "Откриване"
+  Familiar: "Познато"
+  Balanced: "Балансирано"
+  Explore: "Изследване"
+  Related to: "Свързано с {title}"
+  More from: "Още от {channel}"
+  Matches interest: "Съответства на интереса ви към {topic}"
+  Related discovery privacy: "Изпращат се и идентификатори на видеоклипове за намиране на свързани видеоклипове."
   Home: Начало
   Description: Продължете оттам, докъдето сте стигнали, и вижте скорошната активност.
   Customize: Персонализиране на началната страница

@@ -2,6 +2,7 @@ import { canMarkHistoryEntryAsWatched } from '../../history.js'
 
 export const HOME_SECTION_IDS = Object.freeze([
   'continueWatching',
+  'recommendations',
   'newSinceLastVisit',
   'watchQueue',
   'playlists',
@@ -15,24 +16,27 @@ export const DEFAULT_HOME_SECTION_LAYOUT = Object.freeze(
 )
 
 /**
- * Accepts only layouts for the current Home schema. Home has not shipped yet,
- * so stale development data is reset instead of carrying compatibility code.
+ * Preserves existing Home customization and appends newly available sections.
  *
  * @param {unknown} layout
  * @returns {{ id: string, visible: boolean }[]}
  */
 export function normalizeHomeSectionLayout(layout) {
-  if (!Array.isArray(layout) || layout.length !== HOME_SECTION_IDS.length) {
+  if (!Array.isArray(layout)) {
     return DEFAULT_HOME_SECTION_LAYOUT.map(section => ({ ...section }))
   }
 
   const ids = layout.map(entry => entry?.id)
-  if (new Set(ids).size !== HOME_SECTION_IDS.length ||
+  if (new Set(ids).size !== ids.length ||
       ids.some(id => !HOME_SECTION_IDS.includes(id))) {
     return DEFAULT_HOME_SECTION_LAYOUT.map(section => ({ ...section }))
   }
 
-  return layout.map(entry => ({ id: entry.id, visible: entry.visible !== false }))
+  return [
+    ...layout.map(entry => ({ id: entry.id, visible: entry.visible !== false })),
+    ...DEFAULT_HOME_SECTION_LAYOUT.filter(section => !ids.includes(section.id))
+      .map(section => ({ ...section })),
+  ]
 }
 
 const RECENT_DOWNLOAD_STATUSES = new Set([

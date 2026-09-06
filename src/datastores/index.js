@@ -39,6 +39,7 @@ export const profiles = createDatastore('profiles')
 export const playlists = createDatastore('playlists')
 export const history = createDatastore('history')
 export const watchStats = createDatastore('watch-stats')
+export const recommendations = createDatastore('recommendations')
 export const searchHistory = createDatastore('search-history')
 // Web/Android use channel records in IndexedDB. Load the old NeDB cache only
 // when importing an existing installation, not on every application startup.

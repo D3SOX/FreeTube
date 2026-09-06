@@ -101,6 +101,28 @@ Stats:
   Hours: '{hours} t'
   Hours and minutes: '{hours} t {minutes} min'
 Home Page:
+  Familiar description: "Føretrekk videoar du ikkje har sett, frå kanalar du allereie likar."
+  Balanced description: "Bland kjende kanalar med nye som passar interessene dine."
+  Explore description: "Gje meir plass til nye kanalar knytte til interessene dine."
+  Turn off recommendations: Slå av tilrådingar
+  Recommended for you: "Tilrådd for deg"
+  Recommendations description: "Ranger videoar på eininga di ut frå sjåarhistorikken din. Kanal-ID-ar og temasøk vert sende til den valde bakenden for å finne videoar."
+  Enable recommendations: "Slå på tilrådingar"
+  Recommendations need history: "Sjå nokre videoar med historikk slått på for å få tilrådingar."
+  No recommendations: "Fann ingen tilrådingar. Prøv å oppdatere etter at du har sett fleire videoar."
+  Recommendations unavailable: "Klarte ikkje å laste inn tilrådingar. Prøv igjen seinare."
+  More like this: "Meir som dette"
+  Not interested: "Ikkje interessert"
+  Hide this channel: "Gøym denne kanalen"
+  Reset recommendations: "Nullstill tilrådingar"
+  Discovery: "Oppdaging"
+  Familiar: "Kjent"
+  Balanced: "Balansert"
+  Explore: "Utforsk"
+  Related to: "Relatert til {title}"
+  More from: "Meir frå {channel}"
+  Matches interest: "Samsvarar med interessa di for {topic}"
+  Related discovery privacy: "Video-ID-ar vert òg sende for å finne relaterte videoar."
   Home: Heim
   Description: Hald fram der du slapp, og sjå nyleg aktivitet.
   Customize: Tilpass heimesida

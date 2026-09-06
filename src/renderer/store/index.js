@@ -3,6 +3,7 @@ import { createStore } from 'vuex'
 
 import downloads from './modules/downloads'
 import history from './modules/history'
+import recommendations from './modules/recommendations'
 import invidious from './modules/invidious'
 import playlists from './modules/playlists'
 import profiles from './modules/profiles'
@@ -71,10 +72,26 @@ function syncOnLocalChanges(store) {
   })
 }
 
+function reloadRecommendationEvidenceAfterHistoryRemoval(store) {
+  store.subscribe(mutation => {
+    if (!store.getters.getRecommendationEpoch) return
+    // Persistence can remove evidence and change its epoch even when no cached
+    // history IDs disappear, such as clearing empty history with saved feedback.
+    const mayRemoveHistory = mutation.type === 'setHistoryCacheSorted' ||
+      mutation.type === 'removeFromHistoryCacheById' ||
+      (mutation.type === 'removeMultipleFromHistoryCache' && mutation.payload.length > 0) ||
+      (mutation.type === 'applyHistorySyncChanges' && mutation.payload.deletions.length > 0)
+    if (mayRemoveHistory) {
+      store.dispatch('loadRecommendations').catch(error => console.error('Could not reload recommendation evidence', error))
+    }
+  })
+}
+
 export default createStore({
   modules: {
     downloads,
     history,
+    recommendations,
     invidious,
     playlists,
     profiles,
@@ -93,7 +110,7 @@ export default createStore({
   // but we have to turn it off despite its usefulness as we have so much data in the store
   // that it causes a noticable slow-down :(
   strict: false,
-  plugins: [syncOnLocalChanges]
+  plugins: [syncOnLocalChanges, reloadRecommendationEvidenceAfterHistoryRemoval]
 
   // TODO: Enable when deploy
   // plugins: [createPersistedState()]

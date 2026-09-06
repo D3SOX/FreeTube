@@ -4828,6 +4828,19 @@ function runApp() {
   })
 
   // *********** //
+  // Recommendation learning
+  ipcMain.handle(IpcChannels.DB_RECOMMENDATIONS, async (event, { action, data }) => {
+    if (!isOpenTubeXUrl(event.senderFrame.url)) return
+    if (action === DBActions.GENERAL.FIND) return baseHandlers.recommendations.find()
+    let result
+    if (action === DBActions.GENERAL.UPSERT) result = await baseHandlers.recommendations.record(data)
+    else if (action === DBActions.GENERAL.DELETE_MULTIPLE) result = await baseHandlers.recommendations.remove(data)
+    else if (action === DBActions.GENERAL.DELETE_ALL) result = await baseHandlers.recommendations.reset()
+    else throw new Error('Invalid recommendation action')
+    syncOtherWindows(IpcChannels.SYNC_RECOMMENDATIONS, event, result)
+    return result
+  })
+
   // Watch Stats
   ipcMain.handle(IpcChannels.DB_WATCH_STATS, async (event, { action, data }) => {
     if (!isOpenTubeXUrl(event.senderFrame.url)) {

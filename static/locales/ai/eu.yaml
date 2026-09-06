@@ -95,6 +95,28 @@ Stats:
   Hours: '{hours} h'
   Hours and minutes: '{hours} h {minutes} min'
 Home Page:
+  Familiar description: "Lehenetsi ikusi gabeko bideoak dagoeneko gustuko dituzun kanaletatik."
+  Balanced description: "Nahastu kanal ezagunak zure interesekin bat datozen kanal berriekin."
+  Explore description: "Eman leku gehiago zure interesekin lotutako kanal berriei."
+  Turn off recommendations: Desaktibatu gomendioak
+  Recommended for you: "Zuretzat gomendatuak"
+  Recommendations description: "Sailkatu bideoak zure gailuan ikusitakoen historian oinarrituta. Kanalen identifikatzaileak eta gaien araberako bilaketak hautatutako backend-era bidaltzen dira bideoak aurkitzeko."
+  Enable recommendations: "Gaitu gomendioak"
+  Recommendations need history: "Ikusi bideo batzuk historia gaituta gomendioak jasotzeko."
+  No recommendations: "Ez da gomendiorik aurkitu. Saiatu freskatzen bideo gehiago ikusi ondoren."
+  Recommendations unavailable: "Ezin izan dira gomendioak kargatu. Saiatu berriro geroago."
+  More like this: "Horrelako gehiago"
+  Not interested: "Ez zait interesatzen"
+  Hide this channel: "Ezkutatu kanal hau"
+  Reset recommendations: "Berrezarri gomendioak"
+  Discovery: "Aurkikuntza"
+  Familiar: "Ezaguna"
+  Balanced: "Orekatua"
+  Explore: "Arakatu"
+  Related to: "{title} bideoarekin erlazionatuta"
+  More from: "{channel} kanaleko gehiago"
+  Matches interest: "{topic} gaiari buruzko zure interesarekin bat dator"
+  Related discovery privacy: "Bideoen identifikatzaileak ere bidaltzen dira erlazionatutako bideoak aurkitzeko."
   Home: Hasiera
   Description: Jarraitu utzitako lekutik eta ikusi azken jarduera.
   Customize: Pertsonalizatu hasiera

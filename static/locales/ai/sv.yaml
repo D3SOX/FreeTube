@@ -95,6 +95,28 @@ Stats:
   Hours: '{hours} tim'
   Hours and minutes: '{hours} tim {minutes} min'
 Home Page:
+  Familiar description: "Prioritera osedda videor från kanaler du redan gillar."
+  Balanced description: "Blanda bekanta kanaler med nya som matchar dina intressen."
+  Explore description: "Ge mer plats åt nya kanaler som är kopplade till dina intressen."
+  Turn off recommendations: Stäng av rekommendationer
+  Recommended for you: "Rekommenderat för dig"
+  Recommendations description: "Rangordna videor på din enhet utifrån din visningshistorik. Kanal-ID:n och ämnessökningar skickas till din valda backend för att hitta videor."
+  Enable recommendations: "Aktivera rekommendationer"
+  Recommendations need history: "Titta på några videor med historiken aktiverad för att få rekommendationer."
+  No recommendations: "Inga rekommendationer hittades. Försök att uppdatera efter att du har tittat på fler videor."
+  Recommendations unavailable: "Det gick inte att läsa in rekommendationer. Försök igen senare."
+  More like this: "Mer som detta"
+  Not interested: "Inte intresserad"
+  Hide this channel: "Dölj den här kanalen"
+  Reset recommendations: "Återställ rekommendationer"
+  Discovery: "Upptäckt"
+  Familiar: "Bekant"
+  Balanced: "Balanserat"
+  Explore: "Utforska"
+  Related to: "Relaterat till {title}"
+  More from: "Mer från {channel}"
+  Matches interest: "Matchar ditt intresse för {topic}"
+  Related discovery privacy: "Video-ID:n skickas också för att hitta relaterade videor."
   Home: Startsida
   Description: Fortsätt där du slutade och se den senaste aktiviteten.
   Customize: Anpassa startsidan

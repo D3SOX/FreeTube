@@ -125,6 +125,28 @@ Stats:
   Hours: '{hours} h'
   Hours and minutes: '{hours} h {minutes} min'
 Home Page:
+  Familiar description: "Prioritza vídeos no vistos de canals que ja t’agraden."
+  Balanced description: "Combina canals coneguts amb altres de nous que coincideixin amb els teus interessos."
+  Explore description: "Dona més espai a canals nous relacionats amb els teus interessos."
+  Turn off recommendations: Desactiva les recomanacions
+  Recommended for you: "Recomanat per a tu"
+  Recommendations description: "Ordena els vídeos al teu dispositiu segons l'historial de visualitzacions. Els identificadors dels canals i les cerques per temes s'envien al motor que has seleccionat per trobar vídeos."
+  Enable recommendations: "Activa les recomanacions"
+  Recommendations need history: "Mira alguns vídeos amb l'historial activat per obtenir recomanacions."
+  No recommendations: "No s'han trobat recomanacions. Prova d'actualitzar després de mirar més vídeos."
+  Recommendations unavailable: "No s'han pogut carregar les recomanacions. Torna-ho a provar més tard."
+  More like this: "Més contingut semblant"
+  Not interested: "No m’interessa"
+  Hide this channel: "Amaga aquest canal"
+  Reset recommendations: "Restableix les recomanacions"
+  Discovery: "Descoberta"
+  Familiar: "Familiar"
+  Balanced: "Equilibrat"
+  Explore: "Explora"
+  Related to: "Relacionat amb {title}"
+  More from: "Més de {channel}"
+  Matches interest: "Coincideix amb el teu interès en {topic}"
+  Related discovery privacy: "També s’envien identificadors de vídeos per trobar vídeos relacionats."
   Home: Inici
   Description: Continueu des d'on ho vau quedar i consulteu l'activitat recent.
   Customize: Personalitza l'inici

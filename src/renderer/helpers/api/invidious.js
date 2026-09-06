@@ -39,25 +39,27 @@ export function getProxyUrl(uri) {
 
 /**
  * @param {string | URL} url
+ * @param {AbortSignal} [signal]
  */
-export function invidiousFetch(url) {
+export function invidiousFetch(url, signal) {
   const authorization = store.getters.getCurrentInvidiousInstanceAuthorization
 
   if (authorization) {
     return fetch(url, {
+      signal,
       headers: {
         Authorization: authorization
       }
     })
   } else {
-    return fetch(url)
+    return fetch(url, { signal })
   }
 }
 
-function invidiousAPICall({ resource, id = '', params = {}, doLogError = true, subResource = '' }) {
+function invidiousAPICall({ resource, id = '', params = {}, doLogError = true, subResource = '', signal }) {
   return new Promise((resolve, reject) => {
     const requestUrl = getCurrentInstanceUrl() + '/api/v1/' + resource + '/' + id + (!isNullOrEmpty(subResource) ? `/${subResource}` : '') + '?' + new URLSearchParams(params).toString()
-    invidiousFetch(requestUrl)
+    invidiousFetch(requestUrl, signal)
       .then((response) => response.json())
       .then((json) => {
         if (json.error !== undefined) {
@@ -72,7 +74,7 @@ function invidiousAPICall({ resource, id = '', params = {}, doLogError = true, s
         resolve(json)
       })
       .catch((error) => {
-        if (doLogError) {
+        if (doLogError && !signal?.aborted) {
           console.error('Invidious API error', requestUrl, error)
         }
         reject(error)
@@ -152,8 +154,9 @@ export async function invidiousGetChannelInfo(channelId) {
  * @param {string} channelId
  * @param {string | undefined | null} continuation
  * @param {string | undefined} sortBy
+ * @param {AbortSignal} [signal]
  */
-async function getInvidiousChannelTab(tab, channelId, continuation, sortBy) {
+async function getInvidiousChannelTab(tab, channelId, continuation, sortBy, signal) {
   const params = {}
 
   if (continuation) {
@@ -168,7 +171,8 @@ async function getInvidiousChannelTab(tab, channelId, continuation, sortBy) {
     resource: 'channels',
     id: channelId,
     subResource: tab,
-    params
+    params,
+    signal,
   })
 }
 
@@ -176,17 +180,20 @@ async function getInvidiousChannelTab(tab, channelId, continuation, sortBy) {
  * @param {string} channelId
  * @param {string | undefined} sortBy
  * @param {string | undefined | null} continuation
+ * @param {{signal?: AbortSignal, enrichPublicationDates?: boolean}} [options]
  */
-export async function getInvidiousChannelVideos(channelId, sortBy, continuation) {
+export async function getInvidiousChannelVideos(channelId, sortBy, continuation, { signal, enrichPublicationDates = true } = {}) {
   /** @type {{continuation: string?, videos: InvidiousVideoType[]}}  */
-  const response = await getInvidiousChannelTab('videos', channelId, continuation, sortBy)
+  const response = await getInvidiousChannelTab('videos', channelId, continuation, sortBy, signal)
 
   normalizeManyInvidiousVideosAttributes(response.videos, channelId)
   setMultiplePublishedTimestamps(response.videos)
-  response.videos = await enrichFallbackInvidiousPublicationDates(
-    response.videos,
-    invidiousGetVideoInformation
-  )
+  if (enrichPublicationDates) {
+    response.videos = await enrichFallbackInvidiousPublicationDates(
+      response.videos,
+      invidiousGetVideoInformation
+    )
+  }
 
   return response
 }
@@ -361,6 +368,15 @@ export async function fetchAllInvidiousPlaylistVideos(playlistId, initialOffset 
   }
 
   return videos
+}
+
+/** Fetch only related metadata from the configured instance. */
+export async function getInvidiousRelatedVideos(videoId, signal) {
+  const response = await invidiousAPICall({ resource: 'videos', id: videoId, params: { fields: 'recommendedVideos' }, signal })
+  const videos = response.recommendedVideos ?? []
+  normalizeManyInvidiousVideosAttributes(videos)
+  setMultiplePublishedTimestamps(videos)
+  return videos.map(video => ({ ...video, type: 'video' }))
 }
 
 /**
@@ -583,8 +599,9 @@ export async function getInvidiousPopularFeed() {
  * @param {string} query
  * @param {number} page
  * @param {any} searchSettings
+ * @param {AbortSignal} [signal]
  */
-export async function getInvidiousSearchResults(query, page, searchSettings) {
+export async function getInvidiousSearchResults(query, page, searchSettings, signal) {
   const DURATION_MAP = {
     '': '',
     under_three_mins: 'short',
@@ -596,6 +613,7 @@ export async function getInvidiousSearchResults(query, page, searchSettings) {
   let results = await invidiousAPICall({
     resource: 'search',
     id: '',
+    signal,
     params: {
       q: query,
       page,

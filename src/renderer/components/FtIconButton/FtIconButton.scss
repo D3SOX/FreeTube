@@ -179,6 +179,20 @@
   z-index: 6;
   overflow: hidden;
 
+  &.hasFixedHeader {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .iconDropdownHeader {
+    flex-shrink: 0;
+  }
+
+  .iconDropdownContent {
+    min-block-size: 0;
+    overflow-y: auto;
+  }
+
   &.left {
     inset-inline-end: calc(50% - 10px);
   }
