@@ -636,6 +636,7 @@ Settings:
     Always Use Cookies: Använd alltid kakor
     Restricted Playback Authentication Hint: Som standard skickar OpenTubeX kakorna till yt-dlp först när du väljer "Försök med konfigurerade kakor" för en åldersbegränsad video eller en video endast för medlemmar.
     Restricted Playback Authentication Warning: Om du använder yt-dlp med ett Google-konto kan kontot begränsas tillfälligt eller permanent.
+    Use cookies for subtitles: "Använd kakor för undertexter"
   Privacy Settings:
     Automatic History Retention: Automatisk lagringstid för historik (dagar)
     Automatic History Retention Placeholder: Lämna tomt för att spara för alltid
@@ -1433,8 +1434,9 @@ Tooltips:
     Cookie File: Välj en Netscape-formaterad kakfil för autentiserad uppspelning.
     Browser for Cookies: Stödet för webbläsare läses från den valda yt-dlp-programfilen. OpenTubeX ber yt-dlp att läsa webbläsaren när autentiserad uppspelning begärs.
     Browser Profile: Valfritt namn på eller mapp för webbläsarprofilen. Lämna tomt för att använda den senast öppnade profilen.
-    Always Use Cookies: Använd de konfigurerade kakorna varje gång yt-dlp utvinner strömmar. Detta byter inte metod för strömutvinning till yt-dlp. När yt-dlp är valt kan format som kräver konto bli tillgängliga, inklusive YouTube Premiums högre bithastighet om kontot har åtkomst.
+    Always Use Cookies: "Använd de konfigurerade kakorna varje gång yt-dlp utvinner strömmar. Detta byter inte metod för strömutvinning till yt-dlp. När yt-dlp är valt kan format som kräver konto bli tillgängliga, inklusive YouTube Premiums högre bithastighet om kontot har åtkomst. Använd de konfigurerade kakorna för undertexter och automatiska översättningar."
     FFmpeg Executable Path: FFmpeg krävs för att sammanfoga separata video- och ljudströmmar samt för ljudkonvertering. Som standard förutsätter OpenTubeX att FFmpeg kan hittas via miljövariabeln PATH. Vid behov kan du ange en egen sökväg här.
+    Use cookies for subtitles: "Använd de konfigurerade kakorna för undertexter och automatiska översättningar. Aktiveras även av ”Använd alltid kakor”."
   Distraction Free Settings:
     Shorten View Counts: Visar antal visningar och gilla-markeringar på kommentarer i den förkortade form som YouTube redan har avrundat, exempelvis 14 tn i stället för 14 000. Exakta antal visas alltid i sin helhet.
   Subscription Settings:

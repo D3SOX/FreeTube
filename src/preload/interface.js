@@ -480,6 +480,10 @@ export default {
     return ipcRenderer.invoke(IpcChannels.YT_DLP_GET_RECOMMENDATIONS, currentVideoId)
   },
 
+  ytDlpGetSubtitle: (url) => {
+    return ipcRenderer.invoke(IpcChannels.YT_DLP_GET_SUBTITLE, url)
+  },
+
   ytDlpPlaybackCacheGet: (videoId, cacheKey) => {
     return ipcRenderer.invoke(IpcChannels.YT_DLP_PLAYBACK_CACHE_GET, videoId, cacheKey)
   },

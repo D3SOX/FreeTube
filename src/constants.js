@@ -167,6 +167,7 @@ const IpcChannels = {
   YT_DLP_CHOOSE_DOWNLOAD_FOLDER: 'yt-dlp-choose-download-folder',
   YT_DLP_CHOOSE_EXECUTABLE: 'yt-dlp-choose-executable',
   YT_DLP_GET_INFO: 'yt-dlp-get-info',
+  YT_DLP_GET_SUBTITLE: 'yt-dlp-get-subtitle',
   YT_DLP_GET_PLAYBACK_INFO: 'yt-dlp-get-playback-info',
   YT_DLP_GET_RECOMMENDATIONS: 'yt-dlp-get-recommendations',
   YT_DLP_PLAYBACK_CACHE_GET: 'yt-dlp-playback-cache-get',

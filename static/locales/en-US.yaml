@@ -1132,6 +1132,7 @@ Settings:
     Always Use Cookies: Always Use Cookies
     Restricted Playback Authentication Hint: By default, OpenTubeX only passes these cookies to yt-dlp after you choose "Try with configured cookies" on an age-restricted or members-only video.
     Restricted Playback Authentication Warning: Using yt-dlp with a Google account can lead to temporary or permanent account restrictions.
+    Use cookies for subtitles: "Use cookies for subtitles"
   Privacy Settings:
     Privacy Settings: Privacy
     Remember History: Remember Watch History
@@ -2511,10 +2512,11 @@ Tooltips:
     Cookie File: Select a Netscape-formatted cookie file for authenticated playback.
     Browser for Cookies: Browser support is read from the selected yt-dlp executable. OpenTubeX asks yt-dlp to read this browser when authenticated playback is requested.
     Browser Profile: Optional browser profile name or folder. Leave blank to use the most recently accessed profile.
-    Always Use Cookies: Use the configured cookies whenever yt-dlp extracts streams. This does not switch the stream extraction method to yt-dlp. With yt-dlp selected, account-only formats may become available, including YouTube Premium's enhanced bitrate when the account has access.
+    Always Use Cookies: "Use the configured cookies for subtitles and whenever yt-dlp extracts streams. This does not switch the stream extraction method to yt-dlp. With yt-dlp selected, account-only formats may become available, including YouTube Premium's enhanced bitrate when the account has access."
     FFmpeg Executable Path: FFmpeg is required for merging separate video and audio streams
       and for audio conversion. By default, OpenTubeX will assume that FFmpeg can be found
       via the PATH environment variable. If needed, a custom path can be set here.
+    Use cookies for subtitles: "Use the configured cookies for subtitles and automatic translations. Also enabled by \"Always Use Cookies\"."
   Distraction Free Settings:
     Shorten View Counts: Shows view and comment like counts that YouTube has already rounded in a shortened form, e.g. 14K instead of 14,000. Exact counts are always shown in full.
     Hide Channels: Enter a channel ID to hide all videos, playlists and the channel itself from appearing in search, trending, most popular and recommended.

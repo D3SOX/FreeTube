@@ -634,6 +634,7 @@ Settings:
     Always Use Cookies: Vždy používat cookies
     Restricted Playback Authentication Hint: OpenTubeX ve výchozím nastavení předá tyto cookies nástroji yt-dlp až poté, co u videa s věkovým omezením nebo pouze pro členy zvolíte „Zkusit s nastavenými cookies“.
     Restricted Playback Authentication Warning: Použití nástroje yt-dlp s účtem Google může vést k dočasnému nebo trvalému omezení účtu.
+    Use cookies for subtitles: "Používat cookies pro titulky"
   Privacy Settings:
     Automatic History Retention: Automatické uchovávání historie (dny)
     Automatic History Retention Placeholder: Chcete-li historii zachovat navždy, ponechte prázdné
@@ -1425,8 +1426,9 @@ Tooltips:
     Cookie File: Vyberte soubor cookies ve formátu Netscape pro ověřené přehrávání.
     Browser for Cookies: Podpora prohlížečů se načítá z vybraného spustitelného souboru yt-dlp. Při požadavku na ověřené přehrávání OpenTubeX požádá yt-dlp o načtení tohoto prohlížeče.
     Browser Profile: Volitelný název nebo složka profilu prohlížeče. Chcete-li použít naposledy otevřený profil, ponechte pole prázdné.
-    Always Use Cookies: Nastavené cookies použije při každém získávání streamů pomocí yt-dlp. Způsob získávání streamu se tím nepřepne na yt-dlp. Pokud je vybrán yt-dlp, mohou být dostupné formáty pouze pro účty, včetně vyšší přenosové rychlosti YouTube Premium, pokud k ní má účet přístup.
+    Always Use Cookies: "Nastavené cookies použije při každém získávání streamů pomocí yt-dlp. Způsob získávání streamu se tím nepřepne na yt-dlp. Pokud je vybrán yt-dlp, mohou být dostupné formáty pouze pro účty, včetně vyšší přenosové rychlosti YouTube Premium, pokud k ní má účet přístup. Používat nastavené cookies pro titulky a automatické překlady."
     FFmpeg Executable Path: FFmpeg je nutný ke slučování samostatných streamů obrazu a zvuku a k převodu zvuku. OpenTubeX ve výchozím nastavení předpokládá, že nástroj FFmpeg lze najít pomocí proměnné prostředí PATH. V případě potřeby zde můžete nastavit vlastní cestu.
+    Use cookies for subtitles: "Používat nastavené cookies pro titulky a automatické překlady. Zapne se také volbou „Vždy používat cookies“."
   Distraction Free Settings:
     Shorten View Counts: Zobrazí počty zhlédnutí a hodnocení komentářů, které YouTube již zaokrouhlil do zkrácené podoby, například 14K místo 14,000. Přesné počty se vždy zobrazují celé.
   Subscription Settings:

@@ -636,6 +636,7 @@ Settings:
     Always Use Cookies: Erabili beti cookieak
     Restricted Playback Authentication Hint: Modu lehenetsian, OpenTubeX aplikazioak cookie hauek yt-dlp-ri ematen dizkio soilik adin-muga duen edo kideentzat den bideo batean "Saiatu konfiguratutako cookieekin" aukeratu ondoren.
     Restricted Playback Authentication Warning: yt-dlp Google kontu batekin erabiltzeak kontua aldi baterako edo behin betiko mugatzea eragin dezake.
+    Use cookies for subtitles: "Erabili cookieak azpitituluetarako"
   Privacy Settings:
     Automatic History Retention: Historiaren atxikipen automatikoa (egunak)
     Automatic History Retention Placeholder: Utzi hutsik betiko gordetzeko
@@ -1442,8 +1443,9 @@ Tooltips:
     Cookie File: Hautatu Netscape formatuko cookie-fitxategi bat autentifikatutako erreprodukziorako.
     Browser for Cookies: Hautatutako yt-dlp exekutagarriak adierazten du zein arakatzaile onartzen diren. Autentifikatutako erreprodukzioa eskatzean, OpenTubeX aplikazioak arakatzaile hau irakurtzeko eskatzen dio yt-dlp-ri.
     Browser Profile: Arakatzailearen aukerako profil-izena edo karpeta. Utzi hutsik azkena erabilitako profila erabiltzeko.
-    Always Use Cookies: Erabili konfiguratutako cookieak yt-dlp-k korronteak erauzten dituen bakoitzean. Honek ez du korronteak erauzteko metodoa yt-dlp aukerara aldatzen. yt-dlp hautatuta dagoenean, kontuarekin soilik erabil daitezkeen formatuak egon daitezke erabilgarri, YouTube Premium-en bit-tasa hobetua barne kontuak sarbidea badu.
+    Always Use Cookies: "Erabili konfiguratutako cookieak yt-dlp-k korronteak erauzten dituen bakoitzean. Honek ez du korronteak erauzteko metodoa yt-dlp aukerara aldatzen. yt-dlp hautatuta dagoenean, kontuarekin soilik erabil daitezkeen formatuak egon daitezke erabilgarri, YouTube Premium-en bit-tasa hobetua barne kontuak sarbidea badu. Erabili konfiguratutako cookieak azpitituluetarako eta itzulpen automatikoetarako."
     FFmpeg Executable Path: FFmpeg beharrezkoa da bideo- eta audio-korronte bereiziak bateratzeko eta audioa bihurtzeko. Modu lehenetsian, OpenTubeX aplikazioak FFmpeg PATH ingurune-aldagaiaren bidez aurki daitekeela joko du. Behar izanez gero, bide-izen pertsonalizatu bat ezar daiteke hemen.
+    Use cookies for subtitles: "Erabili konfiguratutako cookieak azpitituluetarako eta itzulpen automatikoetarako. «Erabili beti cookieak» aukerak ere gaitzen du."
   Distraction Free Settings:
     Shorten View Counts: YouTube-k dagoeneko biribildu dituen ikustaldi- eta iruzkinetako atsegite-kopuruak modu laburtuan erakusten ditu; adibidez, 14K, 14.000 ordez. Kopuru zehatzak osorik erakusten dira beti.
   Subscription Settings:

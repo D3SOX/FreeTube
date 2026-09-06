@@ -852,6 +852,7 @@ Settings:
     Always Use Cookies: Vedno uporabi piškotke
     Restricted Playback Authentication Hint: OpenTubeX te piškotke privzeto posreduje orodju yt-dlp šele, ko pri starostno omejenem videoposnetku ali videoposnetku samo za člane izberete »Poskusi z nastavljenimi piškotki«.
     Restricted Playback Authentication Warning: Uporaba orodja yt-dlp z računom Google lahko privede do začasnih ali trajnih omejitev računa.
+    Use cookies for subtitles: "Uporabi piškotke za podnapise"
   Privacy Settings:
     Automatic History Retention: Samodejna hramba zgodovine (dnevi)
     Automatic History Retention Placeholder: Pustite prazno za trajno hrambo
@@ -1924,8 +1925,9 @@ Tooltips:
     Cookie File: Izberite datoteko s piškotki v obliki Netscape za overjeno predvajanje.
     Browser for Cookies: Podpora za brskalnike se prebere iz izbrane izvedljive datoteke yt-dlp. OpenTubeX ob zahtevanem overjenem predvajanju naroči yt-dlp, naj prebere podatke tega brskalnika.
     Browser Profile: Izbirno ime ali mapa profila brskalnika. Če želite uporabiti nazadnje uporabljeni profil, pustite prazno.
-    Always Use Cookies: Uporabi nastavljene piškotke vsakič, ko yt-dlp pridobiva pretoke. S tem se način pridobivanja pretoka ne preklopi na yt-dlp. Ko je izbran yt-dlp, so lahko na voljo oblike, dostopne samo z računom, vključno z izboljšano bitno hitrostjo storitve YouTube Premium, če ima račun dostop.
+    Always Use Cookies: "Uporabi nastavljene piškotke vsakič, ko yt-dlp pridobiva pretoke. S tem se način pridobivanja pretoka ne preklopi na yt-dlp. Ko je izbran yt-dlp, so lahko na voljo oblike, dostopne samo z računom, vključno z izboljšano bitno hitrostjo storitve YouTube Premium, če ima račun dostop. Uporabi nastavljene piškotke za podnapise in samodejne prevode."
     FFmpeg Executable Path: FFmpeg je potreben za združevanje ločenih video- in zvočnih pretokov ter pretvarjanje zvoka. OpenTubeX privzeto predvideva, da je FFmpeg mogoče najti prek okoljske spremenljivke PATH. Po potrebi lahko tukaj nastavite pot po meri.
+    Use cookies for subtitles: "Uporabi nastavljene piškotke za podnapise in samodejne prevode. Omogoči tudi možnost »Vedno uporabi piškotke«."
   Distraction Free Settings:
     Shorten View Counts: Prikaže število ogledov in všečkov komentarjev v skrajšani obliki, ki jo je YouTube že zaokrožil, npr. 14 tis. namesto 14.000. Natančno število je vedno prikazano v celoti.
     Hide Channels: Vnesite ID kanala, da skrijete vse njegove videoposnetke in sezname predvajanja ter sam kanal iz iskanja, priljubljenih in najbolj gledanih vsebin ter priporočil. Vneseni ID kanala se mora popolnoma ujemati in razlikuje med velikimi in malimi črkami.

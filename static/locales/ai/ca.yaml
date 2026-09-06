@@ -885,6 +885,7 @@ Settings:
     Always Use Cookies: Utilitza sempre les galetes
     Restricted Playback Authentication Hint: De manera predeterminada, l'OpenTubeX només passa aquestes galetes a yt-dlp després que trieu "Prova-ho amb les galetes configurades" en un vídeo restringit per edat o només per a membres.
     Restricted Playback Authentication Warning: Utilitzar yt-dlp amb un compte de Google pot comportar restriccions temporals o permanents del compte.
+    Use cookies for subtitles: "Utilitza galetes per als subtítols"
   Privacy Settings:
     Automatic History Retention: Conservació automàtica de l'historial (dies)
     Automatic History Retention Placeholder: Deixeu-ho en blanc per conservar-lo per sempre
@@ -1964,8 +1965,9 @@ Tooltips:
     Cookie File: Seleccioneu un fitxer de galetes amb format de Netscape per a la reproducció autenticada.
     Browser for Cookies: La compatibilitat amb navegadors es consulta a l'executable yt-dlp seleccionat. L'OpenTubeX demana a yt-dlp que llegeixi aquest navegador quan se sol·licita una reproducció autenticada.
     Browser Profile: Nom o carpeta opcional del perfil del navegador. Deixeu-ho en blanc per utilitzar el perfil al qual s'ha accedit més recentment.
-    Always Use Cookies: Utilitza les galetes configurades sempre que yt-dlp extregui fluxos. Això no canvia a yt-dlp el mètode d'extracció dels fluxos. Amb yt-dlp seleccionat, poden estar disponibles formats exclusius del compte, inclosa la taxa de bits millorada de YouTube Premium quan el compte hi tingui accés.
+    Always Use Cookies: "Utilitza les galetes configurades sempre que yt-dlp extregui fluxos. Això no canvia a yt-dlp el mètode d'extracció dels fluxos. Amb yt-dlp seleccionat, poden estar disponibles formats exclusius del compte, inclosa la taxa de bits millorada de YouTube Premium quan el compte hi tingui accés. Utilitza les galetes configurades per als subtítols i les traduccions automàtiques."
     FFmpeg Executable Path: FFmpeg és necessari per combinar fluxos de vídeo i àudio separats i per convertir àudio. De manera predeterminada, l'OpenTubeX suposa que es pot trobar FFmpeg mitjançant la variable d'entorn PATH. Si cal, podeu definir aquí un camí personalitzat.
+    Use cookies for subtitles: "Utilitza les galetes configurades per als subtítols i les traduccions automàtiques. També s’activa amb «Utilitza sempre galetes»."
   Distraction Free Settings:
     Shorten View Counts: Mostra en format abreujat els recomptes de visualitzacions i de m'agrades dels comentaris que YouTube ja ha arrodonit, p. ex. 14K en lloc de 14.000. Els recomptes exactes sempre es mostren sencers.
     Hide Channels: Introduïu un ID de canal per ocultar tots els seus vídeos i llistes de reproducció, així com el canal mateix, de la cerca, les tendències, els més populars i les recomanacions. L'ID introduït ha de coincidir completament i distingeix entre majúscules i minúscules.

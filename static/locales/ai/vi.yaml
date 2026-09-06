@@ -642,6 +642,7 @@ Settings:
     Always Use Cookies: Luôn dùng cookie
     Restricted Playback Authentication Hint: Theo mặc định, OpenTubeX chỉ chuyển các cookie này cho yt-dlp sau khi bạn chọn "Thử bằng cookie đã thiết lập" trên video giới hạn độ tuổi hoặc chỉ dành cho hội viên.
     Restricted Playback Authentication Warning: Dùng yt-dlp với tài khoản Google có thể khiến tài khoản bị hạn chế tạm thời hoặc vĩnh viễn.
+    Use cookies for subtitles: "Dùng cookie cho phụ đề"
   Privacy Settings:
     Automatic History Retention: Tự động lưu giữ lịch sử (ngày)
     Automatic History Retention Placeholder: Để trống nếu muốn giữ mãi
@@ -1449,8 +1450,9 @@ Tooltips:
     Cookie File: Chọn tệp cookie định dạng Netscape để phát nội dung cần xác thực.
     Browser for Cookies: Khả năng hỗ trợ trình duyệt được đọc từ tệp thực thi yt-dlp đã chọn. OpenTubeX yêu cầu yt-dlp đọc trình duyệt này khi cần phát nội dung xác thực.
     Browser Profile: Tên hoặc thư mục hồ sơ trình duyệt không bắt buộc. Để trống để dùng hồ sơ được truy cập gần nhất.
-    Always Use Cookies: Dùng cookie đã thiết lập mỗi khi yt-dlp trích xuất luồng. Tùy chọn này không chuyển phương thức trích xuất luồng sang yt-dlp. Khi chọn yt-dlp, các định dạng chỉ dành cho tài khoản có thể xuất hiện, gồm tốc độ bit nâng cao của YouTube Premium nếu tài khoản có quyền truy cập.
+    Always Use Cookies: "Dùng cookie đã thiết lập mỗi khi yt-dlp trích xuất luồng. Tùy chọn này không chuyển phương thức trích xuất luồng sang yt-dlp. Khi chọn yt-dlp, các định dạng chỉ dành cho tài khoản có thể xuất hiện, gồm tốc độ bit nâng cao của YouTube Premium nếu tài khoản có quyền truy cập. Dùng cookie đã cấu hình cho phụ đề và bản dịch tự động."
     FFmpeg Executable Path: Cần FFmpeg để ghép luồng video và âm thanh riêng biệt cũng như chuyển đổi âm thanh. Theo mặc định, OpenTubeX giả định có thể tìm thấy FFmpeg qua biến môi trường PATH. Bạn có thể đặt đường dẫn tùy chỉnh tại đây nếu cần.
+    Use cookies for subtitles: "Dùng cookie đã cấu hình cho phụ đề và bản dịch tự động. Cũng được bật bởi \"Luôn dùng cookie\"."
   Distraction Free Settings:
     Shorten View Counts: Hiện số lượt xem và lượt thích bình luận theo dạng rút gọn mà YouTube đã làm tròn, ví dụ 14K thay vì 14.000. Số chính xác luôn được hiện đầy đủ.
   Subscription Settings:

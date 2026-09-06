@@ -778,6 +778,7 @@ Settings:
     Always Use Cookies: Bruk alltid informasjonskapslar
     Restricted Playback Authentication Hint: Som standard sender OpenTubeX berre desse informasjonskapslane til yt-dlp etter at du har valt "Prøv med dei valde informasjonskapslane" på ein aldersavgrensa video eller ein video berre for medlemer.
     Restricted Playback Authentication Warning: Bruk av yt-dlp med ein Google-konto kan føre til mellombelse eller varige avgrensingar på kontoen.
+    Use cookies for subtitles: "Bruk informasjonskapslar for undertekstar"
   Privacy Settings:
     Automatic History Retention: Automatisk oppbevaring av historikk (dagar)
     Automatic History Retention Placeholder: La stå tomt for å ta vare på historikken for alltid
@@ -1764,8 +1765,9 @@ Tooltips:
     Cookie File: Vel ei infokapselfil i Netscape-format for autentisert avspeling.
     Browser for Cookies: Nettlesarstøtta vert lesen frå den valde yt-dlp-programfila. OpenTubeX ber yt-dlp om å lese frå denne nettlesaren ved autentisert avspeling.
     Browser Profile: Valfritt namn på eller mappe til ein nettlesarprofil. La feltet stå tomt for å bruke profilen som sist vart opna.
-    Always Use Cookies: Bruk dei oppsette infokapslane kvar gong yt-dlp hentar ut straumar. Dette byter ikkje metoden for straumuthenting til yt-dlp. Når yt-dlp er valt, kan format som krev konto, verte tilgjengelege. Det omfattar den utvida bithastigheita til YouTube Premium når kontoen har tilgang.
+    Always Use Cookies: "Bruk dei oppsette infokapslane kvar gong yt-dlp hentar ut straumar. Dette byter ikkje metoden for straumuthenting til yt-dlp. Når yt-dlp er valt, kan format som krev konto, verte tilgjengelege. Det omfattar den utvida bithastigheita til YouTube Premium når kontoen har tilgang. Bruk dei konfigurerte informasjonskapslane for undertekstar og automatiske omsetjingar."
     FFmpeg Executable Path: FFmpeg trengst for å slå saman åtskilde video- og lydstraumar og for lydkonvertering. OpenTubeX går som standard ut frå at FFmpeg kan finnast gjennom miljøvariabelen PATH. Du kan velje ein eigen sti her dersom det trengst.
+    Use cookies for subtitles: "Bruk dei konfigurerte informasjonskapslane for undertekstar og automatiske omsetjingar. Vert òg aktivert av «Bruk alltid informasjonskapslar»."
   Distraction Free Settings:
     Shorten View Counts: Viser visingstal og tal på likarklikk for kommentarar i den avrunda kortforma frå YouTube, til dømes 14K i staden for 14,000. Nøyaktige tal vert alltid viste i full lengd.
     Hide Subscriptions Live: Denne innstillinga vert overstyrt av innstillinga "{appWideSetting}" for heile appen i underdelen "{subsection}" under "{settingsSection}"

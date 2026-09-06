@@ -642,6 +642,7 @@ Settings:
     Always Use Cookies: Nota alltaf vafrakökur
     Restricted Playback Authentication Hint: Sjálfgefið sendir OpenTubeX þessar vafrakökur aðeins til yt-dlp eftir að þú velur "Reyna með stilltum vafrakökum" fyrir aldurstakmarkað myndband eða myndband sem aðeins er fyrir meðlimi.
     Restricted Playback Authentication Warning: Notkun yt-dlp með Google-reikningi getur leitt til tímabundinna eða varanlegra takmarkana á reikningnum.
+    Use cookies for subtitles: "Nota vafrakökur fyrir skjátexta"
   Privacy Settings:
     Automatic History Retention: Sjálfvirk varðveisla ferils (dagar)
     Automatic History Retention Placeholder: Skildu eftir autt til að geyma að eilífu
@@ -1458,8 +1459,9 @@ Tooltips:
     Cookie File: Veldu vefkökuskrá á Netscape-sniði fyrir auðkennda spilun.
     Browser for Cookies: Valda yt-dlp-keyrsluskráin ræður hvaða vafrar eru studdir. OpenTubeX biður yt-dlp um að lesa vefkökur úr þessum vafra þegar beðið er um auðkennda spilun.
     Browser Profile: Valfrjálst heiti eða mappa vafrasniðs. Skildu reitinn eftir auðan til að nota síðast opnaða sniðið.
-    Always Use Cookies: Notar stilltar vefkökur í hvert sinn sem yt-dlp dregur út streymi. Þetta breytir ekki aðferðinni við að draga út streymi í yt-dlp. Þegar yt-dlp er valið kunna snið sem krefjast reiknings að verða tiltæk, þar á meðal aukinn bitahraði YouTube Premium ef reikningurinn hefur aðgang að honum.
+    Always Use Cookies: "Notar stilltar vefkökur í hvert sinn sem yt-dlp dregur út streymi. Þetta breytir ekki aðferðinni við að draga út streymi í yt-dlp. Þegar yt-dlp er valið kunna snið sem krefjast reiknings að verða tiltæk, þar á meðal aukinn bitahraði YouTube Premium ef reikningurinn hefur aðgang að honum. Nota stilltar vafrakökur fyrir skjátexta og sjálfvirkar þýðingar."
     FFmpeg Executable Path: FFmpeg er nauðsynlegt til að sameina aðskilið mynd- og hljóðstreymi og til að umbreyta hljóði. Sjálfgefið gerir OpenTubeX ráð fyrir að FFmpeg finnist með PATH-umhverfisbreytunni. Hér má velja sérsniðna slóð ef þess þarf.
+    Use cookies for subtitles: "Nota stilltar vafrakökur fyrir skjátexta og sjálfvirkar þýðingar. Virkjast einnig með „Nota alltaf vafrakökur“."
   Distraction Free Settings:
     Shorten View Counts: Sýnir fjölda áhorfa og fjölda þeirra sem líka við athugasemdir á styttu formi ef YouTube hefur þegar námundað tölurnar, t.d. 14 þ. í stað 14.000. Nákvæmur fjöldi er alltaf sýndur fullskrifaður.
   Subscription Settings:

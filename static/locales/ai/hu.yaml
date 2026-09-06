@@ -634,6 +634,7 @@ Settings:
     Always Use Cookies: Sütik használata mindig
     Restricted Playback Authentication Hint: Az OpenTubeX alapértelmezés szerint csak akkor adja át ezeket a sütiket az yt-dlp programnak, ha egy korhatáros vagy csak tagoknak szóló videónál a „Próbálkozás a beállított sütikkel” lehetőséget választja.
     Restricted Playback Authentication Warning: Ha az yt-dlp programot Google-fiókkal használja, a fiókot ideiglenesen vagy véglegesen korlátozhatják.
+    Use cookies for subtitles: "Sütik használata a feliratokhoz"
   Privacy Settings:
     Automatic History Retention: Előzmények automatikus megőrzése (nap)
     Automatic History Retention Placeholder: Hagyja üresen a korlátlan megőrzéshez
@@ -1429,8 +1430,9 @@ Tooltips:
     Cookie File: Válasszon Netscape-formátumú cookie-fájlt a hitelesített lejátszáshoz.
     Browser for Cookies: A böngészőtámogatás adatait a kiválasztott yt-dlp végrehajtható fájlból olvassa be az alkalmazás. Hitelesített lejátszás kérésekor az OpenTubeX arra utasítja a yt-dlp-t, hogy ebből a böngészőből olvassa be a cookie-kat.
     Browser Profile: Nem kötelező böngészőprofilnév vagy -mappa. Hagyja üresen a legutóbb használt profil kiválasztásához.
-    Always Use Cookies: A beállított cookie-k használata minden alkalommal, amikor a yt-dlp adatfolyamokat nyer ki. Ez nem állítja át az adatfolyam-kinyerési módszert yt-dlp-re. A yt-dlp kiválasztásával csak fiókkal elérhető formátumok is megjelenhetnek, köztük a YouTube Premium nagyobb bitrátája, ha a fiók hozzáfér.
+    Always Use Cookies: "A beállított cookie-k használata minden alkalommal, amikor a yt-dlp adatfolyamokat nyer ki. Ez nem állítja át az adatfolyam-kinyerési módszert yt-dlp-re. A yt-dlp kiválasztásával csak fiókkal elérhető formátumok is megjelenhetnek, köztük a YouTube Premium nagyobb bitrátája, ha a fiók hozzáfér. A beállított sütik használata a feliratokhoz és az automatikus fordításokhoz."
     FFmpeg Executable Path: Az FFmpeg szükséges a különálló videó- és hangadatfolyamok egyesítéséhez, valamint a hangkonvertáláshoz. Az OpenTubeX alapértelmezés szerint azt feltételezi, hogy az FFmpeg megtalálható a PATH környezeti változó alapján. Szükség esetén itt egyéni elérési út adható meg.
+    Use cookies for subtitles: "A beállított sütik használata a feliratokhoz és az automatikus fordításokhoz. A „Sütik használata mindig” beállítás is engedélyezi."
   Distraction Free Settings:
     Shorten View Counts: A YouTube által már kerekített megtekintés- és hozzászóláskedvelési számok rövidített megjelenítése, például 14 E a 14 000 helyett. A pontos számok mindig teljesen jelennek meg.
   Subscription Settings:

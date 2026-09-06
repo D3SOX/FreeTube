@@ -647,6 +647,7 @@ Settings:
     Always Use Cookies: Cookies altijd gebruiken
     Restricted Playback Authentication Hint: OpenTubeX geeft deze cookies standaard pas aan yt-dlp door nadat je bij een video met een leeftijdsbeperking of een video voor leden hebt gekozen voor "Proberen met ingestelde cookies".
     Restricted Playback Authentication Warning: Als je yt-dlp met een Google-account gebruikt, kan je account tijdelijk of permanent worden beperkt.
+    Use cookies for subtitles: "Cookies gebruiken voor ondertitels"
   Privacy Settings:
     Automatic History Retention: Geschiedenis automatisch bewaren (dagen)
     Automatic History Retention Placeholder: Leeg laten om onbeperkt te bewaren
@@ -1468,8 +1469,9 @@ Tooltips:
     Cookie File: Selecteer een cookiebestand in Netscape-indeling voor geverifieerd afspelen.
     Browser for Cookies: Browserondersteuning wordt uit het geselecteerde uitvoerbare bestand van yt-dlp gelezen. OpenTubeX vraagt yt-dlp om deze browser te lezen wanneer geverifieerd afspelen wordt aangevraagd.
     Browser Profile: Optionele naam of map van het browserprofiel. Laat dit leeg om het laatst gebruikte profiel te gebruiken.
-    Always Use Cookies: Gebruik de ingestelde cookies wanneer yt-dlp streams extraheert. Dit wijzigt de methode voor stream-extractie niet in yt-dlp. Als yt-dlp is geselecteerd, kunnen indelingen die alleen voor accounts beschikbaar zijn worden aangeboden, waaronder de verbeterde bitsnelheid van YouTube Premium als het account daar toegang toe heeft.
+    Always Use Cookies: "Gebruik de ingestelde cookies wanneer yt-dlp streams extraheert. Dit wijzigt de methode voor stream-extractie niet in yt-dlp. Als yt-dlp is geselecteerd, kunnen indelingen die alleen voor accounts beschikbaar zijn worden aangeboden, waaronder de verbeterde bitsnelheid van YouTube Premium als het account daar toegang toe heeft. Gebruik de ingestelde cookies voor ondertitels en automatische vertalingen."
     FFmpeg Executable Path: FFmpeg is vereist om afzonderlijke video- en audiostreams samen te voegen en audio te converteren. OpenTubeX gaat er standaard van uit dat FFmpeg via de omgevingsvariabele PATH kan worden gevonden. Je kunt hier zo nodig een aangepast pad instellen.
+    Use cookies for subtitles: "Gebruik de ingestelde cookies voor ondertitels en automatische vertalingen. Wordt ook ingeschakeld door \"Altijd cookies gebruiken\"."
   Distraction Free Settings:
     Shorten View Counts: Toont aantallen weergaven en vind-ik-leuks bij reacties die YouTube al verkort heeft afgerond, bijvoorbeeld 14K in plaats van 14.000. Exacte aantallen worden altijd volledig weergegeven.
   Subscription Settings:

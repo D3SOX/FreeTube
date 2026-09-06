@@ -634,6 +634,7 @@ Settings:
     Always Use Cookies: Usa sempre i cookie
     Restricted Playback Authentication Hint: Per impostazione predefinita, OpenTubeX passa questi cookie a yt-dlp solo dopo che hai scelto "Prova con i cookie configurati" per un video con limiti di età o riservato ai membri.
     Restricted Playback Authentication Warning: L'uso di yt-dlp con un account Google può causare restrizioni temporanee o permanenti dell'account.
+    Use cookies for subtitles: "Usa i cookie per i sottotitoli"
   Privacy Settings:
     Automatic History Retention: Conservazione automatica della cronologia (giorni)
     Automatic History Retention Placeholder: Lascia vuoto per conservarla sempre
@@ -1425,8 +1426,9 @@ Tooltips:
     Cookie File: Seleziona un file di cookie in formato Netscape per la riproduzione autenticata.
     Browser for Cookies: Il supporto dei browser viene rilevato dall'eseguibile yt-dlp selezionato. OpenTubeX chiede a yt-dlp di leggere i cookie da questo browser quando viene richiesta la riproduzione autenticata.
     Browser Profile: Nome o cartella facoltativi del profilo del browser. Lascia vuoto per usare il profilo aperto più di recente.
-    Always Use Cookies: Usa i cookie configurati ogni volta che yt-dlp estrae i flussi. Non cambia il metodo di estrazione in yt-dlp. Se yt-dlp è selezionato, potrebbero essere disponibili formati riservati all'account, inclusa la velocità in bit migliorata di YouTube Premium se l'account vi ha accesso.
+    Always Use Cookies: "Usa i cookie configurati ogni volta che yt-dlp estrae i flussi. Non cambia il metodo di estrazione in yt-dlp. Se yt-dlp è selezionato, potrebbero essere disponibili formati riservati all'account, inclusa la velocità in bit migliorata di YouTube Premium se l'account vi ha accesso. Usa i cookie configurati per i sottotitoli e le traduzioni automatiche."
     FFmpeg Executable Path: FFmpeg è necessario per unire flussi video e audio separati e per convertire l'audio. Per impostazione predefinita, OpenTubeX presume che FFmpeg sia disponibile tramite la variabile d'ambiente PATH. Se necessario, puoi impostare qui un percorso personalizzato.
+    Use cookies for subtitles: "Usa i cookie configurati per i sottotitoli e le traduzioni automatiche. Si attiva anche con \"Usa sempre i cookie\"."
   Distraction Free Settings:
     Shorten View Counts: Mostra in forma abbreviata i conteggi delle visualizzazioni e dei Mi piace ai commenti già arrotondati da YouTube, ad esempio 14 mila invece di 14.000. I conteggi esatti vengono sempre mostrati per intero.
   Subscription Settings:

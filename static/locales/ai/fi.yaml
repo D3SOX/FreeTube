@@ -647,6 +647,7 @@ Settings:
     Always Use Cookies: Käytä evästeitä aina
     Restricted Playback Authentication Hint: OpenTubeX välittää nämä evästeet oletuksena yt-dlp:lle vasta, kun valitset ikärajoitetun tai vain jäsenille tarkoitetun videon kohdalla "Yritä määritetyillä evästeillä".
     Restricted Playback Authentication Warning: yt-dlp:n käyttäminen Google-tilillä voi johtaa tilin tilapäisiin tai pysyviin rajoituksiin.
+    Use cookies for subtitles: "Käytä evästeitä tekstityksiin"
   Privacy Settings:
     Automatic History Retention: Historian automaattinen säilytysaika (päivää)
     Automatic History Retention Placeholder: Jätä tyhjäksi säilyttääksesi historian pysyvästi
@@ -1457,8 +1458,9 @@ Tooltips:
     Cookie File: Valitse Netscape-muotoinen evästetiedosto tunnistautumista vaativaa toistoa varten.
     Browser for Cookies: Selaintuki luetaan valitusta yt-dlp-ohjelmatiedostosta. OpenTubeX pyytää yt-dlp:tä lukemaan tämän selaimen evästeet, kun tunnistautumista vaativaa toistoa pyydetään.
     Browser Profile: Valinnainen selainprofiilin nimi tai kansio. Jos kenttä jätetään tyhjäksi, käytetään viimeksi avattua profiilia.
-    Always Use Cookies: Käytä määritettyjä evästeitä aina, kun yt-dlp hakee suoratoistovirtoja. Tämä ei vaihda suoratoistovirtojen hakumenetelmäksi yt-dlp:tä. Kun yt-dlp on valittu, vain tilille tarkoitetut muodot voivat tulla saataville. Niihin kuuluu YouTube Premiumin parannettu bittinopeus, jos tilillä on sen käyttöoikeus.
+    Always Use Cookies: "Käytä määritettyjä evästeitä aina, kun yt-dlp hakee suoratoistovirtoja. Tämä ei vaihda suoratoistovirtojen hakumenetelmäksi yt-dlp:tä. Kun yt-dlp on valittu, vain tilille tarkoitetut muodot voivat tulla saataville. Niihin kuuluu YouTube Premiumin parannettu bittinopeus, jos tilillä on sen käyttöoikeus. Käytä määritettyjä evästeitä tekstityksiin ja automaattisiin käännöksiin."
     FFmpeg Executable Path: FFmpeg tarvitaan erillisten video- ja äänivirtojen yhdistämiseen sekä äänen muuntamiseen. OpenTubeX olettaa oletusarvoisesti, että FFmpeg löytyy PATH-ympäristömuuttujan avulla. Tarvittaessa voit määrittää oman polun tässä.
+    Use cookies for subtitles: "Käytä määritettyjä evästeitä tekstityksiin ja automaattisiin käännöksiin. Myös ”Käytä aina evästeitä” ottaa tämän käyttöön."
   Distraction Free Settings:
     Shorten View Counts: Näyttää katselu- ja kommenttien tykkäysmäärät YouTuben valmiiksi pyöristämässä lyhyessä muodossa, esimerkiksi 14 t. 14 000:n sijaan. Tarkat määrät näytetään aina kokonaisina.
   Subscription Settings:

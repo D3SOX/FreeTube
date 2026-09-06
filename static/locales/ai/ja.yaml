@@ -634,6 +634,7 @@ Settings:
     Always Use Cookies: 常にCookieを使用
     Restricted Playback Authentication Hint: 既定では、年齢制限またはメンバー限定の動画で「設定済みのCookieを使用して再試行」を選んだ後にのみ、これらのCookieをyt-dlpへ渡します。
     Restricted Playback Authentication Warning: Googleアカウントでyt-dlpを使用すると、アカウントが一時的または永久に制限される場合があります。
+    Use cookies for subtitles: "字幕に Cookie を使用"
   Privacy Settings:
     Automatic History Retention: 履歴の自動保持期間（日）
     Automatic History Retention Placeholder: 無期限に保持する場合は空欄
@@ -1425,8 +1426,9 @@ Tooltips:
     Cookie File: 認証が必要な再生に使用するNetscape形式のCookieファイルを選択します。
     Browser for Cookies: 選択したyt-dlp実行ファイルからブラウザーの対応状況を取得します。認証が必要な再生を要求すると、OpenTubeXはyt-dlpにこのブラウザーのCookieを読み取るよう指示します。
     Browser Profile: ブラウザーのプロフィール名またはフォルダーを必要に応じて指定します。空欄にすると、最近使用したプロフィールを使います。
-    Always Use Cookies: yt-dlpがストリームを抽出するたびに、設定したCookieを使用します。ストリーム抽出方式がyt-dlpに切り替わるわけではありません。yt-dlpを選択している場合は、アカウントに権限があればYouTube Premiumの高ビットレートなど、アカウント限定の形式を利用できる場合があります。
+    Always Use Cookies: "yt-dlpがストリームを抽出するたびに、設定したCookieを使用します。ストリーム抽出方式がyt-dlpに切り替わるわけではありません。yt-dlpを選択している場合は、アカウントに権限があればYouTube Premiumの高ビットレートなど、アカウント限定の形式を利用できる場合があります。 設定した Cookie を字幕と自動翻訳に使用します."
     FFmpeg Executable Path: FFmpegは、分離された動画と音声ストリームの結合や音声変換に必要です。既定では、PATH環境変数からFFmpegが見つかるものとみなします。必要に応じて、ここでカスタムパスを指定できます。
+    Use cookies for subtitles: "設定した Cookie を字幕と自動翻訳に使用します。「常に Cookie を使用」でも有効になります。"
   Distraction Free Settings:
     Shorten View Counts: YouTubeですでに丸められた視聴回数とコメントの高評価数を、14,000ではなく14Kのように省略表示します。正確な数値は常に省略せず表示します。
   Subscription Settings:

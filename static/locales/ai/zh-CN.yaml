@@ -634,6 +634,7 @@ Settings:
     Always Use Cookies: 始终使用 Cookie
     Restricted Playback Authentication Hint: 默认情况下，只有在受年龄限制或仅限会员观看的视频上选择“使用已配置的 Cookie 重试”后，OpenTubeX 才会将这些 Cookie 传递给 yt-dlp。
     Restricted Playback Authentication Warning: 通过 yt-dlp 使用 Google 账号可能导致账号受到临时或永久限制。
+    Use cookies for subtitles: "使用 Cookie 获取字幕"
   Privacy Settings:
     Automatic History Retention: 自动保留历史记录（天）
     Automatic History Retention Placeholder: 留空则永久保留
@@ -1425,8 +1426,9 @@ Tooltips:
     Cookie File: 选择用于身份验证播放的 Netscape 格式 Cookie 文件。
     Browser for Cookies: 从所选的 yt-dlp 可执行文件中读取浏览器支持信息。请求身份验证播放时，OpenTubeX 会让 yt-dlp 从此浏览器读取 Cookie。
     Browser Profile: 可选的浏览器配置文件名称或文件夹。留空则使用最近访问的配置文件。
-    Always Use Cookies: 每当 yt-dlp 提取流时都使用已配置的 Cookie。这不会将流提取方式切换为 yt-dlp。选择 yt-dlp 后，可能会提供仅限账号使用的格式，包括账号有权使用时的 YouTube Premium 增强比特率。
+    Always Use Cookies: "每当 yt-dlp 提取流时都使用已配置的 Cookie。这不会将流提取方式切换为 yt-dlp。选择 yt-dlp 后，可能会提供仅限账号使用的格式，包括账号有权使用时的 YouTube Premium 增强比特率。 使用已配置的 Cookie 获取字幕和自动翻译."
     FFmpeg Executable Path: 合并独立的视频流和音频流以及转换音频需要 FFmpeg。默认情况下，OpenTubeX 假定可通过 PATH 环境变量找到 FFmpeg。如有需要，可在此设置自定义路径。
+    Use cookies for subtitles: "使用已配置的 Cookie 获取字幕和自动翻译。启用“始终使用 Cookie”也会开启此功能。"
   Distraction Free Settings:
     Shorten View Counts: 以缩写形式显示 YouTube 已取整的观看次数和评论点赞数，例如显示 14K 而不是 14,000。精确计数始终完整显示。
   Subscription Settings:

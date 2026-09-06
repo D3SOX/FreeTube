@@ -659,6 +659,7 @@ Settings:
     Always Use Cookies: Brug altid cookies
     Restricted Playback Authentication Hint: Som standard sender OpenTubeX først disse cookies til yt-dlp, når du vælger "Prøv med konfigurerede cookies" på en aldersbegrænset video eller en video kun for medlemmer.
     Restricted Playback Authentication Warning: Brug af yt-dlp med en Google-konto kan medføre midlertidige eller permanente begrænsninger af kontoen.
+    Use cookies for subtitles: "Brug cookies til undertekster"
   Privacy Settings:
     Automatic History Retention: Automatisk opbevaring af historik (dage)
     Automatic History Retention Placeholder: Lad feltet stå tomt for at gemme for altid
@@ -1492,8 +1493,9 @@ Tooltips:
     Cookie File: Vælg en cookiefil i Netscape-format til godkendt afspilning.
     Browser for Cookies: Browserunderstøttelse aflæses fra den valgte eksekverbare yt-dlp-fil. OpenTubeX beder yt-dlp om at læse denne browser, når der anmodes om godkendt afspilning.
     Browser Profile: Valgfrit browserprofilnavn eller mappe. Lad feltet stå tomt for at bruge den senest åbnede profil.
-    Always Use Cookies: Brug de konfigurerede cookies, hver gang yt-dlp udtrækker streams. Dette ændrer ikke metoden til udtræk af streams til yt-dlp. Når yt-dlp er valgt, kan formater, der kræver en konto, blive tilgængelige, herunder YouTube Premiums forbedrede bithastighed, hvis kontoen har adgang.
+    Always Use Cookies: "Brug de konfigurerede cookies, hver gang yt-dlp udtrækker streams. Dette ændrer ikke metoden til udtræk af streams til yt-dlp. Når yt-dlp er valgt, kan formater, der kræver en konto, blive tilgængelige, herunder YouTube Premiums forbedrede bithastighed, hvis kontoen har adgang. Brug de konfigurerede cookies til undertekster og automatiske oversættelser."
     FFmpeg Executable Path: FFmpeg kræves for at flette separate video- og lydstreams og konvertere lyd. OpenTubeX antager som standard, at FFmpeg kan findes via miljøvariablen PATH. Du kan om nødvendigt angive en brugerdefineret sti her.
+    Use cookies for subtitles: "Brug de konfigurerede cookies til undertekster og automatiske oversættelser. Aktiveres også af \"Brug altid cookies\"."
   Distraction Free Settings:
     Shorten View Counts: Viser antal visninger og likes på kommentarer i den forkortede form, som YouTube allerede har afrundet, f.eks. 14 t. i stedet for 14.000. Nøjagtige tal vises altid fuldt ud.
     Hide Videos on Watch: Skjuler sete videoer fra fanerne Videoer, Shorts og Live på abonnements- og kanalsiderne. Dette påvirker ikke fanen Start på kanalsider

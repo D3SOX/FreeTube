@@ -11,6 +11,8 @@ import { TabManager } from './tabs/TabManager'
 import { IpcChannels } from '../constants'
 import { getMatchingDownloadValidators, getYtDlpAssetName } from './ytDlpAsset'
 import { buildYtDlpStoryboardVtt } from './ytDlpStoryboard'
+import { downloadYtDlpSubtitle } from './ytDlpSubtitle'
+import { isYouTubeSubtitleUrl } from '../youtubeSubtitle'
 import { shouldUseGioTrash } from './trashPlatform'
 import {
   compareQueuedDownloads,
@@ -1519,6 +1521,48 @@ async function pushYtDlpPlaybackAuthenticationArguments(args) {
   }
 
   return null
+}
+
+/** @type {Map<string, Promise<string>>} */
+const subtitleRequests = new Map()
+
+/**
+ * Fetches subtitle text without exposing account cookies to the renderer.
+ * @param {import('electron').IpcMainInvokeEvent} event
+ * @param {string} url
+ * @returns {Promise<string | { error: string } | null>}
+ */
+export async function handleYtDlpGetSubtitle(event, url) {
+  if (!isOpenTubeXUrl(event.senderFrame.url) || !isYouTubeSubtitleUrl(url)) return null
+
+  const alwaysUseCookies = (await settings._findOne('ytDlpPlaybackAlwaysUseCookies'))?.value === true
+  const subtitleUseCookies = (await settings._findOne('ytDlpSubtitleUseCookies'))?.value === true
+  if (!alwaysUseCookies && !subtitleUseCookies) return null
+
+  const args = []
+  if (await pushYtDlpPlaybackAuthenticationArguments(args) !== null) return null
+  await pushProxyArgument(args)
+
+  const { source, executable } = await resolveExecutable('ytDlpSource', 'ytDlpPath', 'yt-dlp')
+  if (source === 'managed' && !existsSync(executable)) {
+    const result = await downloadManagedYtDlp()
+    if ('error' in result) return { error: result.error }
+  }
+
+  const key = JSON.stringify([executable, args, url])
+  let request = subtitleRequests.get(key)
+  if (!request) {
+    request = downloadYtDlpSubtitle(executable, args, url, app.getPath('temp'))
+    subtitleRequests.set(key, request)
+  }
+  try {
+    return await request
+  } catch {
+    // yt-dlp errors can contain signed URLs or cookie details.
+    return { error: 'Unable to load subtitle with configured cookies' }
+  } finally {
+    if (subtitleRequests.get(key) === request) subtitleRequests.delete(key)
+  }
 }
 
 /**
