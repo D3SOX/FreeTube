@@ -27,6 +27,7 @@ import { getEarliestYtDlpFormatExpiry, YtDlpPlaybackSourceCache } from './ytDlpP
 // yt-dlp appends the audio track or a suffix like "-drc" to the itag for some formats
 const ITAG_REGEX = /^\d+/
 const URL_PROBE_TIMEOUT = 10_000
+const REJECTED_PLAYBACK_URL_STATUSES = new Set([401, 403, 404, 410])
 const MINIMUM_LIVE_DVR_WINDOW_SECONDS = 30
 const playbackSourceCache = new YtDlpPlaybackSourceCache()
 const pendingPlaybackSourceLoads = new Map()
@@ -331,6 +332,42 @@ async function probeYtDlpUrl(url) {
     return response.ok
   } catch {
     return false
+  }
+}
+
+/**
+ * Checks whether the exact URL that timed out is still serving stream data.
+ * @param {unknown} url
+ * @returns {Promise<'accepted' | 'rejected' | 'inconclusive'>}
+ */
+export async function checkYtDlpPlaybackUrl(url) {
+  if (typeof url !== 'string' || url.length === 0) return 'inconclusive'
+
+  try {
+    const response = await fetch(url, { signal: AbortSignal.timeout(URL_PROBE_TIMEOUT) })
+
+    if (REJECTED_PLAYBACK_URL_STATUSES.has(response.status)) {
+      await response.body?.cancel().catch(() => {})
+      return 'rejected'
+    }
+
+    if (!response.ok || response.body === null) {
+      await response.body?.cancel().catch(() => {})
+      return 'inconclusive'
+    }
+
+    const reader = response.body.getReader()
+    try {
+      while (true) {
+        const { done, value } = await reader.read()
+        if (value !== undefined && value.byteLength > 0) return 'accepted'
+        if (done) return 'inconclusive'
+      }
+    } finally {
+      await reader.cancel().catch(() => {})
+    }
+  } catch {
+    return 'inconclusive'
   }
 }
 
