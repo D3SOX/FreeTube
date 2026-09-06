@@ -1,5 +1,9 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
+import { readFile } from 'node:fs/promises'
+import vm from 'node:vm'
+
+import { createAbortError } from '../../src/renderer/helpers/api/requestErrors.js'
 
 import {
   capacitorHttpFetch,
@@ -232,5 +236,37 @@ test('rejects invalid native avatar responses', async () => {
       await fetchCapacitorAvatarDataUrl('https://yt3.ggpht.com/avatar'),
       null
     )
+  }
+})
+
+test('bounds native connection and stalled reads while retaining JavaScript cancellation', async () => {
+  const source = (await readFile(new URL('../../src/renderer/helpers/api/capacitor-http.js', import.meta.url), 'utf8'))
+    .replace(/^import .* from .*\n/gm, '')
+    .replace(/^export /gm, '')
+  const requests = []
+  const context = vm.createContext({
+    CapacitorHttp: {
+      request(options) {
+        requests.push(options)
+        return new Promise(() => {})
+      },
+    },
+    createAbortError, Request, Response, Headers, URL, URLSearchParams, setTimeout, clearTimeout,
+  })
+  vm.runInContext(`${source}\nglobalThis.fetchNative = capacitorHttpFetch`, context)
+  const controller = new AbortController()
+  const pending = context.fetchNative('https://www.youtube.com/watch?v=test', {
+    signal: controller.signal,
+    nativeTimeoutMs: 15_000,
+  })
+  const rejected = assert.rejects(pending, { name: 'AbortError' })
+  try {
+    await Promise.resolve()
+    assert.equal(requests.length, 1)
+    assert.equal(requests[0].connectTimeout, 15_000)
+    assert.equal(requests[0].readTimeout, 15_000)
+  } finally {
+    controller.abort()
+    await rejected
   }
 })

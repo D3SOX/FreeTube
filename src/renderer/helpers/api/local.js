@@ -41,7 +41,7 @@ const TRACKING_PARAM_NAMES = [
 /**
  * Uses native HTTP on Android, where YouTube does not allow WebView CORS access.
  * @param {RequestInfo | URL} input
- * @param {RequestInit} [init]
+ * @param {RequestInit & { nativeTimeoutMs?: number }} [init]
  */
 export async function localApiFetch(input, init) {
   if (process.env.IS_CAPACITOR) {

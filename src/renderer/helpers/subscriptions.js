@@ -495,7 +495,10 @@ async function fetchRssVideoUpcomingInfoUncached(videoId) {
     // lookup, so it is not cached and the next refresh tries again.
     const response = await localApiFetch(
       `https://www.youtube.com/watch?v=${videoId}`,
-      { signal: AbortSignal.timeout(RSS_ENRICHMENT_TIMEOUT_MS) }
+      {
+        signal: AbortSignal.timeout(RSS_ENRICHMENT_TIMEOUT_MS),
+        nativeTimeoutMs: RSS_ENRICHMENT_TIMEOUT_MS,
+      }
     )
 
     if (!response.ok) {
@@ -635,7 +638,10 @@ async function enrichScrapedUpcomingPublicationDates(channelId, videos) {
   try {
     const response = await localApiFetch(
       `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`,
-      { signal: AbortSignal.timeout(RSS_ENRICHMENT_TIMEOUT_MS) }
+      {
+        signal: AbortSignal.timeout(RSS_ENRICHMENT_TIMEOUT_MS),
+        nativeTimeoutMs: RSS_ENRICHMENT_TIMEOUT_MS,
+      }
     )
 
     if (!response.ok) {
