@@ -577,7 +577,7 @@ test.describe('settings', () => {
     })
   })
 
-  test('shows yt-dlp browsers dynamically and centers the optional profile field', async ({ app, page }) => {
+  test('shows yt-dlp browsers dynamically and centers the optional profile field', async ({ app, page, attachScreenshot }) => {
     await app.electronApp.evaluate(({ ipcMain }) => {
       ipcMain.removeHandler('yt-dlp-get-info')
       ipcMain.handle('yt-dlp-get-info', (_event, options) => ({
@@ -597,7 +597,8 @@ test.describe('settings', () => {
       has: page.getByRole('heading', { name: 'yt-dlp Playback Cookies', exact: true })
     })
     const cookieSource = authentication.locator('.restrictedPlaybackAuthSource select')
-    const alwaysUseCookies = authentication.getByLabel('Always Use Cookies')
+    const alwaysUseCookies = authentication.getByRole('checkbox', { name: /^Always Use Cookies/ })
+    const subtitleCookies = authentication.getByRole('checkbox', { name: /^Use cookies for subtitles/ })
     const authenticationHint = authentication.locator('.restrictedPlaybackAuthHint')
     const accountRestrictionWarning = authentication.locator(
       '.restrictedPlaybackAuthHint strong'
@@ -605,6 +606,10 @@ test.describe('settings', () => {
 
     await expect(cookieSource.locator('option')).toHaveText(['None', 'File', 'Browser'])
     await expect(alwaysUseCookies).not.toBeChecked()
+    await expect(subtitleCookies).not.toBeChecked()
+    await expect(subtitleCookies).toBeEnabled()
+    await subtitleCookies.locator('..').locator('label.switch-label').click()
+    await expect(subtitleCookies).toBeChecked()
     await expect(authenticationHint).toHaveText(
       'By default, OpenTubeX only passes these cookies to yt-dlp after you choose "Try with configured cookies" on an age-restricted or members-only video. Using yt-dlp with a Google account can lead to temporary or permanent account restrictions.'
     )
@@ -616,7 +621,7 @@ test.describe('settings', () => {
       .locator('.selectTooltip button')
       .focus()
     await expect(page.locator('body > [role="tooltip"]:visible')).toHaveText(
-      "Use the configured cookies whenever yt-dlp extracts streams. This does not switch the stream extraction method to yt-dlp. With yt-dlp selected, account-only formats may become available, including YouTube Premium's enhanced bitrate when the account has access."
+      "Use the configured cookies for subtitles and whenever yt-dlp extracts streams. This does not switch the stream extraction method to yt-dlp. With yt-dlp selected, account-only formats may become available, including YouTube Premium's enhanced bitrate when the account has access."
     )
     await cookieSource.selectOption('browser')
 
@@ -632,6 +637,15 @@ test.describe('settings', () => {
     await profile.fill('/tmp/firefox-profile')
     await alwaysUseCookies.locator('..').locator('label.switch-label').click()
     await expect(alwaysUseCookies).toBeChecked()
+    await expect(subtitleCookies).toBeChecked()
+    await expect(subtitleCookies).toBeDisabled()
+    await alwaysUseCookies.locator('..').locator('label.switch-label').click()
+    await expect(subtitleCookies).toBeEnabled()
+    await expect(subtitleCookies).toBeChecked()
+    await subtitleCookies.locator('..').locator('label.switch-label').click()
+    await alwaysUseCookies.locator('..').locator('label.switch-label').click()
+    await expect(subtitleCookies).toBeChecked()
+    await expect(subtitleCookies).toBeDisabled()
 
     const [sourceBox, browserBox, profileBox] = await Promise.all([
       authentication.locator('.restrictedPlaybackAuthSource .select').boundingBox(),
@@ -668,6 +682,7 @@ test.describe('settings', () => {
       profile: '/tmp/firefox-profile',
       alwaysUse: true
     })
+    await attachScreenshot('subtitle cookie settings')
   })
 
   test('puts theme controls before a separate Layout section', async ({ page }) => {

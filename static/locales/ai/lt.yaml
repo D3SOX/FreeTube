@@ -836,6 +836,7 @@ Settings:
     Always Use Cookies: Visada naudoti slapukus
     Restricted Playback Authentication Hint: Pagal numatytuosius nustatymus OpenTubeX perduoda šiuos slapukus yt-dlp tik tada, kai ribojamo pagal amžių arba tik nariams skirto vaizdo įrašo puslapyje pasirenkate „Bandyti naudojant sukonfigūruotus slapukus“.
     Restricted Playback Authentication Warning: Naudojant yt-dlp su Google paskyra, paskyra gali būti laikinai arba visam laikui apribota.
+    Use cookies for subtitles: "Naudoti slapukus subtitrams"
   Privacy Settings:
     Automatic History Retention: Automatinis istorijos saugojimas (dienomis)
     Automatic History Retention Placeholder: Palikite tuščią, kad būtų saugoma neribotai
@@ -1830,8 +1831,9 @@ Tooltips:
     Cookie File: Pasirinkite Netscape formato slapukų failą autentifikuotam atkūrimui.
     Browser for Cookies: Naršyklių palaikymo informacija gaunama iš pasirinkto yt-dlp vykdomojo failo. Paprašius autentifikuoto atkūrimo, OpenTubeX nurodo yt-dlp nuskaityti šią naršyklę.
     Browser Profile: Pasirinktinis naršyklės profilio pavadinimas arba aplankas. Palikite tuščią, jei norite naudoti paskutinį atvertą profilį.
-    Always Use Cookies: Naudoti sukonfigūruotus slapukus kaskart, kai yt-dlp išgauna srautus. Tai nepakeičia srautų išgavimo būdo į yt-dlp. Pasirinkus yt-dlp gali tapti pasiekiami tik paskyrai skirti formatai, įskaitant didesnę YouTube Premium spartą, jei paskyra turi prieigą.
+    Always Use Cookies: "Naudoti sukonfigūruotus slapukus kaskart, kai yt-dlp išgauna srautus. Tai nepakeičia srautų išgavimo būdo į yt-dlp. Pasirinkus yt-dlp gali tapti pasiekiami tik paskyrai skirti formatai, įskaitant didesnę YouTube Premium spartą, jei paskyra turi prieigą. Naudoti sukonfigūruotus slapukus subtitrams ir automatiniams vertimams."
     FFmpeg Executable Path: FFmpeg reikalingas atskiriems vaizdo ir garso srautams sujungti bei garsui konvertuoti. Pagal numatymą OpenTubeX laikys, kad FFmpeg galima rasti naudojant PATH aplinkos kintamąjį. Jei reikia, čia galima nurodyti pasirinktinį kelią.
+    Use cookies for subtitles: "Naudoti sukonfigūruotus slapukus subtitrams ir automatiniams vertimams. Taip pat įjungiama pasirinkus „Visada naudoti slapukus“."
   Distraction Free Settings:
     Shorten View Counts: Sutrumpintai rodo peržiūrų ir komentarų teigiamų įvertinimų skaičius, kuriuos YouTube jau suapvalino, pvz., 14 tūkst. vietoje 14 000. Tikslūs skaičiai visada rodomi nesutrumpinti.
     Hide Channels: Įveskite kanalo ID, kad visi vaizdo įrašai, grojaraščiai ir pats kanalas nebūtų rodomi paieškoje, tarp populiarėjančių, populiariausių ir rekomenduojamų elementų. Įvestas kanalo ID turi tiksliai sutapti, taip pat skiriamos didžiosios ir mažosios raidės.

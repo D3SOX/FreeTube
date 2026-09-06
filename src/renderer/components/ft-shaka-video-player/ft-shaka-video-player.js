@@ -6,6 +6,7 @@ import shaka from 'shaka-player'
 import { useI18n } from 'vue-i18n'
 
 import store from '../../store/index'
+import { getSubtitleRequestUrl } from '../../helpers/player/subtitleCookies'
 import { KeyboardShortcuts } from '../../../constants'
 import { useTabContext, useTabLifecycle } from '../../tabs/TabContext'
 import { tabMediaCoordinator } from '../../tabs/TabMediaCoordinator'
@@ -7233,6 +7234,25 @@ export default defineComponent({
     let captionTranslationSelectionGeneration = 0
 
     /**
+     * Native WebVTT tracks bypass Shaka's networking engine, so authenticate
+     * external captions before handing them to the player as well.
+     * @param {{ url: string, label: string, language: string, mimeType: string }} caption
+     * @param {shaka.Player} [captionPlayer]
+     * @returns {Promise<shaka.extern.Track>}
+     */
+    async function addCaptionTrack(caption, captionPlayer = player) {
+      const url = await getSubtitleRequestUrl(caption.url, store.getters)
+      return captionPlayer.addTextTrackAsync(
+        url,
+        caption.language,
+        'captions',
+        caption.mimeType,
+        undefined,
+        caption.label
+      )
+    }
+
+    /**
      * @param {{ url: string, label: string, language: string, mimeType: string }} caption
      * @param {shaka.Player} captionPlayer
      * @returns {Promise<boolean>}
@@ -7243,14 +7263,7 @@ export default defineComponent({
 
       if (!track) {
         try {
-          track = await captionPlayer.addTextTrackAsync(
-            caption.url,
-            caption.language,
-            'captions',
-            caption.mimeType,
-            undefined,
-            caption.label
-          )
+          track = await addCaptionTrack(caption, captionPlayer)
         } catch (error) {
           handleError(error, 'addTextTrackAsync', caption)
           return false
@@ -10102,6 +10115,11 @@ export default defineComponent({
         player.getNetworkingEngine().registerRequestFilter(requestFilter)
         player.getNetworkingEngine().registerResponseFilter(responseFilter)
       }
+      if (process.env.IS_ELECTRON) {
+        player.getNetworkingEngine().registerRequestFilter(async (_type, request) => {
+          request.uris = await Promise.all(request.uris.map(url => getSubtitleRequestUrl(url, store.getters)))
+        })
+      }
       player.getNetworkingEngine().registerRequestFilter(silenceSkippingRequestFilter)
       player.getNetworkingEngine().registerResponseFilter(silenceSkippingResponseFilter)
 
@@ -10405,7 +10423,7 @@ export default defineComponent({
               url.searchParams.get('caps') === 'asr' && url.searchParams.get('kind') === 'asr' && url.searchParams.get('fmt') === 'vtt') {
               promises.push((async () => {
                 try {
-                  const response = await fetch(caption.url)
+                  const response = await fetch(await getSubtitleRequestUrl(caption.url, store.getters))
                   let text = await response.text()
 
                   // position:0% for LTR text and position:100% for RTL text
@@ -10431,27 +10449,13 @@ export default defineComponent({
               })())
             } else {
               promises.push(
-                player.addTextTrackAsync(
-                  caption.url,
-                  caption.language,
-                  'captions',
-                  caption.mimeType,
-                  undefined, // codec, only needed if the captions are inside a container (e.g. mp4)
-                  caption.label
-                )
+                addCaptionTrack(caption)
                   .catch(error => handleError(error, 'addTextTrackAsync', caption))
               )
             }
           } else {
             promises.push(
-              player.addTextTrackAsync(
-                caption.url,
-                caption.language,
-                'captions',
-                caption.mimeType,
-                undefined, // codec, only needed if the captions are inside a container (e.g. mp4)
-                caption.label
-              )
+              addCaptionTrack(caption)
                 .catch(error => handleError(error, 'addTextTrackAsync', caption))
             )
           }

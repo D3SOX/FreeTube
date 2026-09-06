@@ -634,6 +634,7 @@ Settings:
     Always Use Cookies: Çerezleri Her Zaman Kullan
     Restricted Playback Authentication Hint: OpenTubeX varsayılan olarak bu çerezleri yt-dlp'ye yalnızca yaş kısıtlamalı veya üyelere özel bir videoda "Yapılandırılmış çerezlerle dene" seçeneğini seçtikten sonra gönderir.
     Restricted Playback Authentication Warning: yt-dlp'yi bir Google hesabıyla kullanmak geçici veya kalıcı hesap kısıtlamalarına yol açabilir.
+    Use cookies for subtitles: "Altyazılar için çerezleri kullan"
   Privacy Settings:
     Automatic History Retention: Otomatik Geçmiş Saklama Süresi (Gün)
     Automatic History Retention Placeholder: Süresiz saklamak için boş bırakın
@@ -1425,8 +1426,9 @@ Tooltips:
     Cookie File: Kimlik doğrulamalı oynatma için Netscape biçiminde bir çerez dosyası seçin.
     Browser for Cookies: Tarayıcı desteği seçili yt-dlp yürütülebilir dosyasından okunur. Kimlik doğrulamalı oynatma istendiğinde OpenTubeX, yt-dlp'den bu tarayıcıyı okumasını ister.
     Browser Profile: İsteğe bağlı tarayıcı profili adı veya klasörü. Son erişilen profili kullanmak için boş bırakın.
-    Always Use Cookies: yt-dlp akışları her çıkardığında yapılandırılmış çerezleri kullanır. Bu, akış çıkarma yöntemini yt-dlp olarak değiştirmez. yt-dlp seçiliyken ve hesabın erişimi varsa YouTube Premium'un gelişmiş bit hızı dâhil yalnızca hesaba özel biçimler kullanılabilir hâle gelebilir.
+    Always Use Cookies: "yt-dlp akışları her çıkardığında yapılandırılmış çerezleri kullanır. Bu, akış çıkarma yöntemini yt-dlp olarak değiştirmez. yt-dlp seçiliyken ve hesabın erişimi varsa YouTube Premium'un gelişmiş bit hızı dâhil yalnızca hesaba özel biçimler kullanılabilir hâle gelebilir. Altyazılar ve otomatik çeviriler için yapılandırılmış çerezleri kullan."
     FFmpeg Executable Path: Ayrı video ve ses akışlarını birleştirmek ve ses dönüştürmek için FFmpeg gereklidir. OpenTubeX varsayılan olarak FFmpeg'in PATH ortam değişkeni üzerinden bulunabildiğini varsayar. Gerekirse buradan özel bir yol ayarlayabilirsiniz.
+    Use cookies for subtitles: "Altyazılar ve otomatik çeviriler için yapılandırılmış çerezleri kullan. \"Her zaman çerezleri kullan\" seçeneği de bunu etkinleştirir."
   Distraction Free Settings:
     Shorten View Counts: YouTube'un zaten yuvarlayarak kısalttığı izlenme ve yorum beğeni sayılarını gösterir, örneğin 14.000 yerine 14 B. Kesin sayılar her zaman tam gösterilir.
   Subscription Settings:

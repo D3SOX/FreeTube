@@ -636,6 +636,7 @@ Settings:
     Always Use Cookies: Uvijek upotrebljavaj kolačiće
     Restricted Playback Authentication Hint: OpenTubeX prema zadanim postavkama prosljeđuje ove kolačiće alatu yt-dlp tek nakon što odaberete "Pokušaj s postavljenim kolačićima" na videozapisu s dobnim ograničenjem ili samo za članove.
     Restricted Playback Authentication Warning: Uporaba alata yt-dlp s Google računom može dovesti do privremenih ili trajnih ograničenja računa.
+    Use cookies for subtitles: "Koristi kolačiće za titlove"
   Privacy Settings:
     Automatic History Retention: Automatsko čuvanje povijesti (dani)
     Automatic History Retention Placeholder: Ostavite prazno za trajno čuvanje
@@ -1437,8 +1438,9 @@ Tooltips:
     Cookie File: Odaberite datoteku kolačića u formatu Netscape za reprodukciju uz prijavu.
     Browser for Cookies: Podrška za preglednike očitava se iz odabrane izvršne datoteke alata yt-dlp. Pri zahtjevu za reprodukciju uz prijavu OpenTubeX traži od alata yt-dlp da čita podatke iz ovog preglednika.
     Browser Profile: Neobavezan naziv ili mapa profila preglednika. Ostavite prazno za upotrebu posljednjeg korištenog profila.
-    Always Use Cookies: Upotrijebi konfigurirane kolačiće kad god yt-dlp izdvaja tokove. Time se način izdvajanja tokova ne prebacuje na yt-dlp. Kada je yt-dlp odabran, mogu postati dostupni formati samo za prijavljene račune, uključujući poboljšanu brzinu prijenosa usluge YouTube Premium ako račun ima pristup toj usluzi.
+    Always Use Cookies: "Upotrijebi konfigurirane kolačiće kad god yt-dlp izdvaja tokove. Time se način izdvajanja tokova ne prebacuje na yt-dlp. Kada je yt-dlp odabran, mogu postati dostupni formati samo za prijavljene račune, uključujući poboljšanu brzinu prijenosa usluge YouTube Premium ako račun ima pristup toj usluzi. Koristi postavljene kolačiće za titlove i automatske prijevode."
     FFmpeg Executable Path: FFmpeg je potreban za spajanje odvojenih tokova videozapisa i zvuka te za pretvorbu zvuka. OpenTubeX prema zadanim postavkama pretpostavlja da se FFmpeg može pronaći putem varijable okruženja PATH. Ovdje po potrebi možete postaviti prilagođenu putanju.
+    Use cookies for subtitles: "Koristi postavljene kolačiće za titlove i automatske prijevode. Uključuje se i opcijom „Uvijek koristi kolačiće”."
   Distraction Free Settings:
     Shorten View Counts: Prikazuje skraćene brojeve pregleda i oznaka sviđanja komentara koje je YouTube već zaokružio, primjerice 14 tis. umjesto 14.000. Točni brojevi uvijek se prikazuju u cijelosti.
   Subscription Settings:

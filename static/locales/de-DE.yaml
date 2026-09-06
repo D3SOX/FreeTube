@@ -1262,6 +1262,7 @@ Settings:
     Downloading FFmpeg and FFprobe: FFmpeg und FFprobe werden heruntergeladen…
     FFmpeg and FFprobe Downloaded Template: FFmpeg und FFprobe {version} wurden heruntergeladen
     FFmpeg and FFprobe Download Error Template: 'Herunterladen von FFmpeg und FFprobe fehlgeschlagen: {error}'
+    Use cookies for subtitles: "Cookies für Untertitel verwenden"
   Parental Control Settings:
     Parental Control Settings: Kindersicherung
     Hide Unsubscribe Button: Schaltfläche „Deabonnieren“ ausblenden
@@ -2251,8 +2252,9 @@ Tooltips:
     Cookie File: Wähle eine Cookie-Datei im Netscape-Format für die authentifizierte Wiedergabe aus.
     Browser for Cookies: Die Browserunterstützung wird anhand der ausgewählten ausführbaren yt-dlp-Datei ermittelt. OpenTubeX weist yt-dlp an, Cookies aus diesem Browser zu lesen, wenn eine authentifizierte Wiedergabe angefordert wird.
     Browser Profile: Optionaler Name oder Ordner des Browserprofils. Lasse das Feld leer, um das zuletzt verwendete Profil zu nutzen.
-    Always Use Cookies: Verwendet die konfigurierten Cookies bei jeder Stream-Extraktion mit yt-dlp. Dies wechselt die Methode zur Stream-Extraktion nicht zu yt-dlp. Wenn yt-dlp ausgewählt ist, können kontogebundene Formate verfügbar werden, einschließlich der höheren Bitrate von YouTube Premium, wenn das Konto darauf Zugriff hat.
+    Always Use Cookies: "Verwendet die konfigurierten Cookies für Untertitel und bei jeder Stream-Extraktion mit yt-dlp. Dies wechselt die Methode zur Stream-Extraktion nicht zu yt-dlp. Wenn yt-dlp ausgewählt ist, können kontogebundene Formate verfügbar werden, einschließlich der höheren Bitrate von YouTube Premium, wenn das Konto darauf Zugriff hat."
     FFmpeg Executable Path: FFmpeg wird zum Zusammenführen von getrennten Video- und Audiospuren sowie zur Audiokonvertierung benötigt. Standardmäßig nimmt OpenTubeX an, dass FFmpeg über die PATH-Umgebungsvariable gefunden werden kann. Falls nötig, kann hier ein benutzerdefinierter Pfad festgelegt werden.
+    Use cookies for subtitles: "Die konfigurierten Cookies für Untertitel und automatische Übersetzungen verwenden. Auch durch „Cookies immer verwenden“ aktiviert."
   Experimental Settings:
     Replace HTTP Cache: Deaktiviert den festplattenbasierten HTTP-Cache von Electron und aktiviert einen benutzerdefinierten In-Memory-Image-Cache. Dies führt zu einer erhöhten RAM-Auslastung.
   Distraction Free Settings:

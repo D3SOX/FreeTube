@@ -200,6 +200,7 @@ Settings:
     Always Use Cookies: Zawsze używaj ciasteczek
     Restricted Playback Authentication Hint: Domyślnie OpenTubeX przekazuje te ciasteczka do yt-dlp dopiero po wybraniu opcji „Spróbuj ze skonfigurowanymi ciasteczkami” dla filmu z ograniczeniem wiekowym lub dostępnego tylko dla wspierających.
     Restricted Playback Authentication Warning: Używanie yt-dlp z kontem Google może spowodować jego tymczasowe lub trwałe ograniczenie.
+    Use cookies for subtitles: "Używaj plików cookie do napisów"
   Privacy Settings:
     Cache Video Metadata: Historia metadanych
     Cache Video Metadata Tooltip: Zachowuje wszystkie obsługiwane wersje metadanych odwiedzonych filmów, w tym tytuły, miniatury i opisy. Funkcja jest domyślnie wyłączona, ponieważ historia metadanych zajmuje dodatkowe miejsce na dysku.
@@ -685,7 +686,8 @@ Tooltips:
     Cookie File: Wybierz plik ciasteczek w formacie Netscape na potrzeby uwierzytelnionego odtwarzania.
     Browser for Cookies: Obsługiwane przeglądarki są odczytywane z wybranego pliku wykonywalnego yt-dlp. Gdy potrzebne jest uwierzytelnione odtwarzanie, OpenTubeX zleca yt-dlp odczytanie ciasteczek z tej przeglądarki.
     Browser Profile: Opcjonalna nazwa lub folder profilu przeglądarki. Pozostaw puste pole, aby użyć ostatnio otwieranego profilu.
-    Always Use Cookies: Używa skonfigurowanych ciasteczek przy każdym pobieraniu strumieni przez yt-dlp. Nie zmienia to metody pobierania strumienia na yt-dlp. Po wybraniu yt-dlp mogą być dostępne formaty przeznaczone tylko dla kont, w tym wyższa szybkość transmisji bitów YouTube Premium, jeśli konto ma do niej dostęp.
+    Always Use Cookies: "Używa skonfigurowanych ciasteczek przy każdym pobieraniu strumieni przez yt-dlp. Nie zmienia to metody pobierania strumienia na yt-dlp. Po wybraniu yt-dlp mogą być dostępne formaty przeznaczone tylko dla kont, w tym wyższa szybkość transmisji bitów YouTube Premium, jeśli konto ma do niej dostęp. Używaj skonfigurowanych plików cookie do napisów i tłumaczeń automatycznych."
+    Use cookies for subtitles: "Używaj skonfigurowanych plików cookie do napisów i tłumaczeń automatycznych. Włącza się także przez „Zawsze używaj ciasteczek”."
   Distraction Free Settings:
     Shorten View Counts: Pokazuje liczbę wyświetleń i polubień komentarzy w skróconej postaci zaokrąglonej przez YouTube, na przykład 14 tys. zamiast 14 000. Dokładne wartości są zawsze wyświetlane w całości.
   Subscription Settings:

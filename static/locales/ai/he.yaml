@@ -647,6 +647,7 @@ Settings:
     Always Use Cookies: להשתמש תמיד בעוגיות
     Restricted Playback Authentication Hint: כברירת מחדל, OpenTubeX מעביר את העוגיות האלה ל-yt-dlp רק לאחר בחירה באפשרות "לנסות עם העוגיות שהוגדרו" בסרטון שמוגבל לפי גיל או לחברים בלבד.
     Restricted Playback Authentication Warning: שימוש ב-yt-dlp עם חשבון Google עלול להוביל להגבלות זמניות או קבועות על החשבון.
+    Use cookies for subtitles: "שימוש בעוגיות לכתוביות"
   Privacy Settings:
     Automatic History Retention: תקופת שמירה אוטומטית של ההיסטוריה (ימים)
     Automatic History Retention Placeholder: השאירו ריק כדי לשמור לתמיד
@@ -1459,8 +1460,9 @@ Tooltips:
     Cookie File: בחרו קובץ עוגיות בתבנית Netscape לצורך הפעלה מאומתת.
     Browser for Cookies: רשימת הדפדפנים הנתמכים מתקבלת מקובץ ההפעלה הנבחר של yt-dlp. כשנדרשת הפעלה מאומתת, OpenTubeX מורה ל-yt-dlp לקרוא את העוגיות מדפדפן זה.
     Browser Profile: שם או תיקייה אופציונליים של פרופיל דפדפן. השאירו ריק כדי להשתמש בפרופיל שנפתח לאחרונה.
-    Always Use Cookies: השתמשו בעוגיות שהוגדרו בכל פעם ש-yt-dlp מחלץ זרמים. אפשרות זו אינה משנה את שיטת חילוץ הזרמים ל-yt-dlp. כש-yt-dlp נבחר, ייתכן שיופיעו פורמטים הזמינים לחשבון בלבד, כולל קצב הסיביות המשופר של YouTube Premium אם החשבון זכאי לכך.
+    Always Use Cookies: "השתמשו בעוגיות שהוגדרו בכל פעם ש-yt-dlp מחלץ זרמים. אפשרות זו אינה משנה את שיטת חילוץ הזרמים ל-yt-dlp. כש-yt-dlp נבחר, ייתכן שיופיעו פורמטים הזמינים לחשבון בלבד, כולל קצב הסיביות המשופר של YouTube Premium אם החשבון זכאי לכך. שימוש בעוגיות שהוגדרו עבור כתוביות ותרגומים אוטומטיים."
     FFmpeg Executable Path: FFmpeg נדרש למיזוג זרמי וידאו ושמע נפרדים ולהמרת שמע. כברירת מחדל, OpenTubeX מניחה שאפשר למצוא את FFmpeg דרך משתנה הסביבה PATH. במידת הצורך אפשר להגדיר כאן נתיב מותאם אישית.
+    Use cookies for subtitles: "שימוש בעוגיות שהוגדרו עבור כתוביות ותרגומים אוטומטיים. מופעל גם דרך „השתמש תמיד בעוגיות”."
   Distraction Free Settings:
     Shorten View Counts: מציג ספירות צפיות ולייקים לתגובות ש-YouTube כבר עיגלה בצורה מקוצרת, למשל 14K במקום 14,000. ספירות מדויקות תמיד מוצגות במלואן.
   Subscription Settings:

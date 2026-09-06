@@ -142,6 +142,8 @@
 import { FtIcon } from '@opentubex/icons'
 import { computed, nextTick, onBeforeUnmount, ref, useTemplateRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import store from '../../store/index'
+import { getSubtitleRequestUrl } from '../../helpers/player/subtitleCookies'
 
 import FtCard from '../ft-card/ft-card.vue'
 import FtIconButton from '../FtIconButton/FtIconButton.vue'
@@ -245,7 +247,8 @@ watch(
     isLoading.value = true
 
     try {
-      const response = await fetch(caption.url, { signal: controller.signal })
+      const url = await getSubtitleRequestUrl(caption.url, store.getters)
+      const response = await fetch(url, { signal: controller.signal })
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}`)
       }

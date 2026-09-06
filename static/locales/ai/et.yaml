@@ -634,6 +634,7 @@ Settings:
     Always Use Cookies: Kasuta alati küpsiseid
     Restricted Playback Authentication Hint: Vaikimisi edastab OpenTubeX need küpsised yt-dlp-le alles siis, kui valid vanusepiiranguga või ainult liikmetele mõeldud video juures "Proovi seadistatud küpsistega".
     Restricted Playback Authentication Warning: yt-dlp kasutamine Google’i kontoga võib kaasa tuua ajutised või püsivad kontopiirangud.
+    Use cookies for subtitles: "Kasuta subtiitrite jaoks küpsiseid"
   Privacy Settings:
     Automatic History Retention: Ajaloo automaatne säilitusaeg (päevades)
     Automatic History Retention Placeholder: Tähtajatult säilitamiseks jäta tühjaks
@@ -1431,8 +1432,9 @@ Tooltips:
     Cookie File: Vali autentitud esitamiseks Netscape'i vormingus küpsisefail.
     Browser for Cookies: Brauseritugi tuvastatakse valitud yt-dlp täitmisfailist. Autenditud esituse taotlemisel käsib OpenTubeX yt-dlp-l sellest brauserist küpsiseid lugeda.
     Browser Profile: Valikuline brauseriprofiili nimi või kaust. Viimati kasutatud profiili valimiseks jäta väli tühjaks.
-    Always Use Cookies: Kasuta seadistatud küpsiseid alati, kui yt-dlp vooge eraldab. See ei muuda voo eraldamise meetodiks yt-dlp-d. Kui yt-dlp on valitud, võivad saada kättesaadavaks ainult kontoga kasutatavad vormingud, sealhulgas YouTube Premiumi täiustatud bitikiirus, kui kontol on sellele juurdepääs.
+    Always Use Cookies: "Kasuta seadistatud küpsiseid alati, kui yt-dlp vooge eraldab. See ei muuda voo eraldamise meetodiks yt-dlp-d. Kui yt-dlp on valitud, võivad saada kättesaadavaks ainult kontoga kasutatavad vormingud, sealhulgas YouTube Premiumi täiustatud bitikiirus, kui kontol on sellele juurdepääs. Kasuta seadistatud küpsiseid subtiitrite ja automaattõlgete jaoks."
     FFmpeg Executable Path: FFmpeg on vajalik eraldi video- ja helivoogude ühendamiseks ning heli teisendamiseks. Vaikimisi eeldab OpenTubeX, et FFmpeg leitakse keskkonnamuutuja PATH kaudu. Vajaduse korral saab siin määrata kohandatud asukoha.
+    Use cookies for subtitles: "Kasuta seadistatud küpsiseid subtiitrite ja automaattõlgete jaoks. Selle lubab ka „Kasuta alati küpsiseid“."
   Distraction Free Settings:
     Shorten View Counts: Kuvab YouTube'i juba ümardatud vaatamiste arvu ja kommentaaride meeldimiste arvu lühendatud kujul, näiteks 14 000 asemel 14 tuh. Täpsed arvud kuvatakse alati täielikult.
   Subscription Settings:

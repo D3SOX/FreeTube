@@ -634,6 +634,7 @@ Settings:
     Always Use Cookies: "Implijout an toupinoù bepred"
     Restricted Playback Authentication Hint: "Dre ziouer, OpenTubeX ne dremen an toupinoù-mañ da yt-dlp nemet goude ma tibabit «Klask gant an toupinoù kefluniet» war ur video bevennet diouzh an oad pe miret d'an izili."
     Restricted Playback Authentication Warning: "Implijout yt-dlp gant ur gont Google a c'hall degas bevennoù padennek pe da viken war ar gont."
+    Use cookies for subtitles: "Implijout toupinoù evit an istitloù"
   Privacy Settings:
     Automatic History Retention: "Mirout an istor ent emgefreek (devezhioù)"
     Automatic History Retention Placeholder: "Leuskel goullo evit mirout da viken"
@@ -1434,8 +1435,9 @@ Tooltips:
     Cookie File: "Dibabit ur restr toupinoù er mentrezh Netscape evit al lenn dilesaet."
     Browser for Cookies: "Lennet e vez skor ar merdeer diwar erounezadus yt-dlp diuzet. OpenTubeX a c'houlenn digant yt-dlp lenn ar merdeer-mañ pa vez goulennet al lenn dilesaet."
     Browser Profile: "Anv pe deuliad profil merdeer diret. Laoskit goullo evit implijout ar profil haeziñ diwezhañ."
-    Always Use Cookies: "Implijout an toupinoù kefluniet bep tro ma eztenn yt-dlp gwazhioù. Ne cheñch ket an dra-mañ an doare eztennañ gwazhioù da yt-dlp. Gant yt-dlp diuzet e c'hall mentrezhioù miret d'ar c'hontoù bezañ hegerz, en o zouez fonnder gwell YouTube Premium pa vez aotreet ar gont."
+    Always Use Cookies: "Implijout an toupinoù kefluniet bep tro ma eztenn yt-dlp gwazhioù. Ne cheñch ket an dra-mañ an doare eztennañ gwazhioù da yt-dlp. Gant yt-dlp diuzet e c'hall mentrezhioù miret d'ar c'hontoù bezañ hegerz, en o zouez fonnder gwell YouTube Premium pa vez aotreet ar gont. Implijout an toupinoù kefluniet evit an istitloù hag an troidigezhioù emgefreek."
     FFmpeg Executable Path: "Rekis eo FFmpeg evit kendeuziñ gwazhioù video ha son distag hag evit amdreiñ ar son. Dre ziouer e soñj OpenTubeX e c'haller kavout FFmpeg dre argemmenn endro PATH. Gallout a reer lakaat un hent personelaet amañ ma vez ezhomm."
+    Use cookies for subtitles: "Implijout an toupinoù kefluniet evit an istitloù hag an troidigezhioù emgefreek. Gweredekaet ivez gant « Implijout toupinoù atav »."
   Distraction Free Settings:
     Shorten View Counts: "Diskouez niver ar selladennoù ha plijadennoù an evezhiadennoù er stumm berr rontaet dija gant YouTube, da skouer 14K e-lec'h 14 000. Diskouezet e vez an niver resis en e bezh bepred."
   Subscription Settings:

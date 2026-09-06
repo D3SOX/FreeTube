@@ -291,6 +291,15 @@
         compact
         @change="updateYtDlpPlaybackAlwaysUseCookies"
       />
+      <FtToggleSwitch
+        :label="t('Settings.External Software Settings.Use cookies for subtitles')"
+        :default-value="ytDlpPlaybackAlwaysUseCookies || ytDlpSubtitleUseCookies"
+        :disabled="ytDlpPlaybackAlwaysUseCookies"
+        setting-key="ytDlpSubtitleUseCookies"
+        :tooltip="t('Tooltips.External Software Settings.Use cookies for subtitles')"
+        compact
+        @change="store.dispatch('updateYtDlpSubtitleUseCookies', $event)"
+      />
     </FtFlexBox>
     <p class="restrictedPlaybackAuthHint">
       {{ t('Settings.External Software Settings.Restricted Playback Authentication Hint') }}
@@ -365,6 +374,7 @@ const ytDlpPlaybackCookiesBrowserProfile = computed(() => store.getters.getYtDlp
 
 /** @type {import('vue').ComputedRef<boolean>} */
 const ytDlpPlaybackAlwaysUseCookies = computed(() => store.getters.getYtDlpPlaybackAlwaysUseCookies)
+const ytDlpSubtitleUseCookies = computed(() => store.getters.getYtDlpSubtitleUseCookies)
 
 /** @type {import('vue').ComputedRef<'system' | 'managed'>} */
 const ytDlpFfmpegSource = computed(() => store.getters.getYtDlpFfmpegSource)
