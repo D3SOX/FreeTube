@@ -62,6 +62,8 @@ Global:
     Watching Count: 1 espectador | {count} espectadors | {count} espectadors
 Search Bar:
   Remove: Suprimeix
+  Open Search Container: Obre el camp de cerca
+  Search: Cerca
 Search character limit: La consulta supera el límit de {searchCharacterLimit} caràcters
 Search Listing:
   Label:
@@ -1058,6 +1060,8 @@ Settings:
     Show Video Title: Mostra el títol del vídeo
     Show Bottom Right Actions Dock: Mostra el plafó d'accions inferior dret
     Paused Interface Hide Delay: Retard per ocultar la interfície en pausa
+    Add: Afegeix
+    Remove: Elimina
   Data Settings:
     Data And Storage: Dades i emmagatzematge
     Profile Directory: Directori del perfil
@@ -1328,6 +1332,7 @@ Profile:
   Theme Color: Color del tema
   Close Profile Dropdown: Tanca el desplegable del perfil
   Open Profile Dropdown: Obre el desplegable del perfil
+  Go To Profile Manager: Ves al gestor de perfils
 Channel:
   Subscription settings: Configuració de la subscripció
   Failed to save subscription settings: No s'han pogut desar els paràmetres del canal
@@ -1670,6 +1675,7 @@ Video:
   Watch:
     'Remaining preroll-ad time: {remindingTimeSeconds}s': 'Temps restant de l''anunci previ: {remindingTimeSeconds}s'
     'Remaining SABR backoff time: {remindingTimeSeconds}s': 'Temps d''espera de SABR restant: {remindingTimeSeconds}s'
+  Station: Estació
 Playlist:
   Playlist Already Preloaded: "Tots els vídeos de la llista ja estan precarregats"
   Playlist Preload Progress: "S'estan precarregant vídeos: {completed} de {requested}"

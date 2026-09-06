@@ -766,6 +766,8 @@ Settings:
     Show Video Title: Tampilkan Judul Video
     Show Bottom Right Actions Dock: Tampilkan Dok Tindakan Kanan Bawah
     Paused Interface Hide Delay: Jeda Sebelum Menyembunyikan Antarmuka yang Dijeda
+    Add: Tambah
+    Remove: Hapus
   Data Settings:
     Data And Storage: Data & Penyimpanan
     Profile Directory: Direktori profil
@@ -985,6 +987,7 @@ Profile:
   Use Initial: Gunakan Inisial
   The selected image could not be loaded: Gambar yang dipilih tidak dapat dimuat
   Theme Color: Warna Tema
+  Go To Profile Manager: Buka pengelola profil
 Channel:
   Subscription settings: Pengaturan langganan
   Failed to save subscription settings: Gagal menyimpan pengaturan saluran
@@ -1223,6 +1226,7 @@ Video:
       UpvoteSegment: Beri suara positif
       DownvoteSegment: Beri suara negatif
       VoteFailed: Gagal mengirim suara SponsorBlock.
+  Station: Stasiun
 Playlist:
   Playlist Already Preloaded: "Semua video dalam daftar putar sudah dimuat sebelumnya"
   Playlist Preload Progress: "Memuat video terlebih dahulu: {completed} dari {requested}"
@@ -1638,3 +1642,6 @@ Downloads:
     Subtitles Format: Takarir - {format}
 Channels:
   Load More Channels: "Muat lebih banyak channel"
+Search Bar:
+  Open Search Container: Buka kolom pencarian
+  Search: Cari

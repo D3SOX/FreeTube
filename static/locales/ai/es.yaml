@@ -764,6 +764,8 @@ Settings:
     Show Video Title: Mostrar título del vídeo
     Show Bottom Right Actions Dock: Mostrar panel de acciones inferior derecho
     Paused Interface Hide Delay: Retraso para ocultar la interfaz al pausar
+    Add: Añadir
+    Remove: Eliminar
   Data Settings:
     Data And Storage: Datos y almacenamiento
     Profile Directory: Directorio del perfil
@@ -983,6 +985,7 @@ Profile:
   Use Initial: Usar inicial
   The selected image could not be loaded: No se pudo cargar la imagen seleccionada
   Theme Color: Color del tema
+  Go To Profile Manager: Ir al gestor de perfiles
 Channel:
   Subscription settings: Configuración de la suscripción
   Failed to save subscription settings: No se pudo guardar la configuración del canal
@@ -1219,6 +1222,7 @@ Video:
       UpvoteSegment: Votar a favor
       DownvoteSegment: Votar en contra
       VoteFailed: No se pudo enviar el voto a SponsorBlock.
+  Station: Estación
 Playlist:
   Playlist Already Preloaded: "Todos los videos de la lista ya están precargados"
   Playlist Preload Progress: "Precargando videos: {completed} de {requested}"
@@ -1634,3 +1638,6 @@ Downloads:
     Subtitles Format: Subtítulos - {format}
 Channels:
   Load More Channels: "Cargar más canales"
+Search Bar:
+  Open Search Container: Abrir el campo de búsqueda
+  Search: Buscar

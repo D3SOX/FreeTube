@@ -766,6 +766,8 @@ Settings:
     Show Video Title: Hiện tiêu đề video
     Show Bottom Right Actions Dock: Hiện thanh thao tác dưới bên phải
     Paused Interface Hide Delay: Độ trễ ẩn giao diện khi tạm dừng
+    Add: Thêm
+    Remove: Xóa
   Data Settings:
     Data And Storage: Dữ liệu và bộ nhớ
     Profile Directory: Thư mục hồ sơ
@@ -985,6 +987,7 @@ Profile:
   Use Initial: Dùng chữ cái đầu
   The selected image could not be loaded: Không thể tải ảnh đã chọn
   Theme Color: Màu chủ đề
+  Go To Profile Manager: Đi đến trình quản lý hồ sơ
 Channel:
   Subscription settings: Cài đặt đăng ký
   Failed to save subscription settings: Không thể lưu cài đặt kênh
@@ -1221,6 +1224,7 @@ Video:
       UpvoteSegment: Bình chọn tích cực
       DownvoteSegment: Bình chọn tiêu cực
       VoteFailed: Không thể gửi bình chọn SponsorBlock.
+  Station: Trạm
 Playlist:
   Playlist Already Preloaded: "Tất cả video trong danh sách phát đã được tải trước"
   Playlist Preload Progress: "Đang tải trước video: {completed}/{requested}"
@@ -1636,3 +1640,6 @@ Downloads:
     Subtitles Format: Phụ đề - {format}
 Channels:
   Load More Channels: "Tải thêm kênh"
+Search Bar:
+  Open Search Container: Mở ô tìm kiếm
+  Search: Tìm kiếm

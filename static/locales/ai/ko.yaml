@@ -977,6 +977,8 @@ Settings:
     Show Video Title: 동영상 제목 표시
     Show Bottom Right Actions Dock: 오른쪽 아래 작업 독 표시
     Paused Interface Hide Delay: 일시 정지된 인터페이스 숨김 지연 시간
+    Add: 추가
+    Remove: 제거
   Data Settings:
     Data And Storage: 데이터 및 저장 공간
     Profile Directory: 프로필 디렉터리
@@ -1222,6 +1224,7 @@ Profile:
   Theme Color: 테마 색상
   Close Profile Dropdown: 프로필 드롭다운 닫기
   Open Profile Dropdown: 프로필 드롭다운 열기
+  Go To Profile Manager: 프로필 관리자로 이동
 Channel:
   Subscription settings: 구독 설정
   Failed to save subscription settings: 채널 설정을 저장하지 못했습니다
@@ -1539,6 +1542,7 @@ Video:
   Watch:
     'Remaining preroll-ad time: {remindingTimeSeconds}s': '프리롤 광고 남은 시간: {remindingTimeSeconds}초'
     'Remaining SABR backoff time: {remindingTimeSeconds}s': 'SABR 대기 남은 시간: {remindingTimeSeconds}초'
+  Station: 스테이션
 Playlist:
   Playlist Already Preloaded: "재생목록의 모든 동영상을 이미 미리 불러왔습니다"
   Playlist Preload Progress: "동영상 미리 불러오는 중: {requested}개 중 {completed}개"
@@ -2054,3 +2058,6 @@ Downloads:
     Subtitles Format: 자막 - {format}
 Channels:
   Load More Channels: "채널 더 불러오기"
+Search Bar:
+  Open Search Container: 검색창 열기
+  Search: 검색

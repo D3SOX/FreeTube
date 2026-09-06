@@ -758,6 +758,8 @@ Settings:
     Show Video Title: 顯示影片標題
     Show Bottom Right Actions Dock: 顯示右下角操作列
     Paused Interface Hide Delay: 暫停介面的隱藏延遲
+    Add: 新增
+    Remove: 移除
   Data Settings:
     Data And Storage: 資料與儲存空間
     Profile Directory: 設定檔資料夾
@@ -968,6 +970,7 @@ Profile:
   Use Initial: 使用首字母
   The selected image could not be loaded: 無法載入選取的圖片
   Theme Color: 佈景主題色彩
+  Go To Profile Manager: 前往個人檔案管理員
 Channel:
   Subscription settings: 訂閱設定
   Failed to save subscription settings: 無法儲存頻道設定
@@ -1203,6 +1206,7 @@ Video:
       UpvoteSegment: 投贊成票
       DownvoteSegment: 投反對票
       VoteFailed: 無法提交 SponsorBlock 投票。
+  Station: 電台
 Playlist:
   Playlist Already Preloaded: "播放清單中的所有影片均已預載"
   Playlist Preload Progress: "正在預載影片：{completed}/{requested}"
@@ -1618,3 +1622,6 @@ Downloads:
     Subtitles Format: 字幕 - {format}
 Channels:
   Load More Channels: "載入更多頻道"
+Search Bar:
+  Open Search Container: 開啟搜尋欄
+  Search: 搜尋

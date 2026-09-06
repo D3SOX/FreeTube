@@ -762,6 +762,8 @@ Settings:
     Show Video Title: Afișează titlul videoclipului
     Show Bottom Right Actions Dock: Afișează panoul de acțiuni din dreapta jos
     Paused Interface Hide Delay: Întârzierea ascunderii interfeței în pauză
+    Add: Adaugă
+    Remove: Elimină
   Data Settings:
     Data And Storage: Date și spațiu de stocare
     Profile Directory: Directorul profilului
@@ -986,6 +988,7 @@ Profile:
   Use Initial: Folosește inițiala
   The selected image could not be loaded: Imaginea selectată nu a putut fi încărcată
   Theme Color: Culoarea temei
+  Go To Profile Manager: Deschide gestionarea profilurilor
 Channel:
   Subscription settings: Setări abonament
   Failed to save subscription settings: Setările canalului nu au putut fi salvate
@@ -1227,6 +1230,7 @@ Video:
   Watch:
     'Remaining preroll-ad time: {remindingTimeSeconds}s': 'Timp rămas din reclama de început: {remindingTimeSeconds}s'
     'Remaining SABR backoff time: {remindingTimeSeconds}s': 'Timp rămas din așteptarea SABR: {remindingTimeSeconds}s'
+  Station: Stație
 Playlist:
   Playlist Already Preloaded: "Toate videoclipurile din lista de redare sunt deja preîncărcate"
   Playlist Preload Progress: "Se preîncarcă videoclipurile: {completed} din {requested}"
@@ -1648,3 +1652,6 @@ Downloads:
     Subtitles Format: Subtitrări - {format}
 Channels:
   Load More Channels: "Încarcă mai multe canale"
+Search Bar:
+  Open Search Container: Deschide câmpul de căutare
+  Search: Caută

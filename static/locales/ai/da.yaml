@@ -784,6 +784,8 @@ Settings:
     Show Video Title: Vis videotitel
     Show Bottom Right Actions Dock: Vis handlingspanelet nederst til højre
     Paused Interface Hide Delay: Forsinkelse før brugerfladen skjules under pause
+    Add: Tilføj
+    Remove: Fjern
   Data Settings:
     Data And Storage: Data og lager
     Profile Directory: Profilmappe
@@ -1017,6 +1019,7 @@ Profile:
   Use Initial: Brug forbogstav
   The selected image could not be loaded: Det valgte billede kunne ikke indlæses
   Theme Color: Temafarve
+  Go To Profile Manager: Gå til profilhåndtering
 Channel:
   Subscription settings: Abonnementsindstillinger
   Failed to save subscription settings: Kanalindstillingerne kunne ikke gemmes
@@ -1260,6 +1263,7 @@ Video:
   Watch:
     'Remaining preroll-ad time: {remindingTimeSeconds}s': 'Resterende tid for preroll-annonce: {remindingTimeSeconds}s'
     'Remaining SABR backoff time: {remindingTimeSeconds}s': 'Resterende SABR-ventetid: {remindingTimeSeconds}s'
+  Station: Station
 Playlist:
   Playlist Already Preloaded: "Alle videoer i playlisten er allerede forudindlæst"
   Playlist Preload Progress: "Forudindlæser videoer: {completed} af {requested}"
@@ -1684,3 +1688,6 @@ Downloads:
     Subtitles Format: Undertekster - {format}
 Channels:
   Load More Channels: "Indlæs flere kanaler"
+Search Bar:
+  Open Search Container: Åbn søgefelt
+  Search: Søg

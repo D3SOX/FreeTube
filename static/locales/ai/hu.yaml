@@ -758,6 +758,8 @@ Settings:
     Show Video Title: Videó címének megjelenítése
     Show Bottom Right Actions Dock: Jobb alsó műveletsáv megjelenítése
     Paused Interface Hide Delay: Szüneteltetett kezelőfelület elrejtési késleltetése
+    Add: Hozzáadás
+    Remove: Eltávolítás
   Data Settings:
     Data And Storage: Adatok és tárhely
     Profile Directory: Profilmappa
@@ -968,6 +970,7 @@ Profile:
   Use Initial: Monogram használata
   The selected image could not be loaded: A kiválasztott kép nem tölthető be
   Theme Color: Téma színe
+  Go To Profile Manager: Ugrás a profilkezelőhöz
 Channel:
   Subscription settings: Feliratkozási beállítások
   Failed to save subscription settings: Nem sikerült menteni a csatornabeállításokat
@@ -1201,6 +1204,7 @@ Video:
       UpvoteSegment: Pozitív szavazat
       DownvoteSegment: Negatív szavazat
       VoteFailed: Nem sikerült elküldeni a SponsorBlock-szavazatot.
+  Station: Állomás
 Playlist:
   Playlist Already Preloaded: "A lejátszási lista összes videója már elő van töltve"
   Playlist Preload Progress: "Videók előtöltése: {completed}/{requested}"
@@ -1616,3 +1620,6 @@ Downloads:
     Subtitles Format: Feliratok - {format}
 Channels:
   Load More Channels: "További csatornák betöltése"
+Search Bar:
+  Open Search Container: Keresőmező megnyitása
+  Search: Keresés

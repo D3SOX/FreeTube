@@ -771,6 +771,8 @@ Settings:
     Show Video Title: Εμφάνιση τίτλου βίντεο
     Show Bottom Right Actions Dock: Εμφάνιση βάσης ενεργειών κάτω δεξιά
     Paused Interface Hide Delay: Καθυστέρηση απόκρυψης περιβάλλοντος κατά την παύση
+    Add: Προσθήκη
+    Remove: Αφαίρεση
   Data Settings:
     Data And Storage: Δεδομένα και αποθηκευτικός χώρος
     Profile Directory: Κατάλογος προφίλ
@@ -992,6 +994,7 @@ Profile:
   Use Initial: Χρήση αρχικού γράμματος
   The selected image could not be loaded: Δεν ήταν δυνατή η φόρτωση της επιλεγμένης εικόνας
   Theme Color: Χρώμα θέματος
+  Go To Profile Manager: Μετάβαση στη διαχείριση προφίλ
 Channel:
   Subscription settings: Ρυθμίσεις συνδρομής
   Failed to save subscription settings: Δεν ήταν δυνατή η αποθήκευση των ρυθμίσεων καναλιού
@@ -1229,6 +1232,7 @@ Video:
       UpvoteSegment: Θετική ψήφος
       DownvoteSegment: Αρνητική ψήφος
       VoteFailed: Απέτυχε η υποβολή ψήφου στο SponsorBlock.
+  Station: Σταθμός
 Playlist:
   Playlist Already Preloaded: "Όλα τα βίντεο της λίστας αναπαραγωγής έχουν ήδη προφορτωθεί"
   Playlist Preload Progress: "Προφόρτωση βίντεο: {completed} από {requested}"
@@ -1646,3 +1650,6 @@ Downloads:
     Subtitles Format: Υπότιτλοι - {format}
 Channels:
   Load More Channels: "Φόρτωση περισσότερων καναλιών"
+Search Bar:
+  Open Search Container: Άνοιγμα πεδίου αναζήτησης
+  Search: Αναζήτηση

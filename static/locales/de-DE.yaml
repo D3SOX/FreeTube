@@ -1093,6 +1093,8 @@ Settings:
     Show Video Title: Videotitel anzeigen
     Show Bottom Right Actions Dock: Aktionsleiste unten rechts anzeigen
     Paused Interface Hide Delay: Verzögerung zum Ausblenden der pausierten Oberfläche
+    Add: Hinzufügen
+    Remove: Entfernen
   The app needs to restart for changes to take effect. Restart and apply change?: Die App muss neu gestartet werden, damit die Änderungen wirksam werden. Neu starten und Änderung übernehmen?
   Proxy Settings:
     Ip: IP-Adresse
@@ -1944,6 +1946,7 @@ Video:
   Top Chat: Top-Chat
   All Messages: Alle Nachrichten
   Live chat replay is enabled. Chat messages will appear here as the video plays.: Die Livechat-Wiederholung ist aktiviert. Chatnachrichten erscheinen hier während der Videowiedergabe.
+  Station: Station
 Playlist:
   #& About
   Close Playlist: Playlist schließen
@@ -2142,6 +2145,7 @@ Profile:
   Use Initial: Anfangsbuchstaben verwenden
   The selected image could not be loaded: Das ausgewählte Bild konnte nicht geladen werden
   Theme Color: Designfarbe
+  Go To Profile Manager: Zum Profil Manager wechseln
 The playlist has been reversed: Die Playlist wurde umgedreht
 Download From Site: Von der Website herunterladen
 Version {versionNumber} is now available.: Version {versionNumber} ist jetzt verfügbar.
@@ -2281,6 +2285,8 @@ Default Invidious instance has been set to {instance}: Standardmäßige Invidiou
 Search Bar:
   Clear Input: Eingabe löschen
   Remove: Entfernen
+  Open Search Container: Suchcontainer öffnen
+  Search: Suche
 Are you sure you want to open this link?: Bist du sicher, dass du diesen Link öffnen willst?
 External link opening has been disabled in Settings → Privacy: Das Öffnen externer Links wurde unter Einstellungen → Datenschutz deaktiviert
 Screenshot Success: Screenshot wurde gespeichert

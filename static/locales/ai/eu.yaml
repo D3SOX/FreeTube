@@ -760,6 +760,8 @@ Settings:
     Show Video Title: Erakutsi bideoaren izenburua
     Show Bottom Right Actions Dock: Erakutsi ekintzen panela behean eskuinean
     Paused Interface Hide Delay: Pausatutako interfazea ezkutatzeko atzerapena
+    Add: Gehitu
+    Remove: Kendu
   Data Settings:
     Data And Storage: Datuak eta biltegiratzea
     Profile Directory: Profilaren direktorioa
@@ -970,6 +972,7 @@ Profile:
   Use Initial: Erabili iniziala
   The selected image could not be loaded: Ezin izan da hautatutako irudia kargatu
   Theme Color: Gaiaren kolorea
+  Go To Profile Manager: Joan profil-kudeatzailera
 Channel:
   Subscription settings: Harpidetzaren ezarpenak
   Failed to save subscription settings: Ezin izan dira kanalaren ezarpenak gorde
@@ -1214,6 +1217,7 @@ Video:
       UpvoteSegment: Eman aldeko botoa
       DownvoteSegment: Eman kontrako botoa
       VoteFailed: Ezin izan da SponsorBlock botoa bidali.
+  Station: Estazioa
 Playlist:
   Playlist Already Preloaded: "Erreprodukzio-zerrendako bideo guztiak aurrez kargatuta daude"
   Playlist Preload Progress: "Bideoak aurrez kargatzen: {completed}/{requested}"
@@ -1629,3 +1633,6 @@ Downloads:
     Subtitles Format: Azpitituluak - {format}
 Channels:
   Load More Channels: "Kargatu kanal gehiago"
+Search Bar:
+  Open Search Container: Ireki bilaketa-eremua
+  Search: Bilatu

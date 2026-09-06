@@ -113,6 +113,8 @@ Search / Go to URL: Search / Go to URL
 Search Bar:
   Clear Input: Clear Input
   Remove: Remove
+  Open Search Container: Open Search Container
+  Search: Search
 Search character limit: Search query is over the {searchCharacterLimit} character limit
 Search Listing:
   Label:
@@ -1332,6 +1334,8 @@ Settings:
     Show Video Title: Show Video Title
     Show Bottom Right Actions Dock: Show Bottom Right Actions Dock
     Paused Interface Hide Delay: Paused Interface Hide Delay
+    Add: Add
+    Remove: Remove
   Data Settings:
     Data Settings: Data
     Data And Storage: Data & Storage
@@ -1721,6 +1725,7 @@ Profile:
     from any other profile.
   Close Profile Dropdown: Close Profile Dropdown
   Open Profile Dropdown: Open Profile Dropdown
+  Go To Profile Manager: Go to Profile Manager
 #On Channel Page
 Channel:
   Subscription settings: Subscription settings
@@ -1918,6 +1923,7 @@ Video:
   AI: AI
   AI-generated content: AI-generated content
   Collaborators: Collaborators
+  Station: Station
   Live: Live
   Live Now: Live Now
   Live Chat: Live Chat

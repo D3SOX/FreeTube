@@ -758,6 +758,8 @@ Settings:
     Show Video Title: Vis videotittel
     Show Bottom Right Actions Dock: Vis handlingsfelt nederst til høyre
     Paused Interface Hide Delay: Forsinkelse før grensesnittet skjules ved pause
+    Add: Legg til
+    Remove: Fjern
   Data Settings:
     Data And Storage: Data og lagring
     Profile Directory: Profilmappe
@@ -968,6 +970,7 @@ Profile:
   Use Initial: Bruk forbokstav
   The selected image could not be loaded: Det valgte bildet kunne ikke lastes inn
   Theme Color: Temafarge
+  Go To Profile Manager: Gå til profilbehandling
 Channel:
   Subscription settings: Abonnementsinnstillinger
   Failed to save subscription settings: Kunne ikke lagre kanalinnstillingene
@@ -1205,6 +1208,7 @@ Video:
       UpvoteSegment: Stem opp
       DownvoteSegment: Stem ned
       VoteFailed: Kunne ikke sende inn SponsorBlock-stemmen.
+  Station: Stasjon
 Playlist:
   Playlist Already Preloaded: "Alle videoene i spillelisten er allerede forhåndslastet"
   Playlist Preload Progress: "Forhåndslaster videoer: {completed} av {requested}"
@@ -1620,3 +1624,6 @@ Downloads:
     Subtitles Format: Undertekster – {format}
 Channels:
   Load More Channels: "Last inn flere kanaler"
+Search Bar:
+  Open Search Container: Åpne søkefeltet
+  Search: Søk

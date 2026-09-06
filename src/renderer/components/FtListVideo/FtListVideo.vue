@@ -60,13 +60,18 @@
         />
       </RouterLink>
       <div
-        v-if="isLive || isUpcoming || (displayDuration !== '' && displayDuration !== '0:00')"
+        v-if="isLive || isUpcoming || isStation || (displayDuration !== '' && displayDuration !== '0:00')"
         class="videoDuration"
         :class="{
-          live: isLive,
+          live: isLive || isStation,
           upcoming: isUpcoming
         }"
       >
+        <FtIcon
+          v-if="isStation"
+          :icon="['fa', 'tower-broadcast']"
+          class="subscriptionIcon"
+        />
         {{ displayDurationLabel }}
       </div>
       <div
@@ -242,11 +247,11 @@
         </bdi>
         <span class="videoInfo">
           <span
-            v-if="!isLive && !isUpcoming && !isPremium && !hideViews && viewCount != null"
+            v-if="!isLive && !isUpcoming && !isPremium && !isStation && !hideViews && viewCount != null"
             class="viewCount"
           >{{ t('Global.Counts.View Count', { count: parsedViewCount }, viewCount) }}</span>
           <span
-            v-if="displayedUploadedTime !== '' && !isLive"
+            v-if="displayedUploadedTime !== '' && !isLive && !isStation"
             class="uploadedTime"
           >{{ displayedUploadedTime }}</span>
           <span
@@ -254,7 +259,7 @@
             class="subscriptionHiddenVideoCount"
           >{{ t('Channel.More videos hidden', { count: subscriptionHiddenVideoCount }, subscriptionHiddenVideoCount) }}</span>
           <span
-            v-if="isLive && !hideViews"
+            v-if="(isLive || isStation) && !hideViews"
             class="viewCount"
           >{{ t('Global.Counts.Watching Count', { count: parsedViewCount }, viewCount) }}</span>
         </span>
@@ -579,6 +584,7 @@ const is3D = ref(false)
 const hasCaptions = ref(false)
 const isMembersOnly = ref(false)
 const isUpcoming = ref(false)
+const isStation = ref(false)
 const showDownloadPrompt = ref(false)
 const enableDownloads = computed(() => store.getters.getEnableDownloads)
 
@@ -1394,6 +1400,7 @@ const displayDurationLabel = computed(() => {
   if (isPremiere.value) return t('Video.Premiere')
   if (isLive.value) return t('Video.Live')
   if (isUpcoming.value) return t('Video.Upcoming')
+  if (isStation.value) return t('Video.Station')
 
   return displayDuration.value
 })
@@ -1793,7 +1800,7 @@ function updateUploadedTime() {
       timeFormat.value
     )
     published.value = props.data.premiereTimestamp * 1000
-  } else if (typeof props.data.published === 'number' && !isLive.value) {
+  } else if (typeof props.data.published === 'number' && !isLive.value && !isStation.value) {
     published.value = props.data.published
 
     if (inHistory.value) {
@@ -1843,7 +1850,8 @@ function parseVideoData() {
   }
 
   description.value = props.data.description
-  isLive.value = props.data.isLive || props.data.liveNow || props.data.lengthSeconds === undefined
+  isStation.value = props.data.isStation === true
+  isLive.value = !isStation.value && (props.data.isLive || props.data.liveNow || props.data.lengthSeconds === undefined)
   isPremiere.value = props.data.isPremiere === true ||
     (isLive.value && props.data.premiereTimestamp > 0)
   isUpcoming.value = props.data.isUpcoming || props.data.premiere
@@ -1895,6 +1903,7 @@ function markAsWatched() {
     isWatched: true,
     timeWatched: historyEntry.value?.timeWatched ?? Date.now(),
     isLive: false,
+    isStation: false,
     isUpcoming: false,
     isMembersOnly: isMembersOnly.value,
     type: 'video'

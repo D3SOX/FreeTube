@@ -771,6 +771,8 @@ Settings:
     Show Video Title: הצגת כותרת הסרטון
     Show Bottom Right Actions Dock: הצגת סרגל הפעולות הימני התחתון
     Paused Interface Hide Delay: השהיה לפני הסתרת הממשק כשהסרטון מושהה
+    Add: הוספה
+    Remove: הסרה
   Data Settings:
     Data And Storage: נתונים ואחסון
     Profile Directory: תיקיית הפרופיל
@@ -992,6 +994,7 @@ Profile:
   Use Initial: שימוש באות הראשונה
   The selected image could not be loaded: לא ניתן לטעון את התמונה שנבחרה
   Theme Color: צבע ערכת הנושא
+  Go To Profile Manager: מעבר למנהל הפרופילים
 Channel:
   Subscription settings: הגדרות מינוי
   Failed to save subscription settings: לא ניתן לשמור את הגדרות הערוץ
@@ -1231,6 +1234,7 @@ Video:
       UpvoteSegment: הצבעה בעד
       DownvoteSegment: הצבעה נגד
       VoteFailed: שליחת ההצבעה אל SponsorBlock נכשלה.
+  Station: תחנה
 Playlist:
   Playlist Already Preloaded: "כל סרטוני הפלייליסט כבר נטענו מראש"
   Playlist Preload Progress: "טוען סרטונים מראש: {completed} מתוך {requested}"
@@ -1648,3 +1652,6 @@ Downloads:
     Subtitles Format: כתוביות - {format}
 Channels:
   Load More Channels: "טעינת ערוצים נוספים"
+Search Bar:
+  Open Search Container: פתיחת שדה החיפוש
+  Search: חיפוש

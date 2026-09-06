@@ -771,6 +771,8 @@ Settings:
     Show Video Title: Näytä videon nimi
     Show Bottom Right Actions Dock: Näytä toimintopalkki oikeassa alakulmassa
     Paused Interface Hide Delay: Keskeytetyn käyttöliittymän piilotusviive
+    Add: Lisää
+    Remove: Poista
   Data Settings:
     Data And Storage: Tiedot ja tallennustila
     Profile Directory: Profiilikansio
@@ -992,6 +994,7 @@ Profile:
   Use Initial: Käytä alkukirjainta
   The selected image could not be loaded: Valittua kuvaa ei voitu ladata
   Theme Color: Teemaväri
+  Go To Profile Manager: Siirry profiilien hallintaan
 Channel:
   Subscription settings: Tilausasetukset
   Failed to save subscription settings: Kanava-asetusten tallentaminen epäonnistui
@@ -1229,6 +1232,7 @@ Video:
       UpvoteSegment: Äänestä puolesta
       DownvoteSegment: Äänestä vastaan
       VoteFailed: SponsorBlock-äänen lähettäminen epäonnistui.
+  Station: Asema
 Playlist:
   Playlist Already Preloaded: "Kaikki soittolistan videot on jo esiladattu"
   Playlist Preload Progress: "Esiladataan videoita: {completed}/{requested}"
@@ -1646,3 +1650,6 @@ Downloads:
     Subtitles Format: Tekstitykset - {format}
 Channels:
   Load More Channels: "Lataa lisää kanavia"
+Search Bar:
+  Open Search Container: Avaa hakukenttä
+  Search: Hae

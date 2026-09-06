@@ -738,6 +738,8 @@ Settings:
     Disable A-B Repeat: Disable A-B Repeat
     Hide End-Screen Annotations: Hide End-Screen Annotations
     Hide Paid Promotion Badge: Hide Paid Promotion Badge
+    Add: Add
+    Remove: Remove
   Data Settings:
     Data And Storage: Data & Storage
     Profile Directory: Profile directory
@@ -946,6 +948,7 @@ Profile:
   Use Initial: Use Initial
   The selected image could not be loaded: The selected image could not be loaded
   Theme Color: Theme Colour
+  Go To Profile Manager: Go to Profile Manager
 Channel:
   Subscription settings: Subscription settings
   Failed to save subscription settings: Failed to save channel settings
@@ -1172,6 +1175,7 @@ Video:
       UpvoteSegment: Upvote
       DownvoteSegment: Downvote
       VoteFailed: Failed to submit SponsorBlock vote.
+  Station: Station
 Playlist:
   Playlist Already Preloaded: "All playlist videos are already preloaded"
   Playlist Preload Progress: "Preloading videos: {completed} of {requested}"
@@ -1584,3 +1588,6 @@ Downloads:
     Audio Best: Audio - Best Quality
     Audio Format: Audio - {format}
     Subtitles Format: Subtitles - {format}
+Search Bar:
+  Open Search Container: Open Search Container
+  Search: Search

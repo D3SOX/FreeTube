@@ -781,6 +781,8 @@ Settings:
     Show Video Title: Прикажи наслов видео-снимка
     Show Bottom Right Actions Dock: Прикажи траку радњи у доњем десном углу
     Paused Interface Hide Delay: Кашњење скривања интерфејса током паузе
+    Add: Додај
+    Remove: Уклони
   Data Settings:
     Data And Storage: Подаци и складиште
     Profile Directory: Фасцикла профила
@@ -1013,6 +1015,7 @@ Profile:
   Use Initial: Користи иницијал
   The selected image could not be loaded: Изабрана слика није могла да се учита
   Theme Color: Боја теме
+  Go To Profile Manager: Иди на управљање профилима
 Channel:
   Subscription settings: Подешавања претплате
   Failed to save subscription settings: Није могуће сачувати подешавања канала
@@ -1254,6 +1257,7 @@ Video:
   Watch:
     'Remaining preroll-ad time: {remindingTimeSeconds}s': 'Преостало време уводног огласа: {remindingTimeSeconds}s'
     'Remaining SABR backoff time: {remindingTimeSeconds}s': 'Преостало време до поновног покушаја SABR-а: {remindingTimeSeconds}s'
+  Station: Станица
 Playlist:
   Playlist Already Preloaded: "Сви видео снимци са плејлисте су већ претходно учитани"
   Playlist Preload Progress: "Претходно учитавање видео снимака: {completed} од {requested}"
@@ -1675,3 +1679,6 @@ Downloads:
     Subtitles Format: Титлови - {format}
 Channels:
   Load More Channels: "Учитај још канала"
+Search Bar:
+  Open Search Container: Отвори поље за претрагу
+  Search: Претрага

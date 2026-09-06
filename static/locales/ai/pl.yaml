@@ -306,6 +306,8 @@ Settings:
     Show Video Title: Pokazuj tytuł filmu
     Show Bottom Right Actions Dock: Pokazuj panel działań w prawym dolnym rogu
     Paused Interface Hide Delay: Opóźnienie ukrywania interfejsu po wstrzymaniu
+    Add: Dodaj
+    Remove: Usuń
   Data Settings:
     Data And Storage: Dane i pamięć
     Profile Directory: Katalog profilu
@@ -447,6 +449,7 @@ Profile:
   Use Initial: Użyj inicjału
   The selected image could not be loaded: Nie udało się wczytać wybranego obrazu
   Theme Color: Kolor motywu
+  Go To Profile Manager: Przejdź do menedżera profili
 Channel:
   Subscription settings: Ustawienia subskrypcji
   Failed to save subscription settings: Nie udało się zapisać ustawień kanału
@@ -552,6 +555,7 @@ Video:
       MuteActionType: Wycisz
       MutePrompt: Wyciszyć segment „{segmentCategory}”?
       SkipActionType: Pomiń
+  Station: Stacja
 Change Format:
   Local Video File: Lokalny plik filmu
   Local Audio File: Lokalny plik dźwiękowy
@@ -821,3 +825,6 @@ Playlist:
   Playlist Preload Pagination Failed: "Nie udało się wczytać całej playlisty, więc anulowano wstępne wczytywanie."
 Channels:
   Load More Channels: "Wczytaj więcej kanałów"
+Search Bar:
+  Open Search Container: Otwórz pole wyszukiwania
+  Search: Szukaj

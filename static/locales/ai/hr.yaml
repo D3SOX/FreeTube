@@ -760,6 +760,8 @@ Settings:
     Show Video Title: Prikaži naslov videozapisa
     Show Bottom Right Actions Dock: Prikaži traku radnji u donjem desnom kutu
     Paused Interface Hide Delay: Odgoda skrivanja sučelja tijekom pauze
+    Add: Dodaj
+    Remove: Ukloni
   Data Settings:
     Data And Storage: Podaci i pohrana
     Profile Directory: Mapa profila
@@ -970,6 +972,7 @@ Profile:
   Use Initial: Upotrijebi početno slovo
   The selected image could not be loaded: Odabranu sliku nije moguće učitati
   Theme Color: Boja teme
+  Go To Profile Manager: Otvori upravitelja profila
 Channel:
   Subscription settings: Postavke pretplate
   Failed to save subscription settings: Nije moguće spremiti postavke kanala
@@ -1209,6 +1212,7 @@ Video:
       UpvoteSegment: Glasaj za
       DownvoteSegment: Glasaj protiv
       VoteFailed: Slanje glasa u SponsorBlock nije uspjelo.
+  Station: Postaja
 Playlist:
   Playlist Already Preloaded: "Svi videozapisi na popisu već su predučitani"
   Playlist Preload Progress: "Predučitavanje videozapisa: {completed} od {requested}"
@@ -1624,3 +1628,6 @@ Downloads:
     Subtitles Format: Titlovi - {format}
 Channels:
   Load More Channels: "Učitaj više kanala"
+Search Bar:
+  Open Search Container: Otvori polje za pretraživanje
+  Search: Pretraži

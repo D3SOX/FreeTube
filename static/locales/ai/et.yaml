@@ -758,6 +758,8 @@ Settings:
     Show Video Title: Kuva video pealkiri
     Show Bottom Right Actions Dock: Kuva all paremal toiminguriba
     Paused Interface Hide Delay: Liidese peitmise viivitus pausi ajal
+    Add: Lisa
+    Remove: Eemalda
   Data Settings:
     Data And Storage: Andmed ja salvestusruum
     Profile Directory: Profiilikaust
@@ -968,6 +970,7 @@ Profile:
   Use Initial: Kasuta esitähte
   The selected image could not be loaded: Valitud pilti ei õnnestunud laadida
   Theme Color: Kujunduse värv
+  Go To Profile Manager: Ava profiilihaldur
 Channel:
   Subscription settings: Tellimuse seaded
   Failed to save subscription settings: Kanali seadeid ei õnnestunud salvestada
@@ -1203,6 +1206,7 @@ Video:
       UpvoteSegment: Anna poolthääl
       DownvoteSegment: Anna vastuhääl
       VoteFailed: SponsorBlocki hääle saatmine nurjus.
+  Station: Jaam
 Playlist:
   Playlist Already Preloaded: "Kõik esitusloendi videod on juba eellaaditud"
   Playlist Preload Progress: "Videote eellaadimine: {completed}/{requested}"
@@ -1618,3 +1622,6 @@ Downloads:
     Subtitles Format: Subtiitrid - {format}
 Channels:
   Load More Channels: "Laadi rohkem kanaleid"
+Search Bar:
+  Open Search Container: Ava otsinguväli
+  Search: Otsi

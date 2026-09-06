@@ -766,6 +766,8 @@ Settings:
     Show Video Title: Показувати назву відео
     Show Bottom Right Actions Dock: Показувати панель дій унизу праворуч
     Paused Interface Hide Delay: Затримка приховування інтерфейсу під час паузи
+    Add: Додати
+    Remove: Видалити
   Data Settings:
     Data And Storage: Дані та сховище
     Profile Directory: Папка профілю
@@ -987,6 +989,7 @@ Profile:
   Use Initial: Використати ініціал
   The selected image could not be loaded: Не вдалося завантажити вибране зображення
   Theme Color: Колір теми
+  Go To Profile Manager: Перейти до керування профілями
 Channel:
   Subscription settings: Налаштування підписки
   Failed to save subscription settings: Не вдалося зберегти налаштування каналу
@@ -1224,6 +1227,7 @@ Video:
       UpvoteSegment: Проголосувати за
       DownvoteSegment: Проголосувати проти
       VoteFailed: Не вдалося надіслати голос у SponsorBlock.
+  Station: Станція
 Playlist:
   Playlist Already Preloaded: "Усі відео з плейлиста вже попередньо завантажені"
   Playlist Preload Progress: "Попереднє завантаження відео: {completed} з {requested}"
@@ -1639,3 +1643,6 @@ Downloads:
     Subtitles Format: Субтитри - {format}
 Channels:
   Load More Channels: "Завантажити більше каналів"
+Search Bar:
+  Open Search Container: Відкрити поле пошуку
+  Search: Пошук

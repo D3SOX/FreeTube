@@ -944,6 +944,8 @@ Settings:
     Show Video Title: Vis videotittel
     Show Bottom Right Actions Dock: Vis handlingsfeltet nede til høgre
     Paused Interface Hide Delay: Forseinking før grensesnittet blir gøymt ved pause
+    Add: Legg til
+    Remove: Fjern
   Data Settings:
     Data And Storage: Data og lagring
     Profile Directory: Profilmappe
@@ -1189,6 +1191,7 @@ Profile:
   Theme Color: Temafarge
   Close Profile Dropdown: Lukk profilmenyen
   Open Profile Dropdown: Opna profilmenyen
+  Go To Profile Manager: Gå til profilhandsaming
 Channel:
   Subscription settings: Abonnementsinnstillingar
   Failed to save subscription settings: Klarte ikkje å lagre kanalinnstillingane
@@ -1511,6 +1514,7 @@ Video:
   Watch:
     'Remaining preroll-ad time: {remindingTimeSeconds}s': 'Attverande tid for førehandsannonsen: {remindingTimeSeconds}s'
     'Remaining SABR backoff time: {remindingTimeSeconds}s': 'Attverande ventetid for SABR: {remindingTimeSeconds}s'
+  Station: Stasjon
 Playlist:
   Playlist Already Preloaded: "Alle videoane i spelelista er allereie førehandslasta"
   Playlist Preload Progress: "Førehandslastar videoar: {completed} av {requested}"
@@ -2032,3 +2036,6 @@ Downloads:
     Subtitles Format: Undertekstar - {format}
 Channels:
   Load More Channels: "Last inn fleire kanalar"
+Search Bar:
+  Open Search Container: Opne søkjefeltet
+  Search: Søk

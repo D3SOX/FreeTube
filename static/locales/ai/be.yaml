@@ -788,6 +788,8 @@ Settings:
     Show Video Title: Паказваць назву відэа
     Show Bottom Right Actions Dock: Паказваць панэль дзеянняў унізе справа
     Paused Interface Hide Delay: Затрымка схавання інтэрфейсу падчас паўзы
+    Add: Дадаць
+    Remove: Выдаліць
   Data Settings:
     Data And Storage: Даныя і сховішча
     Profile Directory: Папка профілю
@@ -1021,6 +1023,7 @@ Profile:
   Use Initial: Выкарыстоўваць ініцыял
   The selected image could not be loaded: Не ўдалося загрузіць выбраную выяву
   Theme Color: Колер тэмы
+  Go To Profile Manager: Перайсці да кіравання профілямі
 Channel:
   Subscription settings: Налады падпіскі
   Failed to save subscription settings: Не ўдалося захаваць налады канала
@@ -1271,6 +1274,7 @@ Video:
   Watch:
     'Remaining preroll-ad time: {remindingTimeSeconds}s': 'Да канца рэкламы перад відэа: {remindingTimeSeconds} с'
     'Remaining SABR backoff time: {remindingTimeSeconds}s': 'Да паўторнай спробы SABR: {remindingTimeSeconds} с'
+  Station: Станцыя
 Playlist:
   Playlist Already Preloaded: "Усе відэа плэйліста ўжо папярэдне загружаны"
   Playlist Preload Progress: "Папярэдняя загрузка відэа: {completed} з {requested}"
@@ -1695,3 +1699,6 @@ Downloads:
     Subtitles Format: Субцітры — {format}
 Channels:
   Load More Channels: "Загрузіць больш каналаў"
+Search Bar:
+  Open Search Container: Адкрыць поле пошуку
+  Search: Пошук

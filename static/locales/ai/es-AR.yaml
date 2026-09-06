@@ -844,6 +844,8 @@ Settings:
     Show Video Title: Mostrar título del video
     Show Bottom Right Actions Dock: Mostrar panel de acciones inferior derecho
     Paused Interface Hide Delay: Retraso para ocultar la interfaz al pausar
+    Add: Agregar
+    Remove: Eliminar
   Data Settings:
     Data And Storage: Datos y almacenamiento
     Profile Directory: Directorio del perfil
@@ -1149,6 +1151,7 @@ Profile:
   Are you sure you want to delete the selected channels?  This will not delete the channel from any other profile.: ¿Está seguro de que desea eliminar los canales seleccionados? Esto no eliminará el canal de ningún otro perfil.
   Close Profile Dropdown: Cerrar el desplegable del Perfil
   Open Profile Dropdown: Abrir el desplegable del Perfil
+  Go To Profile Manager: Ir al administrador de perfiles
 Channel:
   Subscription settings: Configuración de la suscripción
   Failed to save subscription settings: No se pudo guardar la configuración del canal
@@ -1562,6 +1565,7 @@ Video:
   Watch:
     'Remaining preroll-ad time: {remindingTimeSeconds}s': 'Tiempo restante previo al anuncio: {remindingTimeSeconds} s'
     'Remaining SABR backoff time: {remindingTimeSeconds}s': 'Tiempo restante de retroceso de SABR: {remindingTimeSeconds} s'
+  Station: Estación
 Playlist:
   Playlist Already Preloaded: "Todos los videos de la lista ya están precargados"
   Playlist Preload Progress: "Precargando videos: {completed} de {requested}"
@@ -2165,3 +2169,6 @@ Downloads:
     Subtitles Format: Subtítulos - {format}
 Channels:
   Load More Channels: "Cargar más canales"
+Search Bar:
+  Open Search Container: Abrir el campo de búsqueda
+  Search: Buscar

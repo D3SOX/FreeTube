@@ -72,6 +72,8 @@ Global:
     Watching Count: 1 gledalec | {count} gledalca | {count} gledalci | {count} gledalcev
 Search Bar:
   Remove: Odstrani
+  Open Search Container: Odpri iskalno polje
+  Search: Iskanje
 Search character limit: Iskalna poizvedba presega omejitev {searchCharacterLimit} znakov
 Search Listing:
   Label:
@@ -1017,6 +1019,8 @@ Settings:
     Show Video Title: Prikaži naslov videoposnetka
     Show Bottom Right Actions Dock: Prikaži vrstico z dejanji spodaj desno
     Paused Interface Hide Delay: Zakasnitev skrivanja vmesnika med premorom
+    Add: Dodaj
+    Remove: Odstrani
   Data Settings:
     Data And Storage: Podatki in shramba
     Profile Directory: Mapa profila
@@ -1296,6 +1300,7 @@ Profile:
   Theme Color: Barva teme
   Close Profile Dropdown: Zapri spustni meni profila
   Open Profile Dropdown: Odpri spustni meni profila
+  Go To Profile Manager: Pojdi v upravitelja profilov
 Channel:
   Subscription settings: Nastavitve naročnine
   Failed to save subscription settings: Nastavitev kanala ni bilo mogoče shraniti
@@ -1648,6 +1653,7 @@ Video:
   Watch:
     'Remaining preroll-ad time: {remindingTimeSeconds}s': 'Preostali čas oglasa pred videoposnetkom: {remindingTimeSeconds}s'
     'Remaining SABR backoff time: {remindingTimeSeconds}s': 'Preostali čas zakasnitve SABR: {remindingTimeSeconds}s'
+  Station: Postaja
 Playlist:
   Playlist Already Preloaded: "Vsi videoposnetki na seznamu so že prednaloženi"
   Playlist Preload Progress: "Prednalaganje videoposnetkov: {completed} od {requested}"

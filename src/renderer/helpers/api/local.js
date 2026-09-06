@@ -2114,7 +2114,9 @@ function parseLockupView(lockupView, channelId = undefined, channelName = undefi
       }
     }
     case 'SHORT':
+    case 'STATION':
     case 'VIDEO': {
+      const isStation = lockupView.content_type === 'STATION'
       let publishedText
       let lengthSeconds = ''
       let liveNow = false
@@ -2130,7 +2132,8 @@ function parseLockupView(lockupView, channelId = undefined, channelName = undefi
       }
 
       /** @type {YTNodes.ThumbnailBottomOverlayView | undefined } */
-      const thumbnailBottomOverlayView = lockupView.content_image?.overlays?.firstOfType(YTNodes.ThumbnailBottomOverlayView)
+      const thumbnailBottomOverlayView = lockupView.content_image?.overlays?.firstOfType(YTNodes.ThumbnailBottomOverlayView) ??
+        lockupView.content_image?.primary_thumbnail?.overlays?.firstOfType(YTNodes.ThumbnailBottomOverlayView)
 
       // YouTube changed the metadata row structure in 2026. The layout can now be any of:
       //   - 2 rows: [author] [views, date]            (e.g. related videos / Up Next)
@@ -2220,7 +2223,8 @@ function parseLockupView(lockupView, channelId = undefined, channelName = undefi
       }
 
       const imageAuthorId = lockupView.metadata.image?.renderer_context?.command_context?.on_tap?.payload?.browseId
-      const author = authorPart?.text ?? channelName
+      const author = authorPart?.text ?? channelName ??
+        metadataParts.find(part => part.avatar_stack?.text?.text)?.avatar_stack.text.text
       const authorId = authorPart?.endpoint?.payload?.browseId ?? imageAuthorId ?? channelId
       const hasCollaborators = authorPart?.endpoint == null && isCollaborativeVideoAuthor(author)
 
@@ -2239,6 +2243,7 @@ function parseLockupView(lockupView, channelId = undefined, channelName = undefi
         isPremiere,
         isUpcoming,
         premiereDate,
+        isStation,
         isShort: lockupView.content_type === 'SHORT',
         isMembersOnly: Boolean(isMemberOnly)
       }

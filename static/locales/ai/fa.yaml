@@ -788,6 +788,8 @@ Settings:
     Show Video Title: نمایش عنوان ویدیو
     Show Bottom Right Actions Dock: نمایش نوار کنش‌های پایین سمت راست
     Paused Interface Hide Delay: تأخیر پنهان‌شدن رابط هنگام توقف
+    Add: افزودن
+    Remove: حذف
   Data Settings:
     Data And Storage: داده و فضای ذخیره‌سازی
     Profile Directory: پوشهٔ نمایه
@@ -1018,6 +1020,7 @@ Profile:
   Use Initial: استفاده از حرف اول
   The selected image could not be loaded: تصویر انتخاب‌شده بارگیری نشد
   Theme Color: رنگ پوسته
+  Go To Profile Manager: رفتن به مدیر نمایه‌ها
 Channel:
   Subscription settings: تنظیمات اشتراک
   Failed to save subscription settings: تنظیمات کانال ذخیره نشد
@@ -1265,6 +1268,7 @@ Video:
   Watch:
     'Remaining preroll-ad time: {remindingTimeSeconds}s': 'زمان باقی‌ماندهٔ تبلیغ پیش از پخش: {remindingTimeSeconds}s'
     'Remaining SABR backoff time: {remindingTimeSeconds}s': 'زمان باقی‌ماندهٔ وقفهٔ SABR: {remindingTimeSeconds}s'
+  Station: ایستگاه
 Playlist:
   Playlist Already Preloaded: "همه ویدیوهای فهرست پخش از قبل پیش‌بارگذاری شده‌اند"
   Playlist Preload Progress: "در حال پیش‌بارگذاری ویدیوها: {completed} از {requested}"
@@ -1686,3 +1690,6 @@ Downloads:
     Subtitles Format: زیرنویس - {format}
 Channels:
   Load More Channels: "بارگیری کانال‌های بیشتر"
+Search Bar:
+  Open Search Container: باز کردن کادر جستجو
+  Search: جستجو

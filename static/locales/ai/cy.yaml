@@ -760,6 +760,8 @@ Settings:
     Show Video Title: Dangos teitl y fideo
     Show Bottom Right Actions Dock: Dangos doc gweithredoedd y gwaelod ar y dde
     Paused Interface Hide Delay: Oedi cyn cuddio'r rhyngwyneb wrth oedi
+    Add: Ychwanegu
+    Remove: Dileu
   Data Settings:
     Data And Storage: Data a storfa
     Profile Directory: Cyfeiriadur y proffil
@@ -970,6 +972,7 @@ Profile:
   Use Initial: Defnyddio llythyren gyntaf
   The selected image could not be loaded: Nid oedd modd llwytho'r ddelwedd a ddewiswyd
   Theme Color: Lliw'r thema
+  Go To Profile Manager: Mynd i'r rheolwr proffiliau
 Channel:
   Subscription settings: Gosodiadau tanysgrifiad
   Failed to save subscription settings: Methwyd cadw gosodiadau'r sianel
@@ -1214,6 +1217,7 @@ Video:
       UpvoteSegment: Pleidleisio o blaid
       DownvoteSegment: Pleidleisio yn erbyn
       VoteFailed: Methodd cyflwyno pleidlais SponsorBlock.
+  Station: Gorsaf
 Playlist:
   Playlist Already Preloaded: "Mae holl fideos y rhestr chwarae eisoes wedi'u rhaglwytho"
   Playlist Preload Progress: "Yn rhaglwytho fideos: {completed} o {requested}"
@@ -1629,3 +1633,6 @@ Downloads:
     Subtitles Format: Isdeitlau - {format}
 Channels:
   Load More Channels: "Llwytho mwy o sianeli"
+Search Bar:
+  Open Search Container: Agor y blwch chwilio
+  Search: Chwilio

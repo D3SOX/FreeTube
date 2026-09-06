@@ -272,6 +272,7 @@
           ref="searchBar"
           input-type="search"
           :placeholder="$t('Channel.Search Channel')"
+          :action-button-label="$t('Search Bar.Search')"
           :value="query"
           class="channelSearch"
           :maxlength="255"

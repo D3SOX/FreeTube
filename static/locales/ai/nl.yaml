@@ -771,6 +771,8 @@ Settings:
     Show Video Title: Videotitel tonen
     Show Bottom Right Actions Dock: Actiebalk rechtsonder tonen
     Paused Interface Hide Delay: Wachttijd voor verbergen van gepauzeerde interface
+    Add: Toevoegen
+    Remove: Verwijderen
   Data Settings:
     Data And Storage: Gegevens en opslag
     Profile Directory: Profielmap
@@ -995,6 +997,7 @@ Profile:
   Use Initial: Initiaal gebruiken
   The selected image could not be loaded: De geselecteerde afbeelding kan niet worden geladen
   Theme Color: Themakleur
+  Go To Profile Manager: Naar profielbeheer
 Channel:
   Subscription settings: Abonnementsinstellingen
   Failed to save subscription settings: Kan de kanaalinstellingen niet opslaan
@@ -1240,6 +1243,7 @@ Video:
   Watch:
     'Remaining preroll-ad time: {remindingTimeSeconds}s': 'Resterende tijd van preroll-advertentie: {remindingTimeSeconds}s'
     'Remaining SABR backoff time: {remindingTimeSeconds}s': 'Resterende SABR-wachttijd: {remindingTimeSeconds}s'
+  Station: Station
 Playlist:
   Playlist Already Preloaded: "Alle video's in de afspeellijst zijn al vooraf geladen"
   Playlist Preload Progress: "Video's vooraf laden: {completed} van {requested}"
@@ -1657,3 +1661,6 @@ Downloads:
     Subtitles Format: Ondertiteling - {format}
 Channels:
   Load More Channels: "Meer kanalen laden"
+Search Bar:
+  Open Search Container: Zoekveld openen
+  Search: Zoeken

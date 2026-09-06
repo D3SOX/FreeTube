@@ -766,6 +766,8 @@ Settings:
     Show Video Title: إظهار عنوان الفيديو
     Show Bottom Right Actions Dock: إظهار إرساء الإجراءات اليمنى السفلية
     Paused Interface Hide Delay: واجهة متوقفة مؤقتًا إخفاء التأخير
+    Add: إضافة
+    Remove: إزالة
   Data Settings:
     Data And Storage: البيانات والتخزين
     Profile Directory: دليل الملف الشخصي
@@ -987,6 +989,7 @@ Profile:
   Use Initial: استخدم الأولي
   The selected image could not be loaded: لا يمكن تحميل الصورة المحددة
   Theme Color: لون الموضوع
+  Go To Profile Manager: الانتقال إلى مدير الملفات الشخصية
 Channel:
   Subscription settings: إعدادات الاشتراك
   Failed to save subscription settings: تعذّر حفظ إعدادات القناة
@@ -1224,6 +1227,7 @@ Video:
       UpvoteSegment: التصويت لصالح
       DownvoteSegment: التصويت السلبي
       VoteFailed: فشل إرسال تصويت SponsorBlock.
+  Station: محطة
 Playlist:
   Playlist Already Preloaded: "تم تحميل جميع فيديوهات قائمة التشغيل مسبقًا بالفعل"
   Playlist Preload Progress: "جارٍ تحميل الفيديوهات مسبقًا: {completed} من {requested}"
@@ -1624,3 +1628,6 @@ Downloads:
     Subtitles Format: ترجمات - {format}
 Channels:
   Load More Channels: "تحميل المزيد من القنوات"
+Search Bar:
+  Open Search Container: فتح مربع البحث
+  Search: بحث

@@ -766,6 +766,8 @@ Settings:
     Show Video Title: Sýna heiti myndbands
     Show Bottom Right Actions Dock: Sýna aðgerðastiku neðst til hægri
     Paused Interface Hide Delay: Töf áður en viðmót er falið í hléi
+    Add: Bæta við
+    Remove: Fjarlægja
   Data Settings:
     Data And Storage: Gögn og geymsla
     Profile Directory: Mappa notandasniðs
@@ -985,6 +987,7 @@ Profile:
   Use Initial: Nota upphafsstaf
   The selected image could not be loaded: Ekki tókst að hlaða völdu myndinni
   Theme Color: Þemalitur
+  Go To Profile Manager: Opna umsjón með notandasniðum
 Channel:
   Subscription settings: Áskriftarstillingar
   Failed to save subscription settings: Ekki tókst að vista rásarstillingar
@@ -1230,6 +1233,7 @@ Video:
       UpvoteSegment: Gefa jákvætt atkvæði
       DownvoteSegment: Gefa neikvætt atkvæði
       VoteFailed: Ekki tókst að senda SponsorBlock-atkvæði.
+  Station: Stöð
 Playlist:
   Playlist Already Preloaded: "Öll myndskeið spilunarlistans eru þegar forhlaðin"
   Playlist Preload Progress: "Forhleðsla myndskeiða: {completed} af {requested}"
@@ -1645,3 +1649,6 @@ Downloads:
     Subtitles Format: Skjátextar – {format}
 Channels:
   Load More Channels: "Hlaða fleiri rásum"
+Search Bar:
+  Open Search Container: Opna leitarreit
+  Search: Leita

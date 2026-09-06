@@ -994,6 +994,8 @@ Settings:
     Show Video Title: Rodyti vaizdo įrašo pavadinimą
     Show Bottom Right Actions Dock: Rodyti veiksmų juostą apačioje dešinėje
     Paused Interface Hide Delay: Pristabdytos sąsajos slėpimo delsa
+    Add: Pridėti
+    Remove: Pašalinti
   Data Settings:
     Data And Storage: Duomenys ir saugykla
     Profile Directory: Profilio aplankas
@@ -1244,6 +1246,7 @@ Profile:
   Theme Color: Apipavidalinimo spalva
   Close Profile Dropdown: Užverti profilio išskleidžiamąjį meniu
   Open Profile Dropdown: Atverti profilio išskleidžiamąjį meniu
+  Go To Profile Manager: Eiti į profilių tvarkytuvę
 Channel:
   Subscription settings: Prenumeratos nustatymai
   Failed to save subscription settings: Nepavyko išsaugoti kanalo nustatymų
@@ -1574,6 +1577,7 @@ Video:
   Watch:
     'Remaining preroll-ad time: {remindingTimeSeconds}s': 'Reklamos prieš vaizdo įrašą likęs laikas: {remindingTimeSeconds} s'
     'Remaining SABR backoff time: {remindingTimeSeconds}s': 'Likęs SABR delsos laikas: {remindingTimeSeconds} s'
+  Station: Stotis
 Playlist:
   Playlist Already Preloaded: "Visi grojaraščio vaizdo įrašai jau įkelti iš anksto"
   Playlist Preload Progress: "Vaizdo įrašų išankstinis įkėlimas: {completed} iš {requested}"
@@ -2100,3 +2104,6 @@ Downloads:
     Subtitles Format: Subtitrai - {format}
 Channels:
   Load More Channels: "Įkelti daugiau kanalų"
+Search Bar:
+  Open Search Container: Atverti paieškos lauką
+  Search: Ieškoti

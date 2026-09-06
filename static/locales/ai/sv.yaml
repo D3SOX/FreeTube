@@ -760,6 +760,8 @@ Settings:
     Show Video Title: Visa videotitel
     Show Bottom Right Actions Dock: Visa åtgärdsfältet längst ned till höger
     Paused Interface Hide Delay: Fördröjning innan pausgränssnittet döljs
+    Add: Lägg till
+    Remove: Ta bort
   Data Settings:
     Data And Storage: Data och lagring
     Profile Directory: Profilmapp
@@ -970,6 +972,7 @@ Profile:
   Use Initial: Använd initial
   The selected image could not be loaded: Den valda bilden kunde inte läsas in
   Theme Color: Temafärg
+  Go To Profile Manager: Gå till profilhanteraren
 Channel:
   Subscription settings: Prenumerationsinställningar
   Failed to save subscription settings: Det gick inte att spara kanalinställningarna
@@ -1205,6 +1208,7 @@ Video:
       UpvoteSegment: Rösta upp
       DownvoteSegment: Rösta ned
       VoteFailed: Det gick inte att skicka SponsorBlock-rösten.
+  Station: Station
 Playlist:
   Playlist Already Preloaded: "Alla videor i spellistan är redan förladdade"
   Playlist Preload Progress: "Förladdar videor: {completed} av {requested}"
@@ -1620,3 +1624,6 @@ Downloads:
     Subtitles Format: Undertexter - {format}
 Channels:
   Load More Channels: "Läs in fler kanaler"
+Search Bar:
+  Open Search Container: Öppna sökfältet
+  Search: Sök

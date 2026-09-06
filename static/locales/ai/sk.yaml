@@ -758,6 +758,8 @@ Settings:
     Show Video Title: Zobraziť názov videa
     Show Bottom Right Actions Dock: Zobraziť panel akcií vpravo dole
     Paused Interface Hide Delay: Oneskorenie skrytia rozhrania pri pozastavení
+    Add: Pridať
+    Remove: Odstrániť
   Data Settings:
     Data And Storage: Údaje a úložisko
     Profile Directory: Priečinok profilu
@@ -968,6 +970,7 @@ Profile:
   Use Initial: Použiť iniciálu
   The selected image could not be loaded: Vybraný obrázok sa nepodarilo načítať
   Theme Color: Farba motívu
+  Go To Profile Manager: Prejsť do správcu profilov
 Channel:
   Subscription settings: Nastavenia odberu
   Failed to save subscription settings: Nastavenia kanála sa nepodarilo uložiť
@@ -1201,6 +1204,7 @@ Video:
       UpvoteSegment: Hlasovať za
       DownvoteSegment: Hlasovať proti
       VoteFailed: Hlas SponsorBlock sa nepodarilo odoslať.
+  Station: Stanica
 Playlist:
   Playlist Already Preloaded: "Všetky videá v playliste sú už predbežne načítané"
   Playlist Preload Progress: "Predbežné načítavanie videí: {completed} z {requested}"
@@ -1616,3 +1620,6 @@ Downloads:
     Subtitles Format: Titulky – {format}
 Channels:
   Load More Channels: "Načítať ďalšie kanály"
+Search Bar:
+  Open Search Container: Otvoriť vyhľadávacie pole
+  Search: Hľadať

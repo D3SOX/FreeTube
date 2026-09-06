@@ -760,6 +760,8 @@ Settings:
     Show Video Title: Показване на заглавието на видеоклипа
     Show Bottom Right Actions Dock: Показване на панела с действия долу вдясно
     Paused Interface Hide Delay: Закъснение преди скриване на интерфейса при пауза
+    Add: Добавяне
+    Remove: Премахване
   Data Settings:
     Data And Storage: Данни и хранилище
     Profile Directory: Папка на профила
@@ -970,6 +972,7 @@ Profile:
   Use Initial: Използване на инициал
   The selected image could not be loaded: Избраното изображение не можа да бъде заредено
   Theme Color: Цвят на темата
+  Go To Profile Manager: Към управлението на профили
 Channel:
   Subscription settings: Настройки на абонамента
   Failed to save subscription settings: Настройките на канала не можаха да бъдат запазени
@@ -1205,6 +1208,7 @@ Video:
       UpvoteSegment: Гласуване „за“
       DownvoteSegment: Гласуване „против“
       VoteFailed: Гласът в SponsorBlock не можа да бъде изпратен.
+  Station: Станция
 Playlist:
   Playlist Already Preloaded: "Всички видеоклипове в плейлиста вече са предварително заредени"
   Playlist Preload Progress: "Предварително зареждане на видеоклипове: {completed} от {requested}"
@@ -1620,3 +1624,6 @@ Downloads:
     Subtitles Format: Субтитри - {format}
 Channels:
   Load More Channels: "Зареждане на още канали"
+Search Bar:
+  Open Search Container: Отваряне на полето за търсене
+  Search: Търсене

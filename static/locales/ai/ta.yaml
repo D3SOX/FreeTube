@@ -770,6 +770,8 @@ Settings:
     Show Video Title: காணொளித் தலைப்பைக் காட்டு
     Show Bottom Right Actions Dock: கீழ் வலது செயல் பலகையைக் காட்டு
     Paused Interface Hide Delay: இடைநிறுத்திய இடைமுகம் மறையும் தாமதம்
+    Add: சேர்
+    Remove: அகற்று
   Data Settings:
     Data And Storage: தரவும் சேமிப்பகமும்
     Profile Directory: சுயவிவரக் கோப்புறை
@@ -991,6 +993,7 @@ Profile:
   Use Initial: முதலெழுத்தைப் பயன்படுத்து
   The selected image could not be loaded: தேர்ந்தெடுத்த படத்தை ஏற்ற முடியவில்லை
   Theme Color: அலங்கார நிறம்
+  Go To Profile Manager: சுயவிவர மேலாளருக்குச் செல்
 Channel:
   Subscription settings: சந்தா அமைப்புகள்
   Failed to save subscription settings: சேனல் அமைப்புகளைச் சேமிக்க முடியவில்லை
@@ -1234,6 +1237,7 @@ Video:
       VoteFailed: SponsorBlock வாக்கைச் சமர்ப்பிக்க முடியவில்லை.
   Watch:
     'Remaining preroll-ad time: {remindingTimeSeconds}s': 'தொடக்க விளம்பரத்தில் மீதமுள்ள நேரம்: {remindingTimeSeconds}வி.'
+  Station: நிலையம்
 Playlist:
   Playlist Already Preloaded: "பிளேலிஸ்ட்டின் அனைத்து காணொளிகளும் ஏற்கனவே முன்பே ஏற்றப்பட்டுள்ளன"
   Playlist Preload Progress: "காணொளிகளை முன்பே ஏற்றுகிறது: {requested} இல் {completed}"
@@ -1651,3 +1655,6 @@ Downloads:
     Subtitles Format: துணைத்தலைப்புகள் - {format}
 Channels:
   Load More Channels: "மேலும் சேனல்களை ஏற்று"
+Search Bar:
+  Open Search Container: தேடல் பெட்டியைத் திற
+  Search: தேடு

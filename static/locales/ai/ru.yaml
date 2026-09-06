@@ -743,6 +743,8 @@ Settings:
     Show Video Title: Показывать название видео
     Show Bottom Right Actions Dock: Показывать панель действий в правом нижнем углу
     Paused Interface Hide Delay: Задержка скрытия интерфейса во время паузы
+    Add: Добавить
+    Remove: Удалить
   Data Settings:
     Data And Storage: Данные и хранилище
     Profile Directory: Папка профиля
@@ -964,6 +966,7 @@ Profile:
   Use Initial: Использовать инициал
   The selected image could not be loaded: Не удалось загрузить выбранное изображение
   Theme Color: Цвет темы
+  Go To Profile Manager: Перейти к управлению профилями
 Channel:
   Subscription settings: Настройки подписки
   Failed to save subscription settings: Не удалось сохранить настройки канала
@@ -1201,6 +1204,7 @@ Video:
       UpvoteSegment: Нравится
       DownvoteSegment: Не нравится
       VoteFailed: Не удалось отправить оценку в SponsorBlock.
+  Station: Станция
 Playlist:
   Playlist Already Preloaded: "Все видео из плейлиста уже предварительно загружены"
   Playlist Preload Progress: "Предварительная загрузка видео: {completed} из {requested}"
@@ -1614,3 +1618,6 @@ Downloads:
     Subtitles Format: Субтитры - {format}
 Channels:
   Load More Channels: "Загрузить больше каналов"
+Search Bar:
+  Open Search Container: Открыть поле поиска
+  Search: Поиск

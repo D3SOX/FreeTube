@@ -74,6 +74,8 @@
           enabled: inputDataPresent || allowActionButtonWhenEmpty,
           withLabel: showLabel
         }"
+        :aria-label="actionButtonLabel"
+        :title="actionButtonLabel"
         @click="handleClick"
       >
         <FtIcon
@@ -178,6 +180,10 @@ const props = defineProps({
   showActionButton: {
     type: Boolean,
     default: true
+  },
+  actionButtonLabel: {
+    type: String,
+    default: '',
   },
   forceActionButtonIconName: {
     type: Array,
