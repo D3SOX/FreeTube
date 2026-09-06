@@ -78,6 +78,8 @@ import {
 } from '../../helpers/androidUi'
 import { appendTimestamp, getInvidiousVideoUrl, getYoutubeVideoShareUrl } from '../../helpers/share'
 import { MANIFEST_TYPE_SABR } from '../../helpers/player/SabrManifestParser'
+import { preferOriginalHlsAudio } from '../../helpers/player/hlsAudioTracks'
+import { getDefaultAudioVariants } from '../../helpers/player/defaultAudioTrack'
 import { MUSIC_MEDIA_TYPE } from '../../helpers/player/musicMediaType'
 import { resolveSegmentPrefetchLimit } from '../../helpers/player/segmentPrefetch'
 import { AUTO_QUALITY_FALLBACK, streamsSupportAutoQuality } from '../../helpers/player/autoQuality'
@@ -3347,6 +3349,10 @@ export default defineComponent({
         // - `powerEfficient` the spec is quite vague but in Chromium it should prioritise hardware decoding when available
         // https://developer.mozilla.org/en-US/docs/Web/API/MediaCapabilities/decodingInfo
         preferredDecodingAttributes: format === 'dash' ? ['smooth', 'powerEfficient'] : [],
+
+        // Prefer the main audio before codec/channel preferences. If there is
+        // no main role, Shaka falls back to the manifest's primary track.
+        preferredAudio: [{ role: 'main' }],
 
         // Shaka automatically shows a matching preferred text track on load.
         // Only give it a preference when captions should be enabled or restored.
@@ -6750,6 +6756,9 @@ export default defineComponent({
             response.data = new TextEncoder().encode(cleaned).buffer
           }
         }
+      } else if (type === RequestType.MANIFEST && context.type === AdvancedRequestType.MASTER_PLAYLIST) {
+        const manifest = new TextDecoder().decode(response.data)
+        response.data = new TextEncoder().encode(preferOriginalHlsAudio(manifest)).buffer
       } else if (type === RequestType.MANIFEST && context.type === AdvancedRequestType.MEDIA_PLAYLIST) {
         const url = new URL(response.uri)
 
@@ -6849,12 +6858,7 @@ export default defineComponent({
       if (label) {
         variants = variants.filter(variant => variant.label === label)
       } else if (hasMultipleAudioTracks.value) {
-        // default audio track
-        const filteredVariants = variants.filter(variant => variant.audioRoles.includes('main'))
-        // Sometimes there is nothing marked as main, don't filter in this case
-        if (filteredVariants.length > 0) {
-          variants = filteredVariants
-        }
+        variants = getDefaultAudioVariants(variants)
       }
 
       const isPortrait = variants[0].height > variants[0].width
@@ -10329,8 +10333,7 @@ export default defineComponent({
             let variants = player.getVariantTracks()
 
             if (hasMultipleAudioTracks.value) {
-              // default audio track
-              variants = variants.filter(variant => variant.audioRoles.includes('main'))
+              variants = getDefaultAudioVariants(variants)
             }
 
             if (variants.length > 0) {
@@ -10678,12 +10681,7 @@ export default defineComponent({
                 if (label) {
                   variants = variants.filter(variant => variant.label === label)
                 } else if (variants.length > 1) {
-                  // default audio track
-                  const filteredVariants = variants.filter(variant => variant.audioRoles.includes('main'))
-                  // Sometimes there is nothing marked as main, don't filter in this case
-                  if (filteredVariants.length > 0) {
-                    variants = filteredVariants
-                  }
+                  variants = getDefaultAudioVariants(variants)
                 }
 
                 let chosenVariant
