@@ -10935,6 +10935,15 @@ export default defineComponent({
       // destroyed, after its internal manifest has already been cleared.
       hasLoaded.value = false
 
+      // Shaka clears the video's intrinsic dimensions before this component
+      // unmounts. Keep its ratio and restore the poster so recovery doesn't
+      // briefly collapse the player to the empty video's 150px default height.
+      if (video.value?.videoWidth > 0 && video.value.videoHeight > 0) {
+        video.value.style.aspectRatio = `${video.value.videoWidth} / ${video.value.videoHeight}`
+      }
+      showPoster.value = true
+      await nextTick()
+
       let uiState = {
         startNextVideoInFullscreen: false,
         startNextVideoInFullwindow: false,

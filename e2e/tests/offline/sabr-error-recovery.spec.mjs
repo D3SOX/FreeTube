@@ -593,6 +593,87 @@ test('a stale yt-dlp rejection probe preserves a newer cache entry', async ({ ap
   expect(result.loadGeneration).toBeGreaterThan(0)
 })
 
+for (const zoom of [1, 1.25]) {
+  for (const posterAvailable of [true, false]) {
+    test(`yt-dlp 403 recovery keeps the player height at ${zoom * 100}% scale with poster ${posterAvailable ? 'available' : 'unavailable'}`, async ({ app, page }, testInfo) => {
+      await mockPlayableWatchPage(app, page)
+      if (posterAvailable) {
+        // A 4:3 poster must not change the playing video's 16:9 geometry.
+        await page.route('https://i.ytimg.com/**', route => route.fulfill({
+          contentType: 'image/svg+xml',
+          body: '<svg xmlns="http://www.w3.org/2000/svg" width="480" height="360"><rect width="480" height="360" fill="#326b8a"/></svg>'
+        }))
+      }
+      await page.evaluate(async zoom => {
+        await window.ftElectron.setZoomFactor(zoom)
+        const store = document.querySelector('#app').__vue_app__.config.globalProperties.$store
+        await store.dispatch('updateVideoPlaybackEngine', 'built-in')
+      }, zoom)
+      await openMockedVideo(page)
+
+      const player = page.locator('.ftVideoPlayer')
+      const before = await player.boundingBox()
+      const watchView = await watchViewHandle(page)
+      await watchView.evaluate((view) => {
+        const area = view.$el.querySelector('.videoAreaMargin')
+        window.__recoveryHeights = []
+        window.__recoveryHeightObserver = new ResizeObserver(() => {
+          window.__recoveryHeights.push(area.getBoundingClientRect().height)
+        })
+        window.__recoveryHeightObserver.observe(area)
+        view.activePlaybackEngine = 'yt-dlp'
+        view.extractYtDlpPlaybackSource = () => new Promise(resolve => {
+          window.__releaseStreamExtraction = () => resolve(true)
+        })
+        const destroyPlayer = view.$refs.player.destroyPlayer
+        const teardownPending = new Promise(resolve => { window.__releasePlayerTeardown = resolve })
+        view.$refs.player.destroyPlayer = async () => {
+          const state = await destroyPlayer()
+          window.__playerTeardownFinished = true
+          await teardownPending
+          return state
+        }
+        window.__streamRecovery = view.handlePlayerError({
+          code: 1002,
+          data: ['https://example.invalid/video', 403]
+        })
+      })
+      await expect.poll(() => page.evaluate(() => window.__playerTeardownFinished)).toBe(true)
+      expect(await player.locator('video').evaluate(element => element.videoWidth)).toBe(0)
+      await expect(player.locator('video')).toHaveAttribute('poster', /i\.ytimg\.com/)
+      const during = await player.boundingBox()
+      expect(Math.abs(during.height - before.height)).toBeLessThanOrEqual(1)
+      await testInfo.attach('player-during-teardown', {
+        body: await player.screenshot(),
+        contentType: 'image/png'
+      })
+
+      await page.evaluate(() => { window.__releasePlayerTeardown() })
+      const placeholder = page.locator('.streamPlaceholder')
+      await expect(placeholder).toBeVisible()
+      const pending = await placeholder.boundingBox()
+      expect(Math.abs(pending.height - before.height)).toBeLessThanOrEqual(1)
+      await expect(placeholder).toContainText('Fetching streams')
+      if (posterAvailable) {
+        await expect.poll(() => placeholder.locator('img').evaluate(element => element.naturalWidth)).toBe(480)
+      }
+      await page.evaluate(async () => {
+        window.__releaseStreamExtraction()
+        await window.__streamRecovery
+      })
+      await expect.poll(() => player.locator('video').evaluate(element => element.videoWidth)).toBeGreaterThan(0)
+      const after = await player.boundingBox()
+      expect(Math.abs(after.height - before.height)).toBeLessThanOrEqual(1)
+      const heights = await page.evaluate(() => {
+        window.__recoveryHeightObserver.disconnect()
+        return window.__recoveryHeights
+      })
+      expect(heights.length).toBeGreaterThan(0)
+      expect(Math.max(...heights.map(height => Math.abs(height - before.height)))).toBeLessThanOrEqual(1)
+    })
+  }
+}
+
 test('yt-dlp recovery remounts only the player and preserves playback state', async ({ app, page }) => {
   await mockPlayableWatchPage(app, page)
   await goTo(page, 'history')
