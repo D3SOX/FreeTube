@@ -209,18 +209,23 @@
                 :icon="newFeedSortByIcon"
                 @change="updateNewFeedSortBy"
               />
-              <button
+              <Teleport
                 v-if="currentTabHasNewContent"
-                class="markAllSeenButton"
-                type="button"
-                :disabled="markingSeenTab !== null || currentTabRefreshing"
-                @click="markAllAsSeen(currentTab)"
+                :to="tabsRowRef"
+                :disabled="!headerFitsOneRow"
               >
-                <FtIcon :icon="['fas', 'check']" />
-                <span class="markAllSeenLabel">
-                  {{ $t('Subscriptions.Mark All as Seen') }}
-                </span>
-              </button>
+                <button
+                  class="markAllSeenButton"
+                  type="button"
+                  :disabled="markingSeenTab !== null || currentTabRefreshing"
+                  @click="markAllAsSeen(currentTab)"
+                >
+                  <FtIcon :icon="['fas', 'check']" />
+                  <span class="markAllSeenLabel">
+                    {{ $t('Subscriptions.Mark All as Seen') }}
+                  </span>
+                </button>
+              </Teleport>
               <FtRefreshWidget
                 embedded
                 class="headerRefreshWidget subscriptionsHeaderRefreshWidget"
@@ -1233,10 +1238,17 @@ function observeHeaderRow() {
 
 // Which elements exist changes with the panel (the refresh widget is only
 // rendered once it is mounted) and with the Mark all as seen button
-watch([currentTabPanel, currentTabHasNewContent], () => nextTick(() => {
-  observeHeaderRow()
-  updateHeaderFitsOneRow()
-}))
+watch([currentTabPanel, currentTabHasNewContent, headerFitsOneRow], () => {
+  const restoreFocus = headerRowRef.value?.querySelector('.markAllSeenButton') === document.activeElement
+  nextTick(() => {
+    observeHeaderRow()
+    updateHeaderFitsOneRow()
+    // Moving the button between rows must preserve keyboard focus.
+    if (restoreFocus) {
+      headerRowRef.value?.querySelector('.markAllSeenButton')?.focus({ preventScroll: true })
+    }
+  })
+})
 
 // ===== Sliding feed tab indicator =====
 const tabsContainerRef = useTemplateRef('tabsContainerRef')
