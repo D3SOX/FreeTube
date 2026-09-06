@@ -185,6 +185,18 @@
               v-if="currentTabPanel !== null"
               class="headerActions"
             >
+              <button
+                v-if="currentTabHasNewContent"
+                class="markAllSeenButton"
+                type="button"
+                :disabled="markingSeenTab !== null || currentTabRefreshing"
+                @click="markAllAsSeen(currentTab)"
+              >
+                <FtIcon :icon="['fas', 'check']" />
+                <span class="markAllSeenLabel">
+                  {{ $t('Subscriptions.Mark All as Seen') }}
+                </span>
+              </button>
               <FtIconButton
                 v-if="currentTab === 'new'"
                 class="headerViewToggle"
@@ -209,18 +221,6 @@
                 :icon="newFeedSortByIcon"
                 @change="updateNewFeedSortBy"
               />
-              <button
-                v-if="currentTabHasNewContent"
-                class="markAllSeenButton"
-                type="button"
-                :disabled="markingSeenTab !== null || currentTabRefreshing"
-                @click="markAllAsSeen(currentTab)"
-              >
-                <FtIcon :icon="['fas', 'check']" />
-                <span class="markAllSeenLabel">
-                  {{ $t('Subscriptions.Mark All as Seen') }}
-                </span>
-              </button>
               <FtRefreshWidget
                 embedded
                 class="headerRefreshWidget subscriptionsHeaderRefreshWidget"
@@ -1186,7 +1186,8 @@ function updateHeaderFitsOneRow() {
     return child === tabs ? singleLineWidth(tabs) : child.getBoundingClientRect().width
   })
   const feedTabsControlsRowWidth = singleLineWidth(feedTabsControlsRow, child => {
-    return child === tabsRow ? tabsRowWidth : child.getBoundingClientRect().width
+    // The actions stretch to keep Mark all as seen beside the tabs on desktop.
+    return child === tabsRow ? tabsRowWidth : singleLineWidth(child)
   })
   const requiredWidth = singleLineWidth(row, child => {
     // The grouped row stretches across the header in the split layout
@@ -1219,6 +1220,10 @@ function observeHeaderRow() {
   }
 
   for (const child of feedTabsControlsRowRef.value?.children ?? []) {
+    headerResizeObserver.observe(child)
+  }
+
+  for (const child of row.querySelectorAll('.headerActions > *')) {
     headerResizeObserver.observe(child)
   }
 

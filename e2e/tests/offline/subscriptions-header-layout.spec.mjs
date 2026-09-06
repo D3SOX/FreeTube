@@ -83,6 +83,45 @@ function headerBoxes (page) {
 }
 
 test.describe('subscriptions header layout', () => {
+  for (const uiScale of [100, 95]) {
+    test(`keeps Mark all as seen beside the desktop feed tabs at ${uiScale}% scale`, async ({ app, page, attachScreenshot }) => {
+      await app.electronApp.evaluate(({ BrowserWindow }, scale) => {
+        BrowserWindow.getAllWindows()[0].webContents.setZoomFactor(scale / 100)
+      }, uiScale)
+      await goTo(page, 'subscriptions')
+
+      for (const tab of ['videos', 'all', 'tabbed', 'videos']) {
+        if (tab === 'tabbed') {
+          await page.getByRole('button', { name: 'Show tabbed view' }).click()
+        } else {
+          await page.locator(`[data-subscription-feed-tab="${tab}"]`).click()
+        }
+        await expect(page.locator('.subscriptionsHeader')).toHaveClass(/singleRow/)
+        await expect(page.locator('.markAllSeenButton')).toBeVisible()
+
+        await expect.poll(() => page.evaluate(() => {
+          const tabs = document.querySelector('.tabs').getBoundingClientRect()
+          const mark = document.querySelector('.markAllSeenButton').getBoundingClientRect()
+          return mark.left - tabs.right
+        })).toBeLessThanOrEqual(9)
+        const layout = await page.evaluate(() => {
+          const tabs = document.querySelector('.tabs').getBoundingClientRect()
+          const mark = document.querySelector('.markAllSeenButton').getBoundingClientRect()
+          const nextControl = document.querySelector('.headerViewToggle, .headerRefreshWidget').getBoundingClientRect()
+          return {
+            gap: mark.left - tabs.right,
+            centerOffset: Math.abs((mark.top + mark.bottom - tabs.top - tabs.bottom) / 2),
+            controlsGap: nextControl.left - mark.right
+          }
+        })
+        expect(layout.gap).toBeGreaterThanOrEqual(0)
+        expect(layout.centerOffset).toBeLessThanOrEqual(2)
+        expect(layout.controlsGap).toBeGreaterThanOrEqual(0)
+        await attachScreenshot(`desktop ${tab} feed action at ${uiScale}%`)
+      }
+    })
+  }
+
   test('shows the New feed action and regular feed refresh status on mobile', async ({ app, page, attachScreenshot }) => {
     await goTo(page, 'subscriptions')
     await page.locator('[data-subscription-feed-tab="all"]').click()
