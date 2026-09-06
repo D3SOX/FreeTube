@@ -47,9 +47,7 @@ const props = defineProps({
 const svg = useTemplateRef('svg')
 const width = ref(1)
 const height = ref(1)
-const rightToLeft = ref(false)
 let resizeObserver = null
-let directionObserver = null
 
 const clampedProgress = computed(() => Math.min(100, Math.max(0, props.progress)))
 
@@ -103,15 +101,6 @@ const path = computed(() => {
     startTop,
   } = geometry.value
 
-  if (rightToLeft.value) {
-    return [
-      `M ${width.value - startInset} ${startTop}`,
-      `A ${arcRadius} ${arcRadius} 0 0 1 ${width.value - radius} ${bottom}`,
-      `H ${radius}`,
-      `A ${arcRadius} ${arcRadius} 0 0 1 ${width.value - endInset} ${endTop}`,
-    ].join(' ')
-  }
-
   return [
     `M ${startInset} ${startTop}`,
     `A ${arcRadius} ${arcRadius} 0 0 0 ${radius} ${bottom}`,
@@ -133,23 +122,13 @@ function updateGeometry(entry) {
   height.value = Math.max(1, box ? box.blockSize : entry.contentRect.height)
 }
 
-function updateDirection() {
-  rightToLeft.value = getComputedStyle(svg.value).direction === 'rtl'
-}
-
 onMounted(() => {
   resizeObserver = new ResizeObserver(entries => updateGeometry(entries[0]))
   resizeObserver.observe(svg.value)
-  directionObserver = new MutationObserver(updateDirection)
-  directionObserver.observe(document.body, {
-    attributeFilter: ['dir'],
-  })
-  updateDirection()
 })
 
 onBeforeUnmount(() => {
   resizeObserver?.disconnect()
-  directionObserver?.disconnect()
 })
 </script>
 
@@ -169,5 +148,11 @@ onBeforeUnmount(() => {
   stroke-linecap: round;
   stroke-linejoin: round;
   stroke-width: v-bind(lineWidth);
+}
+
+.embeddedProgress:dir(rtl) .embeddedProgressPath {
+  transform: scaleX(-1);
+  transform-origin: center;
+  transform-box: view-box;
 }
 </style>

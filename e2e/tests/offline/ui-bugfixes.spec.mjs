@@ -1391,11 +1391,17 @@ test.describe('thumbnail watched progress', () => {
     expect(Math.abs(progressBounds.width - thumbnailBounds.width)).toBeLessThanOrEqual(1)
     expect(progressGeometry.pathLength).toBeGreaterThan(thumbnailBounds.width - 20)
 
-    const leftToRightPath = progressGeometry.path
+    const renderedDirection = () => progressPath.evaluate(element => {
+      const matrix = element.getScreenCTM()
+      const start = element.getPointAtLength(0).matrixTransform(matrix)
+      const end = element.getPointAtLength(element.getTotalLength()).matrixTransform(matrix)
+      return start.x < end.x ? 'ltr' : 'rtl'
+    })
+    await expect.poll(renderedDirection).toBe('ltr')
     await page.evaluate(() => {
       document.body.dir = 'rtl'
     })
-    await expect.poll(() => progressPath.getAttribute('d')).not.toBe(leftToRightPath)
+    await expect.poll(renderedDirection).toBe('rtl')
   })
 
   test('keeps full progress aligned across Android screen shapes and UI scales', async ({ app, page }) => {

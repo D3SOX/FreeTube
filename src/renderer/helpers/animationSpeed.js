@@ -32,6 +32,10 @@ function isAnimationSpeedManaged(target) {
 }
 
 function updateTargetAnimations(event) {
+  // CSS already runs at this rate. Avoid querying animations (and flushing
+  // pending styles) for every hover transition at the default setting.
+  if (animationPlaybackRate === 1) { return }
+
   queueMicrotask(() => {
     if (isAnimationSpeedManaged(event.target)) { return }
     if (!(event.target instanceof Element)) { return }
