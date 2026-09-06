@@ -45,7 +45,6 @@ const LEGACY_ENCRYPTED_COLLECTIONS = [
   'subscriptions',
   'playlists',
   'history',
-  'playbackSpeeds',
   'profiles',
   'playlistBookmarks',
 ]
@@ -323,6 +322,8 @@ async function runSync(context, { allowDataLoss = false } = {}) {
           ...compatibilityCollections,
         ]))
         const document = createEmptySyncDocument()
+        // Legacy speeds are read for migration into settings, never uploaded.
+        document.playbackSpeeds = legacy.playbackSpeeds ?? []
         const original = {}
         const entries = await Promise.all(downloadCollections.map(async collection => {
           const response = await networkClient.getEncryptedSyncCollection(collection)
