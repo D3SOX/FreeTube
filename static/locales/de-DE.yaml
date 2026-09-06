@@ -1085,7 +1085,7 @@ Settings:
     Hide Channel Courses: Tab „Kurse“ im Kanal ausblenden
     Hide Channel Posts: Tab „Beiträge“ im Kanal ausblenden
     Hide Subscriptions Posts: Beiträge aus Abos ausblenden
-    Shorten View Counts: Aufrufzahlen und Kommentar-Likes abkürzen
+    Shorten View Counts: Aufrufzahlen, Kommentarzahlen und Kommentar-Likes abkürzen
     Hide Live Chat Replay: Livechat-Wiederholung ausblenden
     Hide End-Screen Annotations: Anmerkungen auf dem Abspann ausblenden
     Hide Paid Promotion Badge: Hinweis auf bezahlte Werbung ausblenden
@@ -2263,7 +2263,7 @@ Tooltips:
     Hide Videos, Playlists and Channels Containing Text: Gib ein Wort, einen Teil eines Wortes oder einen Satz ein (Groß-/Kleinschreibung wird ignoriert), um alle Videos und Playlists, welche es in ihren Originaltiteln enthalten, auf ganz OpenTubeX auszublenden. Dein Verlauf, deine eigenen Playlists und Videos innerhalb Playlists sind davon nicht betroffen.
     Hide Videos on Watch: Blendet bereits angesehene Videos aus den Tabs „Videos“, „Shorts“ und „Live“ der Abo- und Kanalseiten aus. Beeinflusst nicht den „Home“-Tab der Kanalseiten
     Shorten View Counts: >-
-      Zeigt von YouTube bereits gerundete Aufrufzahlen und Like-Zahlen von Kommentaren in abgekürzter Form an,
+      Zeigt von YouTube bereits gerundete Aufrufzahlen, Kommentarzahlen und Like-Zahlen von Kommentaren in abgekürzter Form an,
       z. B. 14 Tsd. statt 14.000. Exakte Zahlen werden immer vollständig angezeigt.
   SponsorBlock Settings:
     UseDeArrowTitles: Videotitel durch von der Community eingereichte Titel von DeArrow ersetzen.

@@ -948,7 +948,7 @@ Settings:
       General: 일반
       Visible While Paused: 전체 창 / 전체 화면에서 일시 정지 중 표시
     Hide Channel Avatars: 채널 아바타 숨기기
-    Shorten View Counts: 조회수 및 댓글 좋아요 수 줄여 표시
+    Shorten View Counts: 조회수, 댓글 수 및 댓글 좋아요 수 줄여 표시
     Hide Home: 홈 숨기기
     Hide Live Chat Replay: 실시간 채팅 다시보기 숨기기
     Hide Profile Pictures in Comments: 댓글의 프로필 사진 숨기기
@@ -1797,7 +1797,7 @@ Tooltips:
     FFmpeg Executable Path: 별도의 동영상 및 오디오 스트림을 병합하고 오디오를 변환하려면 FFmpeg가 필요합니다. 기본적으로 OpenTubeX는 PATH 환경 변수에서 FFmpeg를 찾습니다. 필요하면 여기서 사용자 지정 경로를 설정할 수 있습니다.
     Use cookies for subtitles: "설정된 쿠키를 자막과 자동 번역에 사용합니다. \"항상 쿠키 사용\"으로도 활성화됩니다."
   Distraction Free Settings:
-    Shorten View Counts: YouTube에서 이미 반올림해 줄여 표시한 조회수와 댓글 좋아요 수를 표시합니다. 예를 들어 14,000 대신 14K로 표시합니다. 정확한 수치는 항상 전체 자릿수로 표시합니다.
+    Shorten View Counts: YouTube에서 이미 반올림해 줄여 표시한 조회수, 댓글 수와 댓글 좋아요 수를 표시합니다. 예를 들어 14,000 대신 14K로 표시합니다. 정확한 수치는 항상 전체 자릿수로 표시합니다.
     Hide Subscriptions Live: 이 설정은 "{settingsSection}"의 "{subsection}" 섹션에 있는 앱 전체 "{appWideSetting}" 설정으로 재정의됩니다
     Hide Videos, Playlists and Channels Containing Text: 단어, 단어 일부 또는 구문을 입력하면 원본 제목에 해당 텍스트가 포함된 모든 동영상, 재생목록 및 채널을 OpenTubeX 전체에서 숨깁니다. 대소문자를 구분하지 않습니다. 시청 기록, 내 재생목록 및 재생목록 안의 동영상은 제외됩니다.
     Hide Videos on Watch: 구독 및 채널 페이지의 동영상, Shorts 및 실시간 탭에서 시청한 동영상을 숨깁니다. 채널 페이지의 홈 탭에는 영향을 주지 않습니다

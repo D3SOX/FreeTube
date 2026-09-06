@@ -298,7 +298,7 @@ Settings:
     Sections:
       Visible While Paused: Widoczne po wstrzymaniu w trybie pełnego okna lub pełnego ekranu
     Hide Channel Avatars: Ukrywaj awatary kanałów
-    Shorten View Counts: Skracaj liczbę wyświetleń i polubień komentarzy
+    Shorten View Counts: Skracaj liczbę wyświetleń, komentarzy i polubień komentarzy
     Hide Home: Ukryj stronę główną
     Hide Live Chat Replay: Ukrywaj powtórkę czatu na żywo
     Disable A-B Repeat: Wyłącz powtarzanie A-B
@@ -689,7 +689,7 @@ Tooltips:
     Always Use Cookies: "Używa skonfigurowanych ciasteczek przy każdym pobieraniu strumieni przez yt-dlp. Nie zmienia to metody pobierania strumienia na yt-dlp. Po wybraniu yt-dlp mogą być dostępne formaty przeznaczone tylko dla kont, w tym wyższa szybkość transmisji bitów YouTube Premium, jeśli konto ma do niej dostęp. Używaj skonfigurowanych plików cookie do napisów i tłumaczeń automatycznych."
     Use cookies for subtitles: "Używaj skonfigurowanych plików cookie do napisów i tłumaczeń automatycznych. Włącza się także przez „Zawsze używaj ciasteczek”."
   Distraction Free Settings:
-    Shorten View Counts: Pokazuje liczbę wyświetleń i polubień komentarzy w skróconej postaci zaokrąglonej przez YouTube, na przykład 14 tys. zamiast 14 000. Dokładne wartości są zawsze wyświetlane w całości.
+    Shorten View Counts: Pokazuje liczbę wyświetleń, komentarzy i polubień komentarzy w skróconej postaci zaokrąglonej przez YouTube, na przykład 14 tys. zamiast 14 000. Dokładne wartości są zawsze wyświetlane w całości.
   Subscription Settings:
     Show Scheduled Live Streams / Premieres First: Umieszcza nadchodzące transmisje na żywo i premiery na górze kanału subskrypcji. Po wyłączeniu pozostają na pozycji zgodnej z datą ogłoszenia aż do rozpoczęcia. Po wyłączeniu odśwież kanał subskrypcji, aby pobrać daty ogłoszenia istniejących zaplanowanych pozycji.
     Refresh Subscriptions While App Is Closed: "Pozwala systemowi Android odświeżać kanały subskrypcji w wybranych odstępach czasu, gdy OpenTubeX jest zamknięty. Wyłącz tę opcję, aby automatyczne odświeżanie działało tylko przy otwartej aplikacji."

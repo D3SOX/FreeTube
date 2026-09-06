@@ -762,7 +762,7 @@ Settings:
     Sections:
       Visible While Paused: Zichtbaar wanneer gepauzeerd in volledig venster of volledig scherm
     Hide Channel Avatars: Kanaalavatars verbergen
-    Shorten View Counts: Aantallen weergaven en vind-ik-leuks bij reacties inkorten
+    Shorten View Counts: Aantallen weergaven, reacties en vind-ik-leuks bij reacties inkorten
     Hide Home: Startpagina verbergen
     Hide Live Chat Replay: Herhaling van livechat verbergen
     Disable A-B Repeat: A-B-herhaling uitschakelen
@@ -1473,7 +1473,7 @@ Tooltips:
     FFmpeg Executable Path: FFmpeg is vereist om afzonderlijke video- en audiostreams samen te voegen en audio te converteren. OpenTubeX gaat er standaard van uit dat FFmpeg via de omgevingsvariabele PATH kan worden gevonden. Je kunt hier zo nodig een aangepast pad instellen.
     Use cookies for subtitles: "Gebruik de ingestelde cookies voor ondertitels en automatische vertalingen. Wordt ook ingeschakeld door \"Altijd cookies gebruiken\"."
   Distraction Free Settings:
-    Shorten View Counts: Toont aantallen weergaven en vind-ik-leuks bij reacties die YouTube al verkort heeft afgerond, bijvoorbeeld 14K in plaats van 14.000. Exacte aantallen worden altijd volledig weergegeven.
+    Shorten View Counts: Toont aantallen weergaven, reacties en vind-ik-leuks bij reacties die YouTube al verkort heeft afgerond, bijvoorbeeld 14K in plaats van 14.000. Exacte aantallen worden altijd volledig weergegeven.
   Subscription Settings:
     Fetch Feed on Startup: Als dit is ingeschakeld, haalt OpenTubeX je abonnementsfeed automatisch op bij het opstarten en wanneer een nieuw venster wordt geopend.
     Show New Content Feed: Toont een tabblad Nieuw met items uit de abonnementsfeed die bij de vorige ophaalactie nog niet aanwezig waren.

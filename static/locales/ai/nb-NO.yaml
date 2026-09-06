@@ -749,7 +749,7 @@ Settings:
     Sections:
       Visible While Paused: Synlig ved pause i fullt vindu / fullskjerm
     Hide Channel Avatars: Skjul kanalavatarer
-    Shorten View Counts: Forkort antall visninger og likerklikk på kommentarer
+    Shorten View Counts: Forkort antall visninger, kommentarer og likerklikk på kommentarer
     Hide Home: Skjul startsiden
     Hide Live Chat Replay: Skjul reprise av direktechat
     Disable A-B Repeat: Deaktiver A-B-gjentakelse
@@ -1438,7 +1438,7 @@ Tooltips:
     FFmpeg Executable Path: FFmpeg kreves for å slå sammen separate video- og lydstrømmer og for lydkonvertering. OpenTubeX antar som standard at FFmpeg finnes via miljøvariabelen PATH. Du kan angi en egendefinert bane her ved behov.
     Use cookies for subtitles: "Bruk de konfigurerte informasjonskapslene for undertekster og automatiske oversettelser. Aktiveres også av «Bruk alltid informasjonskapsler»."
   Distraction Free Settings:
-    Shorten View Counts: Viser antall visninger og likerklikk på kommentarer i den forkortede formen YouTube allerede har avrundet til, for eksempel 14k i stedet for 14 000. Nøyaktige tall vises alltid i sin helhet.
+    Shorten View Counts: Viser antall visninger, kommentarer og likerklikk på kommentarer i den forkortede formen YouTube allerede har avrundet til, for eksempel 14k i stedet for 14 000. Nøyaktige tall vises alltid i sin helhet.
   Subscription Settings:
     Fetch Feed on Startup: Når dette er slått på, henter OpenTubeX automatisk abonnementsstrømmen ved oppstart og når et nytt vindu åpnes.
     Show New Content Feed: Viser en Ny-fane med elementer i abonnementsstrømmen som ikke var med forrige gang den ble hentet.

@@ -749,7 +749,7 @@ Settings:
     Sections:
       Visible While Paused: Pausi ajal täisaknas või täisekraanil nähtav
     Hide Channel Avatars: Peida kanalite avatarid
-    Shorten View Counts: Lühenda vaatamiste ja kommentaaride meeldimiste arvu
+    Shorten View Counts: Lühenda vaatamiste, kommentaaride ja kommentaaride meeldimiste arvu
     Hide Live Chat Replay: Peida otsevestluse kordus
     Hide Home: Peida avaleht
     Disable A-B Repeat: Lülita A-B-kordus välja
@@ -1436,7 +1436,7 @@ Tooltips:
     FFmpeg Executable Path: FFmpeg on vajalik eraldi video- ja helivoogude ühendamiseks ning heli teisendamiseks. Vaikimisi eeldab OpenTubeX, et FFmpeg leitakse keskkonnamuutuja PATH kaudu. Vajaduse korral saab siin määrata kohandatud asukoha.
     Use cookies for subtitles: "Kasuta seadistatud küpsiseid subtiitrite ja automaattõlgete jaoks. Selle lubab ka „Kasuta alati küpsiseid“."
   Distraction Free Settings:
-    Shorten View Counts: Kuvab YouTube'i juba ümardatud vaatamiste arvu ja kommentaaride meeldimiste arvu lühendatud kujul, näiteks 14 000 asemel 14 tuh. Täpsed arvud kuvatakse alati täielikult.
+    Shorten View Counts: Kuvab YouTube'i juba ümardatud vaatamiste arvu, kommentaaride arvu ja kommentaaride meeldimiste arvu lühendatud kujul, näiteks 14 000 asemel 14 tuh. Täpsed arvud kuvatakse alati täielikult.
   Subscription Settings:
     Fetch Feed on Startup: Kui see on lubatud, hangib OpenTubeX tellimuste voo automaatselt käivitumisel ja uue akna avamisel.
     Show New Content Feed: Kuvab vahelehe Uus, mis sisaldab tellimuste voo üksusi, mida eelmise hankimise ajal polnud.

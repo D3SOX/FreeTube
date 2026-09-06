@@ -915,7 +915,7 @@ Settings:
       General: Generelt
       Visible While Paused: Synleg ved pause i fullt vindauge eller på fullskjerm
     Hide Channel Avatars: Gøym kanalavatarar
-    Shorten View Counts: Forkort talet på visingar og likerklikk på kommentarar
+    Shorten View Counts: Forkort talet på visingar, kommentarar og likerklikk på kommentarar
     Hide Home: Gøym heimesida
     Hide Live Chat Replay: Gøym opptak av direktepraten
     Hide Profile Pictures in Comments: Gøym profilbilete i kommentarar
@@ -1769,7 +1769,7 @@ Tooltips:
     FFmpeg Executable Path: FFmpeg trengst for å slå saman åtskilde video- og lydstraumar og for lydkonvertering. OpenTubeX går som standard ut frå at FFmpeg kan finnast gjennom miljøvariabelen PATH. Du kan velje ein eigen sti her dersom det trengst.
     Use cookies for subtitles: "Bruk dei konfigurerte informasjonskapslane for undertekstar og automatiske omsetjingar. Vert òg aktivert av «Bruk alltid informasjonskapslar»."
   Distraction Free Settings:
-    Shorten View Counts: Viser visingstal og tal på likarklikk for kommentarar i den avrunda kortforma frå YouTube, til dømes 14K i staden for 14,000. Nøyaktige tal vert alltid viste i full lengd.
+    Shorten View Counts: Viser visingstal, kommentartal og tal på likarklikk for kommentarar i den avrunda kortforma frå YouTube, til dømes 14K i staden for 14,000. Nøyaktige tal vert alltid viste i full lengd.
     Hide Subscriptions Live: Denne innstillinga vert overstyrt av innstillinga "{appWideSetting}" for heile appen i underdelen "{subsection}" under "{settingsSection}"
     Hide Videos, Playlists and Channels Containing Text: Skriv inn eit ord, ein del av eit ord eller ei setning, utan skilnad på store og små bokstavar, for å gøyme alle videoar, spelelister og kanalar med ein originaltittel som inneheld teksten. Dette gjeld i heile OpenTubeX, bortsett frå Historikk, Dine spelelister og videoar i spelelister.
     Hide Videos on Watch: Gøymer videoar du har sett, frå fanene Videoar, Shorts og Direkte på abonnements- og kanalsidene. Dette påverkar ikkje Heim-fana på kanalsider

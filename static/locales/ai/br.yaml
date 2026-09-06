@@ -749,7 +749,7 @@ Settings:
     Sections:
       Visible While Paused: "Gwelus e-pad un ehan er prenestr leun pe er skramm leun"
     Hide Channel Avatars: "Kuzhat skeudennoù ar chadennoù"
-    Shorten View Counts: "Berraat niver ar selladennoù ha plijadennoù an evezhiadennoù"
+    Shorten View Counts: "Berraat niver ar selladennoù, evezhiadennoù ha plijadennoù an evezhiadennoù"
     Hide Home: "Kuzhat ar bajenn degemer"
     Hide Live Chat Replay: "Kuzhat adlenn ar flapañ war-eeun"
     Disable A-B Repeat: "Diweredekaat an adlenn A-B"
@@ -1439,7 +1439,7 @@ Tooltips:
     FFmpeg Executable Path: "Rekis eo FFmpeg evit kendeuziñ gwazhioù video ha son distag hag evit amdreiñ ar son. Dre ziouer e soñj OpenTubeX e c'haller kavout FFmpeg dre argemmenn endro PATH. Gallout a reer lakaat un hent personelaet amañ ma vez ezhomm."
     Use cookies for subtitles: "Implijout an toupinoù kefluniet evit an istitloù hag an troidigezhioù emgefreek. Gweredekaet ivez gant « Implijout toupinoù atav »."
   Distraction Free Settings:
-    Shorten View Counts: "Diskouez niver ar selladennoù ha plijadennoù an evezhiadennoù er stumm berr rontaet dija gant YouTube, da skouer 14K e-lec'h 14 000. Diskouezet e vez an niver resis en e bezh bepred."
+    Shorten View Counts: "Diskouez niver ar selladennoù, evezhiadennoù ha plijadennoù an evezhiadennoù er stumm berr rontaet dija gant YouTube, da skouer 14K e-lec'h 14 000. Diskouezet e vez an niver resis en e bezh bepred."
   Subscription Settings:
     Fetch Feed on Startup: "Pa vez gweredekaet e adtap OpenTubeX gwazh ho koumanantoù ent emgefreek el loc'hañ ha pa vez digoret ur prenestr nevez."
     Show New Content Feed: "Diskouez un ivinell Nevez gant elfennoù eus gwazh ar c'houmanantoù na oant ket aze en adtapout kent."

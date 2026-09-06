@@ -749,7 +749,7 @@ Settings:
     Sections:
       Visible While Paused: Visible pendant la pause en mode pleine fenêtre ou plein écran
     Hide Channel Avatars: Masquer les avatars des chaînes
-    Shorten View Counts: Abréger le nombre de vues et de mentions J’aime sur les commentaires
+    Shorten View Counts: Abréger le nombre de vues, de commentaires et de mentions J’aime sur les commentaires
     Hide Live Chat Replay: Masquer la rediffusion du chat en direct
     Hide Home: Masquer l’accueil
     Disable A-B Repeat: Désactiver la répétition A-B
@@ -1428,7 +1428,7 @@ Tooltips:
     FFmpeg Executable Path: FFmpeg est nécessaire pour fusionner des flux vidéo et audio distincts, ainsi que pour convertir le son. Par défaut, OpenTubeX suppose que FFmpeg est accessible au moyen de la variable d’environnement PATH. Vous pouvez définir ici un chemin personnalisé si nécessaire.
     Use cookies for subtitles: "Utiliser les cookies configurés pour les sous-titres et les traductions automatiques. Également activé par « Toujours utiliser les cookies »."
   Distraction Free Settings:
-    Shorten View Counts: Affiche sous forme abrégée le nombre de vues et de mentions J’aime sur les commentaires que YouTube a déjà arrondi, par exemple 14 k au lieu de 14 000. Les nombres exacts sont toujours affichés en entier.
+    Shorten View Counts: Affiche sous forme abrégée le nombre de vues, de commentaires et de mentions J’aime sur les commentaires que YouTube a déjà arrondi, par exemple 14 k au lieu de 14 000. Les nombres exacts sont toujours affichés en entier.
   Subscription Settings:
     Fetch Feed on Startup: Lorsque cette option est activée, OpenTubeX récupère automatiquement votre flux d’abonnements au démarrage et à l’ouverture d’une nouvelle fenêtre.
     Show New Content Feed: Affiche un onglet Nouveau contenant les éléments du flux d’abonnements qui n’étaient pas présents lors de la récupération précédente.

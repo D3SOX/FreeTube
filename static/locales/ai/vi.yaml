@@ -757,7 +757,7 @@ Settings:
     Sections:
       Visible While Paused: Hiện khi tạm dừng ở chế độ toàn cửa sổ / toàn màn hình
     Hide Channel Avatars: Ẩn ảnh đại diện kênh
-    Shorten View Counts: Rút gọn số lượt xem và lượt thích bình luận
+    Shorten View Counts: Rút gọn số lượt xem, bình luận và lượt thích bình luận
     Hide Home: Ẩn Trang chủ
     Hide Live Chat Replay: Ẩn bản phát lại trò chuyện trực tiếp
     Disable A-B Repeat: Tắt lặp A-B
@@ -1454,7 +1454,7 @@ Tooltips:
     FFmpeg Executable Path: Cần FFmpeg để ghép luồng video và âm thanh riêng biệt cũng như chuyển đổi âm thanh. Theo mặc định, OpenTubeX giả định có thể tìm thấy FFmpeg qua biến môi trường PATH. Bạn có thể đặt đường dẫn tùy chỉnh tại đây nếu cần.
     Use cookies for subtitles: "Dùng cookie đã cấu hình cho phụ đề và bản dịch tự động. Cũng được bật bởi \"Luôn dùng cookie\"."
   Distraction Free Settings:
-    Shorten View Counts: Hiện số lượt xem và lượt thích bình luận theo dạng rút gọn mà YouTube đã làm tròn, ví dụ 14K thay vì 14.000. Số chính xác luôn được hiện đầy đủ.
+    Shorten View Counts: Hiện số lượt xem, bình luận và lượt thích bình luận theo dạng rút gọn mà YouTube đã làm tròn, ví dụ 14K thay vì 14.000. Số chính xác luôn được hiện đầy đủ.
   Subscription Settings:
     Fetch Feed on Startup: Khi bật, OpenTubeX sẽ tự động tải bảng tin đăng ký lúc khởi động và khi mở cửa sổ mới.
     Show New Content Feed: Hiện thẻ Mới chứa các mục trong bảng tin đăng ký chưa có ở lần tải trước.

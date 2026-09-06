@@ -762,7 +762,7 @@ Settings:
     Sections:
       Visible While Paused: מוצג בזמן השהיה בחלון מלא או במסך מלא
     Hide Channel Avatars: הסתרת תמונות ערוצים
-    Shorten View Counts: קיצור מספרי צפיות ולייקים לתגובות
+    Shorten View Counts: קיצור מספרי צפיות, תגובות ולייקים לתגובות
     Hide Live Chat Replay: הסתרת ההפעלה החוזרת של הצ'אט החי
     Hide Home: הסתרת דף הבית
     Disable A-B Repeat: השבתת חזרה A-B
@@ -1464,7 +1464,7 @@ Tooltips:
     FFmpeg Executable Path: FFmpeg נדרש למיזוג זרמי וידאו ושמע נפרדים ולהמרת שמע. כברירת מחדל, OpenTubeX מניחה שאפשר למצוא את FFmpeg דרך משתנה הסביבה PATH. במידת הצורך אפשר להגדיר כאן נתיב מותאם אישית.
     Use cookies for subtitles: "שימוש בעוגיות שהוגדרו עבור כתוביות ותרגומים אוטומטיים. מופעל גם דרך „השתמש תמיד בעוגיות”."
   Distraction Free Settings:
-    Shorten View Counts: מציג ספירות צפיות ולייקים לתגובות ש-YouTube כבר עיגלה בצורה מקוצרת, למשל 14K במקום 14,000. ספירות מדויקות תמיד מוצגות במלואן.
+    Shorten View Counts: מציג ספירות צפיות, תגובות ולייקים לתגובות ש-YouTube כבר עיגלה בצורה מקוצרת, למשל 14K במקום 14,000. ספירות מדויקות תמיד מוצגות במלואן.
   Subscription Settings:
     Fetch Feed on Startup: כשהאפשרות מופעלת, OpenTubeX תטען אוטומטית את פיד המינויים עם ההפעלה ובפתיחת חלון חדש.
     Show New Content Feed: מציג לשונית בשם חדש ובה פריטים מפיד המינויים שלא היו בטעינה הקודמת.
