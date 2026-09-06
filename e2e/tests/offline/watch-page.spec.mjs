@@ -4889,7 +4889,7 @@ test.describe('manual comment loading', () => {
     await expect(page.locator('.commentsTitle')).toBeVisible({ timeout: 30_000 })
     await expect(page.locator('.getMoreComments')).toHaveCount(1)
 
-    const ownerReplyToggle = page.getByRole('button', {
+    const ownerReplyToggle = page.locator('.commentReplyRootToggle').getByRole('button', {
       name: /replies from .+ and others/
     })
     await expect(ownerReplyToggle).toBeVisible()
@@ -4920,6 +4920,120 @@ test.describe('manual comment loading', () => {
     })).toBe(true)
     await ownerReplyThreadElement.dispose()
   })
+
+  for (const scale of [100, 125]) {
+    test(`toggles comment thread lines with mouse and keyboard at ${scale}% scale`, async ({ app, page, attachScreenshot }) => {
+      await mockPlayableWatchPage(app, page)
+      await openMockedVideo(page)
+      await page.evaluate(async scale => {
+        const store = document.querySelector('#app').__vue_app__.config.globalProperties.$store
+        await store.dispatch('updateUiScale', scale)
+        await store.dispatch('updateBaseTheme', scale === 100 ? 'dark' : 'light')
+      }, scale)
+      await page.locator('.getCommentsTitle').click()
+      await expect(page.locator('.commentsTitle')).toBeVisible()
+
+      const thread = page.locator('.commentThread').first()
+      const line = thread.locator(':scope > .commentThreadLineToggle')
+      await expect(line).toHaveAttribute('aria-expanded', 'false')
+      await page.mouse.move(0, 0)
+      const restingColor = await thread.evaluate(element => getComputedStyle(element, '::before').borderInlineStartColor)
+      await line.hover({ position: { x: 10, y: 5 } })
+      await expect(line).toHaveCSS('cursor', 'pointer')
+      await expect.poll(() => thread.evaluate(element => getComputedStyle(element, '::before').borderInlineStartColor)).not.toBe(restingColor)
+      await line.click({ position: { x: 10, y: 5 } })
+      await expect(line).toHaveAttribute('aria-expanded', 'true')
+      await expect(thread.locator('.commentReplyContent').first()).toBeVisible()
+      const replyCount = await thread.locator('.commentReplyContent').count()
+
+      const connector = thread.locator('.commentReplyConnectorToggle').first()
+      await connector.hover()
+      await expect(connector).toHaveCSS('cursor', 'pointer')
+      await expect.poll(() => connector.evaluate(element => getComputedStyle(element).borderInlineStartColor)).not.toBe(restingColor)
+      await connector.click()
+      await expect(thread.locator('.commentReplyContent')).toHaveCount(0)
+      await line.focus()
+      await line.press('Enter')
+      await expect(thread.locator('.commentReplyContent')).toHaveCount(replyCount)
+      await line.press('Space')
+      await expect(thread.locator('.commentReplyContent')).toHaveCount(0)
+      await line.press('Enter')
+
+      // Give one loaded reply children so the same controls are exercised at a
+      // second depth without relying on YouTube's changing reply structure.
+      const branch = thread.locator('.commentReplyBranchRoot').first()
+      await branch.evaluate(element => {
+        const find = vnode => {
+          if (vnode?.component?.subTree?.el === element) return vnode.component
+          if (vnode?.component?.subTree) {
+            const match = find(vnode.component.subTree)
+            if (match) return match
+          }
+          for (const child of Array.isArray(vnode?.children) ? vnode.children : []) {
+            const match = find(child)
+            if (match) return match
+          }
+          return null
+        }
+        const component = find(document.querySelector('#app').__vue_app__._container._vnode)
+        const reply = component.props.node.reply
+        reply.replies = Array.from({ length: 8 }, (_, index) => ({
+          ...reply,
+          id: `thread-line-child-${index}`,
+          text: `Nested reply ${index}`,
+          replies: [],
+          numReplies: 0,
+          hasReplyToken: false,
+        }))
+        reply.numReplies = 8
+        reply.hasReplyToken = false
+      })
+      const nestedLine = branch.locator(':scope > .commentReplyLineToggle')
+      const children = branch.locator('.commentReplyChildren .commentReplyContent')
+      await expect(children).toHaveCount(8)
+      await line.evaluate(element => element.blur())
+      await nestedLine.hover({ position: { x: 10, y: 5 } })
+      await expect(nestedLine).toHaveCSS('cursor', 'pointer')
+      await expect.poll(() => branch.locator('.commentReplyChildStem').evaluate(element => getComputedStyle(element).borderInlineStartColor)).not.toBe(restingColor)
+      await attachScreenshot(`comment thread line hover at ${scale}%`)
+      await nestedLine.click({ position: { x: 10, y: 5 } })
+      await expect(children).toHaveCount(0)
+      await expect(thread.locator('.commentReplyContent')).toHaveCount(replyCount)
+      await nestedLine.focus()
+      await nestedLine.press('Space')
+      await expect(children).toHaveCount(8)
+      await branch.locator('.commentReplyChildren .commentReplyConnectorToggle').first().click()
+      await expect(children).toHaveCount(0)
+      await branch.locator(':scope > .commentReplyChildren > .commentReplyContinuation button').click()
+      await expect(children).toHaveCount(8)
+
+      await setPlayerFullscreen(page, true)
+      await page.locator('.fullscreenCommentsToggle').click({ force: true })
+      const scroller = page.locator('.fullscreenCommentsOverlay.open .commentsContentWrapper')
+      for (const toggle of [nestedLine, line]) {
+        await scroller.evaluate(element => { element.scrollTop = element.scrollHeight })
+        const previousScrollTop = await scroller.evaluate(element => element.scrollTop)
+        expect(previousScrollTop).toBeGreaterThan(0)
+        await toggle.evaluate(element => element.click())
+        await expect.poll(() => scroller.evaluate((element, previousScrollTop) => {
+          const content = element.querySelector(':scope > div')
+          const maximumScrollTop = Math.max(0, element.scrollTop +
+            content.getBoundingClientRect().bottom - element.getBoundingClientRect().bottom)
+          const scrollbar = element.querySelector(':scope > .os-scrollbar-vertical')
+          return {
+            reduced: element.scrollTop < previousScrollTop,
+            scrollbarMatchesOverflow: scrollbar.classList.contains('os-scrollbar-visible') === (maximumScrollTop > 1),
+          }
+        }, previousScrollTop)).toEqual({ reduced: true, scrollbarMatchesOverflow: true })
+        await expect.poll(() => scroller.evaluate(element => {
+          const content = element.querySelector(':scope > div')
+          return element.getBoundingClientRect().bottom - content.getBoundingClientRect().bottom
+        // The clamp uses integer layout offsets and heights; their rounding
+        // can add up to more than one CSS pixel at fractional Electron zoom.
+        })).toBeLessThanOrEqual(2)
+      }
+    })
+  }
 
   test('searches the comments loaded for the current video', async ({ app, page }) => {
     await mockPlayableWatchPage(app, page)

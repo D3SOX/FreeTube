@@ -458,6 +458,33 @@
   inset-block-start: calc(75px + var(--highlighted-comment-offset));
 }
 
+.commentThreadLineToggle {
+  position: absolute;
+  z-index: 1;
+  inset-block: 75px 45px;
+  inset-inline-start: 35px;
+  inline-size: 26px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.highlightedComment > .commentThreadLineToggle {
+  inset-block-start: calc(75px + var(--highlighted-comment-offset));
+}
+
+.commentThreadLineToggle:disabled {
+  cursor: default;
+}
+
+.commentThreadLineToggle:focus-visible {
+  outline: 2px solid currentcolor;
+  outline-offset: 2px;
+}
+
 .commentTitleAction {
   font-size: 13px;
   text-decoration: underline;
@@ -696,8 +723,8 @@
   inset-inline-start: 0;
   inline-size: 15px;
   block-size: 26px;
-  border-block-end: 1px solid var(--comment-thread-line-color);
-  border-inline-start: 1px solid var(--comment-thread-line-color);
+  border-block-end: 1px solid var(--comment-parent-thread-line-color, var(--comment-thread-line-color));
+  border-inline-start: 1px solid var(--comment-parent-thread-line-color, var(--comment-thread-line-color));
   border-end-start-radius: calc(12px * var(--ui-roundness));
   pointer-events: none;
 }
@@ -765,4 +792,13 @@
   text-decoration: underline;
   cursor: pointer;
   color: var(--title-color);
+}
+
+.commentThread:has(> .commentThreadLineToggle:enabled:is(:hover, :focus-visible))::before,
+.commentThreadLineToggle:enabled:is(:hover, :focus-visible) ~ .commentReplyRootToggle::before {
+  border-color: currentcolor;
+}
+
+.commentThreadLineToggle:enabled:is(:hover, :focus-visible) ~ .commentReplies {
+  --comment-parent-thread-line-color: currentcolor;
 }
