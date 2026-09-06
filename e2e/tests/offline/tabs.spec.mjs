@@ -1407,10 +1407,10 @@ test.describe('tab bar', () => {
     }
 
     await page.locator(sel.activeTab).click({ button: 'right' })
-    const tabColor = page.getByRole('menuitem', { name: 'Tab Color', exact: true })
-    await tabColor.hover()
+    const moveTab = page.getByRole('menuitem', { name: 'Move Tab', exact: true })
+    await moveTab.hover()
 
-    const submenu = tabColor.locator('xpath=following-sibling::*[@role="menu"]')
+    const submenu = moveTab.locator('xpath=following-sibling::*[@role="menu"]')
     await expect(submenu).toBeVisible()
     const submenuBox = await boundingBoxWhenSettled(submenu)
     const viewport = await page.evaluate(() => ({ width: innerWidth, height: innerHeight }))

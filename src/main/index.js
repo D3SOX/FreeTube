@@ -800,6 +800,7 @@ function runApp() {
     'New Window': 'New Window',
     Orange: 'Settings.Theme Settings.Main Color Theme.Orange',
     Paste: 'Paste',
+    Pink: 'Settings.Theme Settings.Main Color Theme.Pink',
     Red: 'Settings.Theme Settings.Main Color Theme.Red',
     Ungrouped: 'Tab Organizer.Ungrouped',
     Yellow: 'Settings.Theme Settings.Main Color Theme.Yellow'
@@ -1187,7 +1188,8 @@ function runApp() {
             { key: 'Yellow', color: 'yellow' },
             { key: 'Green', color: 'green' },
             { key: 'Blue', color: 'blue' },
-            { key: 'Purple', color: 'purple' }
+            { key: 'Purple', color: 'purple' },
+            { key: 'Pink', color: 'pink' }
           ].map(({ key, color }) => ({
             label: contextMenuLabel(key),
             type: 'radio',
