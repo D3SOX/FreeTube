@@ -3402,7 +3402,7 @@ html[data-reduced-motion='reduce'] .musicVisualizerCanvas {
   }
 }
 
-:where(.documentPictureInPicture.playerControlsShown) .documentPipWindowControls {
+:where(.documentPictureInPicture[data-player-controls-shown='true']) .documentPipWindowControls {
   opacity: 1;
   pointer-events: auto;
 }

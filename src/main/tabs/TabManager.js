@@ -4186,12 +4186,22 @@ export async function setupTabsIPC(options = {}) {
         }
 
         if (documentPipWindow && !documentPipWindow.document.contains(target)) {
+          const closeDeadline = Date.now() + 1000
           await new Promise(resolve => {
-            documentPipWindow.addEventListener('pagehide', resolve, { once: true })
+            const finish = () => {
+              clearTimeout(timeoutId)
+              documentPipWindow.removeEventListener('pagehide', finish)
+              resolve()
+            }
+            const timeoutId = setTimeout(finish, 1000)
+            documentPipWindow.addEventListener('pagehide', finish, { once: true })
             documentPipWindow.close()
           })
-          while (window.documentPictureInPicture?.window) {
-            await new Promise(resolve => setTimeout(resolve))
+          while (
+            window.documentPictureInPicture?.window &&
+            Date.now() < closeDeadline
+          ) {
+            await new Promise(resolve => setTimeout(resolve, 10))
           }
         }
 

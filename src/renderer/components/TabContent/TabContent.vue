@@ -108,6 +108,19 @@ let lifecycleRevision = 0
 let disposalNotified = false
 let pictureInPictureExitRequested = false
 
+function closeDocumentPictureInPictureWindow(pipWindow) {
+  return new Promise(resolve => {
+    const finish = () => {
+      clearTimeout(timeoutId)
+      pipWindow.removeEventListener('pagehide', finish)
+      resolve()
+    }
+    const timeoutId = window.setTimeout(finish, 1000)
+    pipWindow.addEventListener('pagehide', finish, { once: true })
+    pipWindow.close()
+  })
+}
+
 async function disposeMountedContent() {
   const pictureInPictureElement = document.pictureInPictureElement
   const documentPipWindow = window.documentPictureInPicture?.window
@@ -133,10 +146,7 @@ async function disposeMountedContent() {
   } else if (!pictureInPictureExitRequested && documentPipWindow && ownsDocumentPictureInPicture) {
     pictureInPictureExitRequested = true
     try {
-      exitPictureInPicture = new Promise(resolve => {
-        documentPipWindow.addEventListener('pagehide', resolve, { once: true })
-        documentPipWindow.close()
-      }).finally(() => {
+      exitPictureInPicture = closeDocumentPictureInPictureWindow(documentPipWindow).finally(() => {
         pictureInPictureExitRequested = false
       })
     } catch (error) {
