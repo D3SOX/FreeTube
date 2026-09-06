@@ -6,6 +6,11 @@
 .app {
   --app-safe-area-inset-top: var(--safe-area-inset-top, env(safe-area-inset-top, 0));
   --top-nav-height: 60px;
+  --progress-bar-height: 6px;
+
+  /* Keep a length so the empty space can be added inside calc(). */
+  /* stylelint-disable-next-line length-zero-no-unit */
+  --mobile-progress-bar-space: 0px;
   --top-tab-bar-height: 32px;
   --top-nav-sticky-offset: calc(var(--app-safe-area-inset-top) + var(--top-nav-height));
 
@@ -233,7 +238,7 @@
   inline-size: 100%;
   max-inline-size: none;
   margin: 0;
-  padding-block-end: calc(60px + var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)));
+  padding-block-end: calc(60px + var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)) + var(--mobile-progress-bar-space));
 }
 
 /* Narrow viewports normally reserve a phone-sized top gap. The tablet tab
@@ -578,8 +583,12 @@
 }
 
 @media only screen and (width <= 680px) {
+  .app:has(> .progressBar) {
+    --mobile-progress-bar-space: var(--progress-bar-height);
+  }
+
   .routerView {
-    margin-block: 68px;
+    margin-block: 68px calc(68px + var(--mobile-progress-bar-space));
     margin-inline: 8px;
   }
 
@@ -656,7 +665,7 @@
 
 @media only screen and (width <= 680px) {
   .app:is(.topTabs, .bottomTabs) :deep(.sideNav) {
-    block-size: 60px;
+    block-size: calc(60px + var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)));
     inset-block-start: auto;
   }
 
@@ -664,8 +673,12 @@
     inset-block-end: 34px;
   }
 
+  .app.bottomTabs :deep(.progressBar) {
+    inset-block-end: calc(94px + var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)));
+  }
+
   .app.bottomTabs :deep(.moreOptionContainer) {
-    inset-block-end: 94px;
+    inset-block-end: calc(94px + var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)) + var(--mobile-progress-bar-space));
   }
 
   .sideNavBackdrop {

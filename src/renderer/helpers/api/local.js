@@ -38,7 +38,12 @@ const TRACKING_PARAM_NAMES = [
   'utm_content',
 ]
 
-async function localApiFetch(input, init) {
+/**
+ * Uses native HTTP on Android, where YouTube does not allow WebView CORS access.
+ * @param {RequestInfo | URL} input
+ * @param {RequestInit} [init]
+ */
+export async function localApiFetch(input, init) {
   if (process.env.IS_CAPACITOR) {
     const { capacitorHttpFetch } = await import('./capacitor-http')
     return await capacitorHttpFetch(input, init)

@@ -67,6 +67,110 @@ async function phoneTabScrollState(page, contentSelector) {
   }, contentSelector)
 }
 
+for (const theme of ['light', 'dark']) {
+  test(`phone organizer covers navigation and keeps themed safe areas in ${theme} mode`, async ({ app, page }) => {
+    await setWindowSize(app, page, { width: 375, height: 760 })
+    await page.evaluate(async baseTheme => {
+      const store = document.querySelector('#app')._vnode.component.appContext.config.globalProperties.$store
+      await store.dispatch('updateBaseTheme', baseTheme)
+      document.documentElement.style.setProperty('--safe-area-inset-top', '28px')
+      document.documentElement.style.setProperty('--safe-area-inset-bottom', '24px')
+    }, theme)
+    await enablePhoneTabSwitcher(page)
+    await page.locator('.capacitorPhoneTabSwitcherButton').click()
+    const overlay = page.locator('.capacitorPhoneTabOverlay')
+    await expect(overlay).toBeVisible()
+    for (const size of [{ width: 375, height: 760 }, { width: 760, height: 375 }]) {
+      if (size.width !== 375) await setWindowSize(app, page, size)
+      const metrics = await overlay.evaluate(element => {
+        const dialog = element.querySelector('.capacitorPhoneTabDialog')
+        const header = element.querySelector('.capacitorPhoneTabHeader')
+        const bounds = dialog.getBoundingClientRect()
+        return {
+          top: bounds.top,
+          bottom: innerHeight - bounds.bottom,
+          left: bounds.left,
+          right: innerWidth - bounds.right,
+          background: getComputedStyle(element).backgroundColor,
+          headerBackground: getComputedStyle(header).backgroundColor,
+        }
+      })
+      expect(metrics.background).toBe(metrics.headerBackground)
+      expect(metrics.top).toBeCloseTo(28, 0)
+      expect(metrics.bottom).toBeCloseTo(24, 0)
+      expect(metrics.left).toBeCloseTo(0, 0)
+      expect(metrics.right).toBeCloseTo(0, 0)
+    }
+  })
+}
+
+test('phone organizer clamps its scroller when a taller viewport removes overflow', async ({ app, page }) => {
+  await setWindowSize(app, page, { width: 375, height: 400 })
+  await page.evaluate(async () => {
+    await window.ftElectron.setZoomFactor(0.95)
+    const store = document.querySelector('#app')._vnode.component.appContext.config.globalProperties.$store
+    for (let index = 0; index < 6; index++) {
+      await store.dispatch('createTab', { route: '/subscriptions', makeActive: false })
+    }
+  })
+  await enablePhoneTabSwitcher(page)
+  await page.locator('.capacitorPhoneTabSwitcherButton').click()
+  const panel = page.locator('#capacitor-phone-open-tabs-panel')
+  await panel.evaluate(element => { element.scrollTop = element.scrollHeight })
+  await expect.poll(async () => (await phoneTabScrollState(page, '.capacitorPhoneOpenTabs')).scrollTop)
+    .toBeGreaterThan(100)
+  await setWindowSize(app, page, { width: 376, height: 950 })
+  await expect.poll(() => phoneTabScrollState(page, '.capacitorPhoneOpenTabs')).toEqual({
+    scrollTop: 0,
+    maximum: 0,
+    scrollbarUnusable: true,
+  })
+})
+
+for (const zoom of [1, 0.95]) {
+  test(`mobile progress sits above the navigation without moving its active indicator at ${zoom} scale`, async ({ app, page }) => {
+    await setWindowSize(app, page, { width: 375, height: 760 })
+    await page.evaluate(async factor => {
+      await window.ftElectron.setZoomFactor(factor)
+      document.documentElement.style.setProperty('--safe-area-inset-bottom', '24px')
+      const store = document.querySelector('#app')._vnode.component.appContext.config.globalProperties.$store
+      store.commit('setShowProgressBarToast', false)
+      store.commit('setShowProgressBar', false)
+    }, zoom)
+    const nav = page.locator('.sideNav')
+    await expect.poll(() => nav.locator('.activeIndicator').evaluate(element => element.getBoundingClientRect().height))
+      .toBeCloseTo(3, 1)
+    await expect.poll(() => nav.locator('.activeIndicator').evaluate(element => (
+      new DOMMatrix(getComputedStyle(element).transform).m42
+    ))).toBeCloseTo(0, 2)
+    const originalHeight = await nav.evaluate(element => element.getBoundingClientRect().height)
+    await page.evaluate(() => {
+      const store = document.querySelector('#app')._vnode.component.appContext.config.globalProperties.$store
+      store.commit('setProgressBarPercentage', 50)
+      store.commit('setShowProgressBar', true)
+    })
+    await expect(page.locator('.progressBar')).toBeVisible()
+    const metrics = await nav.evaluate(element => {
+      const indicator = element.querySelector('.activeIndicator').getBoundingClientRect()
+      const progress = document.querySelector('.progressBar').getBoundingClientRect()
+      return {
+        height: element.getBoundingClientRect().height,
+        progressBottom: progress.bottom,
+        navTop: element.getBoundingClientRect().top,
+        indicatorBottomInset: innerHeight - indicator.bottom,
+      }
+    })
+    expect(metrics.height).toBeCloseTo(originalHeight, 0)
+    expect(metrics.progressBottom).toBeCloseTo(metrics.navTop, 0)
+    expect(metrics.indicatorBottomInset).toBeCloseTo(24, 0)
+    await page.evaluate(() => {
+      document.querySelector('#app')._vnode.component.appContext.config.globalProperties.$store.commit('setShowProgressBar', false)
+    })
+    await expect(page.locator('.progressBar')).toHaveCount(0)
+    expect(await nav.evaluate(element => element.getBoundingClientRect().height)).toBeCloseTo(originalHeight, 0)
+  })
+}
+
 test('centers phone tab close controls within their rows', async ({ page }) => {
   await page.addStyleTag({
     path: path.join(
