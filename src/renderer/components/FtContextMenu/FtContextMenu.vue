@@ -29,7 +29,7 @@
               v-for="item in tabQuickActions"
               :key="item.actionId"
               class="menuItem iconButton"
-              :class="{ disabled: !item.enabled, closeAction: item.labelKey === 'Close Tab' || item.labelKey === 'Context Menu.Close Multiple Tabs' }"
+              :class="{ disabled: !item.enabled }"
               type="button"
               role="menuitem"
               :aria-label="localizedLabel(item)"

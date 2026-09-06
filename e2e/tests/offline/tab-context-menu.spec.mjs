@@ -151,6 +151,18 @@ for (const settings of [
         await testInfo.attach('compact tab menu detail', { body: await menu.screenshot({ animations: 'disabled' }), contentType: 'image/png' })
       }
 
+      const quickActions = menu.locator('.tabQuickActions button')
+      await quickActions.first().hover()
+      const hoverBackground = await quickActions.first().evaluate(element => getComputedStyle(element).backgroundColor)
+      expect(hoverBackground).not.toBe('rgba(0, 0, 0, 0)')
+      await quickActions.last().hover()
+      await expect(quickActions.last()).toHaveCSS('background-color', hoverBackground, { timeout: 1000 })
+      await page.mouse.move(0, 0)
+      await quickActions.first().focus()
+      await page.keyboard.press('ArrowLeft')
+      await expect(quickActions.last()).toBeFocused()
+      await expect(quickActions.last()).toHaveCSS('background-color', hoverBackground)
+
       // Reduce the action viewport while the menu stays open, then restore it.
       const scroller = menu.locator('.menuScroll')
       const header = menu.locator('.tabMenuHeader')

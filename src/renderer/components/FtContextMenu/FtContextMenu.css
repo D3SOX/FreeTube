@@ -275,11 +275,6 @@
   background-color: var(--primary-color);
 }
 
-.compactTabMenu .closeAction:is(:hover, :focus-visible) {
-  color: var(--primary-text-color);
-  background-color: color-mix(in srgb, var(--error-color) 24%, var(--card-bg-color));
-}
-
 @media (prefers-reduced-motion: reduce) {
   .context-menu-enter-active,
   .context-menu-leave-active,
