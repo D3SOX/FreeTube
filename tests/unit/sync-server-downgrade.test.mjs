@@ -235,6 +235,8 @@ for (const source of ['plaintext', 'single document', 'collection']) {
     const expected = { 'legacy-channel': 1.5, 'local-channel': 2 }
     for (let run = 0; run < 2; run++) {
       await f.actions.syncWithSyncServer(f.context)
+      const manifests = f.requests.filter(request => new URL(request.url).pathname === '/v1/encrypted_sync')
+      assert.equal(new URL(manifests.at(-1).url).searchParams.get('playback_speeds_in_settings'), run === 1 ? 'true' : null)
       assert.equal(f.context.state.syncServerError, '')
       assert.equal(f.requests.some(request => request.method === 'PUT' &&
         request.url.endsWith('/encrypted_sync/playbackSpeeds')), false)
@@ -248,5 +250,22 @@ for (const source of ['plaintext', 'single document', 'collection']) {
     assert.equal(collections.has('playbackSpeeds'), false)
     assert.equal(f.requests.some(request => request.method === 'GET' &&
       request.url.endsWith('/encrypted_sync/playbackSpeeds')), source === 'collection')
+  })
+}
+
+for (const overrides of [
+  { syncServerSyncSettings: false },
+  { syncServerSyncSettings: true, syncServerSettingsExcluded: ['channelPlaybackSpeeds'] },
+]) {
+  test(`does not acknowledge playback-speed migration with disabled sync: ${JSON.stringify(overrides)}`, async () => {
+    const f = fixture({
+      ...overrides,
+      channelPlaybackSpeeds: '{}',
+      syncServerSnapshot: JSON.stringify({ settings: { channelPlaybackSpeeds: { value: '{}', updatedAt: 1 } } }),
+    }, { encrypted: true })
+    await f.actions.syncWithSyncServer(f.context)
+    assert.equal(f.context.state.syncServerError, '')
+    assert.ok(f.requests.some(request => request.url.endsWith('/v1/encrypted_sync')))
+    assert.equal(f.requests.some(request => request.url.includes('playback_speeds_in_settings')), false)
   })
 }

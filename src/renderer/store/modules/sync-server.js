@@ -295,7 +295,12 @@ async function runSync(context, { allowDataLoss = false } = {}) {
         remote,
         uploadCollections,
       } = await runStage('download', async () => {
-        const manifest = await networkClient.getEncryptedSyncManifest()
+        // The snapshot is saved only after successful collection uploads.
+        // Never infer completed migration from unrelated encrypted settings.
+        const playbackSpeedsInSettings = settings.syncServerSyncSettings &&
+          isSettingSyncEnabled(settings, 'channelPlaybackSpeeds') &&
+          Boolean(previous.settings?.channelPlaybackSpeeds)
+        const manifest = await networkClient.getEncryptedSyncManifest({ playbackSpeedsInSettings })
         const legacyEncrypted = manifest.legacy_encrypted_data
           ? await networkClient.getLegacyEncryptedSync()
           : null
