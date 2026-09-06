@@ -267,6 +267,7 @@ Subscriptions:
     RSS Message: YouTube does not provide RSS feeds for posts. Disable the "{rssSetting}" setting to view posts or enable the "{hideSetting}" setting to hide this tab.
 More: More
 Channels:
+  Load More Channels: "Load more channels"
   Channels: Channels
   Title: Channel List
   Search bar placeholder: Search Channels

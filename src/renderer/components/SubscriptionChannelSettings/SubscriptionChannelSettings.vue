@@ -18,12 +18,6 @@
         :value="searchQuery"
         @input="searchQuery = $event"
       />
-      <FtPagination
-        v-model:page="channelPage"
-        class="channelSettingsPagination"
-        :page-size="channelsPerPage"
-        :total="visibleChannels.length"
-      />
     </div>
     <div
       ref="channelSettingsScroller"
@@ -275,6 +269,21 @@
             </div>
           </li>
         </ul>
+        <FtAutoLoadNextPageWrapper
+          v-if="hasMoreChannels"
+          :key="channelPage"
+          @load-next-page="channelPage++"
+        >
+          <FtFlexBox>
+            <FtButton
+              :label="t('Channels.Load More Channels')"
+              :icon="['fas', 'arrow-down']"
+              background-color="var(--primary-color)"
+              text-color="var(--text-with-main-color)"
+              @click="channelPage++"
+            />
+          </FtFlexBox>
+        </FtAutoLoadNextPageWrapper>
       </div>
     </div>
   </FtSettingsSubpage>
@@ -286,8 +295,9 @@ import { computed, nextTick, onBeforeUnmount, ref, shallowRef, useId, useTemplat
 import { useI18n } from 'vue-i18n'
 
 import FtButton from '../FtButton/FtButton.vue'
-import FtPagination from '../FtPagination/FtPagination.vue'
+import FtAutoLoadNextPageWrapper from '../FtAutoLoadNextPageWrapper.vue'
 import { useListPagination } from '../../composables/useListPagination'
+import FtFlexBox from '../ft-flex-box/ft-flex-box.vue'
 import FtInput from '../FtInput/FtInput.vue'
 import FtSelect from '../FtSelect/FtSelect.vue'
 import FtSettingsSubpage from '../FtSettingsSubpage/FtSettingsSubpage.vue'
@@ -310,8 +320,7 @@ const { locale, t } = useI18n()
 const id = useId()
 const showManager = ref(false)
 const searchQuery = ref('')
-// Each editor mounts several controls and icons. Bound that work even for
-// profiles with hundreds of subscriptions, including after paging through them.
+// Mount editors in batches so large subscription lists open quickly.
 const channelsPerPage = 24
 const channelSettingsScroller = useTemplateRef('channelSettingsScroller')
 const channelSettingsContent = useTemplateRef('channelSettingsContent')
@@ -378,8 +387,9 @@ const visibleChannels = computed(() => {
   ))
 })
 
-const { page: channelPage, displayedItems: displayedChannels, reset: resetChannelPage } = useListPagination(visibleChannels, {
+const { page: channelPage, hasMore: hasMoreChannels, displayedItems: displayedChannels, reset: resetChannelPage } = useListPagination(visibleChannels, {
   pageSize: channelsPerPage,
+  append: true,
   resetOn: searchQuery,
   scrollTarget: channelSettingsScroller
 })

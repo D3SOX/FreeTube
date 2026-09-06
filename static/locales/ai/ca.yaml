@@ -172,6 +172,7 @@ Subscriptions:
   Posts:
     RSS Message: YouTube no proporciona canals RSS per a les publicacions. Desactiveu l'opció "{rssSetting}" per veure les publicacions o activeu l'opció "{hideSetting}" per ocultar aquesta pestanya.
 Channels:
+  Load More Channels: "Carrega més canals"
   Count: S'ha trobat 1 canal. | S'han trobat {number} canals. | S'han trobat {number} canals.
   Empty: La llista de canals està buida.
   Unsubscribe Prompt: Segur que us voleu donar de baixa de "{channelName}"?

@@ -34,11 +34,10 @@ export function useListPagination(items, { pageSize, append = false, resetOn, sc
 
   function reset() {
     // A new query is a new view even when it stays on the first page.
-    if (page.value === 0) {
+    if (append || page.value === 0) {
       restoreScroll()
-    } else {
-      page.value = 0
     }
+    page.value = 0
   }
 
   return { page, lastPage, displayedItems, hasMore, reset, restoreScroll }

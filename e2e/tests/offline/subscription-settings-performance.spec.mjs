@@ -47,23 +47,21 @@ test('subscription settings stays responsive with hundreds of channels', async (
 })
 
 for (const uiScale of [95, 125]) {
-  test.describe(`channel settings pagination at ${uiScale}% scale`, () => {
+  test.describe(`channel settings incremental loading at ${uiScale}% scale`, () => {
     test.use({
       seed: {
-        settings: { currentLocale: 'en-US', uiScale, fetchSubscriptionsAutomatically: false },
+        settings: { currentLocale: 'en-US', uiScale, fetchSubscriptionsAutomatically: false, generalAutoLoadMorePaginatedItemsEnabled: false },
         profiles: [{ _id: 'allChannels', name: 'All Channels', subscriptions: subscriptions.slice(0, 50) }]
       }
     })
 
-    test('keeps selection across pages and resets scrolling for shorter results', async ({ app, page, attachScreenshot }) => {
+    test('keeps selection while loading more and resets scrolling for shorter results', async ({ app, page, attachScreenshot }) => {
       const settings = await goToSettingsSection(page, 'subscription')
       await settings.getByRole('button', { name: 'Subscription settings', exact: true }).click()
-      const pagination = page.locator('.channelSettingsPagination')
+      const loadMore = page.getByRole('button', { name: 'Load more channels', exact: true })
       const scroller = page.locator('.channelSettingsScroller')
       const scrollbar = scroller.locator(':scope > .os-scrollbar-vertical')
       const toolbar = page.locator('.channelSelectionToolbar')
-      const next = pagination.getByRole('button', { name: 'Next', exact: true })
-      const previous = pagination.getByRole('button', { name: 'Previous', exact: true })
       const scrollToBottom = async () => {
         await scroller.evaluate(element => { element.scrollTop = element.scrollHeight })
         await expect.poll(() => scroller.evaluate(element => element.scrollTop)).toBeGreaterThan(0)
@@ -75,9 +73,9 @@ for (const uiScale of [95, 125]) {
 
       await setWindowSize(app, page, { width: 375, height: 700 })
       await expect.poll(() => page.locator('.channelSettingsHeader').evaluate(element => element.scrollWidth - element.clientWidth)).toBeLessThanOrEqual(1)
-      await attachScreenshot(`channel settings pagination at ${uiScale}%`)
-      await expect(pagination).toContainText('1-24 / 50')
-      await expect(previous).toBeDisabled()
+      await attachScreenshot(`channel settings incremental loading at ${uiScale}%`)
+      await expect(page.locator('.channelSettings')).toHaveCount(24)
+      await expect(page.locator('.channelSettingsPagination')).toHaveCount(0)
       await scrollToBottom()
       await page.getByPlaceholder('Search channels').fill('Channel 00')
       await expect(page.locator('.channelSettings')).toHaveCount(10)
@@ -85,9 +83,10 @@ for (const uiScale of [95, 125]) {
       await page.getByPlaceholder('Search channels').fill('')
       await page.getByRole('checkbox', { name: 'Channel 000', exact: true }).click()
       await scrollToBottom()
-      await next.click()
-      await expect(pagination).toContainText('25-48 / 50')
-      await expectAtTop()
+      await loadMore.click()
+      await expect(page.locator('.channelSettings')).toHaveCount(48)
+      await expect.poll(() => scroller.evaluate(element => element.scrollTop)).toBeGreaterThan(0)
+      await expect(page.getByRole('checkbox', { name: 'Channel 000', exact: true })).toBeChecked()
       await page.getByRole('checkbox', { name: 'Channel 024', exact: true }).click()
       await expect(toolbar).toContainText('2 selected')
       await page.locator('.bulkFeedTypeSettings').getByRole('checkbox', { name: 'Videos', exact: true }).click()
@@ -98,11 +97,9 @@ for (const uiScale of [95, 125]) {
           .map(channel => channel.name)
       })).toEqual(['Channel 000', 'Channel 024'])
       await scrollToBottom()
-      await next.click()
-      await expect(pagination).toContainText('49-50 / 50')
-      await expect(page.locator('.channelSettings')).toHaveCount(2)
-      await expect(next).toBeDisabled()
-      await expectAtTop()
+      await loadMore.click()
+      await expect(page.locator('.channelSettings')).toHaveCount(50)
+      await expect(loadMore).toHaveCount(0)
 
       await scrollToBottom()
       await setWindowSize(app, page, { width: 1600, height: 900 })
@@ -128,7 +125,6 @@ for (const uiScale of [95, 125]) {
       }
       await toolbar.getByRole('button', { name: 'Select All' }).click()
       await expect(toolbar).toContainText('50 selected')
-      await previous.click()
       await toolbar.getByRole('button', { name: 'Select None' }).click()
       await expect(toolbar).toContainText('0 selected')
       await scrollToBottom()
@@ -136,11 +132,11 @@ for (const uiScale of [95, 125]) {
       await expect(page.locator('.channelSettings')).toHaveCount(1)
       await expectAtTop()
       await expect(scrollbar).toHaveClass(/os-scrollbar-unusable/)
-      await expect(pagination).toHaveCount(0)
+      await expect(loadMore).toHaveCount(0)
 
       await page.getByPlaceholder('Search channels').fill('')
-      await expect(pagination).toContainText('1-24 / 50')
-      await next.click()
+      await expect(page.locator('.channelSettings')).toHaveCount(24)
+      await loadMore.click()
       await scrollToBottom()
       await page.evaluate(() => {
         const store = document.querySelector('#app').__vue_app__.config.globalProperties.$store

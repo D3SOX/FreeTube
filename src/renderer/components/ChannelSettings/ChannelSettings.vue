@@ -75,12 +75,6 @@
         :value="searchQuery"
         @input="value => searchQuery = value"
       />
-      <FtPagination
-        v-model:page="channelPage"
-        class="channelSettingsPagination"
-        :page-size="channelsPerPage"
-        :total="visibleChannelEntries.length"
-      />
       <div
         ref="channelListContainer"
         v-overlay-scrollbars
@@ -204,6 +198,21 @@
               </div>
             </li>
           </ul>
+          <FtAutoLoadNextPageWrapper
+            v-if="hasMoreChannels"
+            :key="channelPage"
+            @load-next-page="channelPage++"
+          >
+            <FtFlexBox>
+              <FtButton
+                :label="t('Channels.Load More Channels')"
+                :icon="['fas', 'arrow-down']"
+                background-color="var(--primary-color)"
+                text-color="var(--text-with-main-color)"
+                @click="channelPage++"
+              />
+            </FtFlexBox>
+          </FtAutoLoadNextPageWrapper>
         </div>
       </div>
       <FtPrompt
@@ -299,7 +308,7 @@ import { computed, nextTick, onBeforeUnmount, ref, useTemplateRef, watch } from 
 import { useI18n } from 'vue-i18n'
 
 import FtButton from '../FtButton/FtButton.vue'
-import FtPagination from '../FtPagination/FtPagination.vue'
+import FtAutoLoadNextPageWrapper from '../FtAutoLoadNextPageWrapper.vue'
 import { useListPagination } from '../../composables/useListPagination'
 import FtFlexBox from '../ft-flex-box/ft-flex-box.vue'
 import FtIconButton from '../FtIconButton/FtIconButton.vue'
@@ -621,9 +630,10 @@ const visibleChannelEntries = computed(() => {
   })
 })
 
-// Keep the number of mounted controls bounded as users page through saved channels.
-const { page: channelPage, displayedItems: displayedChannelEntries, reset: resetChannelPage, restoreScroll: restoreChannelScroll } = useListPagination(visibleChannelEntries, {
+// Mount editors in batches so large saved channel lists open quickly.
+const { page: channelPage, hasMore: hasMoreChannels, displayedItems: displayedChannelEntries, reset: resetChannelPage, restoreScroll: restoreChannelScroll } = useListPagination(visibleChannelEntries, {
   pageSize: channelsPerPage,
+  append: true,
   resetOn: searchQuery,
   scrollTarget: channelListContainer
 })
