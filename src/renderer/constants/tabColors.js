@@ -4,7 +4,8 @@ export const TAB_COLOR_ACCENTS = Object.freeze({
   yellow: '#c7a72e',
   green: '#3e9b62',
   blue: '#3f7fd6',
-  purple: '#8b64d8'
+  purple: '#8b64d8',
+  pink: '#d65b96'
 })
 
 /**

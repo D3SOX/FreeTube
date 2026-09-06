@@ -680,7 +680,8 @@ const localizedTabColors = computed(() => [
   { value: 'yellow', label: t('Settings.Theme Settings.Main Color Theme.Yellow') },
   { value: 'green', label: t('Settings.Theme Settings.Main Color Theme.Green') },
   { value: 'blue', label: t('Settings.Theme Settings.Main Color Theme.Blue') },
-  { value: 'purple', label: t('Context Menu.Purple') }
+  { value: 'purple', label: t('Context Menu.Purple') },
+  { value: 'pink', label: t('Settings.Theme Settings.Main Color Theme.Pink') }
 ])
 const editableGroupColors = computed(() => [
   { value: '', label: t('Tab Organizer.No Color'), color: null },

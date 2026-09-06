@@ -60,7 +60,7 @@ let tabCloseFocus = DEFAULT_TAB_CLOSE_FOCUS
 // Cache whether silence skipping should start enabled for newly-created tabs.
 let enableSkipSilenceByDefault = false
 let showSkipSilenceButton = false
-const VALID_TAB_COLORS = new Set(['red', 'orange', 'yellow', 'green', 'blue', 'purple'])
+const VALID_TAB_COLORS = new Set(['red', 'orange', 'yellow', 'green', 'blue', 'purple', 'pink'])
 const MAX_TAB_GROUP_NAME_LENGTH = 80
 const TAB_PREVIEW_REFRESH_DELAY_MS = 700
 const TAB_PREVIEW_CAPTURE_STYLE_ID = 'opentubex-tab-preview-capture-style'

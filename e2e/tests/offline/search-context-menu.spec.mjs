@@ -84,8 +84,8 @@ test('keeps tall top-level menus inside the viewport and scrollable', async ({ p
       top: bounds.top,
       bottom: bounds.bottom,
       viewportBottom: innerHeight - 8,
-      overflowY: getComputedStyle(element).overflowY,
-      scrollable: element.scrollHeight > element.clientHeight
+      overflowY: getComputedStyle(element.querySelector('.menuScroll')).overflowY,
+      scrollable: element.querySelector('.menuScroll').scrollHeight > element.querySelector('.menuScroll').clientHeight
     }
   })
 
@@ -95,7 +95,7 @@ test('keeps tall top-level menus inside the viewport and scrollable', async ({ p
   expect(geometry.scrollable).toBe(true)
 
   const lastTopLevelItem = menu
-    .locator(':scope > .menuItem, :scope > .submenuContainer > .menuItem')
+    .locator('.menuScroll > .menuContent > .menuItem, .menuScroll > .menuContent > .submenuContainer > .menuItem')
     .last()
   await lastTopLevelItem.scrollIntoViewIfNeeded()
   await expect(lastTopLevelItem).toBeInViewport()
@@ -113,7 +113,7 @@ test('does not clip fly-out submenus', async ({ page }) => {
   // Fixed-position fly-outs escape the top-level menu's scrollport.
   await expect.poll(() => submenu.evaluate((element) => {
     const menu = element.closest('.contextMenu')
-    const style = getComputedStyle(menu)
+    const style = getComputedStyle(menu.querySelector('.menuScroll'))
     const bounds = element.getBoundingClientRect()
     return {
       overflowX: style.overflowX,

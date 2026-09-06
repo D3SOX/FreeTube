@@ -8,109 +8,181 @@
         v-if="isOpen"
         ref="menuRef"
         class="contextMenu"
-        :class="{ submenusOpenStart }"
+        :class="{ submenusOpenStart, compactTabMenu: tabColorMenu != null }"
         :style="menuStyle"
         role="menu"
         :aria-label="t('Context Menu.Context Menu')"
         @contextmenu.prevent
         @pointerdown.stop
-        @scroll="positionOpenSubmenu"
       >
-        <template
-          v-for="(item, index) in displayedItems"
-          :key="item.actionId ?? `separator-${index}`"
+        <div
+          v-if="tabColorMenu"
+          class="tabMenuHeader"
+          role="none"
         >
           <div
-            v-if="item.type === 'separator'"
-            class="separator"
-            role="separator"
-          />
-          <div
-            v-else-if="item.submenu"
-            class="submenuContainer"
-            @pointerenter="positionSubmenu"
-            @focusin="positionSubmenu"
+            class="tabQuickActions"
+            role="group"
+            :aria-label="t('Context Menu.Context Menu')"
           >
             <button
-              class="menuItem"
+              v-for="item in tabQuickActions"
+              :key="item.actionId"
+              class="menuItem iconButton"
               :class="{ disabled: !item.enabled }"
               type="button"
               role="menuitem"
+              :aria-label="localizedLabel(item)"
+              :title="localizedLabel(item)"
               :disabled="!item.enabled"
-              aria-haspopup="menu"
               @pointerdown.prevent
+              @click="execute(item)"
             >
               <FtContextMenuItemIcon
                 :item="item"
                 :icon="getItemIcon(item)"
-                :icon-class="getItemIconClass(item)"
-              />
-              <span>{{ localizedLabel(item) }}</span>
-              <span
-                class="submenuArrow"
-                aria-hidden="true"
               />
             </button>
-            <div
-              class="submenu"
-              role="menu"
-            >
-              <!-- Presentational scrollport: keeps the hover bridge on .submenu
-                   from becoming scrollable overflow -->
-              <div
-                class="submenuScroll"
-                role="none"
-              >
-                <template
-                  v-for="(child, childIndex) in item.submenu"
-                  :key="child.actionId ?? `separator-${childIndex}`"
-                >
-                  <div
-                    v-if="child.type === 'separator'"
-                    class="separator"
-                    role="separator"
-                  />
-                  <button
-                    v-else
-                    class="menuItem"
-                    :class="{ disabled: !child.enabled }"
-                    type="button"
-                    :role="child.type === 'radio' ? 'menuitemradio' : 'menuitem'"
-                    :aria-checked="child.type === 'radio' ? child.checked : undefined"
-                    :disabled="!child.enabled"
-                    @pointerdown.prevent
-                    @click="execute(child)"
-                  >
-                    <FtContextMenuItemIcon
-                      :item="child"
-                      :icon="getItemIcon(child, item.label)"
-                      :icon-class="getItemIconClass(child)"
-                    />
-                    <span>{{ localizedLabel(child) }}</span>
-                  </button>
-                </template>
-              </div>
-            </div>
           </div>
-          <button
-            v-else
-            class="menuItem"
-            :class="{ disabled: !item.enabled }"
-            type="button"
-            :role="item.type === 'radio' ? 'menuitemradio' : 'menuitem'"
-            :aria-checked="item.type === 'radio' ? item.checked : undefined"
-            :disabled="!item.enabled"
-            @pointerdown.prevent
-            @click="execute(item)"
+          <div
+            class="tabColorPalette"
+            role="group"
+            :aria-label="localizedLabel(tabColorMenu)"
           >
-            <FtContextMenuItemIcon
-              :item="item"
-              :icon="getItemIcon(item)"
-              :icon-class="getItemIconClass(item)"
-            />
-            <span>{{ localizedLabel(item) }}</span>
-          </button>
-        </template>
+            <button
+              v-for="item in tabColorMenu.submenu"
+              :key="item.actionId"
+              class="menuItem iconButton colorButton"
+              type="button"
+              role="menuitemradio"
+              :aria-label="localizedLabel(item)"
+              :title="localizedLabel(item)"
+              :aria-checked="item.checked"
+              :disabled="!item.enabled"
+              @pointerdown.prevent
+              @click="execute(item)"
+            >
+              <FtContextMenuItemIcon
+                :item="item.label === 'Default' ? item : { ...item, groupColor: item.label.toLowerCase() }"
+                :icon="getItemIcon(item)"
+                :icon-class="getItemIconClass(item)"
+              />
+            </button>
+          </div>
+        </div>
+        <div
+          v-overlay-scrollbars
+          class="menuScroll"
+          role="none"
+          @scroll="positionOpenSubmenu"
+        >
+          <div
+            class="menuContent"
+            role="none"
+          >
+            <template
+              v-for="(item, index) in menuRows"
+              :key="item.actionId ?? `separator-${index}`"
+            >
+              <div
+                v-if="item.type === 'separator'"
+                class="separator"
+                role="separator"
+              />
+              <div
+                v-else-if="item.submenu"
+                class="submenuContainer"
+                @pointerenter="positionSubmenu"
+                @focusin="positionSubmenu"
+              >
+                <button
+                  class="menuItem"
+                  :class="{ disabled: !item.enabled }"
+                  type="button"
+                  role="menuitem"
+                  :disabled="!item.enabled"
+                  aria-haspopup="menu"
+                  @pointerdown.prevent
+                >
+                  <FtContextMenuItemIcon
+                    :item="item"
+                    :icon="getItemIcon(item)"
+                    :icon-class="getItemIconClass(item)"
+                  />
+                  <span>{{ localizedLabel(item) }}</span>
+                  <span
+                    class="submenuArrow"
+                    aria-hidden="true"
+                  />
+                </button>
+                <div
+                  class="submenu"
+                  role="menu"
+                >
+                  <!-- Presentational scrollport: keeps the hover bridge on .submenu
+                   from becoming scrollable overflow -->
+                  <div
+                    v-overlay-scrollbars
+                    class="submenuScroll"
+                    role="none"
+                  >
+                    <div
+                      class="menuContent"
+                      role="none"
+                    >
+                      <template
+                        v-for="(child, childIndex) in item.submenu"
+                        :key="child.actionId ?? `separator-${childIndex}`"
+                      >
+                        <div
+                          v-if="child.type === 'separator'"
+                          class="separator"
+                          role="separator"
+                        />
+                        <button
+                          v-else
+                          class="menuItem"
+                          :class="{ disabled: !child.enabled }"
+                          type="button"
+                          :role="child.type === 'radio' ? 'menuitemradio' : 'menuitem'"
+                          :aria-checked="child.type === 'radio' ? child.checked : undefined"
+                          :disabled="!child.enabled"
+                          @pointerdown.prevent
+                          @click="execute(child)"
+                        >
+                          <FtContextMenuItemIcon
+                            :item="child"
+                            :icon="getItemIcon(child, item.label)"
+                            :icon-class="getItemIconClass(child)"
+                          />
+                          <span>{{ localizedLabel(child) }}</span>
+                        </button>
+                      </template>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <button
+                v-else
+                class="menuItem"
+                :class="{ disabled: !item.enabled }"
+                type="button"
+                :role="item.type === 'radio' ? 'menuitemradio' : 'menuitem'"
+                :aria-checked="item.type === 'radio' ? item.checked : undefined"
+                :disabled="!item.enabled"
+                @pointerdown.prevent
+                @click="execute(item)"
+              >
+                <FtContextMenuItemIcon
+                  :item="item"
+                  :icon="getItemIcon(item)"
+                  :icon-class="getItemIconClass(item)"
+                />
+                <span>{{ localizedLabel(item) }}</span>
+              </button>
+            </template>
+          </div>
+        </div>
       </div>
     </Transition>
   </Teleport>
@@ -121,6 +193,7 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, useTemplateRef } f
 import { useI18n } from 'vue-i18n'
 
 import store from '../../store/index'
+import { clampOverlayScrollTop, restoreOverlayScrollTop } from '../../helpers/overlayScrollbars'
 import FtContextMenuItemIcon from './FtContextMenuItemIcon.vue'
 
 const { t } = useI18n()
@@ -133,6 +206,8 @@ const position = ref({ x: 0, y: 0 })
 const submenusOpenStart = ref(false)
 const verticalTabLayout = ref(false)
 let openRequest = 0
+let scrollResizeObserver = null
+let previousFocus = null
 
 const menuStyle = computed(() => ({
   left: `${position.value.x}px`,
@@ -156,6 +231,26 @@ const displayedItems = computed(() => {
         labelParameters: item.refreshingLabelParameters
       }
     : item)
+})
+
+// Keep the action payloads intact; only the desktop tab menu's presentation changes.
+const tabColorMenu = computed(() => displayedItems.value.find(item => item.labelKey === 'Context Menu.Tab Color'))
+const quickActionKeys = [
+  ['Reload Tab', 'Reload Tabs'],
+  ['Duplicate Tab', 'Duplicate Multiple Tabs'],
+  ['Pin Tab', 'Pin Tabs', 'Unpin Tab', 'Unpin Tabs'],
+  ['Close Tab', 'Close Multiple Tabs']
+].map(keys => keys.map(key => key === 'Close Tab' ? key : `Context Menu.${key}`))
+const tabQuickActions = computed(() => tabColorMenu.value
+  ? quickActionKeys.map(keys => displayedItems.value.find(item => keys.includes(item.labelKey))).filter(Boolean)
+  : [])
+const menuRows = computed(() => {
+  if (!tabColorMenu.value) return displayedItems.value
+
+  const rows = displayedItems.value.filter(item => item !== tabColorMenu.value && !tabQuickActions.value.includes(item))
+  return rows.filter((item, index) => item.type !== 'separator' || (
+    index > 0 && index < rows.length - 1 && rows[index - 1].type !== 'separator'
+  ))
 })
 
 function updateFullscreenTarget() {
@@ -215,7 +310,7 @@ const itemIcons = {
   'Unpin Tabs': ['fas', 'thumbtack-slash']
 }
 
-const colorLabels = new Set(['Default', 'Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Purple'])
+const colorLabels = new Set(['Default', 'Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Purple', 'Pink'])
 
 function getItemIcon(item, parentLabel = '') {
   if (colorLabels.has(item.label)) return ['fas', 'circle']
@@ -306,8 +401,24 @@ async function open(event) {
   position.value = { x: event.clientX, y: event.clientY }
   submenusOpenStart.value = event.clientX > window.innerWidth / 2
   verticalTabLayout.value = document.querySelector('.app')?.classList.contains('verticalTabs') === true
+  previousFocus = document.activeElement
   isOpen.value = true
   await nextTick()
+  if (request !== openRequest || !menuRef.value) return
+
+  scrollResizeObserver?.disconnect()
+  const scrollports = [...menuRef.value.querySelectorAll('.menuScroll, .submenuScroll')]
+  scrollResizeObserver = new ResizeObserver(() => {
+    for (const scroller of scrollports) {
+      clampOverlayScrollTop(scroller, scroller.querySelector(':scope > .menuContent'))
+    }
+    positionOpenSubmenu()
+  })
+  for (const scroller of scrollports) {
+    restoreOverlayScrollTop(scroller, 0)
+    scrollResizeObserver.observe(scroller)
+    scrollResizeObserver.observe(scroller.querySelector(':scope > .menuContent'))
+  }
 
   const menuWidth = menuRef.value.offsetWidth
   const menuHeight = menuRef.value.offsetHeight
@@ -322,7 +433,9 @@ async function open(event) {
 
 function close(event) {
   if (event?.target instanceof Element && event.target.closest('.contextMenu')) return
+  if (menuRef.value?.contains(document.activeElement)) previousFocus?.focus({ preventScroll: true })
   openRequest++
+  scrollResizeObserver?.disconnect()
   isOpen.value = false
 }
 
@@ -397,9 +510,43 @@ function localizedLabel(item) {
 }
 
 function handleKeydown(event) {
-  if (!isOpen.value || event.key !== 'Escape') return
+  if (!isOpen.value) return
+  if (event.key === 'Escape') {
+    event.preventDefault()
+    close()
+    previousFocus?.focus({ preventScroll: true })
+    return
+  }
+  if (!tabColorMenu.value || !['ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return
+
   event.preventDefault()
-  close()
+  event.stopPropagation()
+  const focused = document.activeElement
+  const submenu = focused?.closest('.submenu')
+  const rtl = document.body.dir === 'rtl'
+  const forward = event.key === (rtl ? 'ArrowLeft' : 'ArrowRight')
+  const backward = event.key === (rtl ? 'ArrowRight' : 'ArrowLeft')
+  if (submenu && backward) {
+    submenu.parentElement.querySelector(':scope > button').focus()
+    return
+  }
+  if (forward && focused?.getAttribute('aria-haspopup') === 'menu') {
+    focused.parentElement.querySelector('.submenu button:enabled')?.focus()
+    return
+  }
+  const row = focused?.closest('.tabQuickActions, .tabColorPalette')
+  const scope = (forward || backward) && row ? row : submenu ?? menuRef.value
+  const buttons = [...scope.querySelectorAll('button:enabled')].filter(button => (
+    scope !== menuRef.value || !button.closest('.submenu')
+  ))
+  const index = buttons.indexOf(focused)
+  const step = event.key === 'ArrowUp' || backward ? -1 : 1
+  const nextIndex = event.key === 'Home'
+    ? 0
+    : event.key === 'End'
+      ? buttons.length - 1
+      : index < 0 ? (step > 0 ? 0 : buttons.length - 1) : (index + step + buttons.length) % buttons.length
+  buttons[nextIndex]?.focus()
 }
 
 onMounted(() => {
@@ -413,6 +560,7 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
+  scrollResizeObserver?.disconnect()
   document.removeEventListener('contextmenu', open)
   document.removeEventListener('pointerdown', close, true)
   document.removeEventListener('fullscreenchange', updateFullscreenTarget)

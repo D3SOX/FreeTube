@@ -116,8 +116,8 @@
     "material": "history-rounded"
   },
   "clone": {
-    "ri": "share-box-line",
-    "material": "tab-outline"
+    "ri": "checkbox-multiple-blank-line",
+    "material": "library-add-outline"
   },
   "closed-captioning": {
     "ri": "closed-captioning-line",

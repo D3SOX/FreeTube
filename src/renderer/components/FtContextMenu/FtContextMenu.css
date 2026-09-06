@@ -14,7 +14,13 @@
 .contextMenu {
   position: fixed;
   z-index: 20000;
+  display: flex;
+  flex-direction: column;
   max-block-size: calc(100vh - 16px);
+}
+
+.menuScroll {
+  min-block-size: 0;
   overflow: auto;
   overscroll-behavior: contain;
 }
@@ -45,6 +51,56 @@
   font: inherit;
   text-align: start;
   cursor: default;
+}
+
+.compactTabMenu {
+  inline-size: 236px;
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.compactTabMenu .menuItem {
+  min-block-size: 28px;
+  padding-block: 4px;
+}
+
+.tabMenuHeader {
+  flex-shrink: 0;
+  margin-block-end: 4px;
+  border-block-end: 1px solid color-mix(in srgb, var(--border-color) 45%, transparent);
+}
+
+.tabQuickActions,
+.tabColorPalette {
+  display: grid;
+  gap: 2px;
+}
+
+.tabQuickActions {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  padding-block-end: 4px;
+  border-block-end: 1px solid color-mix(in srgb, var(--border-color) 45%, transparent);
+}
+
+.tabColorPalette {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  padding-block: 4px;
+}
+
+.compactTabMenu .iconButton {
+  display: flex;
+  justify-content: center;
+  min-block-size: 30px;
+  padding: 4px;
+}
+
+.tabColorPalette :deep(.groupColorSwatch) {
+  inline-size: 14px;
+  block-size: 14px;
+}
+
+.colorButton[aria-checked='true'] {
+  background-color: var(--side-nav-hover-color);
 }
 
 /* Labels wrap instead of being clipped, so translations are never cut off */
@@ -213,8 +269,8 @@
   outline-offset: -2px;
 }
 
-.menuItem:hover,
-.submenuContainer:hover > .menuItem {
+.menuItem:not(:disabled):hover,
+.submenuContainer:hover > .menuItem:not(:disabled) {
   color: var(--text-with-main-color);
   background-color: var(--primary-color);
 }
