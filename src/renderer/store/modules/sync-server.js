@@ -130,9 +130,21 @@ function withSyncLock(callback) {
   return callback()
 }
 
+function requiresEncryptedSync(settings) {
+  // A key may survive a privacy-mode downgrade made by an older app version.
+  return settings.syncServerPrivacyMode === 'enhanced' || Boolean(settings.syncServerPrivacyKey)
+}
+
+function assertEncryptionSupported(supported, required) {
+  if (required && !supported) {
+    throw new Error('This account requires encrypted sync, but the server no longer supports it')
+  }
+}
+
 async function runSync(context, { allowDataLoss = false } = {}) {
   const { commit, dispatch, rootGetters, rootState } = context
   const settings = rootState.settings
+  const encrypted = requiresEncryptedSync(settings)
   const networkClient = trackSyncClient(
     new SyncServerClient(settings.syncServerUrl, settings.syncServerToken)
   )
@@ -143,21 +155,21 @@ async function runSync(context, { allowDataLoss = false } = {}) {
   const result = {}
   const store = { state: rootState, getters: rootGetters, commit, dispatch }
   const stages = [
-    ...(settings.syncServerPrivacyMode === 'enhanced' ? ['download'] : []),
+    ...(encrypted ? ['download'] : []),
     ...(settings.syncServerSyncSubscriptions ? ['subscriptions'] : []),
     ...(settings.syncServerSyncPlaylists ? ['playlists'] : []),
     ...(settings.syncServerSyncPlaylists ? ['playlistBookmarks'] : []),
     ...(settings.syncServerSyncHistory ? ['history'] : []),
     ...(settings.syncServerSyncProfiles ? ['profiles'] : []),
     ...((process.env.IS_ELECTRON || process.env.IS_CAPACITOR) &&
-      settings.syncServerPrivacyMode === 'enhanced' &&
+      encrypted &&
       settings.syncServerSyncSessions
       ? ['sessionsV2']
       : []),
-    ...(settings.syncServerPrivacyMode === 'enhanced' && settings.syncServerSyncSettings
+    ...(encrypted && settings.syncServerSyncSettings
       ? ['settings']
       : []),
-    ...(settings.syncServerPrivacyMode === 'enhanced' ? ['upload'] : []),
+    ...(encrypted ? ['upload'] : []),
     'finishing',
   ]
   let completedStages = 0
@@ -269,7 +281,7 @@ async function runSync(context, { allowDataLoss = false } = {}) {
   }
 
   try {
-    if (settings.syncServerPrivacyMode === 'enhanced') {
+    if (encrypted) {
       if (!settings.syncServerPrivacyKey) {
         throw new Error('Reconnect and enter your privacy passphrase to enable enhanced privacy')
       }
@@ -623,6 +635,10 @@ const actions = {
       }
 
       const privacySupported = await client.supportsEncryptedSync()
+      const sameAccount = normalizedUrl === rootState.settings.syncServerUrl &&
+        trimmedUsername === rootState.settings.syncServerUsername
+      assertEncryptionSupported(privacySupported, Boolean(privacyPassphrase) ||
+        (sameAccount && requiresEncryptedSync(rootState.settings)))
       if (privacySupported && !privacyPassphrase) {
         throw new Error('A privacy passphrase is required by this server')
       }
@@ -816,6 +832,7 @@ const actions = {
       } finally {
         releaseSyncClient(client)
       }
+      assertEncryptionSupported(privacySupported, requiresEncryptedSync(rootState.settings))
       const privacyMode = privacySupported ? 'enhanced' : 'legacy'
       await dispatch('updateSyncServerPrivacyMode', privacyMode, { root: true })
       if (privacySupported && !rootState.settings.syncServerPrivacyKey) {
