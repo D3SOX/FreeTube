@@ -47,6 +47,7 @@
   position: relative;
   font-family: inherit;
   background-color: var(--search-bar-color);
+  box-shadow: inset 0 0 0 1px var(--input-border-color, transparent);
   backdrop-filter: var(--search-bar-blur, none);
   color: var(--primary-text-color);
   inline-size: 100%;

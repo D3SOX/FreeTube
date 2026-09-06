@@ -386,6 +386,8 @@ Settings:
       Unable to Load: No se pudieron cargar las fuentes instaladas en el sistema
     Always Show Scrollbars: Mostrar siempre las barras de desplazamiento
     Base Theme:
+      OpenTubeX Light: "OpenTubeX Claro"
+      OpenTubeX Dark: "OpenTubeX Oscuro"
       Custom: Personalizado
       Catppuccin Latte: Capuchino con leche
       Gruvbox Dark: Gruvbox oscuro

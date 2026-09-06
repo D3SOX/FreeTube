@@ -2640,6 +2640,10 @@ function runApp() {
           return '#0f0f0f'
         case 'light':
           return '#f1f1f1'
+        case 'openTubeXLight':
+          return '#e8f2f0'
+        case 'openTubeXDark':
+          return '#0b1416'
         case 'black':
           return '#000000'
         case 'dracula':

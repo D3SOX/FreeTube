@@ -486,6 +486,8 @@ Settings:
       Unable to Load: Nepavyko įkelti įdiegtų sistemos šriftų
     Always Show Scrollbars: Visada rodyti slankjuostes
     Base Theme:
+      OpenTubeX Light: "OpenTubeX Šviesi"
+      OpenTubeX Dark: "OpenTubeX Tamsi"
       Custom: Pasirinktinė
       Catppuccin Frappe: Catppuccin Frappe
       Catppuccin Latte: Catppuccin Latte

@@ -389,8 +389,8 @@ import CustomThemeEditor from './CustomThemeEditor/CustomThemeEditor.vue'
 import QuickSettingsCustomizer from './QuickSettingsCustomizer/QuickSettingsCustomizer.vue'
 
 import store from '../store/index'
-import { getThemeClassification } from '../../appearanceSettings'
-import { customThemeIdFromValue, customThemeValue, isCustomThemeValue } from '../../customTheme'
+import { getThemeClassification, hasFixedThemeColors } from '../../appearanceSettings'
+import { customThemeIdFromValue, customThemeValue } from '../../customTheme'
 
 import { colors } from '../helpers/colors'
 import { useColorTranslations } from '../composables/colors'
@@ -449,6 +449,8 @@ const BUILTIN_BASE_THEME_VALUES = [
   'dark',
   'black',
   // Second group
+  'openTubeXLight',
+  'openTubeXDark',
   'nordic',
   'hotPink',
   'pastelPink',
@@ -475,6 +477,8 @@ const builtInBaseThemeNames = computed(() => [
   t('Settings.Theme Settings.Base Theme.Light'),
   t('Settings.Theme Settings.Base Theme.Dark'),
   t('Settings.Theme Settings.Base Theme.Black'),
+  t('Settings.Theme Settings.Base Theme.OpenTubeX Light'),
+  t('Settings.Theme Settings.Base Theme.OpenTubeX Dark'),
   // Second group
   t('Settings.Theme Settings.Base Theme.Nordic'),
   t('Settings.Theme Settings.Base Theme.Hot Pink'),
@@ -633,11 +637,9 @@ function updateIconPack(value) {
   store.dispatch('updateIconPack', value)
 }
 
-const areColorThemesEnabled = computed(() => baseTheme.value !== 'hotPink' && !(
-  isCustomThemeValue(baseTheme.value) ||
-  (baseTheme.value === 'system' &&
-    (isCustomThemeValue(systemLightTheme.value) || isCustomThemeValue(systemDarkTheme.value)))
-))
+const areColorThemesEnabled = computed(() => baseTheme.value === 'system'
+  ? !hasFixedThemeColors(systemLightTheme.value) && !hasFixedThemeColors(systemDarkTheme.value)
+  : !hasFixedThemeColors(baseTheme.value))
 const selectedCustomThemeId = computed(() => customThemeIdFromValue(baseTheme.value === 'system'
   ? (systemUsesDarkTheme.value ? systemDarkTheme.value : systemLightTheme.value)
   : baseTheme.value))

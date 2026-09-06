@@ -365,6 +365,8 @@ Settings:
       Unable to Load: Impossibile caricare i caratteri installati nel sistema
     Always Show Scrollbars: Mostra sempre le barre di scorrimento
     Base Theme:
+      OpenTubeX Light: "OpenTubeX Chiaro"
+      OpenTubeX Dark: "OpenTubeX Scuro"
       Custom: Personalizzato
     Light Theme: Tema chiaro
     Dark Theme: Tema scuro

@@ -344,6 +344,8 @@ Settings:
       Unable to Load: Не удалось загрузить установленные системные шрифты
     Always Show Scrollbars: Всегда показывать полосы прокрутки
     Base Theme:
+      OpenTubeX Light: "OpenTubeX Светлая"
+      OpenTubeX Dark: "OpenTubeX Тёмная"
       Custom: Пользовательская
     Light Theme: Светлая тема
     Dark Theme: Тёмная тема

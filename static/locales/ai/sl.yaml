@@ -495,6 +495,8 @@ Settings:
       Unable to Load: Nameščenih sistemskih pisav ni mogoče naložiti
     Always Show Scrollbars: Vedno prikaži drsne trakove
     Base Theme:
+      OpenTubeX Light: "OpenTubeX Svetla"
+      OpenTubeX Dark: "OpenTubeX Temna"
       Custom: Po meri
       Catppuccin Frappe: Catppuccin Frappe
       Catppuccin Latte: Catppuccin Latte

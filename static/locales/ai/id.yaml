@@ -369,6 +369,8 @@ Settings:
       Unable to Load: Tidak dapat memuat font sistem yang terpasang
     Always Show Scrollbars: Selalu Tampilkan Bilah Gulir
     Base Theme:
+      OpenTubeX Light: "OpenTubeX Terang"
+      OpenTubeX Dark: "OpenTubeX Gelap"
       Custom: Khusus
     Light Theme: Tema terang
     Dark Theme: Tema gelap

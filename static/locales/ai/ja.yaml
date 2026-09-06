@@ -365,6 +365,8 @@ Settings:
       Unable to Load: インストール済みのシステムフォントを読み込めませんでした
     Always Show Scrollbars: スクロールバーを常に表示
     Base Theme:
+      OpenTubeX Light: "OpenTubeX ライト"
+      OpenTubeX Dark: "OpenTubeX ダーク"
       Custom: カスタム
     Light Theme: ライトテーマ
     Dark Theme: ダークテーマ

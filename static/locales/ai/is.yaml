@@ -369,6 +369,8 @@ Settings:
       Unable to Load: Ekki tókst að hlaða uppsettum kerfisleturgerðum
     Always Show Scrollbars: Sýna alltaf skrunstikur
     Base Theme:
+      OpenTubeX Light: "OpenTubeX Ljóst"
+      OpenTubeX Dark: "OpenTubeX Dökkt"
       Custom: Sérsniðið
     Light Theme: Ljóst þema
     Dark Theme: Dökkt þema

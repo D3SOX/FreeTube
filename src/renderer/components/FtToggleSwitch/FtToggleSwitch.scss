@@ -43,14 +43,14 @@
   }
 
   &::before {
-    background-color: #9e9e9e;
+    background-color: var(--toggle-track-color, #9e9e9e);
     border-radius: 8px;
     block-size: 14px;
     inset-inline-start: 6px;
     inline-size: 34px;
 
     .switch-input:checked + & {
-      background-color: var(--accent-color-light);
+      background-color: var(--toggle-checked-track-color, var(--accent-color-light));
     }
 
     .switch-input:disabled + & {
@@ -59,7 +59,7 @@
   }
 
   &::after {
-    background-color: #fafafa;
+    background-color: var(--toggle-thumb-color, #fafafa);
     border-radius: 50%;
     box-shadow: 0 3px 1px -2px rgb(0 0 0 / 14%), 0 2px 2px 0 rgb(0 0 0 / 9.8%), 0 1px 5px 0 rgb(0 0 0 / 8.4%);
     block-size: 20px;
@@ -67,7 +67,7 @@
     inline-size: 20px;
 
     .switch-input:checked + & {
-      background-color: var(--accent-color);
+      background-color: var(--toggle-checked-thumb-color, var(--accent-color));
       transform: translate(calc(80% * var(--horizontal-directionality-coefficient)), -50%);
     }
 

@@ -445,6 +445,8 @@ Settings:
     Theme Settings: Farbschema
     Match Top Bar with Main Color: Obere Leiste an Hauptfarbe anpassen
     Base Theme:
+      OpenTubeX Light: "OpenTubeX Hell"
+      OpenTubeX Dark: "OpenTubeX Dunkel"
       Base Theme: Grundlegendes Farbschema
       Black: Schwarz
       Dark: Dunkel

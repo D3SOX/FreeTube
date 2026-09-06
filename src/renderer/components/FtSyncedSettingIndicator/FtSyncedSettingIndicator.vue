@@ -178,13 +178,13 @@ async function toggleSync() {
 .syncedSettingIndicator:focus-visible,
 .changedSettingIndicator:hover,
 .changedSettingIndicator:focus-visible {
-  color: var(--primary-color);
-  outline: 2px solid var(--primary-color);
+  color: var(--settings-changed-color, var(--primary-color));
+  outline: 2px solid var(--settings-changed-color, var(--primary-color));
   outline-offset: 2px;
 }
 
 .changedSettingIndicator {
-  color: var(--primary-color);
+  color: var(--settings-changed-color, var(--primary-color));
 }
 
 .changedSettingIndicatorPlaceholder {

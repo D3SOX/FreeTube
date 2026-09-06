@@ -1351,3 +1351,86 @@ test.describe('narrow layout top padding', () => {
     await attachScreenshot('narrow layout')
   })
 })
+
+// Sample the empty padding beside the settings content, away from text and controls.
+async function settingsBackgroundVariation(page) {
+  const screenshot = await page.locator('.settingsContent').screenshot({ animations: 'disabled' })
+  return page.evaluate(async base64 => {
+    const bytes = Uint8Array.from(atob(base64), character => character.charCodeAt(0))
+    const bitmap = await createImageBitmap(new Blob([bytes], { type: 'image/png' }))
+    const canvas = new OffscreenCanvas(bitmap.width, bitmap.height)
+    const context = canvas.getContext('2d')
+    context.drawImage(bitmap, 0, 0)
+    const samples = [0.1, 0.3, 0.5, 0.7, 0.9].map(fraction =>
+      [...context.getImageData(4, Math.floor(bitmap.height * fraction), 1, 1).data].slice(0, 3))
+    bitmap.close()
+    return Math.max(...[0, 1, 2].map(channel =>
+      Math.max(...samples.map(color => color[channel])) - Math.min(...samples.map(color => color[channel]))))
+  }, screenshot.toString('base64'))
+}
+
+test.describe('OpenTubeX homepage themes', () => {
+  test('selects, persists, and follows the system with the homepage palettes', async ({ app, page, attachScreenshot }) => {
+    await goToSettingsSection(page, 'theme')
+    for (const [mode, background, accent] of [
+      ['Light', 'rgb(232, 242, 240)', 'rgb(17, 104, 95)'],
+      ['Dark', 'rgb(11, 20, 22)', 'rgb(46, 196, 182)'],
+    ]) {
+      await page.getByRole('combobox', { name: /^Base theme/i }).click()
+      await page.getByRole('option', { name: `OpenTubeX ${mode}`, exact: true }).click()
+      await expect(page.locator('body')).toHaveCSS('background-color', background)
+      await expect(page.getByRole('combobox', { name: /Main colou?r theme/i })).toBeDisabled()
+      await expect(page.getByRole('combobox', { name: /Secondary colou?r theme/i })).toBeDisabled()
+      // Read resolved colors so accidental inheritance from Red/Blue is detected.
+      expect(await page.locator('body').evaluate(body => {
+        const probe = document.createElement('span')
+        probe.style.color = 'var(--accent-color)'
+        body.append(probe)
+        const color = getComputedStyle(probe).color
+        probe.remove()
+        return color
+      })).toBe(accent)
+      for (const selector of ['.app', '.ft-card', '.settingsWindow']) {
+        await expect(page.locator(selector).first()).not.toHaveCSS('background-image', 'none')
+      }
+      await expect(page.locator('.sectionBody').first()).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)')
+      for (const scale of [100, 125]) {
+        await page.evaluate(scale => document.querySelector('#app').__vue_app__.config.globalProperties.$store
+          .dispatch('updateUiScale', scale), scale)
+        await expect.poll(() => app.electronApp.evaluate(({ BrowserWindow }) =>
+          BrowserWindow.getAllWindows()[0].webContents.getZoomFactor())).toBe(scale / 100)
+        const variation = await settingsBackgroundVariation(page)
+        expect(variation).toBeGreaterThanOrEqual(4)
+        await page.locator('.settingsContent').evaluate(element => { element.scrollTop = element.scrollHeight })
+        expect(await settingsBackgroundVariation(page)).toBe(variation)
+        await page.locator('.settingsContent').evaluate(element => { element.scrollTop = 0 })
+      }
+      await page.evaluate(() => document.querySelector('#app').__vue_app__.config.globalProperties.$store
+        .dispatch('updateUiScale', 100))
+      await attachScreenshot(`OpenTubeX ${mode} settings`)
+    }
+
+    ;({ page } = await app.relaunch())
+    await expect(page.locator('body')).toHaveClass(/openTubeXDark/)
+    expect(await app.electronApp.evaluate(({ nativeTheme }) => nativeTheme.shouldUseDarkColors)).toBe(true)
+    await goToSettingsSection(page, 'theme')
+    await page.getByRole('combobox', { name: /^Base theme/i }).click()
+    await page.getByRole('option', { name: /^System default$/i }).click()
+    for (const [mode, other] of [['Light', 'Dark'], ['Dark', 'Light']]) {
+      await page.getByRole('combobox', { name: `${mode} theme`, exact: true }).click()
+      await expect(page.getByRole('option', { name: `OpenTubeX ${other}`, exact: true })).toHaveCount(0)
+      await page.getByRole('option', { name: `OpenTubeX ${mode}`, exact: true }).click()
+      await page.emulateMedia({ colorScheme: mode.toLowerCase() })
+      await expect(page.locator('body')).toHaveClass(new RegExp(`openTubeX${mode}`))
+    }
+
+    // Leaving a fixed palette restores the user's normal color controls.
+    await page.getByRole('combobox', { name: /^Base theme/i }).click()
+    await page.getByRole('option', { name: 'Light', exact: true }).click()
+    await expect(page.getByRole('combobox', { name: /Main colou?r theme/i })).toBeEnabled()
+    await expect(page.locator('body')).toHaveCSS('--primary-color', '#f44336')
+    await expect(page.locator('.app')).toHaveCSS('background-image', 'none')
+    await expect(page.locator('.settingsWindow')).toHaveCSS('background-image', 'none')
+    expect(await settingsBackgroundVariation(page)).toBe(0)
+  })
+})

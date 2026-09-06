@@ -352,6 +352,8 @@ Settings:
       Unable to Load: Unable to load installed system fonts
     Always Show Scrollbars: Always Show Scrollbars
     Base Theme:
+      OpenTubeX Light: "OpenTubeX Light"
+      OpenTubeX Dark: "OpenTubeX Dark"
       Custom: Custom
     Light Theme: Light theme
     Dark Theme: Dark theme

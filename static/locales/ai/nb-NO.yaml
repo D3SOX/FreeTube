@@ -365,6 +365,8 @@ Settings:
       Unable to Load: Kan ikke laste inn installerte systemskrifter
     Always Show Scrollbars: Vis alltid rullefelt
     Base Theme:
+      OpenTubeX Light: "OpenTubeX Lys"
+      OpenTubeX Dark: "OpenTubeX Mørk"
       Custom: Egendefinert
     Light Theme: Lyst tema
     Dark Theme: Mørkt tema

@@ -13,7 +13,7 @@
 }
 
 .sectionBody {
-  background-color: var(--card-bg-color);
+  background-color: var(--settings-section-bg-color, var(--card-bg-color));
   backdrop-filter: var(--card-bg-blur, none);
   border-radius: calc(8px * var(--ui-roundness));
   padding-block: 10px;

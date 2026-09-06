@@ -377,6 +377,8 @@ Settings:
       Unable to Load: Installerede systemskrifttyper kunne ikke indlæses
     Always Show Scrollbars: Vis altid rullebjælker
     Base Theme:
+      OpenTubeX Light: "OpenTubeX Lys"
+      OpenTubeX Dark: "OpenTubeX Mørk"
       Custom: Brugerdefineret
       Catppuccin Latte: Catppuccin Latte
     Light Theme: Lyst tema

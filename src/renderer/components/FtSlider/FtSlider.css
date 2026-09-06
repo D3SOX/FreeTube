@@ -67,7 +67,7 @@
   border-radius: calc(1px * var(--ui-roundness));
   inline-size: 100%;
   block-size: 2px;
-  background-color: var(--accent-color-opacity4);
+  background-color: var(--slider-track-color, var(--accent-color-opacity4));
 }
 
 .input::-webkit-slider-thumb {
@@ -114,7 +114,7 @@
   border-radius: calc(1px * var(--ui-roundness));
   inline-size: 100%;
   block-size: 2px;
-  background-color: var(--accent-color-opacity4);
+  background-color: var(--slider-track-color, var(--accent-color-opacity4));
 }
 
 .input::-moz-range-thumb {

@@ -365,6 +365,8 @@ Settings:
       Unable to Load: 無法載入已安裝的系統字型
     Always Show Scrollbars: 永遠顯示捲軸
     Base Theme:
+      OpenTubeX Light: "OpenTubeX 淺色"
+      OpenTubeX Dark: "OpenTubeX 深色"
       Custom: 自訂
     Light Theme: 淺色主題
     Dark Theme: 深色主題

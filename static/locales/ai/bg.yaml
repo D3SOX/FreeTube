@@ -367,6 +367,8 @@ Settings:
       Unable to Load: Инсталираните системни шрифтове не могат да бъдат заредени
     Always Show Scrollbars: Винаги показвай лентите за превъртане
     Base Theme:
+      OpenTubeX Light: "OpenTubeX Светла"
+      OpenTubeX Dark: "OpenTubeX Тъмна"
       Custom: Персонализирана
     Light Theme: Светла тема
     Dark Theme: Тъмна тема

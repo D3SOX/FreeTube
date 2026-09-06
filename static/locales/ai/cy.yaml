@@ -367,6 +367,8 @@ Settings:
       Unable to Load: Nid oedd modd llwytho ffontiau'r system sydd wedi'u gosod
     Always Show Scrollbars: Dangos bariau sgrolio bob amser
     Base Theme:
+      OpenTubeX Light: "OpenTubeX Golau"
+      OpenTubeX Dark: "OpenTubeX Tywyll"
       Custom: Personol
     Light Theme: Thema olau
     Dark Theme: Thema dywyll
