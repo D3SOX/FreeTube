@@ -98,9 +98,10 @@ async function getRequestBody(input, init) {
  * Uses Capacitor's native HTTP client for small HTML and JSON requests that
  * cannot rely on WebView CORS access. Media requests must keep using the
  * WebView so their response bodies are streamed instead of copied through the
- * JavaScript bridge as base64.
+ * JavaScript bridge as base64. nativeTimeoutMs bounds connection and read
+ * inactivity on Android; signal still limits the JavaScript wait.
  * @param {RequestInfo | URL} input
- * @param {RequestInit | undefined} init
+ * @param {RequestInit & { nativeTimeoutMs?: number }} [init]
  * @returns {Promise<Response>}
  */
 export async function capacitorHttpFetch(input, init = undefined) {
@@ -129,6 +130,8 @@ export async function capacitorHttpFetch(input, init = undefined) {
     data: await getRequestBody(input, init),
     responseType: 'text',
     disableRedirects: redirect !== 'follow',
+    connectTimeout: init?.nativeTimeoutMs,
+    readTimeout: init?.nativeTimeoutMs,
   }, signal)
 
   if (redirect === 'error' && REDIRECT_STATUSES.has(nativeResponse.status)) {

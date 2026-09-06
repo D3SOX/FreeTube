@@ -1,7 +1,7 @@
 .progressBar {
   position: fixed;
   box-sizing: border-box;
-  block-size: 6px;
+  block-size: var(--progress-bar-height, 6px);
   padding-block: 1px;
   inset-block-end: 0;
   inset-inline: 0;
@@ -33,4 +33,12 @@
   background-color: color-mix(in srgb, var(--primary-color) 55%, #fff);
   box-shadow: 0 0 8px 2px color-mix(in srgb, var(--primary-color) 75%, transparent);
   content: '';
+}
+
+@media only screen and (width <= 680px) {
+  .progressBar {
+    inset-block-end: calc(60px + var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0)));
+    overflow: hidden;
+    box-shadow: none;
+  }
 }

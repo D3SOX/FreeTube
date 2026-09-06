@@ -34,7 +34,7 @@
 .moreOptionContainer {
   position: fixed;
   background-color: var(--side-nav-color);
-  inset-block-end: calc(60px + var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0)));
+  inset-block-end: calc(60px + var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0)) + var(--mobile-progress-bar-space, 0px));
   inline-size: 70px;
   z-index: 0;
   box-shadow: 3px -3px 5px 0 rgb(0 0 0 / 20%);
