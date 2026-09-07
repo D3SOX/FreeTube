@@ -4178,6 +4178,9 @@ export default defineComponent({
       // for tabs the user has actually presented.
       if (!this.isCurrentlyPresented() || !this.hasBeenPresented) { return }
       if (!this.$refs.player?.hasLoaded) { return }
+      // Shaka can finish loading before it seeks to the resume point. Saving
+      // the media element's initial zero in that gap would erase progress.
+      if (!this.$refs.player.hasPlaybackPosition) { return }
 
       const currentTime = this.shortsPlaybackCompleted && this.watchedProgressSavingEnabled
         ? this.videoLengthSeconds
