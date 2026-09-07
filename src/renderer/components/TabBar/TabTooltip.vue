@@ -46,10 +46,11 @@
               :key="tab.id"
               class="tabTooltipGridItem"
             >
-              <TabTooltipPreview :tab="tab" />
-              <div class="tabTooltipGridTitle">
-                {{ formatTabTitle(tab.title) }}
-              </div>
+              <TabTooltipPreview
+                :tab="tab"
+                show-title
+                :show-icon="showIcon"
+              />
             </div>
           </div>
           <TabTooltipPreview
@@ -73,7 +74,6 @@ import { FtIcon } from '@opentubex/icons'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, useId, useTemplateRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { getTabAccentColor } from '../../constants/tabColors'
-import { formatTabTitle } from '../../tabs/tabTitle'
 import TabTooltipPreview from './TabTooltipPreview.vue'
 
 const props = defineProps({
@@ -85,7 +85,8 @@ const props = defineProps({
   tabBarPosition: { type: String, default: 'top' },
   disableTooltips: { type: Boolean, default: false },
   closeTooltipsSignal: { type: Number, default: 0 },
-  showPreview: { type: Boolean, default: true }
+  showPreview: { type: Boolean, default: true },
+  showIcon: { type: Boolean, default: true }
 })
 
 const { t } = useI18n()
@@ -398,15 +399,6 @@ watch(() => props.showPreview, () => nextTick(updateTooltipPosition))
 .tabTooltipGridItem :deep(.tabTooltipPreview) {
   min-block-size: 0;
   flex-shrink: 1;
-}
-
-.tabTooltipGridTitle {
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  font-size: 12px;
-  line-height: 1.35;
-  flex-shrink: 0;
 }
 
 .tabTooltipRemaining {

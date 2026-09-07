@@ -311,6 +311,8 @@ test.describe('tab group previews', () => {
     ])
     await expect(tooltip.locator('.tabTooltipPreview img').first()).toHaveAttribute('src', /^data:image\/jpeg/)
     await expect(tooltip.locator('.tabTooltipPreviewFallback')).toHaveCount(3)
+    await expect(tooltip.locator('.tabTooltipGridTitleIcon[data-icon="rss"]')).toHaveCount(1)
+    await expect(tooltip.locator('.tabTooltipGridTitleIcon[data-icon="clapperboard"]')).toHaveCount(3)
     await expect(trigger).toHaveAttribute('aria-describedby', await tooltip.getAttribute('id'))
 
     const positions = await tooltip.locator('.tabTooltipGridItem').evaluateAll(items => ({
@@ -365,9 +367,51 @@ test.describe('tab group previews', () => {
           .every(child => child.getBoundingClientRect().bottom <= bounds.bottom - 7)
         return { besideRail, inside, childrenFit }
       }, position)).toEqual({ besideRail: true, inside: true, childrenFit: true })
+      const titlesAligned = await tooltip.locator('.tabTooltipGridTitle').evaluateAll(titles => titles.every(title => {
+        const icon = title.querySelector('.tabTooltipGridTitleIcon').getBoundingClientRect()
+        const text = title.querySelector('.tabTooltipGridTitleText').getBoundingClientRect()
+        return icon.right < text.left && Math.abs(icon.top + icon.height / 2 - text.top - text.height / 2) <= 1
+      }))
+      expect(titlesAligned).toBe(true)
       await attachScreenshot(`group previews ${position} fractional scale`)
     })
   }
+
+  test('uses channel avatars beside titles, handles failed images, and respects the icon setting', async ({ page }) => {
+    const { tabIds, groupId } = await createCollapsedPreviewGroup(page)
+    const avatarTabId = await page.evaluate(async groupId => {
+      const route = '/channel/UCgroupPreviewAvatar'
+      const tab = await window.ftElectron.tabs.create({ route, title: 'Channel avatar', makeActive: false, lazyLoad: true })
+      const image = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=='
+      const bytes = Uint8Array.from(atob(image), character => character.charCodeAt(0))
+      await window.ftElectron.tabs.updateAvatar(bytes.buffer, tab.id, route)
+      await window.ftElectron.tabs.setGroup([tab.id], groupId)
+      return tab.id
+    }, groupId)
+    await page.locator('.collapsedTabGroup').hover()
+    const item = page.locator('.tabTooltipGridItem').filter({ hasText: 'Channel avatar' })
+    const avatar = item.locator('.tabTooltipGridTitleAvatar')
+    await expect(avatar).toBeVisible()
+    await expect.poll(() => avatar.evaluate(image => image.complete && image.naturalWidth > 0)).toBe(true)
+    await avatar.dispatchEvent('error')
+    await expect(avatar).toHaveCount(0)
+    await expect(item.locator('.tabTooltipGridTitleIcon')).toHaveAttribute('data-icon', 'circle-user')
+
+    await page.evaluate(async () => {
+      const store = document.querySelector('#app').__vue_app__.config.globalProperties.$store
+      await store.dispatch('updateShowTabIcons', false)
+    })
+    await expect(page.locator('.tabTooltipGridTitleIcon, .tabTooltipGridTitleAvatar')).toHaveCount(0)
+    await expect(page.locator('.tabTooltipGridTitleText')).toHaveCount(5)
+    await page.evaluate(async () => {
+      const store = document.querySelector('#app').__vue_app__.config.globalProperties.$store
+      await store.dispatch('updateShowTabIcons', true)
+    })
+    await expect(page.locator('.tabTooltipGridTitleIcon')).toHaveCount(5)
+    const state = await page.evaluate(() => window.ftElectron.tabs.getState())
+    expect(state.activeTabId).toBe(tabIds[0])
+    expect(state.tabs.find(tab => tab.id === avatarTabId).isUnloaded).toBe(true)
+  })
 
   test('keeps the custom title and count when previews are disabled', async ({ page, attachScreenshot }) => {
     await page.evaluate(async () => {

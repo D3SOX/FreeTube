@@ -51,6 +51,7 @@
             v-else
             :title="item.group.name"
             :tabs="item.tabs"
+            :show-icon="showTabIcons"
             is-group
             :tab-bar-position="tabBarPosition"
             :disable-tooltips="draggingTabIds.size > 0"
