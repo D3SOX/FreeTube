@@ -180,7 +180,7 @@
           <FtIcon :icon="['fas', 'angle-down']" />
         </button>
         <button
-          v-if="!isNarrowLayout"
+          v-if="!isMaximizationForced"
           type="button"
           class="settingsHeaderButton"
           :aria-label="maximizeButtonLabel"
@@ -517,7 +517,8 @@ let restoreBounds = null
 let preservedScrollPositions = []
 
 const windowBounds = ref(getInitialBounds())
-const isWindowMaximized = computed(() => isMaximized.value || isNarrowLayout.value)
+const isMaximizationForced = computed(() => IS_CAPACITOR || isNarrowLayout.value)
+const isWindowMaximized = computed(() => isMaximized.value || isMaximizationForced.value)
 const windowStyle = computed(() => isWindowMaximized.value
   ? {
       left: '0',
@@ -1247,7 +1248,7 @@ function restorePreservedScrollPositions() {
 }
 
 async function toggleMaximized() {
-  if (isNarrowLayout.value) return
+  if (isMaximizationForced.value) return
   cancelBoundsAnimation()
   const element = settingsWindowRef.value
   const from = getWindowAnimationState(element)
@@ -1322,7 +1323,7 @@ function handleSettingsEscape(event) {
 
 function handleHeaderDoubleClick(event) {
   if (
-    isNarrowLayout.value ||
+    isMaximizationForced.value ||
     event.button !== 0 ||
     event.target.closest('button, input, .settingsSearch')
   ) return
@@ -1331,7 +1332,7 @@ function handleHeaderDoubleClick(event) {
 
 function startDragging(event) {
   if (
-    isNarrowLayout.value ||
+    isMaximizationForced.value ||
     event.button !== 0 ||
     event.target.closest('button, input, .settingsSearch')
   ) return
