@@ -1,4 +1,3 @@
-import './androidNativeScreen.css'
 import { overrideShakaMethods } from './overrideShakaMethods'
 
 let inlineScreenOwner = null

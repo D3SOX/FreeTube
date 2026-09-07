@@ -620,7 +620,11 @@ test('native dock follows hidden controls after opening a panel by touch', async
   const dock = page.locator('.fullscreenActions')
   await expect(dock).toHaveCSS('opacity', '0')
   await expect(dock).toHaveCSS('pointer-events', 'none')
-  await page.evaluate(() => document.querySelector('.ftVideoPlayer video').ui.getControls().showUI())
+  await page.evaluate(() => {
+    const controls = document.querySelector('.ftVideoPlayer video').ui.getControls()
+    controls.getConfig().fadeDelay = 60
+    controls.showUI()
+  })
   await expect(dock).toHaveCSS('opacity', '1')
   await page.evaluate(() => window.nativeScreenTest.destroy())
 })
@@ -1256,3 +1260,12 @@ for (const uiScale of [100, 125]) {
     })
   })
 }
+
+test('desktop playback does not load Android document compositing styles', async ({ app, page }) => {
+  await mockPlayableWatchPage(app, page)
+  await openMockedVideo(page)
+  const nativeStyles = await page.evaluate(() => [...document.styleSheets].some(sheet =>
+    [...sheet.cssRules].some(rule => /\.nativePlayback(?:Inline|Screen)\b/.test(rule.cssText))
+  ))
+  expect(nativeStyles).toBe(false)
+})
