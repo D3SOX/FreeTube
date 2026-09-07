@@ -320,7 +320,7 @@ const isProfileDropdownEnabled = computed(() => {
 })
 
 const isSubscriptionOptionsEnabled = computed(() => {
-  return !props.hideProfileDropdownToggle
+  return !props.hideProfileDropdownToggle && isSubscribed.value
 })
 
 const isProfileDropdownOpen = ref(false)
@@ -429,7 +429,11 @@ watch(isSubscribed, (subscribed) => {
     justToggled.value = false
   }, 400)
 
-  if (subscribed) optimisticChannelSettings.value = null
+  if (subscribed) {
+    optimisticChannelSettings.value = null
+  } else {
+    isProfileDropdownOpen.value = false
+  }
 })
 
 onBeforeUnmount(() => {
