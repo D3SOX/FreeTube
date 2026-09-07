@@ -37,8 +37,13 @@
   font-size: 1.25rem;
 }
 
-.recommendationHide {
-  max-inline-size: calc(100% - 10px);
+.recommendationIntroductionActions {
+  display: flex;
+  flex-direction: column;
+  max-inline-size: 100%;
+}
+
+.recommendationIntroductionActions :deep(.btn) {
   white-space: normal;
 }
 

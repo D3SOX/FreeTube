@@ -186,19 +186,20 @@
           class="recommendationIntroduction"
         >
           <p>{{ recommendationDescription }}</p>
-          <FtButton
-            :label="t('Home Page.Enable recommendations')"
-            :icon="['fas', 'power-off']"
-            @click="setRecommendationsEnabled(true)"
-          />
-          <FtButton
-            class="recommendationHide"
-            :label="t('Home Page.Keep disabled and hide this section')"
-            :icon="['fas', 'eye-slash']"
-            background-color="var(--secondary-card-bg-color)"
-            text-color="var(--primary-text-color)"
-            @click="setSectionVisibility('recommendations', false)"
-          />
+          <div class="recommendationIntroductionActions">
+            <FtButton
+              :label="t('Home Page.Enable recommendations')"
+              :icon="['fas', 'power-off']"
+              @click="setRecommendationsEnabled(true)"
+            />
+            <FtButton
+              :label="t('Home Page.Keep disabled and hide this section')"
+              :icon="['fas', 'eye-slash']"
+              background-color="var(--secondary-card-bg-color)"
+              text-color="var(--primary-text-color)"
+              @click="setSectionVisibility('recommendations', false)"
+            />
+          </div>
         </div>
         <template v-if="recommendationsEnabled">
           <p

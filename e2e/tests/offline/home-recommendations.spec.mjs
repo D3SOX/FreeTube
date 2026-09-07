@@ -574,8 +574,15 @@ test.describe('watch-page recommendations hidden', () => {
 test('hides disabled recommendations persistently and restores them through Home customization', async ({ app, page }, testInfo) => {
   const backend = await mockCandidates(page)
   await goTo(page, 'home')
-  await setWindowSize(app, page, { width: 375, height: 700 })
   const hide = recommendations(page).getByRole('button', { name: 'Keep disabled and hide this section', exact: true })
+  const enable = recommendations(page).getByRole('button', { name: 'Enable recommendations', exact: true })
+  for (const size of [{ width: 1100, height: 800 }, { width: 375, height: 700 }]) {
+    await setWindowSize(app, page, size)
+    await expect.poll(async () => Math.abs(
+      await enable.evaluate(element => element.getBoundingClientRect().width) -
+      await hide.evaluate(element => element.getBoundingClientRect().width)
+    )).toBeLessThanOrEqual(1)
+  }
   await expect(hide.locator('.ft-icon')).toBeVisible()
   await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1)
   await hide.evaluate(element => element.scrollIntoView({ block: 'center' }))
