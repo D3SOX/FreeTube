@@ -3,134 +3,74 @@ Set-StrictMode -Version Latest
 
 . (Join-Path $PSScriptRoot 'windowsPortableRegistryTrace.ps1')
 
-$bamWrite = @{
-  CapturedData = ''
-  CapturedDataSize = '0'
-  DataSize = '24'
-  KeyName = ''
-  KeyObject = '0xFFFFD2834CF1FB90'
-  PreviousData = ''
-  PreviousDataCapturedSize = '0'
-  PreviousDataSize = '0'
-  PreviousDataType = '0'
-  ResolvedKeyName = 'S-1-5-21-1456194669-2875347699-3862154473-500'
-  Status = '0x0'
-  Type = '3'
-  ValueName = '\Device\HarddiskVolume5\a\OpenTubeX\OpenTubeX\build\win-unpacked\OpenTubeX.exe'
-}
-
-if (Test-PortableHostRegistryMutation -EventId $registryEventId.SetValue `
-    -EventData $bamWrite -IsAppProcess $true) {
-  throw 'Windows BAM execution-history writes must not count as application registry mutations'
-}
-
-foreach ($change in @(
-  @{ Name = 'DataSize'; Value = '25' },
-  @{ Name = 'ResolvedKeyName'; Value = 'HKEY_CURRENT_USER\Software\OpenTubeX' },
-  @{ Name = 'Type'; Value = '1' },
-  @{ Name = 'ValueName'; Value = 'OpenTubeX' }
-)) {
-  $nearMiss = $bamWrite.Clone()
-  $nearMiss[$change.Name] = $change.Value
-  if (-not (Test-PortableHostRegistryMutation -EventId $registryEventId.SetValue `
-      -EventData $nearMiss -IsAppProcess $true)) {
-    throw "A non-BAM registry mutation was ignored after changing $($change.Name)"
-  }
-}
-
-$muiCacheWrite = @{
-  CapturedData = ''
-  CapturedDataSize = '0'
-  DataSize = '20'
-  KeyName = ''
-  KeyObject = '0xFFFFAE0868181BA0'
-  PreviousData = ''
-  PreviousDataCapturedSize = '0'
-  PreviousDataSize = '0'
-  PreviousDataType = '0'
-  ResolvedKeyName = '\REGISTRY\USER\S-1-5-21-1456194669-2875347699-3862154473-500_Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache'
-  Status = '0x0'
-  Type = '1'
-  ValueName = 'D:\a\OpenTubeX\OpenTubeX\build\win-unpacked\OpenTubeX.exe.FriendlyAppName'
-}
-
-if (Test-PortableHostRegistryMutation -EventId $registryEventId.SetValue `
-    -EventData $muiCacheWrite -IsAppProcess $false) {
-  throw 'Windows MuiCache writes must not count as application registry mutations'
-}
-$muiCacheCompanyWrite = $muiCacheWrite.Clone()
-$muiCacheCompanyWrite.DataSize = '46'
-$muiCacheCompanyWrite.ValueName = $muiCacheCompanyWrite.ValueName.Replace(
-  '.FriendlyAppName', '.ApplicationCompany'
-)
-if (Test-PortableHostRegistryMutation -EventId $registryEventId.SetValue `
-    -EventData $muiCacheCompanyWrite -IsAppProcess $false) {
-  throw 'Windows MuiCache company writes must not count as application registry mutations'
-}
-if (-not (Test-PortableHostRegistryMutation -EventId $registryEventId.SetValue `
-    -EventData $muiCacheWrite -IsAppProcess $true)) {
-  throw 'Application-process MuiCache writes must remain host registry mutations'
-}
-
-$muiCacheKey = 'HKEY_CURRENT_USER\Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache'
-$muiCacheValue = 'D:\a\OpenTubeX\OpenTubeX\build\win-unpacked\OpenTubeX.exe.FriendlyAppName    REG_SZ    OpenTubeX'
-$normalizedMuiCacheState = @(ConvertTo-MatchingRegistryState -Lines @(
-  '',
-  $muiCacheKey,
-  "    $muiCacheValue",
-  'End of search: 1 match(es) found.'
-) -Search 'OpenTubeX')
-if ($normalizedMuiCacheState.Count -ne 1 -or
-    $normalizedMuiCacheState[0] -ne "$muiCacheKey`: $muiCacheValue") {
-  throw 'Registry snapshot values did not retain their parent key'
-}
-
-$muiCacheSnapshotValue = "HKCU\Software: $($normalizedMuiCacheState[0])"
-$muiCacheCompanySnapshotValue = $muiCacheSnapshotValue.Replace(
-  '.FriendlyAppName', '.ApplicationCompany'
-)
-foreach ($line in @(
-  $muiCacheSnapshotValue,
-  $muiCacheCompanySnapshotValue
-)) {
-  if (-not (Test-WindowsMuiCacheSnapshotLine -Line $line)) {
-    throw "Windows MuiCache snapshot entry was not ignored: $line"
-  }
-}
-
-foreach ($line in @(
-  $muiCacheSnapshotValue.Replace('HKCU\Software:', 'HKLM\Software:'),
-  $muiCacheSnapshotValue.Replace('\MuiCache:', '\OpenTubeX:'),
-  $muiCacheSnapshotValue.Replace('OpenTubeX.exe.', 'OpenTubeX.dll.'),
-  $muiCacheSnapshotValue.Replace('.FriendlyAppName', '.OpenTubeX'),
-  $muiCacheSnapshotValue.Replace('REG_SZ', 'REG_BINARY')
-)) {
-  if (Test-WindowsMuiCacheSnapshotLine -Line $line) {
-    throw "A non-MuiCache snapshot entry was ignored: $line"
-  }
-}
-
-$matchingKeyState = @(ConvertTo-MatchingRegistryState -Lines @(
+foreach ($key in @(
   'HKEY_CURRENT_USER\Software\OpenTubeX',
-  'End of search: 1 match(es) found.'
-) -Search 'OpenTubeX')
-if ($matchingKeyState.Count -ne 1 -or
-    $matchingKeyState[0] -ne 'HKEY_CURRENT_USER\Software\OpenTubeX') {
-  throw 'A registry key whose path matches the search was lost from the snapshot'
+  '\REGISTRY\USER\S-1-5-21-1-2-3-1000\Software\OpenTubeX\Settings',
+  'HKEY_CURRENT_USER\Software\Classes\opentubex\shell\open\command',
+  'HKEY_CURRENT_USER\Software\Classes\AppUserModelId\electron.app.OpenTubeX',
+  'HKEY_CURRENT_USER\Software\Classes\AppUserModelId\io.opentubex.opentubex'
+)) {
+  if (-not (Test-OpenTubeXRegistryPath -Path $key)) {
+    throw "Application registry key was ignored: $key"
+  }
+  foreach ($field in @('KeyName', 'ResolvedKeyName')) {
+    $eventData = @{ Status = '0x0'; Disposition = '1'; InfoClass = '0' }
+    $eventData[$field] = $key
+    foreach ($eventId in @(
+      $registryEventId.CreateKey, $registryEventId.SetValue,
+      $registryEventId.DeleteValue, $registryEventId.DeleteKey,
+      $registryEventId.Flush, $registryEventId.SetSecurity,
+      $registryEventId.SetInformation
+    )) {
+      if (-not (Test-PortableHostRegistryMutation -EventId $eventId -EventData $eventData)) {
+        throw "Application registry mutation was ignored: $eventId, $field, $key"
+      }
+    }
+    $eventData.Status = '0xC0000022'
+    if (Test-PortableHostRegistryMutation -EventId $registryEventId.SetValue -EventData $eventData) {
+      throw 'A failed write was counted as a mutation'
+    }
+    $eventData.Status = '0x0'
+    $eventData.Disposition = '2'
+    if (Test-PortableHostRegistryMutation -EventId $registryEventId.CreateKey -EventData $eventData) {
+      throw 'Opening an existing key was counted as a mutation'
+    }
+    $eventData.InfoClass = '1'
+    if (Test-PortableHostRegistryMutation -EventId $registryEventId.SetInformation -EventData $eventData) {
+      throw 'Runtime handle configuration was counted as a mutation'
+    }
+  }
 }
 
-foreach ($change in @(
-  @{ Name = 'KeyName'; Value = 'HKEY_CURRENT_USER\Software\OpenTubeX' },
-  @{ Name = 'ResolvedKeyName'; Value = 'HKEY_CURRENT_USER\Software\OpenTubeX' },
-  @{ Name = 'Type'; Value = '3' },
-  @{ Name = 'ValueName'; Value = 'OpenTubeX' }
+foreach ($key in @(
+  'HKEY_LOCAL_MACHINE\Software\Microsoft\SystemCertificates',
+  'HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Internet Settings',
+  '\REGISTRY\MACHINE\SYSTEM\CurrentControlSet\Services\bam\State\UserSettings\S-1-5-21-1-2-3-1000',
+  'HKEY_CURRENT_USER\Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache',
+  'HKEY_CURRENT_USER\Software\OpenTubeXOther',
+  'HKEY_CURRENT_USER\Software\OtherOpenTubeX'
 )) {
-  $nearMiss = $muiCacheWrite.Clone()
-  $nearMiss[$change.Name] = $change.Value
-  if (-not (Test-PortableHostRegistryMutation -EventId $registryEventId.SetValue `
-      -EventData $nearMiss -IsAppProcess $false)) {
-    throw "A non-MuiCache registry mutation was ignored after changing $($change.Name)"
+  $eventData = @{
+    Status = '0x0'
+    KeyName = $key
+    ValueName = 'C:\Portable\OpenTubeX.exe.FriendlyAppName'
+    CapturedData = 'OpenTubeX'
   }
+  if (Test-PortableHostRegistryMutation -EventId $registryEventId.SetValue -EventData $eventData) {
+    throw "System registry activity was counted as application state: $key"
+  }
+}
+
+$state = @(ConvertTo-MatchingRegistryState -Lines @(
+  '',
+  'HKEY_CURRENT_USER\Software\OpenTubeX',
+  '    Setting    REG_SZ    OpenTubeX',
+  'End of search: 1 match(es) found.'
+) -Search 'OpenTubeX')
+if ($state.Count -ne 2 -or
+    $state[0] -ne 'HKEY_CURRENT_USER\Software\OpenTubeX' -or
+    $state[1] -ne 'HKEY_CURRENT_USER\Software\OpenTubeX: Setting    REG_SZ    OpenTubeX') {
+  throw 'Registry snapshot keys or values did not retain their paths'
 }
 
 Write-Output 'Windows portable registry trace policy tests passed.'

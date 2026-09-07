@@ -1,9 +1,6 @@
 import { Arch, build, Platform } from 'electron-builder'
 import config from './ebuilder.config.mjs'
-import {
-  prepareWindowsInterposer,
-  withWindowsInterposer
-} from './windowsInterposer.mjs'
+import { withWindowsPortable } from './windowsPortable.mjs'
 
 const args = process.argv
 
@@ -31,7 +28,6 @@ if (platform === 'darwin') {
       config
     }]
   } else {
-    await prepareWindowsInterposer()
     buildRequests = [
       {
         targets: Platform.WINDOWS.createTarget(['nsis'], arch),
@@ -39,7 +35,7 @@ if (platform === 'darwin') {
       },
       {
         targets: Platform.WINDOWS.createTarget(['zip', '7z'], arch),
-        config: withWindowsInterposer(config)
+        config: withWindowsPortable(config)
       }
     ]
   }

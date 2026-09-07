@@ -85,8 +85,7 @@ function Get-HostState {
   $programsDirectory = Join-Path $env:APPDATA 'Microsoft\Windows\Start Menu\Programs'
   $paths = @(
     (Join-Path $env:APPDATA 'OpenTubeX'),
-    (Join-Path $env:LOCALAPPDATA 'OpenTubeX'),
-    (Join-Path $env:TEMP 'Interposer.log')
+    (Join-Path $env:LOCALAPPDATA 'OpenTubeX')
   )
   $state = [System.Collections.Generic.List[string]]::new()
   foreach ($item in $paths) {
@@ -112,7 +111,7 @@ function Get-HostState {
   foreach ($root in @('HKCU\Software')) {
     foreach ($line in @(Get-MatchingRegistryState -Root $root -Search 'OpenTubeX')) {
       $snapshotLine = "$root`: $line"
-      if (-not (Test-WindowsMuiCacheSnapshotLine -Line $snapshotLine)) {
+      if (Test-OpenTubeXRegistryPath -Path $line.Split(':', 2)[0]) {
         $state.Add($snapshotLine)
       }
     }
@@ -156,41 +155,10 @@ function Wait-ForMainWindow {
   throw "Timed out waiting for the packaged OpenTubeX window from process $ProcessId"
 }
 
-function Wait-ForInterposerStateChange {
-  param(
-    [Parameter(Mandatory)] [string] $RegistryFile,
-    [Parameter(Mandatory)] [string] $InitialContents,
-    [Parameter(Mandatory)] [int] $RootProcessId,
-    [Parameter(Mandatory)] [System.Collections.Generic.HashSet[int]] $ProcessIds,
-    [int] $TimeoutSeconds = 45
-  )
-
-  $deadline = [DateTime]::UtcNow.AddSeconds($TimeoutSeconds)
-  do {
-    Update-AppProcessIds -RootProcessId $RootProcessId -ProcessIds $ProcessIds
-    $registryContents = ''
-    if (Test-Path $RegistryFile) {
-      try {
-        $registryContents = Get-Content $RegistryFile -Raw
-      } catch [System.IO.IOException] {
-        # Interposer rewrites this file while registry calls are in flight.
-        # Retry on the next poll if it temporarily holds an exclusive lock.
-      }
-    }
-    if ($registryContents -and $registryContents -ne $InitialContents) {
-      return
-    }
-    Start-Sleep -Milliseconds 250
-  } while ([DateTime]::UtcNow -lt $deadline)
-  throw 'Interposer did not persist any registry state change during startup'
-}
-
 function Get-PortableDiagnostics {
   param(
-    [Parameter(Mandatory)] [string] $RegistryFile,
     [Parameter(Mandatory)] [string] $Shortcut,
     [Parameter(Mandatory)] [string] $DataDirectory,
-    [Parameter(Mandatory)] [string] $LogDirectory,
     [Parameter(Mandatory)] [int] $RootProcessId,
     [Parameter(Mandatory)] [System.Collections.Generic.HashSet[int]] $ProcessIds
   )
@@ -211,16 +179,6 @@ function Get-PortableDiagnostics {
   if (Test-Path $DataDirectory) {
     Get-ChildItem $DataDirectory -Recurse | ForEach-Object {
       $lines.Add($_.FullName)
-    }
-  }
-  $lines.Add('Virtual registry contents:')
-  if (Test-Path $RegistryFile) {
-    $lines.Add((Get-Content $RegistryFile -Raw))
-  }
-  if (Test-Path $LogDirectory) {
-    foreach ($logFile in Get-ChildItem $LogDirectory -File | Sort-Object LastWriteTime) {
-      $lines.Add("Interposer log: $($logFile.FullName)")
-      Get-Content $logFile.FullName -Tail 200 | ForEach-Object { $lines.Add($_) }
     }
   }
   return $lines -join "`n"
@@ -306,7 +264,7 @@ function Test-AppOwnedHostPath {
   return $false
 }
 
-function Assert-NoHostWrites {
+function Assert-NoAppOwnedHostWrites {
   param(
     [Parameter(Mandatory)] [string] $TraceFile,
     [Parameter(Mandatory)] [string] $OutputFile,
@@ -468,19 +426,19 @@ function Assert-NoHostWrites {
     }
     $isAppProcess = $ProcessIds.Contains($eventProcessId)
     if (-not (Test-PortableHostRegistryMutation -EventId $eventId `
-        -EventData $eventData -IsAppProcess $isAppProcess)) {
+        -EventData $eventData)) {
       continue
     }
     if ($isAppProcess) {
       $appRegistryWrites.Add($description)
-    } elseif ($payload -match '(?i)OpenTubeX|electron\.app\.OpenTubeX') {
+    } else {
       $externalOpenTubeXRegistryWrites.Add($description)
     }
   }
 
   if ($appRegistryWrites.Count -gt 0) {
     $details = $appRegistryWrites | Select-Object -First 30 | Out-String
-    throw "The portable OpenTubeX process changed the host registry:`n$details"
+    throw "The portable OpenTubeX process changed application-owned host registry state:`n$details"
   }
   if ($externalOpenTubeXRegistryWrites.Count -gt 0) {
     $details = $externalOpenTubeXRegistryWrites | Select-Object -First 30 | Out-String
@@ -494,12 +452,7 @@ function Assert-NoHostWrites {
 
 $portableDirectory = Resolve-Path 'build\win-unpacked'
 $executable = Join-Path $portableDirectory 'OpenTubeX.exe'
-$interposer = Join-Path $portableDirectory 'version.dll'
 $marker = Join-Path $portableDirectory 'portable.marker'
-$license = Join-Path $portableDirectory 'LANCommander.Interposer.LICENSE.txt'
-$registryFile = Join-Path $portableDirectory '.interposer\Registry.reg'
-$interposerConfig = Join-Path $portableDirectory '.interposer\Config.yml'
-$interposerLogDirectory = Join-Path $portableDirectory '.interposer\Logs'
 $dataDirectory = Join-Path $portableDirectory 'OpenTubeX-data'
 $shortcut = Join-Path $dataDirectory 'OpenTubeX.lnk'
 $appProcess = $null
@@ -523,7 +476,6 @@ $hostDirectoryTails = @(
   (Get-ComparablePathTail (Join-Path $env:LOCALAPPDATA 'OpenTubeX'))
 )
 $hostFileTails = @(
-  (Get-ComparablePathTail (Join-Path $env:TEMP 'Interposer.log')),
   (Get-ComparablePathTail (Join-Path $env:APPDATA `
     'Microsoft\Windows\Start Menu\Programs\OpenTubeX.lnk'))
 )
@@ -535,24 +487,24 @@ $traceProviders = @(
 Set-Content $traceProvidersFile -Value $traceProviders -Encoding ascii
 
 foreach ($requiredFile in @(
-  $executable, $interposer, $marker, $license, $registryFile, $interposerConfig
+  $executable, $marker
 )) {
   if (-not (Test-Path $requiredFile)) {
     throw "The Windows portable package is missing $requiredFile"
   }
 }
 
+foreach ($obsoleteFile in @('version.dll', '.interposer')) {
+  if (Test-Path (Join-Path $portableDirectory $obsoleteFile)) {
+    throw "The portable package still contains the registry interposer: $obsoleteFile"
+  }
+}
+
 $hostStateBefore = @(Get-HostState)
-$registryStateBefore = Get-Content $registryFile -Raw
 if (Test-Path $dataDirectory) {
   Remove-Item $dataDirectory -Recurse -Force
 }
 New-Item $dataDirectory -ItemType Directory | Out-Null
-$diagnosticConfig = Get-Content $interposerConfig -Raw
-$diagnosticConfig = $diagnosticConfig.Replace('Files: false', 'Files: true')
-$diagnosticConfig = $diagnosticConfig.Replace('Registry: false', 'Registry: true')
-$diagnosticConfig = $diagnosticConfig.Replace('Level: Info', 'Level: Debug')
-Set-Content $interposerConfig -Value $diagnosticConfig -Encoding utf8
 
 try {
   $traceOutput = & logman.exe start $traceSession -pf $traceProvidersFile `
@@ -562,28 +514,23 @@ try {
   }
   $traceStarted = $true
 
-  $appProcess = Start-Process $executable -PassThru
+  $appProcess = Start-Process $executable -PassThru -ArgumentList @(
+    '--remote-debugging-port=0', '--remote-debugging-address=127.0.0.1'
+  )
   Wait-ForMainWindow -ProcessId $appProcess.Id
   Update-AppProcessIds -RootProcessId $appProcess.Id -ProcessIds $appProcessIds
 
-  $loadedModulePaths = @((Get-Process -Id $appProcess.Id).Modules | ForEach-Object {
-    $_.FileName
-  })
-  if ($loadedModulePaths -notcontains $interposer) {
-    throw 'The packaged OpenTubeX process did not load LANCommander Interposer'
-  }
-
   [WindowsPortableSmoke]::MinimizeVisibleWindows($appProcess.Id)
-  Wait-ForInterposerStateChange -RegistryFile $registryFile `
-    -InitialContents $registryStateBefore `
-    -RootProcessId $appProcess.Id -ProcessIds $appProcessIds
+  & node (Join-Path $PSScriptRoot 'testWindowsPortableNetwork.mjs') $dataDirectory
+  if ($LASTEXITCODE -ne 0) {
+    throw 'The packaged Windows portable application failed its network checks'
+  }
   Update-AppProcessIds -RootProcessId $appProcess.Id -ProcessIds $appProcessIds
 }
 catch {
   if ($appProcess) {
-    Write-Output (Get-PortableDiagnostics -RegistryFile $registryFile `
-      -Shortcut $shortcut -DataDirectory $dataDirectory `
-      -LogDirectory $interposerLogDirectory -RootProcessId $appProcess.Id `
+    Write-Output (Get-PortableDiagnostics -Shortcut $shortcut -DataDirectory $dataDirectory `
+      -RootProcessId $appProcess.Id `
       -ProcessIds $appProcessIds)
   }
   throw
@@ -604,14 +551,13 @@ finally {
 }
 
 try {
-  Assert-NoHostWrites -TraceFile $traceFile -OutputFile $traceOutputFile `
+  Assert-NoAppOwnedHostWrites -TraceFile $traceFile -OutputFile $traceOutputFile `
     -ProcessIds $appProcessIds -HostDirectoryTails $hostDirectoryTails `
     -HostFileTails $hostFileTails
 }
 catch {
-  Write-Output (Get-PortableDiagnostics -RegistryFile $registryFile `
-    -Shortcut $shortcut -DataDirectory $dataDirectory `
-    -LogDirectory $interposerLogDirectory -RootProcessId $appProcess.Id `
+  Write-Output (Get-PortableDiagnostics -Shortcut $shortcut -DataDirectory $dataDirectory `
+    -RootProcessId $appProcess.Id `
     -ProcessIds $appProcessIds)
   throw
 }
@@ -621,5 +567,5 @@ if ($hostChanges.Count -gt 0) {
   throw "The portable package changed app-owned host state:`n$($hostChanges | Out-String)"
 }
 
-Write-Output 'Interposer-backed Windows portable package smoke test passed.'
+Write-Output 'Windows portable network and application data isolation checks passed.'
 exit 0
