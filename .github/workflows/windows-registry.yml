@@ -34,4 +34,6 @@ jobs:
           $dll = Get-ChildItem .cache/windows-interposer/*/version.dll | Select-Object -First 1
           Copy-Item _scripts/windows-interposer/Config.yml (New-Item (Join-Path $dll.DirectoryName '.interposer') -ItemType Directory -Force)
           & .cache/registry-tests/Release/registry-tests.exe --test $dll.FullName 'Software\OpenTubeX\RegistryRegression'
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          & .cache/registry-tests/Release/registry-tests.exe --overlay $dll.FullName 'Software\OpenTubeX\RegistryRegression'
           exit $LASTEXITCODE

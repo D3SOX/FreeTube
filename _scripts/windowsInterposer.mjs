@@ -169,14 +169,3 @@ export function getWindowsPortableExtraFiles (
     { from: path.join(repositoryRoot, '_scripts/windows-portable.marker'), to: 'portable.marker' }
   ]
 }
-
-export function withWindowsInterposer (config, architecture = 'x64') {
-  return {
-    ...config,
-    files: [...(config.files ?? [])],
-    extraFiles: [
-      ...(config.extraFiles ?? []),
-      ...getWindowsPortableExtraFiles('win32', architecture)
-    ]
-  }
-}

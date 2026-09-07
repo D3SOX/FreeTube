@@ -48,6 +48,7 @@ foreach ($key in @(
   '\REGISTRY\MACHINE\SYSTEM\CurrentControlSet\Services\bam\State\UserSettings\S-1-5-21-1-2-3-1000',
   'HKEY_CURRENT_USER\Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache',
   'HKEY_CURRENT_USER\Software\OpenTubeXOther',
+  '\REGISTRY\A\private-hive\View64\USER\Software\OpenTubeX',
   'HKEY_CURRENT_USER\Software\OtherOpenTubeX'
 )) {
   $eventData = @{

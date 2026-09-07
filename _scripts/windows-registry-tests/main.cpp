@@ -2,6 +2,7 @@
 #define NOMINMAX
 #include <windows.h>
 #include <winhttp.h>
+#include <winternl.h>
 #include <filesystem>
 #include <iostream>
 #include <stdexcept>
@@ -56,6 +57,46 @@ static void Child(const std::wstring& executable, const std::wstring& mode,
     Require(waited == WAIT_OBJECT_0 && code == 0, "child registry check failed");
 }
 
+static void CheckRegistrySemantics(const std::wstring& fixture)
+{
+    HKEY key;
+    Check(RegOpenKeyExW(HKEY_CURRENT_USER, fixture.c_str(), 0, KEY_READ, &key), "open read-only fixture");
+    Require(RegSetValueExW(key, L"Denied", 0, REG_DWORD, nullptr, 0) == ERROR_ACCESS_DENIED,
+        "read-only registry handle allowed a write");
+    HKEY duplicate;
+    Require(DuplicateHandle(GetCurrentProcess(), key, GetCurrentProcess(),
+        reinterpret_cast<PHANDLE>(&duplicate), 0, FALSE, DUPLICATE_SAME_ACCESS), "duplicate registry handle");
+    RegCloseKey(key);
+    Require(Read(duplicate, L"", L"Original") == L"portable", "duplicated key lost its values");
+    DWORD subkeys = 0, values = 0;
+    Check(RegQueryInfoKeyW(duplicate, nullptr, nullptr, nullptr, &subkeys, nullptr, nullptr,
+        &values, nullptr, nullptr, nullptr, nullptr), "query key information");
+    Require(subkeys == 1 && values == 1, "enumeration includes host or deleted data");
+    wchar_t name[256];
+    DWORD size = 256;
+    Check(RegEnumKeyExW(duplicate, 0, name, &size, nullptr, nullptr, nullptr, nullptr), "enumerate child");
+    Require(_wcsicmp(name, L"LocalChild") == 0, "enumerated incorrect child");
+    size = 256;
+    Check(RegEnumValueW(duplicate, 0, name, &size, nullptr, nullptr, nullptr, nullptr), "enumerate value");
+    Require(std::wstring(name) == L"Original", "enumerated incorrect value");
+    using QueryValue = NTSTATUS(NTAPI*)(HANDLE, PUNICODE_STRING, int, PVOID, ULONG, PULONG);
+    auto query = reinterpret_cast<QueryValue>(GetProcAddress(GetModuleHandleW(L"ntdll.dll"), "NtQueryValueKey"));
+    wchar_t original[] = L"Original";
+    UNICODE_STRING valueName{ sizeof(original) - sizeof(wchar_t), sizeof(original), original };
+    ULONG needed = 0;
+    Require(query(duplicate, &valueName, 2, nullptr, 0, &needed) < 0 && needed > 0, "native query did not report buffer size");
+    std::vector<BYTE> data(needed);
+    Require(query(duplicate, &valueName, 2, data.data(), needed, &needed) == 0, "native value query failed");
+    RegCloseKey(duplicate);
+
+    Write(fixture + L"\\DeletedTree\\Child", L"Value", L"old");
+    Check(RegDeleteTreeW(HKEY_CURRENT_USER, (fixture + L"\\DeletedTree").c_str()), "delete local tree");
+    Write(fixture + L"\\DeletedTree", L"Value", L"new");
+    Require(RegOpenKeyExW(HKEY_CURRENT_USER, (fixture + L"\\DeletedTree\\Child").c_str(), 0, KEY_READ, &key)
+        == ERROR_FILE_NOT_FOUND, "deleted child reappeared after recreating key");
+    Check(RegDeleteTreeW(HKEY_CURRENT_USER, (fixture + L"\\DeletedTree").c_str()), "cleanup recreated key");
+}
+
 static void CheckHttps()
 {
     HINTERNET session = WinHttpOpen(L"OpenTubeX registry regression", WINHTTP_ACCESS_TYPE_AUTOMATIC_PROXY,
@@ -100,11 +141,13 @@ extern "C" int wmain(int argc, wchar_t** argv)
         }
         const bool primary = mode == L"--test";
         std::wstring productName;
+        HKEY preexisting = nullptr;
         if (primary)
         {
             Write(fixture, L"Original", L"host");
             Write(fixture, L"Deleted", L"keep on host");
             Write(fixture + L"\\HostChild", L"Value", L"host child");
+            Check(RegOpenKeyExW(HKEY_CURRENT_USER, fixture.c_str(), 0, KEY_ALL_ACCESS, &preexisting), "open pre-injection key");
             productName = Read(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion", L"ProductName");
         }
         if (dll != L"none") Require(LoadLibraryW(dll.c_str()) != nullptr, "load Interposer");
@@ -112,6 +155,9 @@ extern "C" int wmain(int argc, wchar_t** argv)
         {
             Require(Read(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion", L"ProductName") == productName,
                 "system registry reads changed after loading Interposer");
+            Require(RegSetValueExW(preexisting, L"Original", 0, REG_SZ, nullptr, 0) == ERROR_ACCESS_DENIED,
+                "pre-injection handle changed host application data");
+            RegCloseKey(preexisting);
             HKEY hidden = nullptr;
             LSTATUS hiddenStatus = RegOpenKeyExW(HKEY_CURRENT_USER, fixture.c_str(), 0, KEY_READ, &hidden);
             if (hidden) RegCloseKey(hidden);
@@ -123,6 +169,7 @@ extern "C" int wmain(int argc, wchar_t** argv)
             Check(RegOpenKeyExW(HKEY_CURRENT_USER, fixture.c_str(), 0, KEY_READ | KEY_WRITE, &key), "open fixture");
             Check(RegDeleteValueW(key, L"Deleted"), "delete overlay value");
             RegCloseKey(key);
+            CheckRegistrySemantics(fixture);
             wchar_t executable[32768];
             Require(GetModuleFileNameW(nullptr, executable, 32768) != 0, "get test executable");
             Child(executable, L"--host", dll, fixture);
