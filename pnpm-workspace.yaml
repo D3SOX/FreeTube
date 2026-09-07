@@ -18,6 +18,7 @@ minimumReleaseAgeExclude:
   - "youtubei.js"
 
 patchedDependencies:
+  '@capawesome/capacitor-app-shortcuts@8.0.2': patches/@capawesome__capacitor-app-shortcuts@8.0.2.patch
   shaka-player@5.1.12: patches/shaka-player@5.1.12.patch
   vue-sonner@2.0.9: patches/vue-sonner@2.0.9.patch
   youtubei.js@18.0.0: patches/youtubei.js@18.0.0.patch

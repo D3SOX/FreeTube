@@ -386,6 +386,8 @@
 import { initializeAndroidYtDlp, ytDlp } from './helpers/ytDlp'
 import { parseAutomaticDownloadRules } from './helpers/automaticDownloadRules'
 import { isAppHidden, setAndroidAppVisible } from './helpers/appVisibility.js'
+import { createAppShortcuts, getAppShortcutPath } from './helpers/appShortcuts'
+import { AppShortcuts } from '@capawesome/capacitor-app-shortcuts'
 import { FtIcon } from '@opentubex/icons'
 import { App as CapacitorApp } from '@capacitor/app'
 import { Capacitor, SystemBarType, SystemBars, SystemBarsStyle } from '@capacitor/core'
@@ -4008,6 +4010,21 @@ async function enableCapacitorIntegrations() {
   const urlHandle = await CapacitorApp.addListener('appUrlOpen', ({ url }) => {
     if (url) handleYoutubeLink(url)
   })
+  const shortcutHandle = await AppShortcuts.addListener('click', async ({ shortcutId }) => {
+    const path = getAppShortcutPath(shortcutId)
+    if (!path) return
+    await store.dispatch('hideSettingsWindow')
+    await openInternalPath({ path })
+  })
+  const stopShortcutUpdates = watch(locale, () => {
+    const shortcuts = createAppShortcuts({
+      subscriptions: t('Subscriptions.Subscriptions'),
+      userplaylists: t('Playlists'),
+      history: t('History.History'),
+      downloads: t('Settings.Download Settings.Download Settings'),
+    })
+    AppShortcuts.set({ shortcuts }).catch(error => console.error('Failed to update app shortcuts', error))
+  }, { immediate: true })
   const removeReminderActions = await initializeCapacitorLiveReminderActions((videoId) => {
     handleYoutubeLink(`https://www.youtube.com/watch?v=${videoId}`)
   })
@@ -4031,6 +4048,8 @@ async function enableCapacitorIntegrations() {
   if (launch?.url) await handleYoutubeLink(launch.url)
 
   return () => {
+    stopShortcutUpdates()
+    shortcutHandle.remove()
     urlHandle.remove()
     appStateHandle.remove()
     setAndroidAppVisible(null)

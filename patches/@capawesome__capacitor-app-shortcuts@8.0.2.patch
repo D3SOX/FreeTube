@@ -1,0 +1,13 @@
+diff --git a/android/src/main/java/io/capawesome/capacitorjs/plugins/appshortcuts/AppShortcutsHelper.java b/android/src/main/java/io/capawesome/capacitorjs/plugins/appshortcuts/AppShortcutsHelper.java
+index e8ce4fe5856b5331fdc7496641f190c4221a6b12..b76d07ceed11973ea8e0ba7cd6ee9ae7bfffaaa7 100644
+--- a/android/src/main/java/io/capawesome/capacitorjs/plugins/appshortcuts/AppShortcutsHelper.java
++++ b/android/src/main/java/io/capawesome/capacitorjs/plugins/appshortcuts/AppShortcutsHelper.java
+@@ -56,7 +56,7 @@ public class AppShortcutsHelper {
+                 shortcutInfoCompat.setLongLabel(description);
+             }
+             shortcutInfoCompat.setIntent(
+-                new Intent(Intent.ACTION_VIEW, bridge.getIntentUri(), bridge.getContext(), bridge.getActivity().getClass()).putExtra(
++                new Intent(Intent.ACTION_VIEW, null, bridge.getContext(), bridge.getActivity().getClass()).putExtra(
+                     AppShortcutsPlugin.INTENT_EXTRA_ITEM_NAME,
+                     (String) id
+                 )
