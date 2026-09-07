@@ -126,7 +126,7 @@ struct Redirect {
         auto host = ObjectPath(source);
         size_t start = 0;
         while (start < host.size()) {
-            size_t end = host.find(L'\', start);
+            size_t end = host.find(L'\\', start);
             if (ApplicationComponent(host.substr(start, end - start))) break;
             if (end == std::wstring::npos) return;
             start = end + 1;
@@ -145,7 +145,7 @@ struct Redirect {
         RegCloseKey(static_cast<HKEY>(parent));
         if (canonicalParent.empty()) { status = Denied; return; }
         path = ApplicationPath(canonicalParent + host.substr(start - 1));
-        if (path.empty() || path.size() * sizeof(wchar_t) > MAXUSHORT) { status = Denied; return; }
+        if (path.empty() || path.size() * sizeof(wchar_t) > 0xffff) { status = Denied; return; }
         name.Buffer = path.data();
         name.Length = static_cast<USHORT>(path.size() * sizeof(wchar_t));
         name.MaximumLength = name.Length;
