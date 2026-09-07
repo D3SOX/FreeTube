@@ -8,7 +8,7 @@ Pause, resume, cancellation, retry, ordering, concurrency and bandwidth limits r
 
 Automatic rules run during subscription refreshes, including enabled closed-app refreshes. They include subscribed rule channels filtered out of a profile, apply publication-time and content filters, and deduplicate the download history. Closed-app discovery uses the configured Invidious instance and refresh intervals. Hidden or disabled feed schedules do not run in the background.
 
-Playback extraction, stream caching, fallback, subtitles and storyboards use the shared renderer playback code. Cookie authentication accepts a Netscape cookie file imported into private app storage, including authenticated subtitles and automatic translations. Android cannot read another app's browser cookies or run desktop executable paths. Custom download arguments are restricted to supported media options; executable overrides, shell commands and arbitrary file paths are rejected.
+Playback extraction, stream caching, fallback, subtitles and storyboards use the shared renderer playback code. CDN byte ranges use the URL query parameter so Android's WebView does not apply a Range header twice to intercepted responses. Cookie authentication accepts a Netscape cookie file imported into private app storage, including authenticated subtitles and automatic translations. Android cannot read another app's browser cookies or run desktop executable paths. Custom download arguments are restricted to supported media options; executable overrides, shell commands and arbitrary file paths are rejected.
 
 ## Implementation
 
