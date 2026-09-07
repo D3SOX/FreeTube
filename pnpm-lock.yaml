@@ -9,6 +9,7 @@ overrides:
   yauzl: '>=3.3.1'
 
 patchedDependencies:
+  '@capawesome/capacitor-app-shortcuts@8.0.2': 2581c86d60ce7892c0b3136523994591d24ee7313bbc5fc9b4ad1c710719c70a
   shaka-player@5.1.12: 17d85e267c8958999207ce9d6c29a2ddf18734d0499fb30870ac8a55d90303fa
   vue-sonner@2.0.9: ae94d00b3ff46bede626a25ac5a36a6cd35987f33d73c14ffc73afbd5767f95c
   youtubei.js@18.0.0: 5939f9d50ce37ef8075961245288956568c781818db04171892485bdf96278e9
@@ -32,6 +33,9 @@ importers:
       '@capacitor/local-notifications':
         specifier: ^8.3.1
         version: 8.3.1(@capacitor/core@8.5.0)
+      '@capawesome/capacitor-app-shortcuts':
+        specifier: ^8.0.2
+        version: 8.0.2(patch_hash=2581c86d60ce7892c0b3136523994591d24ee7313bbc5fc9b4ad1c710719c70a)(@capacitor/core@8.5.0)
       '@hpke/core':
         specifier: ^1.9.0
         version: 1.9.0
@@ -815,6 +819,11 @@ packages:
 
   '@capacitor/local-notifications@8.3.1':
     resolution: {integrity: sha512-F7zu/+p/mIR958YP4axOkeI5hBKRaXDyYjbNPrAil2wWfd7OxScPSTvP9t85NpQ0eULVRu0/sntoxOg6ck477A==}
+    peerDependencies:
+      '@capacitor/core': '>=8.0.0'
+
+  '@capawesome/capacitor-app-shortcuts@8.0.2':
+    resolution: {integrity: sha512-gvwF+oc+dvBDN88TI/MNUYEUpWoTdHP2ZRyZ5P1/nHOgw4vzU2LMflZg+Pi85I78Vx7tt+EX1JpsOYYJnX+v5w==}
     peerDependencies:
       '@capacitor/core': '>=8.0.0'
 
@@ -6282,6 +6291,10 @@ snapshots:
       tslib: 2.8.1
 
   '@capacitor/local-notifications@8.3.1(@capacitor/core@8.5.0)':
+    dependencies:
+      '@capacitor/core': 8.5.0
+
+  '@capawesome/capacitor-app-shortcuts@8.0.2(patch_hash=2581c86d60ce7892c0b3136523994591d24ee7313bbc5fc9b4ad1c710719c70a)(@capacitor/core@8.5.0)':
     dependencies:
       '@capacitor/core': 8.5.0
 
