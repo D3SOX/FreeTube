@@ -123,3 +123,18 @@ test('external cancellation aborts active requests and never starts queued sourc
   await loading
   assert.equal(calls, 3)
 })
+
+test('fills nullish candidate metadata without replacing the first defined values', async () => {
+  const { mergeRecommendationCandidates } = await import('../../src/renderer/helpers/recommendationCandidates.js')
+  const sources = [{ type: 'related', id: 'seed' }, { type: 'channel', id: 'channel' }]
+  const [merged] = mergeRecommendationCandidates([
+    { videoId: 'same', title: 'First title', viewCount: null, authorId: undefined, lengthSeconds: 0, isLive: false, recommendationSources: [sources[0]] },
+    { videoId: 'same', title: 'Later title', viewCount: 123, authorId: 'channel', lengthSeconds: 50, isLive: true, recommendationSources: [sources[1]] },
+  ])
+  assert.equal(merged.title, 'First title')
+  assert.equal(merged.viewCount, 123)
+  assert.equal(merged.authorId, 'channel')
+  assert.equal(merged.lengthSeconds, 0)
+  assert.equal(merged.isLive, false)
+  assert.deepEqual(merged.recommendationSources, sources)
+})

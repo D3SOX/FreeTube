@@ -86,6 +86,12 @@ function rotate(items, round) {
   return [...items.slice(offset), ...items.slice(0, offset)]
 }
 
+export function recommendationSubscriptionIds(subscriptions) {
+  return (Array.isArray(subscriptions) ? subscriptions : [])
+    .map(channel => typeof channel === 'string' ? channel : channel?.id)
+    .filter(channel => typeof channel === 'string' && channel.length > 0)
+}
+
 /**
  * Learn reversible long-term, current-session, negative and channel interests.
  * Saved videos and positive feedback contribute even before the first watch.
@@ -202,7 +208,7 @@ export function buildRecommendationProfile(history, {
     evidence,
     rejectedIds,
     blockedChannels,
-    subscriptions: new Set(subscriptions.map(channel => typeof channel === 'string' ? channel : channel.id)),
+    subscriptions: new Set(recommendationSubscriptionIds(subscriptions)),
     vectorFor,
     hasInterests: usable.length > 0,
     now,

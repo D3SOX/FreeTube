@@ -81,7 +81,7 @@ export function mergeRecommendationCandidates(videos) {
     const sources = [...(current?.recommendationSources ?? []), ...(video.recommendationSources ?? [])]
     byId.set(video.videoId, {
       ...video,
-      ...current,
+      ...Object.fromEntries(Object.entries(current ?? {}).filter(([, value]) => value != null)),
       recommendationSources: [...new Map(sources.map(source => [`${source.type}:${source.id}`, source])).values()],
     })
   }

@@ -22,7 +22,7 @@
       <div class="recommendationSettings">
         <div
           class="recommendationDiscovery"
-          role="group"
+          role="radiogroup"
           :aria-labelledby="`${id}-discovery`"
         >
           <div class="recommendationDiscoveryChoices">

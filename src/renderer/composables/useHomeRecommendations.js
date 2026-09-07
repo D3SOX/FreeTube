@@ -1,6 +1,6 @@
 import { computed, onBeforeUnmount, ref, shallowRef, watch } from 'vue'
 import store from '../store/index'
-import { buildRecommendationProfile, scoreRecommendationCandidates, diversifyRecommendations } from '../helpers/recommendations'
+import { buildRecommendationProfile, scoreRecommendationCandidates, diversifyRecommendations, recommendationSubscriptionIds } from '../helpers/recommendations'
 import { collectRecommendationCandidates, fetchRecommendationSource, mergeRecommendationCandidates } from '../helpers/recommendationCandidates'
 import { getLocalChannelVideos, getLocalSearchResults, getLocalRelatedVideos } from '../helpers/api/local'
 import { getInvidiousChannelVideos, getInvidiousSearchResults, getInvidiousRelatedVideos } from '../helpers/api/invidious'
@@ -30,7 +30,7 @@ export function useHomeRecommendations(visible) {
   const eligibleHistory = computed(() => history.value.filter(isVisible))
   const favorites = computed(() => store.getters.getPlaylist('favorites')?.videos.filter(isVisible) ?? [])
   const saved = computed(() => store.getters.getAllPlaylists.filter(playlist => playlist._id !== 'favorites').flatMap(playlist => playlist.videos).filter(isVisible))
-  const subscriptions = computed(() => store.getters.getActiveProfile.subscriptions ?? [])
+  const subscriptions = computed(() => recommendationSubscriptionIds(store.getters.getActiveProfile?.subscriptions))
   const exploration = computed(() => Math.max(0, Math.min(0.5, Number(store.getters.getRecommendationExploration) || 0)))
   const records = computed(() => store.getters.getRecommendationRecords.filter(isVisible))
   const hasHistory = computed(() => store.getters.getRememberHistory && (
@@ -82,7 +82,7 @@ export function useHomeRecommendations(visible) {
     history: sourceIdentity(eligibleHistory.value),
     favorites: sourceIdentity(favorites.value),
     saved: sourceIdentity(saved.value),
-    subscriptions: subscriptions.value.map(channel => channel.id),
+    subscriptions: subscriptions.value,
     feedback: records.value.filter(record => record.feedback).map(record => [record.videoId, record.feedback, record.feedbackAt]),
     epoch: store.getters.getRecommendationEpoch,
     backend: store.getters.getBackendPreference,
@@ -122,8 +122,8 @@ export function useHomeRecommendations(visible) {
     if (!useCache) round++
     cachedCandidates = null
     const learned = makeProfile()
-    if (!learned.channels.length) learned.channels = subscriptions.value.slice(0, 3).map(channel => channel.id)
-    const subscriptionIds = new Set(subscriptions.value.map(channel => channel.id))
+    if (!learned.channels.length) learned.channels = subscriptions.value.slice(0, 3)
+    const subscriptionIds = new Set(subscriptions.value)
     candidates = mergeRecommendationCandidates([...candidates, ...Object.entries(store.getters.getVideoCache)
       .filter(([id]) => subscriptionIds.has(id))
       .toSorted(([a], [b]) => (learned.channelWeights.get(b) ?? 0) - (learned.channelWeights.get(a) ?? 0))

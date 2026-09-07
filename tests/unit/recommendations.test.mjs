@@ -183,3 +183,11 @@ test('handles a diverse thousand-video vocabulary without exceeding argument lim
   }))
   assert.ok(profile(history).interests.size > 100000)
 })
+
+test('ignores malformed subscriptions while retaining channel strings and objects', () => {
+  for (const subscriptions of [null, {}, 'channel']) {
+    assert.deepEqual([...profile([], { subscriptions }).subscriptions], [])
+  }
+  const subscriptions = [null, undefined, {}, false, 42, { id: null }, '', 'string-channel', { id: 'object-channel' }]
+  assert.deepEqual([...profile([], { subscriptions }).subscriptions], ['string-channel', 'object-channel'])
+})

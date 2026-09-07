@@ -128,7 +128,7 @@ async function mockCandidates(page) {
       }
     },
     async settled() {
-      await expect.poll(() => finished.size === requests.length).toBe(true)
+      await expect.poll(() => requests.length > 0 && finished.size === requests.length).toBe(true)
       await renderTurn(page)
     },
   }
@@ -825,7 +825,7 @@ test('provides a custom discovery selector and separate actions with keyboard na
   const description = panel.locator('.recommendationDiscoveryDescriptions p.active')
   await menu.focus()
   await page.keyboard.press('Enter')
-  await expect(panel.getByRole('group', { name: 'Discovery', exact: true })).toBeVisible()
+  await expect(panel.getByRole('radiogroup', { name: 'Discovery', exact: true })).toBeVisible()
   await expect(balanced).toBeChecked()
   await expect(description).toHaveText('Mix familiar channels with new ones that match your interests.')
   await expect(balanced).toHaveAccessibleDescription('Mix familiar channels with new ones that match your interests.')
@@ -903,3 +903,42 @@ test('keeps the discovery heading fixed while its constrained menu scrolls and s
   await expect.poll(() => scroller.evaluate(element => element.scrollHeight - element.clientHeight)).toBeLessThanOrEqual(1)
   await expect(scroller.locator('.os-scrollbar-vertical')).toHaveClass(/os-scrollbar-unusable/)
 })
+
+test('broadcasts expired learning removals when another window reloads its snapshot', async ({ app, page }) => {
+  await page.evaluate(async record => {
+    const store = document.querySelector('#app').__vue_app__.config.globalProperties.$store
+    await store.dispatch('updateEnableHomeRecommendations', true)
+    await store.dispatch('recordRecommendationEvent', { type: 'dismiss', video: record })
+  }, channelCandidate)
+  const second = await openNewWindowFromTabBar(app, page)
+  await waitForAppReady(second)
+  await second.evaluate(() => document.querySelector('#app').__vue_app__.config.globalProperties.$store.dispatch('loadRecommendations'))
+  const feedback = target => target.evaluate(() => document.querySelector('#app').__vue_app__.config.globalProperties.$store
+    .getters.getRecommendationRecords.find(record => record.videoId === 'recchan0001')?.feedback ?? null)
+  await expect.poll(() => feedback(second)).toBe('dismiss')
+  const restoreClock = await app.electronApp.evaluateHandle(() => {
+    const original = Date.now
+    Date.now = () => original() + 181 * 86_400_000
+    return () => { Date.now = original }
+  })
+  try {
+    await page.evaluate(() => document.querySelector('#app').__vue_app__.config.globalProperties.$store.dispatch('loadRecommendations'))
+    await expect.poll(() => feedback(page)).toBe(null)
+    await expect.poll(() => feedback(second)).toBe(null)
+  } finally {
+    await restoreClock.evaluate(restore => restore())
+    await restoreClock.dispose()
+  }
+})
+
+for (const subscriptions of [{ invalid: true }, [null, { id: CHANNEL_ID }]]) {
+  test(`discovers videos with malformed profile subscriptions ${JSON.stringify(subscriptions)}`, async ({ page }) => {
+    await mockCandidates(page)
+    await page.evaluate(subscriptions => {
+      document.querySelector('#app').__vue_app__.config.globalProperties.$store.getters.getActiveProfile.subscriptions = subscriptions
+    }, subscriptions)
+    await goTo(page, 'home')
+    await setEnabled(page, true)
+    await expect(recommendations(page).getByRole('link', { name: /Linux desktop shortcuts/ })).toBeVisible()
+  })
+}

@@ -468,6 +468,7 @@ export default defineComponent({
       watchTimeLastTick: null,
       recommendationPlaybackSample: null,
       recommendationWatchSession: null,
+      recommendationLoadRetryAt: 0,
       /** @type {Record<string, number>} */
       pendingWatchTimeByDate: {},
       historyLastTouchedAt: 0,
@@ -4070,9 +4071,13 @@ export default defineComponent({
       }
       const epoch = this.$store.getters.getRecommendationEpoch
       if (!epoch) {
-        this.$store.dispatch('loadRecommendations').catch(error => console.error('Could not load recommendation learning', error))
+        if (Date.now() >= this.recommendationLoadRetryAt) {
+          this.recommendationLoadRetryAt = Date.now() + 30_000
+          this.$store.dispatch('loadRecommendations').catch(error => console.error('Could not load recommendation learning', error))
+        }
         return
       }
+      this.recommendationLoadRetryAt = 0
       if (this.recommendationWatchSession?.videoId !== this.videoId || this.recommendationWatchSession.epoch !== epoch) {
         this.recommendationWatchSession = { videoId: this.videoId, epoch, sessionId: crypto.randomUUID(), seconds: 0, savedSeconds: 0 }
         this.recommendationPlaybackSample = null

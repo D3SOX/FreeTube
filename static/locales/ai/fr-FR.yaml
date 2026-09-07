@@ -100,7 +100,7 @@ Home Page:
   Explore description: "Accorder plus de place aux nouvelles chaînes liées à vos centres d’intérêt."
   Turn off recommendations: Désactiver les recommandations
   Recommended for you: "Recommandé pour vous"
-  Recommendations description: "Classez les vidéos sur votre appareil selon votre historique de visionnage. Les identifiants des chaînes et les recherches par sujet sont envoyés à l'API interne que vous avez sélectionnée pour trouver des vidéos."
+  Recommendations description: "Classez les vidéos sur votre appareil selon votre historique de visionnage. Les identifiants des chaînes et les recherches par sujet sont envoyés au backend sélectionné pour trouver des vidéos."
   Enable recommendations: "Activer les recommandations"
   Recommendations need history: "Regardez quelques vidéos avec l'historique activé pour obtenir des recommandations."
   No recommendations: "Aucune recommandation trouvée. Essayez d'actualiser après avoir regardé d'autres vidéos."
