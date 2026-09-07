@@ -87,6 +87,35 @@ public class AndroidPlaybackPlugin extends Plugin {
         mainHandler.post(() -> {
             if (!checkOwner(call)) return;
             if (screen != null) {
+                if (call.getBoolean("endScroll", false)) {
+                    screen.finishPageScroll();
+                    call.resolve();
+                    return;
+                }
+                if (call.getBoolean("endTransition", false)) {
+                    screen.finishVideoTransition();
+                    call.resolve();
+                    return;
+                }
+                com.getcapacitor.JSObject transition = call.getObject("transition");
+                if (transition != null) {
+                    org.json.JSONObject from = transition.optJSONObject("from");
+                    double[] target = { call.getDouble("x", 0.0), call.getDouble("y", 0.0), call.getDouble("width", 0.0), call.getDouble("height", 0.0), call.getDouble("viewportWidth", 0.0) };
+                    if (from == null || !java.util.Arrays.stream(target).allMatch(Double::isFinite) || target[2] <= 0 || target[3] <= 0 || target[4] <= 0) {
+                        call.reject("Invalid player transition bounds");
+                        return;
+                    }
+                    double[] origin = { from.optDouble("x"), from.optDouble("y"), from.optDouble("width"), from.optDouble("height") };
+                    if (!java.util.Arrays.stream(origin).allMatch(Double::isFinite) || origin[2] <= 0 || origin[3] <= 0) {
+                        call.reject("Invalid player transition origin");
+                        return;
+                    }
+                    screen.animateVideo(origin, target, Math.max(0, Math.min(1200, transition.optLong("duration", 300))),
+                        (float) Math.max(0, Math.min(1000, transition.optDouble("radius", 0))), call::resolve);
+                    return;
+                }
+                screen.setFollowsPageScroll(call.getBoolean("pageScroll", false));
+                screen.setMiniPlayer(call.getBoolean("miniPlayer", false), (float) Math.max(0, Math.min(1000, call.getDouble("radius", 0.0))));
                 Boolean visible = call.getBoolean("videoVisible");
                 if (visible != null) screen.setInlineVisible(visible);
                 screen.setWebOverlayActive(call.getBoolean("overlayActive", false));
@@ -102,6 +131,7 @@ public class AndroidPlaybackPlugin extends Plugin {
                     screen.layoutVideo(x, y, width, height, viewportWidth);
                     com.getcapacitor.JSArray menus = call.getArray("menus", new com.getcapacitor.JSArray());
                     java.util.ArrayList<android.graphics.RectF> menuBounds = new java.util.ArrayList<>();
+                    java.util.ArrayList<android.graphics.RectF> scrollingMenuBounds = new java.util.ArrayList<>();
                     double scale = screen.getWidth() / viewportWidth;
                     for (int index = 0; index < menus.length(); index++) {
                         org.json.JSONObject menu = menus.optJSONObject(index);
@@ -112,11 +142,12 @@ public class AndroidPlaybackPlugin extends Plugin {
                         double menuHeight = menu.optDouble("height");
                         if (Double.isFinite(menuX) && Double.isFinite(menuY) && Double.isFinite(menuWidth) &&
                             Double.isFinite(menuHeight) && menuWidth > 0 && menuHeight > 0) {
-                            menuBounds.add(new android.graphics.RectF((float) (menuX * scale), (float) (menuY * scale),
+                            (menu.optBoolean("pageScroll", false) ? scrollingMenuBounds : menuBounds).add(new android.graphics.RectF((float) (menuX * scale), (float) (menuY * scale),
                                 (float) ((menuX + menuWidth) * scale), (float) ((menuY + menuHeight) * scale)));
                         }
                     }
                     screen.setMenuBounds(menuBounds.toArray(new android.graphics.RectF[0]));
+                    screen.setScrollingMenuBounds(scrollingMenuBounds.toArray(new android.graphics.RectF[0]));
                     double controlsX = call.getDouble("controlsX", x);
                     double controlsY = call.getDouble("controlsY", y);
                     double controlsWidth = call.getDouble("controlsWidth", width);

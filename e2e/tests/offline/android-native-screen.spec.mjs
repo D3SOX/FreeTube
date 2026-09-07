@@ -17,7 +17,7 @@ test.use({ seed: { settings: { videoPlaybackEngine: 'built-in', ytDlpPlaybackEng
 
 async function openNativeScreen(page, fullscreen = true) {
   await page.addStyleTag({ content: screenCss })
-  await page.addScriptTag({ content: `{${overrideSource}\n${screenSource}\nwindow.createNativeScreenTest = createAndroidNativeScreen}` })
+  await page.addScriptTag({ content: `{const requestAnimationFrame = callback => window.requestAnimationFrame(time => { if (!window.holdNativeLayout) callback(time) });${overrideSource}\n${screenSource}\nwindow.createNativeScreenTest = createAndroidNativeScreen}` })
   await page.evaluate(fullscreen => {
     const createScreen = window.createNativeScreenTest
     const element = document.querySelector('.ftVideoPlayer video')
@@ -25,7 +25,8 @@ async function openNativeScreen(page, fullscreen = true) {
     // Android delegates rotation to its native screen instead of browser fullscreen.
     element.ui.configure({ enableFullscreenOnRotation: false })
     window.nativeFrameCaptureCalls = 0
-    const controller = { async show() {}, async hide() {}, async layout(value) { window.nativeLayoutTest = value }, async captureFrame() { window.nativeFrameCaptureCalls++; return { dataUrl: '' } } }
+    const controller = { async show() {}, async hide() {}, async layout(value) { window.nativeLayoutTest = { ...window.nativeLayoutTest, ...value } }, async captureFrame() { window.nativeFrameCaptureCalls++; return { dataUrl: '' } } }
+    window.nativeScreenTestController = controller
     const screen = createScreen({
       element,
       container: element.closest('.ftVideoPlayer'),
@@ -139,6 +140,35 @@ test('inline playback presents the native surface without copying frames through
   await page.evaluate(() => window.nativeScreenTest.destroy())
 })
 
+test('SABR and preroll countdown rings cover native transport buttons', async ({ app, page }) => {
+  await mockPlayableWatchPage(app, page)
+  await openMockedVideo(page)
+  await openNativeScreen(page, false)
+  await page.evaluate(() => {
+    // Both native source timers use this shared ring. Supply the notice without
+    // requiring a remote SABR server to request backoff during an offline test.
+    const overlay = document.createElement('div')
+    overlay.className = 'countdownOverlay'
+    const ring = document.createElement('div')
+    ring.className = 'countdownProgress'
+    ring.textContent = '1.2s'
+    overlay.append(ring)
+    document.querySelector('.ftVideoPlayer').append(overlay)
+  })
+  const ring = page.locator('.countdownProgress')
+  await expect(ring).toBeVisible()
+  for (const fullscreen of [false, true]) {
+    if (fullscreen) await page.evaluate(() => window.nativeScreenTest.show())
+    const bounds = await ring.boundingBox()
+    await expect.poll(() => page.evaluate(({ x, y, width, height }) => window.nativeLayoutTest.menus.some(menu =>
+      menu.x <= x + 1 && menu.y <= y + 1 && menu.x + menu.width >= x + width - 1 && menu.y + menu.height >= y + height - 1
+    ), bounds)).toBe(true)
+    expect(await page.evaluate(() => window.nativeLayoutTest.overlayActive)).toBe(false)
+    expect(await page.evaluate(() => window.nativeLayoutTest.menus.some(menu => menu.pageScroll))).toBe(!fullscreen)
+  }
+  await page.evaluate(() => window.nativeScreenTest.destroy())
+})
+
 for (const uiScale of [100, 125]) {
   test.describe(`inline native surface at ${uiScale}%`, () => {
     test.use({ seed: { settings: { videoPlaybackEngine: 'built-in', ytDlpPlaybackEngineDefaultMigration: true, uiScale, ambientMode: false } } })
@@ -190,6 +220,31 @@ for (const uiScale of [100, 125]) {
         })).toBeLessThanOrEqual(1)
       })
     }
+    test('lets Android animate mini-player entry and return without competing browser transforms', async ({ app, page }) => {
+      await mockPlayableWatchPage(app, page)
+      await openMockedVideo(page)
+      await openNativeScreen(page, false)
+      await page.evaluate(() => {
+        window.nativeMotionCalls = []
+        window.nativeScreenTestController.layout = async value => {
+          window.nativeMotionCalls.push(value)
+          if (value.transition) await new Promise(resolve => { window.finishNativeMotion = resolve })
+        }
+      })
+      const player = page.locator('.ftVideoPlayer')
+      for (const entering of [true, false]) {
+        await player.evaluate((element, entering) => window.scrollTo(0, entering ? window.scrollY + element.getBoundingClientRect().bottom : 0), entering)
+        await expect(player).toHaveAttribute('data-native-player-transition', '')
+        expect(await player.evaluate(element => element.getAnimations().filter(animation => animation.effect.getKeyframes().some(keyframe => keyframe.transform)).length)).toBe(0)
+        await expect.poll(() => page.evaluate(() => window.nativeMotionCalls.filter(call => call.transition).length)).toBe(entering ? 1 : 2)
+        await expect(page.locator('.shaka-controls-container')).toBeHidden()
+        await page.evaluate(() => window.finishNativeMotion())
+        await expect(player).not.toHaveAttribute('data-native-player-transition')
+        await expect(player).not.toHaveClass(/scrollMiniPlayerAnimating/)
+      }
+      expect(await page.evaluate(() => window.nativeMotionCalls.filter(call => call.endTransition).length)).toBe(2)
+      await page.evaluate(() => window.nativeScreenTest.destroy())
+    })
     test('keeps page content behind the native scroll mini player', async ({ app, page }) => {
       await mockPlayableWatchPage(app, page)
       await openMockedVideo(page)
@@ -237,6 +292,69 @@ for (const uiScale of [100, 125]) {
           Math.floor((bounds.y + bounds.height / 2) * scale), 1, 1).data]
       }, { imageData: screenshot.toString('base64'), bounds })
       expect(pixel[3], 'Page content must not paint inside the native video window').toBe(0)
+      await page.evaluate(() => window.nativeScreenTest.destroy())
+    })
+    test('inline video transparency scrolls with the page before a bridge update', async ({ app, page }) => {
+      await mockPlayableWatchPage(app, page)
+      await openMockedVideo(page)
+      await setWindowSize(app, page, { width: 480, height: 850 })
+      await page.evaluate(() => window.scrollTo(0, 80))
+      await openNativeScreen(page, false)
+      const player = page.locator('.ftVideoPlayer')
+      await player.evaluate(element => { element.querySelector('.shaka-controls-container').style.visibility = 'hidden' })
+      await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))))
+      await page.evaluate(() => { window.holdNativeLayout = true; window.scrollTo(0, 0) })
+      const bounds = await player.boundingBox()
+      const screenshot = await page.screenshot({ omitBackground: true })
+      const alpha = await page.evaluate(async ({ data, bounds }) => {
+        const image = new Image()
+        image.src = `data:image/png;base64,${data}`
+        await image.decode()
+        const canvas = document.createElement('canvas')
+        canvas.width = image.width; canvas.height = image.height
+        const context = canvas.getContext('2d')
+        context.drawImage(image, 0, 0)
+        const scale = image.width / innerWidth
+        return context.getImageData(Math.floor((bounds.x + bounds.width / 2) * scale),
+          Math.floor((bounds.y + bounds.height - 12) * scale), 1, 1).data[3]
+      }, { data: screenshot.toString('base64'), bounds })
+      expect(alpha, 'The native video opening must move with page scrolling, even while JS geometry is delayed').toBe(0)
+      await page.evaluate(() => window.nativeScreenTest.destroy())
+    })
+    test('scroll handoff refreshes the mini-player clip before restoring shared controls', async ({ app, page }) => {
+      await mockPlayableWatchPage(app, page)
+      await openMockedVideo(page)
+      await openNativeScreen(page, false)
+      await page.evaluate(() => { document.querySelector('.watchVideoInfo').style.minHeight = '2500px' })
+      const player = page.locator('.ftVideoPlayer')
+      await player.evaluate(element => window.scrollTo(0, window.scrollY + element.getBoundingClientRect().bottom + 200))
+      await expect(player).toHaveClass(/scrollMiniPlayer/)
+      await expect(player).not.toHaveClass(/scrollMiniPlayerAnimating/)
+      await player.evaluate(element => document.querySelector('#cross-tab-mini-player-layer').append(element))
+      await expect(page.locator('[data-native-player-backdrop]')).toBeAttached()
+      await expect.poll(() => page.evaluate(() => window.nativeLayoutTest.miniPlayer)).toBe(true)
+      const result = await page.evaluate(() => {
+        window.nativeScreenTest.action('scroll-start')
+        const player = document.querySelector('.ftVideoPlayer')
+        const hidden = getComputedStyle(player.querySelector('.scrollMiniPlayerControls')).visibility
+        window.scrollBy(0, 180)
+        const calls = []
+        window.nativeScreenTestController.layout = async value => calls.push(value)
+        window.nativeScreenTest.action('scroll-end')
+        const content = document.querySelector('[data-native-player-backdrop]')
+        const clip = getComputedStyle(content).clipPath.match(/path\(evenodd, "(.+)"\)/)[1]
+        const bounds = player.getBoundingClientRect()
+        const origin = content.getBoundingClientRect()
+        const context = document.createElement('canvas').getContext('2d')
+        return {
+          hidden,
+          restored: getComputedStyle(player.querySelector('.scrollMiniPlayerControls')).visibility,
+          occluded: context.isPointInPath(new Path2D(clip), bounds.x + bounds.width / 2 - origin.x,
+            bounds.y + bounds.height / 2 - origin.y, 'evenodd'),
+          refreshedBeforeHandoff: calls[0].miniPlayer && calls[1].endScroll,
+        }
+      })
+      expect(result).toEqual({ hidden: 'hidden', restored: 'visible', occluded: false, refreshedBeforeHandoff: true })
       await page.evaluate(() => window.nativeScreenTest.destroy())
     })
     test('keeps a transparent rounded video window and an opaque themed page', async ({ app, page }) => {

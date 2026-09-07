@@ -1,7 +1,7 @@
 import { computed, nextTick, ref, watch } from 'vue'
 
 import store from '../../../store/index'
-import { applyAnimationSpeed } from '../../../helpers/animationSpeed'
+import { applyAnimationSpeed, getAnimationSpeedMultiplier } from '../../../helpers/animationSpeed'
 import {
   hasCrossTabMiniPlayerOwner,
   isCrossTabMiniPlayerOwner,
@@ -469,8 +469,9 @@ export function useScrollMiniPlayer({ container, fullWindowEnabled, getUi, isAct
     scrollMiniBounceCancel = null
   }
 
-  function cancelScrollMiniPlayerLayoutAnimation() {
+  function cancelScrollMiniPlayerLayoutAnimation(replacingNative = false) {
     scrollMiniLayoutAnimationSequence++
+    if (!replacingNative) container.value?.dispatchEvent(new CustomEvent('native-player-transition', { detail: null }))
     scrollMiniLayoutAnimation?.cancel()
     scrollMiniLayoutAnimation = null
     scrollMiniPlayerAnimating.value = false
@@ -499,6 +500,22 @@ export function useScrollMiniPlayer({ container, fullWindowEnabled, getUi, isAct
       return
     }
 
+    const nativeMotion = new CustomEvent('native-player-transition', {
+      cancelable: true,
+      detail: {
+        from: previousRect,
+        to: nextRect,
+        duration: SCROLL_MINI_LAYOUT_ANIMATION_DURATION_MS / getAnimationSpeedMultiplier(store.getters.getAnimationSpeed),
+        finished: null
+      }
+    })
+    playerContainer.dispatchEvent(nativeMotion)
+    if (nativeMotion.defaultPrevented) {
+      await nativeMotion.detail.finished
+      if (scrollMiniLayoutAnimationSequence === sequence) scrollMiniPlayerAnimating.value = false
+      return
+    }
+
     const animation = applyAnimationSpeed(playerContainer.animate([
       {
         transform: `translate(${previousRect.left - nextRect.left}px, ${previousRect.top - nextRect.top}px) scale(${previousRect.width / nextRect.width}, ${previousRect.height / nextRect.height})`,
@@ -524,7 +541,7 @@ export function useScrollMiniPlayer({ container, fullWindowEnabled, getUi, isAct
 
   function animateScrollMiniPlayerRectChange(update) {
     const previousRect = container.value?.getBoundingClientRect()
-    cancelScrollMiniPlayerLayoutAnimation()
+    cancelScrollMiniPlayerLayoutAnimation(!!previousRect && !isReducedMotionEnabled())
     update()
 
     if (!previousRect || isReducedMotionEnabled()) return
@@ -649,7 +666,7 @@ export function useScrollMiniPlayer({ container, fullWindowEnabled, getUi, isAct
     lastKnownInlinePlayerHeight = layoutHeight
     scrollMiniPlaceholderHeight.value = placeholderHeight
 
-    cancelScrollMiniPlayerLayoutAnimation()
+    cancelScrollMiniPlayerLayoutAnimation(shouldAnimate)
     const animationSequence = scrollMiniLayoutAnimationSequence
     scrollMiniPlayerAnimating.value = previousRect !== null
 
@@ -701,7 +718,7 @@ export function useScrollMiniPlayer({ container, fullWindowEnabled, getUi, isAct
     const shouldAnimate = animate && playerContainer !== null && !isReducedMotionEnabled()
     const previousRect = shouldAnimate ? playerContainer.getBoundingClientRect() : null
 
-    cancelScrollMiniPlayerLayoutAnimation()
+    cancelScrollMiniPlayerLayoutAnimation(shouldAnimate)
     const animationSequence = scrollMiniLayoutAnimationSequence
     scrollMiniPlayerAnimating.value = previousRect !== null
 

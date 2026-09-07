@@ -23,7 +23,15 @@ public class NativePlaybackScreenTest {
     private static class TouchWebView extends WebView {
         int downs;
         final java.util.List<Integer> actions = new java.util.ArrayList<>();
+        VisualStateCallback heldVisualState;
+        long heldVisualStateId;
+        boolean holdVisualState;
         TouchWebView(android.content.Context context) { super(context); }
+        @Override public void postVisualStateCallback(long id, VisualStateCallback callback) {
+            if (!holdVisualState) { super.postVisualStateCallback(id, callback); return; }
+            heldVisualState = callback;
+            heldVisualStateId = id;
+        }
         @Override public boolean dispatchTouchEvent(MotionEvent event) {
             actions.add(event.getActionMasked());
             if (event.getActionMasked() == MotionEvent.ACTION_DOWN) downs++;
@@ -91,6 +99,241 @@ public class NativePlaybackScreenTest {
             screen.setControlsVisible(false);
             tap(screen, 100, 100);
             assertEquals("Inline surface touches reach the shared gesture recognizer", 1, web.downs);
+        });
+    }
+
+    @Test public void inlineVideoAndControlsFollowScrollBeforeTheNextBridgeLayout() {
+        View[] frame = new View[1];
+        withScreen((screen, controls, web, engine) -> {
+            screen.setFullscreen(false);
+            screen.setInlineVisible(true);
+            screen.setFollowsPageScroll(true);
+            screen.layoutVideo(0, 180, 400, 225, 1000);
+            screen.layoutControls(0, 180, 400, 225, 1000);
+            frame[0] = screen.getChildAt(0);
+            web.loadData("<html><body style='height:4000px'></body></html>", "text/html", "UTF-8");
+        }, (screen, controls, web, engine) -> {
+            web.scrollTo(0, 120);
+            assertEquals(120, web.getScrollY());
+        }, (screen, controls, web, engine) -> {
+            assertEquals(120, web.getScrollY());
+            float expected = 180 * screen.getWidth() / 1000f - web.getScrollY();
+            assertEquals("The native video must follow Chromium scrolling without waiting for JS", expected, frame[0].getTranslationY(), 1f);
+            assertEquals("Native transport buttons must scroll with the shared toolbar", expected, controls.getY(), 1f);
+        });
+    }
+
+    @Test public void scrollingCountdownClipsAndConsumesTouchesAtItsNewPosition() {
+        withScreen((screen, controls, web, engine) -> {
+            screen.setFullscreen(false);
+            screen.setInlineVisible(true);
+            screen.setControlsVisible(true);
+            screen.setFollowsPageScroll(true);
+            screen.layoutVideo(0, 180, 400, 225, 1000);
+            screen.layoutControls(0, 180, 400, 225, 1000);
+            controls.setBackgroundColor(android.graphics.Color.MAGENTA);
+            screen.setMenuBounds(new android.graphics.RectF[] { new android.graphics.RectF(0, 0, 1000, 100) });
+            screen.setScrollingMenuBounds(new android.graphics.RectF[] { new android.graphics.RectF(200, 300, 280, 380) });
+            web.loadData("<html><body style='height:4000px'></body></html>", "text/html", "UTF-8");
+        }, (screen, controls, web, engine) -> web.scrollTo(0, 120),
+        (screen, controls, web, engine) -> {
+            assertEquals(120, web.getScrollY());
+            assertTrue("The moving countdown must still take touch priority", screen.isOverMenu(240, 220));
+            assertFalse("The previous countdown position cannot remain a dead zone", screen.isOverMenu(240, 330));
+            assertTrue("The app header must stay fixed", screen.isOverMenu(240, 50));
+            // Sample the controller background rather than its glyph pixels.
+            for (int i = 0; i < controls.getChildCount(); i++) controls.getChildAt(i).setVisibility(View.INVISIBLE);
+            android.graphics.Bitmap image = android.graphics.Bitmap.createBitmap(screen.getWidth(), screen.getHeight(), android.graphics.Bitmap.Config.ARGB_8888);
+            screen.draw(new android.graphics.Canvas(image));
+            assertNotEquals("The native controls cannot cover the scrolling countdown", android.graphics.Color.MAGENTA, image.getPixel(240, 220));
+            assertEquals("The old countdown opening must close", android.graphics.Color.MAGENTA, image.getPixel(240, 330));
+            image.recycle();
+            screen.animateVideo(new double[] { 0, 60, 400, 225 }, new double[] { 100, 200, 300, 168.75, 1000 }, 1200, 12, () -> {});
+            assertTrue("Changing the video coordinate mode cannot move document-coordinate exclusions", screen.isOverMenu(240, 220));
+            assertFalse(screen.isOverMenu(240, 330));
+        });
+    }
+
+    @Test public void movingMiniPlayerDoesNotResizeTheDecoderSurface() {
+        int[] surfaceSize = new int[2];
+        withScreen((screen, controls, web, engine) -> {
+            screen.setFullscreen(false);
+            screen.setInlineVisible(true);
+            screen.layoutVideo(0, 100, 400, 225, 400);
+        }, (screen, controls, web, engine) -> {
+            View frame = screen.getChildAt(0);
+            surfaceSize[0] = frame.getWidth();
+            surfaceSize[1] = frame.getHeight();
+            screen.layoutVideo(170, 350, 220, 123.75, 400);
+        }, (screen, controls, web, engine) -> {
+            View frame = screen.getChildAt(0);
+            assertEquals("Mini-player motion must scale the existing texture instead of reallocating it", surfaceSize[0], frame.getWidth());
+            assertEquals(surfaceSize[1], frame.getHeight());
+            assertEquals(220 * screen.getWidth() / 400f, frame.getWidth() * frame.getScaleX(), 1f);
+        });
+    }
+
+    @Test public void animatedVideoStaysAbovePageContentAndBelowAppChrome() {
+        withScreen((screen, controls, web, engine) -> {
+            screen.setFullscreen(false);
+            screen.setInlineVisible(true);
+            screen.setControlsVisible(true);
+            ViewGroup frame = (ViewGroup) screen.getChildAt(0);
+            frame.setBackgroundColor(android.graphics.Color.MAGENTA);
+            frame.getChildAt(0).setVisibility(View.INVISIBLE);
+            web.setBackgroundColor(android.graphics.Color.RED);
+            screen.setMenuBounds(new android.graphics.RectF[] { new android.graphics.RectF(0, 0, 1000, 80) });
+            screen.animateVideo(new double[] { 0, 0, 500, 281.25 }, new double[] { 100, 0, 400, 225, 1000 }, 1200, 12, () -> {});
+            assertTrue("Moving video must draw over opaque route content", screen.indexOfChild(frame) > screen.indexOfChild(web));
+            assertFalse("Transport buttons must not travel separately from the video", controls.isFullyVisible());
+        }, (screen, controls, web, engine) -> {
+            android.graphics.Bitmap image = android.graphics.Bitmap.createBitmap(screen.getWidth(), screen.getHeight(), android.graphics.Bitmap.Config.ARGB_8888);
+            screen.draw(new android.graphics.Canvas(image));
+            assertEquals("Page content cannot occlude the moving native frame", android.graphics.Color.MAGENTA, image.getPixel(200, 150));
+            assertNotEquals("Video cannot paint over the app header or status bar", android.graphics.Color.MAGENTA, image.getPixel(200, 40));
+            image.recycle();
+        });
+    }
+
+    @Test public void pageScrollCannotCoverAStationaryMiniPlayer() {
+        withScreen((screen, controls, web, engine) -> {
+            screen.setFullscreen(false);
+            screen.setInlineVisible(true);
+            screen.setControlsVisible(false);
+            screen.layoutVideo(200, 200, 400, 225, 1000);
+            screen.setMiniPlayer(true, 12);
+            ViewGroup frame = (ViewGroup) screen.getChildAt(0);
+            frame.setBackgroundColor(android.graphics.Color.MAGENTA);
+            frame.getChildAt(0).setVisibility(View.INVISIBLE);
+            // Model a Chromium scroll frame painted before its transparent
+            // opening catches up. The native video must survive that frame.
+            web.setBackgroundColor(android.graphics.Color.RED);
+            long now = SystemClock.uptimeMillis();
+            for (int index = 0; index < 2; index++) {
+                MotionEvent event = MotionEvent.obtain(now, now + index * 30,
+                    index == 0 ? MotionEvent.ACTION_DOWN : MotionEvent.ACTION_MOVE,
+                    100, 400 - index * 100, 0);
+                screen.dispatchTouchEvent(event);
+                event.recycle();
+            }
+        }, (screen, controls, web, engine) -> {
+            android.graphics.Bitmap image = android.graphics.Bitmap.createBitmap(screen.getWidth(), screen.getHeight(), android.graphics.Bitmap.Config.ARGB_8888);
+            screen.draw(new android.graphics.Canvas(image));
+            float scale = screen.getWidth() / 1000f;
+            assertEquals("Scrolling page content cannot cover the stationary mini player",
+                android.graphics.Color.MAGENTA, image.getPixel((int) (400 * scale), (int) (300 * scale)));
+            image.recycle();
+        });
+    }
+
+    @Test public void scrollingHandoffWaitsForDrawAndANewSwipeCancelsIt() {
+        View[] frame = new View[1];
+        withScreen((screen, controls, web, engine) -> {
+            screen.setFullscreen(false);
+            screen.setInlineVisible(true);
+            screen.setControlsVisible(false);
+            screen.layoutVideo(200, 200, 400, 225, 1000);
+            screen.setMiniPlayer(true, 12);
+            frame[0] = screen.getChildAt(0);
+            swipePage(screen);
+            web.holdVisualState = true;
+            SystemClock.sleep(160);
+            screen.finishPageScroll();
+            assertNotNull(web.heldVisualState);
+            web.heldVisualState.onComplete(web.heldVisualStateId);
+            assertTrue(screen.indexOfChild(frame[0]) > screen.indexOfChild(web));
+            // Start another fling before Chromium's previous ready frame draws.
+            swipePage(screen);
+            android.graphics.Bitmap image = android.graphics.Bitmap.createBitmap(screen.getWidth(), screen.getHeight(), android.graphics.Bitmap.Config.ARGB_8888);
+            screen.draw(new android.graphics.Canvas(image));
+            image.recycle();
+        }, (screen, controls, web, engine) -> {
+            assertTrue("An obsolete handoff cannot lower a video during another swipe", screen.indexOfChild(frame[0]) > screen.indexOfChild(web));
+            SystemClock.sleep(160);
+            screen.finishPageScroll();
+            web.heldVisualState.onComplete(web.heldVisualStateId);
+            android.graphics.Bitmap image = android.graphics.Bitmap.createBitmap(screen.getWidth(), screen.getHeight(), android.graphics.Bitmap.Config.ARGB_8888);
+            screen.draw(new android.graphics.Canvas(image));
+            image.recycle();
+        }, (screen, controls, web, engine) -> {
+            assertTrue("Settled scrolling must restore the shared mini-player controls", screen.indexOfChild(web) > screen.indexOfChild(frame[0]));
+        });
+    }
+
+    @Test public void pictureInPictureDuringMotionUsesTheWholeVideoWindow() {
+        for (String mode : new String[] { "scroll", "handoff", "animation" }) withScreen((screen, controls, web, engine) -> {
+            screen.setFullscreen(false);
+            screen.setInlineVisible(true);
+            screen.layoutVideo(200, 200, 400, 225, 1000);
+            screen.setMiniPlayer(true, 12);
+            ViewGroup frame = (ViewGroup) screen.getChildAt(0);
+            frame.setBackgroundColor(android.graphics.Color.MAGENTA);
+            frame.getChildAt(0).setVisibility(View.INVISIBLE);
+            if (mode.equals("animation")) {
+                screen.animateVideo(new double[] { 200, 200, 400, 225 }, new double[] { 100, 100, 600, 337.5, 1000 }, 1200, 12, () -> {});
+            } else {
+                swipePage(screen);
+                if (mode.equals("handoff")) {
+                    web.holdVisualState = true;
+                    SystemClock.sleep(160);
+                    screen.finishPageScroll();
+                }
+            }
+            screen.setPictureInPicture(true);
+            assertEquals("PiP cannot retain the mini-player scroll transform", 1f, frame.getScaleX(), 0f);
+            assertEquals(0f, frame.getTranslationX(), 0f);
+            assertEquals(ViewGroup.LayoutParams.MATCH_PARENT, frame.getLayoutParams().width);
+        }, (screen, controls, web, engine) -> {
+            android.graphics.Bitmap image = android.graphics.Bitmap.createBitmap(screen.getWidth(), screen.getHeight(), android.graphics.Bitmap.Config.ARGB_8888);
+            screen.draw(new android.graphics.Canvas(image));
+            assertEquals("PiP cannot retain the mini-player clipping rectangle", android.graphics.Color.MAGENTA,
+                image.getPixel(screen.getWidth() - 30, screen.getHeight() / 2));
+            image.recycle();
+        });
+    }
+
+    private static void swipePage(NativePlaybackScreen screen) {
+        long now = SystemClock.uptimeMillis();
+        for (int index = 0; index < 3; index++) {
+            int action = index == 0 ? MotionEvent.ACTION_DOWN : index == 1 ? MotionEvent.ACTION_MOVE : MotionEvent.ACTION_UP;
+            MotionEvent event = MotionEvent.obtain(now, now + index * 30, action, 100, 400 - index * 70, 0);
+            screen.dispatchTouchEvent(event);
+            event.recycle();
+        }
+    }
+
+    @Test public void reversingMotionStartsAtTheDisplayedVideoInsteadOfTheDomDestination() {
+        withScreen((screen, controls, web, engine) -> {
+            screen.setFullscreen(false);
+            screen.setInlineVisible(true);
+            screen.animateVideo(new double[] { 0, 100, 1000, 562.5 }, new double[] { 600, 500, 350, 196.875, 1000 }, 1200, 12, () -> {});
+        }, (screen, controls, web, engine) -> {
+            View frame = screen.getChildAt(screen.getChildCount() - 1);
+            float left = frame.getTranslationX();
+            float top = frame.getTranslationY();
+            screen.animateVideo(new double[] { 600, 500, 350, 196.875 }, new double[] { 0, 100, 1000, 562.5, 1000 }, 1200, 0, () -> {});
+            assertEquals("Reversing a transition must not jump to its old DOM destination", left, frame.getTranslationX(), 1f);
+            assertEquals(top, frame.getTranslationY(), 1f);
+        });
+    }
+
+    @Test public void videoStaysAboveThePageUntilTheReadyWebFrameHasActuallyDrawn() {
+        withScreen((screen, controls, web, engine) -> {
+            screen.setFullscreen(false);
+            screen.setInlineVisible(true);
+            screen.animateVideo(new double[] { 0, 100, 1000, 562.5 }, new double[] { 600, 500, 350, 196.875, 1000 }, 0, 12, () -> {});
+            View videoFrame = screen.getChildAt(screen.getChildCount() - 1);
+            web.holdVisualState = true;
+            screen.finishVideoTransition();
+            web.heldVisualState.onComplete(web.heldVisualStateId);
+            assertTrue("A ready Chromium frame has not necessarily drawn its new transparent window yet", screen.indexOfChild(videoFrame) > screen.indexOfChild(web));
+            assertFalse(controls.isFullyVisible());
+            android.graphics.Bitmap image = android.graphics.Bitmap.createBitmap(screen.getWidth(), screen.getHeight(), android.graphics.Bitmap.Config.ARGB_8888);
+            screen.draw(new android.graphics.Canvas(image));
+            image.recycle();
+        }, (screen, controls, web, engine) -> {
+            assertTrue("After the WebView draws, its controls must be above the video again", screen.indexOfChild(web) > 0);
+            assertTrue(controls.isFullyVisible());
         });
     }
 

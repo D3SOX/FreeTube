@@ -17,6 +17,14 @@
   clip-path: var(--native-inline-background-clip, inset(0));
 }
 
+/* Inline video follows document scrolling. Its opening must share the page's
+   scroll transform instead of waiting for JS to move a fixed clipping path. */
+.nativePlaybackPageScroll body::before {
+  position: absolute;
+  inset-block-end: auto;
+  block-size: var(--native-inline-page-height, 100vh);
+}
+
 .nativePlaybackInline [data-native-player-backdrop] {
   clip-path: var(--native-player-content-clip);
 }
@@ -62,6 +70,18 @@
 
 [data-native-player-controls] video {
   opacity: 0 !important;
+}
+
+/* Android moves the live texture above the page during mini-player motion.
+   Shared controls resume at the destination after the native animation. */
+[data-native-player-transition],
+[data-native-player-scrolling] {
+  box-shadow: none !important;
+}
+
+[data-native-player-transition] > *,
+[data-native-player-scrolling] > * {
+  visibility: hidden !important;
 }
 
 [data-native-player-controls] .shaka-play-button-container,

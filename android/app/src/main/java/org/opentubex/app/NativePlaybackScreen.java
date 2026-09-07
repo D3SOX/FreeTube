@@ -29,6 +29,7 @@ final class NativePlaybackScreen extends FrameLayout implements TextureView.Surf
     private final AspectRatioFrameLayout videoFrame;
     private final PlayerControlView controls;
     private android.graphics.RectF[] menuBounds = new android.graphics.RectF[0];
+    private android.graphics.RectF[] scrollingMenuBounds = new android.graphics.RectF[0];
     private final SubtitleView subtitles;
     private final TextureView video;
     private Surface surface;
@@ -48,6 +49,24 @@ final class NativePlaybackScreen extends FrameLayout implements TextureView.Surf
     private boolean bitmapCaptions;
     private boolean controlsVisible = true;
     private double[] videoBounds;
+    private double[] controlsBounds;
+    private boolean followsPageScroll;
+    private android.animation.ValueAnimator videoAnimation;
+    private boolean transitioning;
+    private boolean miniPlayer;
+    private float miniRadius;
+    private boolean scrollingPage;
+    private boolean scrollEndRequested;
+    private boolean pageTouchDown;
+    private float pageTouchY;
+    private long lastPageScroll;
+    private int lastWebScrollY;
+    private final Runnable pageScrollSettled = this::requestPageScrollEnd;
+    private final android.view.ViewTreeObserver.OnScrollChangedListener pageScrollListener = this::onPageScroll;
+    private long transitionSequence;
+    private long readyWebFrame = -1;
+    private final android.graphics.RectF transitionBounds = new android.graphics.RectF();
+    private float transitionRadius;
     private final Player.Listener queueListener = new Player.Listener() {
         @Override public void onAvailableCommandsChanged(Player.Commands commands) {
             updateQueueButtons();
@@ -129,6 +148,7 @@ final class NativePlaybackScreen extends FrameLayout implements TextureView.Surf
             originalParent.addOnLayoutChangeListener(originalParentLayout);
             originalParent.removeView(webOverlay);
             webOverlay.setBackgroundColor(Color.TRANSPARENT);
+            webOverlay.getViewTreeObserver().addOnScrollChangedListener(pageScrollListener);
             addView(webOverlay, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         } else {
             originalParent = null;
@@ -154,21 +174,48 @@ final class NativePlaybackScreen extends FrameLayout implements TextureView.Surf
         webOverlayActive = active;
         // The controller has no full-screen scrim over the shared UI. Keep its
         // buttons above Watch's ambient canvas and route all empty space to WebView.
-        controls.bringToFront();
+        if (!transitioning) controls.bringToFront();
     }
 
     void setControlsVisible(boolean visible) {
         controlsVisible = visible;
-        if (visible && (fullscreen || inlineVisible) && !pictureInPicture) controls.show(); else controls.hide();
+        if (visible && (fullscreen || inlineVisible) && !pictureInPicture && !transitioning) controls.show(); else controls.hide();
     }
 
     void layoutControls(double x, double y, double width, double height, double viewportWidth) {
         if (viewportWidth <= 0 || width <= 0 || height <= 0) return;
+        controlsBounds = new double[] { x, y, width, height, viewportWidth };
         double scale = getWidth() / viewportWidth;
-        LayoutParams layout = new LayoutParams((int) Math.round(width * scale), (int) Math.round(height * scale));
-        layout.leftMargin = (int) Math.round(x * scale);
-        layout.topMargin = (int) Math.round(y * scale);
-        controls.setLayoutParams(layout);
+        int nativeWidth = (int) Math.round(width * scale);
+        int nativeHeight = (int) Math.round(height * scale);
+        LayoutParams current = (LayoutParams) controls.getLayoutParams();
+        if (current.width != nativeWidth || current.height != nativeHeight || current.gravity != (Gravity.TOP | Gravity.LEFT)) {
+            controls.setLayoutParams(new LayoutParams(nativeWidth, nativeHeight, Gravity.TOP | Gravity.LEFT));
+        }
+        controls.setTranslationX((float) (x * scale));
+        controls.setTranslationY((float) ((y + pageScrollDelta(viewportWidth)) * scale));
+    }
+
+    private double pageScrollDelta(double viewportWidth) {
+        return followsPageScroll && webOverlay != null && !fullscreen && !miniPlayer && !pictureInPicture && getWidth() > 0
+            ? -webOverlay.getScrollY() * viewportWidth / getWidth() : 0;
+    }
+
+    void setScrollingMenuBounds(android.graphics.RectF[] bounds) {
+        scrollingMenuBounds = bounds;
+        invalidate();
+    }
+
+    private float menuScrollDelta() {
+        return webOverlay == null ? 0 : -webOverlay.getScrollY();
+    }
+
+    private void clipMenus(android.graphics.Canvas canvas) {
+        for (android.graphics.RectF bounds : menuBounds) canvas.clipOutRect(bounds);
+        float delta = menuScrollDelta();
+        for (android.graphics.RectF bounds : scrollingMenuBounds) {
+            canvas.clipOutRect(bounds.left, bounds.top + delta, bounds.right, bounds.bottom + delta);
+        }
     }
 
     void setMenuBounds(android.graphics.RectF[] bounds) {
@@ -177,19 +224,43 @@ final class NativePlaybackScreen extends FrameLayout implements TextureView.Surf
     }
 
     @Override protected boolean drawChild(android.graphics.Canvas canvas, View child, long drawingTime) {
-        if (child != controls || menuBounds.length == 0) return super.drawChild(canvas, child, drawingTime);
-        int save = canvas.save();
-        for (android.graphics.RectF bounds : menuBounds) {
-            if (android.os.Build.VERSION.SDK_INT >= 26) canvas.clipOutRect(bounds);
-            else canvas.clipRect(bounds, android.graphics.Region.Op.DIFFERENCE);
+        if (child == webOverlay && readyWebFrame == transitionSequence) {
+            long sequence = readyWebFrame;
+            readyWebFrame = -1;
+            // This draw consumes Chromium's ready frame. Keep the video above
+            // it for this frame, then hand it back on the following vsync.
+            postOnAnimation(() -> {
+                if (transitionSequence != sequence) return;
+                transitioning = false;
+                webOverlay.bringToFront();
+                controls.bringToFront();
+                refreshVideoLayout();
+                updatePresentation();
+            });
         }
+        if (child == videoFrame && transitioning && !pictureInPicture) {
+            int save = canvas.save();
+            clipMenus(canvas);
+            android.graphics.Path clip = new android.graphics.Path();
+            clip.addRoundRect(transitionBounds, transitionRadius, transitionRadius, android.graphics.Path.Direction.CW);
+            canvas.clipPath(clip);
+            canvas.drawColor(Color.BLACK);
+            boolean drawn = super.drawChild(canvas, child, drawingTime);
+            canvas.restoreToCount(save);
+            return drawn;
+        }
+        if (child != controls || (menuBounds.length == 0 && scrollingMenuBounds.length == 0)) return super.drawChild(canvas, child, drawingTime);
+        int save = canvas.save();
+        clipMenus(canvas);
         boolean drawn = super.drawChild(canvas, child, drawingTime);
         canvas.restoreToCount(save);
         return drawn;
     }
 
-    private boolean isOverMenu(float x, float y) {
+    boolean isOverMenu(float x, float y) {
         for (android.graphics.RectF bounds : menuBounds) if (bounds.contains(x, y)) return true;
+        float delta = menuScrollDelta();
+        for (android.graphics.RectF bounds : scrollingMenuBounds) if (bounds.contains(x, y - delta)) return true;
         return false;
     }
 
@@ -255,18 +326,86 @@ final class NativePlaybackScreen extends FrameLayout implements TextureView.Surf
 
     private void updatePresentation() {
         syncWindowBounds();
-        boolean nativeVideoVisible = fullscreen || pictureInPicture || inlineVisible;
+        boolean nativeVideoVisible = fullscreen || pictureInPicture || inlineVisible || transitioning;
         setBackgroundColor(Color.BLACK);
         videoFrame.setAlpha(nativeVideoVisible ? 1 : 0);
         setControlsVisible(controlsVisible);
         updateSubtitleVisibility();
-        engine.setSurface(fullscreen || pictureInPicture || inlineVisible ? surface : null);
+        engine.setSurface(nativeVideoVisible ? surface : null);
     }
 
     private void updateSubtitleVisibility() {
         // Text captions use Watch's shared displayer and appearance settings.
         // PiP has no WebView overlay; bitmap captions also need native drawing.
-        subtitles.setVisibility(webOverlay == null || pictureInPicture || bitmapCaptions ? View.VISIBLE : View.GONE);
+        subtitles.setVisibility(webOverlay == null || pictureInPicture || bitmapCaptions || transitioning ? View.VISIBLE : View.GONE);
+    }
+
+    void setFollowsPageScroll(boolean enabled) {
+        followsPageScroll = enabled;
+    }
+
+    void setMiniPlayer(boolean enabled, float radius) {
+        miniPlayer = enabled;
+        miniRadius = radius;
+        if (!enabled && scrollingPage) {
+            scrollingPage = false;
+            pageTouchDown = false;
+            removeCallbacks(pageScrollSettled);
+            action.accept("scroll-end");
+            finishVideoTransition();
+        }
+    }
+
+    private void onPageScroll() {
+        if (webOverlay != null && lastWebScrollY != webOverlay.getScrollY()) {
+            lastWebScrollY = webOverlay.getScrollY();
+            if (followsPageScroll && !miniPlayer) {
+                // Chromium reports its native scroll before a renderer bridge
+                // layout arrives. Keep both native layers on that same frame.
+                refreshVideoLayout();
+                if (controlsBounds != null) layoutControls(controlsBounds[0], controlsBounds[1], controlsBounds[2], controlsBounds[3], controlsBounds[4]);
+            }
+            beginPageScroll();
+        }
+    }
+
+    private void beginPageScroll() {
+        if (!miniPlayer || fullscreen || pictureInPicture || !inlineVisible || videoBounds == null) return;
+        lastPageScroll = android.os.SystemClock.uptimeMillis();
+        removeCallbacks(pageScrollSettled);
+        postDelayed(pageScrollSettled, 150);
+        transitionSequence++;
+        boolean notify = !scrollingPage || scrollEndRequested;
+        scrollEndRequested = false;
+        if (notify) action.accept("scroll-start");
+        if (scrollingPage) return;
+        scrollingPage = true;
+        transitioning = true;
+        if (videoAnimation == null) updateScrollBounds();
+        videoFrame.bringToFront();
+        updatePresentation();
+    }
+
+    private void updateScrollBounds() {
+        double scale = getWidth() / videoBounds[4];
+        transitionBounds.set((float) (videoBounds[0] * scale), (float) (videoBounds[1] * scale),
+            (float) ((videoBounds[0] + videoBounds[2]) * scale), (float) ((videoBounds[1] + videoBounds[3]) * scale));
+        transitionRadius = miniRadius * (float) scale;
+    }
+
+    private void requestPageScrollEnd() {
+        if (scrollingPage && !pageTouchDown) {
+            scrollEndRequested = true;
+            action.accept("scroll-end");
+        }
+    }
+
+    void finishPageScroll() {
+        // A newer touch/fling may have started while the WebView acknowledged
+        // the settled geometry. Keep the video raised until that scroll ends.
+        if (!scrollingPage || pageTouchDown || android.os.SystemClock.uptimeMillis() - lastPageScroll < 150) return;
+        scrollingPage = false;
+        finishVideoTransition();
     }
 
     void setInlineVisible(boolean visible) {
@@ -277,20 +416,96 @@ final class NativePlaybackScreen extends FrameLayout implements TextureView.Surf
 
     void layoutVideo(double x, double y, double width, double height, double viewportWidth) {
         videoBounds = new double[] { x, y, width, height, viewportWidth };
+        if (transitioning && !pictureInPicture && !(scrollingPage && videoAnimation == null)) return;
+        positionVideo(x, y + pageScrollDelta(viewportWidth), width, height, viewportWidth);
+        if (scrollingPage && videoAnimation == null) updateScrollBounds();
+    }
+
+    private void positionVideo(double x, double y, double width, double height, double viewportWidth) {
         if (pictureInPicture) {
+            videoFrame.setTranslationX(0);
+            videoFrame.setTranslationY(0);
+            videoFrame.setScaleX(1);
+            videoFrame.setScaleY(1);
             videoFrame.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, Gravity.CENTER));
             return;
         }
-        if (webOverlay == null || viewportWidth <= 0 || width <= 0 || height <= 0) return;
+        if (webOverlay == null || viewportWidth <= 0 || width <= 0 || height <= 0 || getWidth() <= 0) return;
         double scale = getWidth() / viewportWidth;
         VideoSize size = engine.getPlayer().getVideoSize();
         double ratio = size.height > 0 ? size.width * size.pixelWidthHeightRatio / size.height : width / height;
         double fittedWidth = Math.min(width, height * ratio);
         double fittedHeight = Math.min(height, width / ratio);
-        LayoutParams layout = new LayoutParams((int) Math.round(fittedWidth * scale), (int) Math.round(fittedHeight * scale));
-        layout.leftMargin = (int) Math.round((x + (width - fittedWidth) / 2) * scale);
-        layout.topMargin = (int) Math.round((y + (height - fittedHeight) / 2) * scale);
-        videoFrame.setLayoutParams(layout);
+        // Keep the decoder's TextureView at a stable size. Resizing it for each
+        // animation frame reallocates its buffers, including during paused video.
+        int textureWidth = getWidth();
+        int textureHeight = (int) Math.round(textureWidth / ratio);
+        LayoutParams current = (LayoutParams) videoFrame.getLayoutParams();
+        if (current.width != textureWidth || current.height != textureHeight || current.gravity != (Gravity.TOP | Gravity.LEFT)) {
+            videoFrame.setLayoutParams(new LayoutParams(textureWidth, textureHeight, Gravity.TOP | Gravity.LEFT));
+        }
+        videoFrame.setPivotX(0);
+        videoFrame.setPivotY(0);
+        videoFrame.setTranslationX((float) ((x + (width - fittedWidth) / 2) * scale));
+        videoFrame.setTranslationY((float) ((y + (height - fittedHeight) / 2) * scale));
+        videoFrame.setScaleX((float) (fittedWidth * scale / textureWidth));
+        videoFrame.setScaleY((float) (fittedHeight * scale / textureHeight));
+    }
+
+    void animateVideo(double[] from, double[] to, long duration, float radius, Runnable finished) {
+        followsPageScroll = false;
+        double scale = getWidth() / to[4];
+        // A reversal starts where the native frame is actually being drawn,
+        // even though the shared DOM already has the previous destination.
+        double[] origin = transitioning && scale > 0
+            ? new double[] { transitionBounds.left / scale, transitionBounds.top / scale, transitionBounds.width() / scale, transitionBounds.height() / scale }
+            : from;
+        transitionSequence++;
+        if (videoAnimation != null) videoAnimation.cancel();
+        videoBounds = to;
+        transitioning = true;
+        videoFrame.bringToFront();
+        updatePresentation();
+        android.animation.ValueAnimator animation = android.animation.ValueAnimator.ofFloat(0, 1);
+        videoAnimation = animation;
+        animation.setDuration(duration);
+        animation.setInterpolator(new android.view.animation.PathInterpolator(0.4f, 0, 0.2f, 1));
+        animation.addUpdateListener(value -> {
+            float progress = (float) value.getAnimatedValue();
+            double x = origin[0] + (to[0] - origin[0]) * progress;
+            double y = origin[1] + (to[1] - origin[1]) * progress;
+            double width = origin[2] + (to[2] - origin[2]) * progress;
+            double height = origin[3] + (to[3] - origin[3]) * progress;
+            double frameScale = getWidth() / to[4];
+            transitionRadius = radius * (float) frameScale;
+            transitionBounds.set((float) (x * frameScale), (float) (y * frameScale), (float) ((x + width) * frameScale), (float) ((y + height) * frameScale));
+            positionVideo(x, y, width, height, to[4]);
+            invalidate();
+        });
+        animation.addListener(new android.animation.AnimatorListenerAdapter() {
+            @Override public void onAnimationEnd(android.animation.Animator animator) {
+                if (videoAnimation == animation) videoAnimation = null;
+                finished.run();
+            }
+        });
+        animation.start();
+    }
+
+    void finishVideoTransition() {
+        if (scrollingPage) return;
+        long sequence = ++transitionSequence;
+        if (videoAnimation != null) videoAnimation.cancel();
+        // Wait for the WebView's destination clip and controls to be committed
+        // before lowering the video underneath them. A bridge reply alone does
+        // not mean that Chromium has painted the requested DOM changes.
+        if (webOverlay != null) webOverlay.postVisualStateCallback(sequence, new WebView.VisualStateCallback() {
+            @Override public void onComplete(long requestId) {
+                if (transitionSequence != requestId) return;
+                readyWebFrame = requestId;
+                invalidate();
+                webOverlay.invalidate();
+            }
+        });
     }
 
     private void updateAspectRatio(VideoSize size) {
@@ -321,6 +536,25 @@ final class NativePlaybackScreen extends FrameLayout implements TextureView.Surf
     }
 
     @Override public boolean dispatchTouchEvent(MotionEvent event) {
+        if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
+            double scale = videoBounds == null ? 0 : getWidth() / videoBounds[4];
+            boolean overVideo = videoBounds != null && event.getX() >= videoBounds[0] * scale &&
+                event.getX() <= (videoBounds[0] + videoBounds[2]) * scale && event.getY() >= videoBounds[1] * scale &&
+                event.getY() <= (videoBounds[1] + videoBounds[3]) * scale;
+            pageTouchDown = miniPlayer && !overVideo && !isOverMenu(event.getX(), event.getY());
+            pageTouchY = event.getY();
+        } else if (event.getActionMasked() == MotionEvent.ACTION_MOVE && pageTouchDown &&
+            Math.abs(event.getY() - pageTouchY) > android.view.ViewConfiguration.get(getContext()).getScaledTouchSlop()) {
+            // Raise before forwarding the first scroll movement to Chromium.
+            // Its compositor can scroll the page before JS repaints the clip.
+            beginPageScroll();
+        } else if (event.getActionMasked() == MotionEvent.ACTION_UP || event.getActionMasked() == MotionEvent.ACTION_CANCEL) {
+            pageTouchDown = false;
+            if (scrollingPage) {
+                removeCallbacks(pageScrollSettled);
+                postDelayed(pageScrollSettled, 150);
+            }
+        }
         if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
             clearNativeButtonDown();
             gestureTarget = !isOverMenu(event.getX(), event.getY()) && controls.isFullyVisible() &&
@@ -393,6 +627,10 @@ final class NativePlaybackScreen extends FrameLayout implements TextureView.Surf
     }
 
     void close() {
+        transitionSequence++;
+        removeCallbacks(pageScrollSettled);
+        if (webOverlay != null) webOverlay.getViewTreeObserver().removeOnScrollChangedListener(pageScrollListener);
+        if (videoAnimation != null) videoAnimation.cancel();
         clearNativeButtonDown();
         engine.getControlsPlayer().removeListener(queueListener);
         controls.setPlayer(null);
