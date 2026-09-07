@@ -369,6 +369,7 @@ import store from '../../store/index'
 import { useTabContext, useTabLifecycle } from '../../tabs/TabContext'
 import { getTabNavigationService } from '../../tabs/TabNavigationService'
 import { useRefreshAllSubscriptionFeeds } from '../../composables/useRefreshAllSubscriptionFeeds'
+import { useSubscriptionPremiereUpdates } from '../../composables/useSubscriptionPremiereUpdates'
 import {
   requestSubscriptionRefreshCancellation,
   refreshSubscriptionLiveFromRemote,
@@ -385,6 +386,7 @@ const usesLogicalTabs = process.env.IS_ELECTRON || process.env.IS_CAPACITOR
 const hasHorizontalTabBar = computed(() => isElectron && store.getters.getTabBarPosition === 'top')
 
 const { tabId, isTabPresented } = useTabContext()
+useSubscriptionPremiereUpdates()
 const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()

@@ -191,6 +191,90 @@ test.describe('subscriptions feed from cache', () => {
     await expect(premiere.locator('.videoDuration')).toHaveText('Premiere')
   })
 
+  test('polls a started premiere for watching counts and its completed video state', async ({ page }) => {
+    await goTo(page, 'trending')
+    await page.clock.install({ time: now + 30 * 24 * HOUR - 30_000 })
+    let ended = false
+    let watching = 2500
+    let failRequests = false
+    const requests = []
+    await page.route('https://www.youtube.com/watch?*', async route => {
+      const videoId = new URL(route.request().url()).searchParams.get('v')
+      requests.push(videoId)
+      if (failRequests) {
+        await route.abort()
+        return
+      }
+      const player = {
+        playabilityStatus: { status: 'OK' },
+        videoDetails: {
+          videoId,
+          isLive: !ended,
+          isLiveContent: false,
+          viewCount: '9000',
+          lengthSeconds: '702'
+        },
+        microformat: {
+          playerMicroformatRenderer: {
+            liveBroadcastDetails: {
+              isLiveNow: !ended,
+              ...(ended ? { endTimestamp: new Date().toISOString() } : {})
+            }
+          }
+        }
+      }
+      const initialData = {
+        contents: {
+          videoViewCountRenderer: {
+            viewCount: { runs: [{ text: String(watching) }, { text: ' watching now' }] },
+            isLive: true
+          }
+        }
+      }
+      await route.fulfill({
+        contentType: 'text/html',
+        body:
+        `<script>var ytInitialPlayerResponse = ${JSON.stringify(player)}; var ytInitialData = ${JSON.stringify(initialData)};</script>`
+      })
+    })
+    await goTo(page, 'subscriptions')
+    await expect(page.getByText('Upcoming premiere video')).toHaveCount(0)
+    await page.clock.fastForward(61_000)
+    await page.clock.runFor(200)
+
+    const premiere = page.locator('.ft-list-video').filter({ hasText: 'Upcoming premiere video' })
+    await expect(premiere.locator('.viewCount')).toContainText('2.5k watching')
+    failRequests = true
+    await page.clock.fastForward(61_000)
+    await page.clock.runFor(200)
+    await expect(premiere.locator('.viewCount')).toContainText('2.5k watching')
+    await expect(premiere.locator('.videoDuration')).toHaveText('Premiere')
+    failRequests = false
+    watching = 3700
+    await page.clock.fastForward(61_000)
+    await page.clock.runFor(200)
+    await expect(premiere.locator('.viewCount')).toContainText('3.7k watching')
+
+    await goTo(page, 'trending')
+    const inactiveRequestCount = requests.length
+    await page.clock.fastForward(121_000)
+    expect(requests).toHaveLength(inactiveRequestCount)
+    await goTo(page, 'subscriptions')
+
+    ended = true
+    await page.clock.fastForward(61_000)
+    await page.clock.runFor(200)
+    await expect(premiere.locator('.videoDuration')).toHaveText('11:42')
+    await expect(premiere.locator('.viewCount')).toContainText('9k views')
+    await expect(premiere).not.toHaveClass(/premiereVideo/)
+
+    const completedRequestCount = requests.length
+    await page.clock.fastForward(121_000)
+    expect(requests).toHaveLength(completedRequestCount)
+    expect(requests).not.toContain('aaaaaaaaaa1')
+    expect(requests).not.toContain('bbbbbbbbbb1')
+  })
+
   test('an open video menu does not lift feed content over the sticky header', async ({ page }) => {
     await goTo(page, 'subscriptions')
 

@@ -34,6 +34,7 @@ import { mapConcurrently } from './concurrent-map'
 import { includeAutomaticDownloadChannels, startAutomaticDownloadsForChannel } from './automaticDownloads'
 import { extractAssignedJsonObject } from './assigned-json'
 import { getLocalPremiereState } from './premiere'
+import { getInvidiousSubscriptionPremiereUpdate, getLocalSubscriptionPremiereUpdate, shouldRefreshSubscriptionPremiere } from './subscription-premieres'
 import { shouldShowProgressStartToast } from './progressPresentation'
 import { isAndroidSubscriptionRefreshActive } from './androidSubscriptionRefresh'
 import { createSubscriptionNetworkRecovery, SubscriptionNetworkError } from './subscriptionNetworkRecovery'
@@ -72,6 +73,58 @@ const SUBSCRIPTION_FETCH_BATCH_DELAY_MS = 2000
 const SUBSCRIPTION_FETCH_CONCURRENCY = 8
 const RSS_ENRICHMENT_CONCURRENCY = 3
 const RSS_ENRICHMENT_TIMEOUT_MS = 15_000
+
+/**
+ * Refresh only due premieres, preserving the channel's full-refresh timestamp
+ * and any newer cache data written while the request was in flight.
+ * @param {() => boolean} isActive
+ */
+export async function refreshSubscriptionPremieres(isActive) {
+  if (!store.getters.getSubscriptionCacheReady || store.getters.getSubscriptionFeedRefreshInProgress) return
+  const profile = store.getters.getActiveProfile
+  const channels = getSubscriptionsForFeed(profile.subscriptions, 'videos')
+  for (const channel of channels) {
+    if (!isActive() || store.getters.getActiveProfile._id !== profile._id) return
+    const cache = store.getters.getVideoCache[channel.id]
+    const entries = cache?.videos
+    const candidates = entries?.filter(video => shouldRefreshSubscriptionPremiere(video, Date.now())) ?? []
+    if (candidates.length === 0) continue
+    const updates = new Map()
+    await mapConcurrently(candidates, RSS_ENRICHMENT_CONCURRENCY, async video => {
+      if (!isActive()) return
+      try {
+        const options = { signal: AbortSignal.timeout(RSS_ENRICHMENT_TIMEOUT_MS) }
+        let update
+        if (!process.env.SUPPORTS_LOCAL_API || store.getters.getBackendPreference === 'invidious') {
+          const url = `${store.getters.getCurrentInvidiousInstanceUrl}/api/v1/videos/${encodeURIComponent(video.videoId)}`
+          const response = await invidiousFetch(url, options.signal)
+          if (!response.ok) return
+          update = getInvidiousSubscriptionPremiereUpdate(await response.json(), video.videoId)
+        } else {
+          const response = await localApiFetch(`https://www.youtube.com/watch?v=${encodeURIComponent(video.videoId)}`, {
+            ...options,
+            headers: { 'Accept-Language': 'en-US' },
+            nativeTimeoutMs: RSS_ENRICHMENT_TIMEOUT_MS
+          })
+          if (!response.ok) return
+          update = getLocalSubscriptionPremiereUpdate(await response.text(), video.videoId)
+        }
+        if (update !== null) updates.set(video.videoId, update)
+      } catch {
+        // Keep the last known state and retry on the next poll.
+      }
+    })
+    if (!isActive() || store.getters.getActiveProfile._id !== profile._id) return
+    if (updates.size === 0 || store.getters.getVideoCache[channel.id]?.videos !== entries ||
+      store.getters.getSubscriptionFeedRefreshInProgress) continue
+    await store.dispatch('updateSubscriptionVideosCacheByChannel', {
+      channelId: channel.id,
+      videos: entries.map(video => updates.has(video.videoId) ? { ...video, ...updates.get(video.videoId) } : video),
+      timestamp: cache.timestamp
+    })
+    notifySubscriptionChannelRefreshed('videos')
+  }
+}
 
 /**
  * Stops the refresh running in this renderer after the channels that are
