@@ -4,6 +4,10 @@ export function createCapacitorPreviewCache(capture, entries = new Map(), limit 
   let pending = null
   return {
     entries,
+    get(tab) {
+      const entry = entries.get(tab.id)
+      return entry && entry.route === tab.route?.fullPath ? entry.image : null
+    },
     invalidate() { generation += 1 },
     clear() { generation += 1; entries.clear() },
     prune(tabs) {

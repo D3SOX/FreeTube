@@ -8,8 +8,7 @@ const cache = createCapacitorPreviewCache(capturePage, shallowReactive(new Map()
 let captureCurrent = async () => {}
 
 export function getCapacitorTabPreview(tab) {
-  const entry = cache.entries.get(tab.id)
-  return entry?.route === tab.route?.fullPath ? entry.image : null
+  return cache.get(tab)
 }
 
 export async function captureBeforeTabOrganizer() {

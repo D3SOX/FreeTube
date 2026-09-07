@@ -79,3 +79,14 @@ test('capture eligibility excludes settings, prompts, background and loading tab
   assert.equal(canCaptureCapacitorTab({ ...getters, getShowTabPreviews: false }, true), false)
   assert.equal(canCaptureCapacitorTab({ ...getters, getPresentedTab: { ...presented, isLoading: true } }, true), false)
 })
+
+test('synced tabs fall back without a local preview, even when their IDs collide', async () => {
+  const cache = createCapacitorPreviewCache(async () => 'local image')
+  const synced = { id: 'a', route: { path: '/home' } }
+  assert.equal(cache.get(synced), null)
+  assert.equal(cache.get(tab('a')), null)
+  await cache.capture(tab('a'))
+  assert.equal(cache.get(synced), null)
+  assert.equal(cache.get(tab('a', '/history')), null)
+  assert.equal(cache.get(tab('a')), 'local image')
+})
