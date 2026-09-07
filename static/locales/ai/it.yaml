@@ -1514,6 +1514,8 @@ CommandPalette:
     Download Finished: Questo download non è più in corso
     Video: Apri prima un video
 Downloads:
+  Export Failed: "Impossibile salvare il file scaricato. Scegli una cartella di download con permessi di scrittura e riprova."
+  Remove File Permanently Warning: "Questa operazione eliminerà definitivamente \"{title}\"."
   Download: Scarica
   Download Video: Scarica video
   Download Playlist: Scarica playlist

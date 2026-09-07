@@ -1514,6 +1514,8 @@ CommandPalette:
     Download Finished: Toto stahování již neprobíhá
     Video: Nejprve otevřete video
 Downloads:
+  Export Failed: "Stažený soubor se nepodařilo uložit. Vyberte složku pro stahování s oprávněním k zápisu a zkuste to znovu."
+  Remove File Permanently Warning: "Tímto trvale smažete „{title}“."
   Download: Stáhnout
   Download Video: Stáhnout video
   Download Playlist: Stáhnout playlist

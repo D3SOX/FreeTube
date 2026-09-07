@@ -1550,6 +1550,8 @@ CommandPalette:
     Download Finished: Această descărcare nu mai rulează
     Video: Deschideți mai întâi un videoclip
 Downloads:
+  Export Failed: "Fișierul descărcat nu a putut fi salvat. Alegeți un dosar de descărcări cu permisiune de scriere și încercați din nou."
+  Remove File Permanently Warning: "Aceasta va șterge definitiv „{title}”."
   Download: Descarcă
   Download Video: Descarcă videoclipul
   Download Playlist: Descarcă playlistul

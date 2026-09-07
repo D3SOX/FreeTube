@@ -1523,6 +1523,8 @@ CommandPalette:
     Download Finished: "N'emañ ket ar pellgargadenn-mañ war ober ken"
     Video: "Digerit ur video da gentañ"
 Downloads:
+  Export Failed: "N'eo ket bet posupl enrollañ ar restr pellgarget. Dibabit un teuliad pellgargañ a c'haller skrivañ ennañ ha klaskit en-dro."
+  Remove File Permanently Warning: "Diverket e vo \"{title}\" da vat."
   Download: "Pellgargañ"
   Download Video: "Pellgargañ ar video"
   Download Playlist: "Pellgargañ ar roll-videoioù"

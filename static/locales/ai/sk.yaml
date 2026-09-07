@@ -1518,6 +1518,8 @@ CommandPalette:
     Download Finished: Toto sťahovanie už neprebieha
     Video: Najprv otvorte video
 Downloads:
+  Export Failed: "Stiahnutý súbor sa nepodarilo uložiť. Vyberte priečinok na sťahovanie s oprávnením na zápis a skúste to znova."
+  Remove File Permanently Warning: "Týmto natrvalo odstránite „{title}“."
   Download: Stiahnuť
   Download Video: Stiahnuť video
   Download Playlist: Stiahnuť zoznam videí
