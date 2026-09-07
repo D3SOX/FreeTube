@@ -31,3 +31,25 @@ pnpm run capacitor:sync:android
 ```
 
 For a single-ABI test APK, add `-PtestAbi=arm64-v8a`. Normal APKs retain all bundled ABIs. The test document provider exists only in the instrumentation APK.
+
+### Playback cache across APK replacement
+
+`YtDlpPlaybackCacheTest` checks cache persistence, Android cache eviction, migration and explicit cleanup. Its default `playbackCachePhase=both` writes and reads the replacement fixture within one test process; it does not replace the APK. To test replacement, run the `seed` and `verify` phases in separate processes with an APK install between them.
+
+After building the app and instrumentation APKs above, run these commands from the repository root on the selected test device. Replace `DEVICE_SERIAL` with its ADB serial. The app must use the same package identity and signing key across both installs.
+
+```sh
+playback_test_device=DEVICE_SERIAL
+playback_test_class='org.opentubex.app.YtDlpPlaybackCacheTest#playbackSurvivesAppReplacement'
+playback_test_runner=org.opentubex.app.nightly.test/androidx.test.runner.AndroidJUnitRunner
+
+adb -s "$playback_test_device" install --user 0 -r android/app/build/outputs/apk/debug/app-debug.apk
+adb -s "$playback_test_device" install --user 0 -r android/app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
+adb -s "$playback_test_device" shell am instrument --user 0 -w \
+  -e class "$playback_test_class" -e playbackCachePhase seed "$playback_test_runner"
+adb -s "$playback_test_device" install --user 0 -r android/app/build/outputs/apk/debug/app-debug.apk
+adb -s "$playback_test_device" shell am instrument --user 0 -w \
+  -e class "$playback_test_class" -e playbackCachePhase verify "$playback_test_runner"
+```
+
+Both instrumentation runs must print `OK (1 test)` and each install must report `Success`. Check the instrumentation output even when ADB exits successfully. Keep the device's app data intact between phases and run `verify` within one hour, before the fixture expires. The `verify` phase removes its fixture afterward.
