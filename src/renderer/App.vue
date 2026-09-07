@@ -416,6 +416,7 @@ import { parseAutomaticDownloadRules } from './helpers/automaticDownloadRules'
 import { isAppHidden, setAndroidAppVisible } from './helpers/appVisibility.js'
 import { createAppShortcuts, getAppShortcutPath } from './helpers/appShortcuts'
 import { AppShortcuts } from '@capawesome/capacitor-app-shortcuts'
+import { playbackScreenWake } from './helpers/playbackScreenWake'
 import { FtIcon } from '@opentubex/icons'
 import { App as CapacitorApp } from '@capacitor/app'
 import { Capacitor, SystemBarType, SystemBars, SystemBarsStyle } from '@capacitor/core'
@@ -4096,6 +4097,7 @@ async function enableCapacitorIntegrations() {
   let receivedAppState = false
   const appStateHandle = await CapacitorApp.addListener('appStateChange', ({ isActive }) => {
     receivedAppState = true
+    playbackScreenWake?.setAppActive(isActive)
     setAndroidAppVisible(isActive)
     if (shouldPauseAndroidPlaybackOnAppStateChange(
       isActive,
@@ -4105,7 +4107,10 @@ async function enableCapacitorIntegrations() {
     }
   })
   const appState = await CapacitorApp.getState()
-  if (!receivedAppState) setAndroidAppVisible(appState.isActive)
+  if (!receivedAppState) {
+    playbackScreenWake?.setAppActive(appState.isActive)
+    setAndroidAppVisible(appState.isActive)
+  }
   const launch = await CapacitorApp.getLaunchUrl()
   if (launch?.url) await handleYoutubeLink(launch.url)
 
@@ -4115,6 +4120,7 @@ async function enableCapacitorIntegrations() {
     backButtonHandle?.remove()
     urlHandle.remove()
     appStateHandle.remove()
+    playbackScreenWake?.setAppActive(false)
     setAndroidAppVisible(null)
     removeReminderActions()
     removeMediaActions()

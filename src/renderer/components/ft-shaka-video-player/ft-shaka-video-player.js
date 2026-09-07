@@ -1,4 +1,5 @@
 import { isAppHidden } from '../../helpers/appVisibility.js'
+import { playbackScreenWake } from '../../helpers/playbackScreenWake'
 import { capturePlayerFrame } from '../../helpers/player/capturePlayerFrame'
 import { createAndroidPlayer } from '../../helpers/player/androidPlayer'
 import { computed, defineComponent, inject, nextTick, onBeforeUnmount, onMounted, onUnmounted, reactive, ref, shallowRef, watch } from 'vue'
@@ -657,6 +658,7 @@ export default defineComponent({
     /** @type {shaka.ui.Overlay|null} */
     let ui = null
     let nativePlaybackCleanup = null
+    let screenWakeBinding = null
 
     // Set when a UI reconfigure is requested while the player is not loaded, so
     // it can be flushed once loading finishes (see configureUI).
@@ -6434,6 +6436,10 @@ export default defineComponent({
       tabMediaCoordinator.setMiniPlayer(mediaTabId, detached)
     }, { immediate: true })
 
+    watch([isActiveTab, isCrossTabMiniPlayerPresented, scrollMiniPlayerDismissed, audioPlayerMode], () => {
+      screenWakeBinding?.update()
+    })
+
     // Logical tabs restore their saved scroll position after becoming active.
     // Refresh once that restoration is complete so an already-active mini player
     // is placed directly at its saved bounds instead of replaying its entrance.
@@ -10128,6 +10134,10 @@ export default defineComponent({
     onMounted(async () => {
       const videoElement = video.value
 
+      screenWakeBinding = playbackScreenWake?.bindVideo(videoElement, () =>
+        !audioPlayerMode.value && !scrollMiniPlayerDismissed.value && (isActiveTab.value || isCrossTabMiniPlayerPresented.value)
+      )
+
       voiceOverTranslation.attach(videoElement)
 
       await initializeActiveTab()
@@ -10833,6 +10843,8 @@ export default defineComponent({
     // #region tear down
 
     onBeforeUnmount(() => {
+      screenWakeBinding?.destroy()
+      screenWakeBinding = null
       clearTimeout(paidPromotionTimer)
       if (fullscreenDockLayoutFrame !== null) {
         cancelAnimationFrame(fullscreenDockLayoutFrame)
@@ -11022,6 +11034,8 @@ export default defineComponent({
      * }>}
      */
     async function destroyPlayer() {
+      screenWakeBinding?.destroy()
+      screenWakeBinding = null
       nativePlaybackCleanup?.()
       nativePlaybackCleanup = null
       ignoreErrors = true

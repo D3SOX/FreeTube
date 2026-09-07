@@ -2,9 +2,11 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFile } from 'node:fs/promises'
 import vm from 'node:vm'
+import { setImmediate } from 'node:timers/promises'
 
 import { isAppHidden, setAndroidAppVisible } from '../../src/renderer/helpers/appVisibility.js'
 import { resolveAndroidBackgroundPlaybackFormat } from '../../src/renderer/helpers/player/androidBackgroundPlayback.js'
+import { createPlaybackScreenWake } from '../../src/renderer/helpers/playbackScreenWake.js'
 
 test('Android background playback follows Home even when Chromium stays visible for a refresh', () => {
   const originalDocument = globalThis.document
@@ -51,6 +53,12 @@ for (const eventFirst of [false, true]) {
     const changes = []
     const listeners = new Map()
     const removedListeners = []
+    const wakeCalls = []
+    const playbackScreenWake = createPlaybackScreenWake({
+      async keepAwake() { wakeCalls.push(true) },
+      async allowSleep() { wakeCalls.push(false) },
+    })
+    playbackScreenWake.bindVideo(Object.assign(new EventTarget(), { paused: false, ended: false }), () => true)
     let listener
     let pauses = 0
     let backPresses = 0
@@ -72,6 +80,7 @@ for (const eventFirst of [false, true]) {
       watch: () => () => {},
       locale: {},
       setAndroidAppVisible: visible => changes.push(visible),
+      playbackScreenWake,
       shouldPauseAndroidPlaybackOnAppStateChange: active => !active,
       store: { getters: { getContinuePlaybackWhenScreenIsLocked: false } },
       tabMediaCoordinator: { pauseAll: () => { pauses++ } },
@@ -85,7 +94,11 @@ for (const eventFirst of [false, true]) {
     assert.equal(pauses, eventFirst ? 1 : 0)
     listeners.get('backButton')({ canGoBack: false })
     assert.equal(backPresses, 1, 'native back events reach the existing app navigation handler')
+    await setImmediate()
+    assert.equal(wakeCalls.at(-1), !eventFirst, 'wake follows the newest native app lifecycle state')
     cleanup()
+    await setImmediate()
+    assert.equal(wakeCalls.at(-1), false, 'app teardown releases screen wake')
     assert.equal(changes.at(-1), null)
     assert.ok(removedListeners.includes('backButton'), 'unmount removes the native back listener')
   })
@@ -98,6 +111,7 @@ test('Capacitor integrations do not register the Android back button on iOS', as
   const listeners = []
   const enable = vm.runInNewContext(`${integration}\nenableCapacitorIntegrations`, {
     Capacitor: { getPlatform: () => 'ios' },
+    playbackScreenWake: createPlaybackScreenWake({ async keepAwake() {}, async allowSleep() {} }),
     AppShortcuts: { addListener: async () => ({ remove() {} }) },
     watch: () => () => {},
     locale: {},
