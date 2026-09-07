@@ -1,0 +1,44 @@
+Logging:
+  Files: false
+  Registry: false
+  Downloads: false
+  Plugins: false
+  Identity: false
+  RichPresence: false
+  DnsRedirects: false
+  Network: false
+  DirectInput: false
+  Level: Info
+
+FileRedirects:
+  - Pattern: '^.+\\AppData\\Roaming\\OpenTubeX(?:\\(.*))?$'
+    Replacement: '%PORTABLE_EXECUTABLE_DIR%\OpenTubeX-data\$1'
+  - Pattern: '^.+\\AppData\\Local\\OpenTubeX(?:\\(.*))?$'
+    Replacement: '%PORTABLE_EXECUTABLE_DIR%\OpenTubeX-data\$1'
+  - Pattern: '^.+\\Microsoft\\Windows\\Start Menu\\Programs\\OpenTubeX\.lnk$'
+    Replacement: '%PORTABLE_EXECUTABLE_DIR%\OpenTubeX-data\OpenTubeX.lnk'
+
+DnsRedirects: []
+
+DirectInput:
+  FixLegacyDeviceEnumeration: false
+  DeviceFilter:
+    Enabled: false
+    Classes: []
+    Names: []
+
+NetworkAdapters:
+  Enabled: false
+  Subnets: []
+  Names: []
+  MACs: []
+
+FastDL:
+  Enabled: false
+  Paths: []
+
+RichPresence:
+  Discord:
+    Enabled: false
+
+Plugins: {}

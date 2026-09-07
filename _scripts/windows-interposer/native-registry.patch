@@ -1,0 +1,96 @@
+diff --git a/LANCommander.Interposer/dll/src/dllmain.cpp b/LANCommander.Interposer/dll/src/dllmain.cpp
+index 7989945..aa43b15 100644
+--- a/LANCommander.Interposer/dll/src/dllmain.cpp
++++ b/LANCommander.Interposer/dll/src/dllmain.cpp
+@@ -1,55 +1,14 @@
+-#define WIN32_LEAN_AND_MEAN
+-#define NOMINMAX
+ #include <windows.h>
+ #include "hooks.h"
+ 
+-static void WriteLog(const wchar_t* message)
++BOOL APIENTRY DllMain(HMODULE instance, DWORD reason, LPVOID reserved)
+ {
+-    wchar_t temporaryPath[MAX_PATH];
+-    
+-    GetTempPathW(MAX_PATH, temporaryPath);
+-    
+-    wcscat_s(temporaryPath, L"Interposer.log");
+-    
+-    HANDLE fileHandle = CreateFileW(temporaryPath, FILE_APPEND_DATA, FILE_SHARE_READ,
+-        nullptr, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+-    
+-    if (fileHandle == INVALID_HANDLE_VALUE) 
+-        return;
+-    
+-    DWORD written;
+-    
+-    WriteFile(fileHandle, message, static_cast<DWORD>(wcslen(message) * sizeof(wchar_t)), &written, nullptr);
+-    WriteFile(fileHandle, L"\r\n", 4, &written, nullptr);
+-    CloseHandle(fileHandle);
+-}
+-
+-BOOL APIENTRY DllMain(HMODULE hInstance, DWORD fdwReason, LPVOID /*lpvReserved*/)
+-{
+-    switch (fdwReason)
+-    {
+-    case DLL_PROCESS_ATTACH:
+-        DisableThreadLibraryCalls(hInstance);
+-        WriteLog(L"DLL_PROCESS_ATTACH: calling InstallHooks");
+-        __try
+-        {
+-            InstallHooks();
+-            WriteLog(L"InstallHooks returned OK");
+-        }
+-        __except (EXCEPTION_EXECUTE_HANDLER)
+-        {
+-            wchar_t buf[64];
+-            wsprintfW(buf, L"InstallHooks EXCEPTION code=0x%08X", GetExceptionCode());
+-            WriteLog(buf);
+-        }
+-        break;
+-
+-    case DLL_PROCESS_DETACH:
++    if (reason == DLL_PROCESS_ATTACH) {
++        DisableThreadLibraryCalls(instance);
++        try { InstallHooks(); }
++        catch (...) { return FALSE; }
++    } else if (reason == DLL_PROCESS_DETACH && !reserved) {
+         RemoveHooks();
+-        break;
+-
+-    default:
+-        break;
+     }
+     return TRUE;
+ }
+diff --git a/LANCommander.Interposer/dll/src/hooks.cpp b/LANCommander.Interposer/dll/src/hooks.cpp
+index 432e6bd..a84f9dc 100644
+--- a/LANCommander.Interposer/dll/src/hooks.cpp
++++ b/LANCommander.Interposer/dll/src/hooks.cpp
+@@ -11,6 +11,7 @@
+ #include "richpresence.h"
+ 
+ #include <MinHook.h>
++#include <stdexcept>
+ 
+ // ---------------------------------------------------------------------------
+ // Public API
+@@ -25,7 +26,7 @@ void InstallHooks()
+     __debugbreak();
+ #endif
+ 
+-    MH_Initialize();
++    if (MH_Initialize() != MH_OK) throw std::runtime_error("Cannot initialize portable hooks");
+ 
+     LoadConfig();
+     InstallRegistryHooks();
+@@ -35,7 +36,7 @@ void InstallHooks()
+     InstallIdentityHooks();
+     InstallDirectInputHooks();
+ 
+-    MH_EnableHook(MH_ALL_HOOKS);
++    if (MH_EnableHook(MH_ALL_HOOKS) != MH_OK) throw std::runtime_error("Cannot enable portable hooks");
+ 
+     ConnectEventPipe();
+ 
