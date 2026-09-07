@@ -199,6 +199,8 @@ $processStartKeywords = '0x10'
 $fileMutationKeywords = '0x1e30'
 $verboseTraceLevel = 5
 $traceStarted = $false
+$stdoutFile = Join-Path $traceDirectory "$traceSession.stdout.log"
+$stderrFile = Join-Path $traceDirectory "$traceSession.stderr.log"
 $hostDirectoryTails = @(
   (Get-ComparablePathTail (Join-Path $env:APPDATA 'OpenTubeX')),
   (Get-ComparablePathTail (Join-Path $env:LOCALAPPDATA 'OpenTubeX'))
@@ -238,8 +240,10 @@ try {
   }
   $traceStarted = $true
 
-  $appProcess = Start-Process $executable -PassThru -ArgumentList @(
-    '--remote-debugging-port=0', '--remote-debugging-address=127.0.0.1'
+  $appProcess = Start-Process $executable -PassThru `
+    -RedirectStandardOutput $stdoutFile -RedirectStandardError $stderrFile -ArgumentList @(
+    '--remote-debugging-port=0', '--remote-debugging-address=127.0.0.1',
+    '--enable-logging=stderr'
   )
   Wait-ForMainWindow -ProcessId $appProcess.Id
   Update-AppProcessIds -RootProcessId $appProcess.Id -ProcessIds $appProcessIds
@@ -252,7 +256,11 @@ try {
   Update-AppProcessIds -RootProcessId $appProcess.Id -ProcessIds $appProcessIds
 }
 catch {
+  foreach ($log in @($stdoutFile, $stderrFile)) {
+    if (Test-Path $log) { Get-Content $log }
+  }
   if ($appProcess) {
+    if ($appProcess.HasExited) { Write-Output "Application exit code: $($appProcess.ExitCode)" }
     Write-Output (Get-PortableDiagnostics -Shortcut $shortcut -DataDirectory $dataDirectory `
       -RootProcessId $appProcess.Id `
       -ProcessIds $appProcessIds)

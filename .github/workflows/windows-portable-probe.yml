@@ -1,0 +1,44 @@
+name: Windows portable startup probe
+
+on:
+  push:
+    branches: [restore-portable-registry-isolation]
+
+permissions:
+  contents: read
+
+jobs:
+  portable:
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24.x
+          package-manager-cache: false
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
+        with:
+          version: 11
+          cache: false
+      - uses: microsoft/setup-msbuild@6fb02220983dee41ce7ae257b6f4d8f9bf5ed4ce # v2.0.0
+      - name: Prepare dependencies and interposer
+        run: |
+          pnpm install --frozen-lockfile
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          node --input-type=module -e "import { prepareWindowsInterposer } from './_scripts/windowsInterposer.mjs'; await prepareWindowsInterposer()"
+      - name: Prepare released application with candidate DLL
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download v0.34.0-beta -p '*win-x64-portable.zip' -D .cache/released-app
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          Expand-Archive (Get-ChildItem .cache/released-app/*.zip).FullName build/win-unpacked
+          $dll = Get-ChildItem .cache/windows-interposer/*/version.dll | Select-Object -First 1
+          Copy-Item $dll.FullName build/win-unpacked/version.dll
+          New-Item build/win-unpacked/.interposer -ItemType Directory -Force
+          Copy-Item _scripts/windows-interposer/Config.yml build/win-unpacked/.interposer/Config.yml
+      - name: Test packaged startup and networking
+        run: ./_scripts/testWindowsPortable.ps1
