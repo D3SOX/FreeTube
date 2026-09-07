@@ -2,14 +2,11 @@ package org.opentubex.app;
 
 import android.app.Activity;
 import android.app.PictureInPictureParams;
-import android.content.ClipData;
-import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.hardware.input.InputManager;
 import android.os.Build;
-import android.provider.Settings;
 import android.util.Rational;
 import android.view.InputDevice;
 
@@ -101,57 +98,13 @@ public class AndroidUiPlugin extends Plugin {
     }
 
     @PluginMethod
-    public void getDeviceInfo(PluginCall call) {
-        String name = null;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
-            name = Settings.Global.getString(
-                getContext().getContentResolver(),
-                Settings.Global.DEVICE_NAME
-            );
-        }
-        if (name == null || name.trim().isEmpty()) {
-            name = Build.MODEL;
-        }
-
+    public void getDeviceArchitecture(PluginCall call) {
         JSObject result = new JSObject();
-        result.put("name", name);
-        result.put("platform", "android");
         result.put(
             "architecture",
             Build.SUPPORTED_ABIS.length == 0 ? "" : Build.SUPPORTED_ABIS[0]
         );
-        result.put("release", Build.VERSION.RELEASE);
         call.resolve(result);
-    }
-
-    @PluginMethod
-    public void writeClipboard(PluginCall call) {
-        String text = call.getString("text");
-        if (text == null) {
-            call.reject("Clipboard text is required");
-            return;
-        }
-
-        getActivity().runOnUiThread(() -> {
-            ClipboardManager clipboard = (ClipboardManager) getContext()
-                .getSystemService(Context.CLIPBOARD_SERVICE);
-            clipboard.setPrimaryClip(ClipData.newPlainText("OpenTubeX", text));
-            call.resolve();
-        });
-    }
-
-    @PluginMethod
-    public void readClipboard(PluginCall call) {
-        getActivity().runOnUiThread(() -> {
-            ClipboardManager clipboard = (ClipboardManager) getContext()
-                .getSystemService(Context.CLIPBOARD_SERVICE);
-            ClipData clip = clipboard.getPrimaryClip();
-            CharSequence text = clip != null && clip.getItemCount() > 0
-                ? clip.getItemAt(0).getText() : null;
-            JSObject result = new JSObject();
-            result.put("text", text == null ? "" : text.toString());
-            call.resolve(result);
-        });
     }
 
     public boolean hasHardwareKeyboard() {

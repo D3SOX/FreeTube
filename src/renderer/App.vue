@@ -1330,7 +1330,6 @@ onMounted(async () => {
   window.addEventListener(OPEN_COMMAND_PALETTE_EVENT, openCommandPalette)
   window.addEventListener(OPEN_TAB_ORGANIZER_EVENT, openTabOrganizer)
   if (isCapacitor) {
-    window.addEventListener('opentubex:android-back', handleAndroidBack)
     window.addEventListener('opentubex:android-pip', handleAndroidPictureInPictureChange)
     window.addEventListener('opentubex:hardware-keyboard', handleHardwareKeyboardChange)
     document.addEventListener('contextmenu', handleMobileLinkContextMenu, true)
@@ -1392,7 +1391,6 @@ onBeforeUnmount(() => {
   document.removeEventListener('keydown', handleKeyboardShortcuts)
   window.removeEventListener(OPEN_COMMAND_PALETTE_EVENT, openCommandPalette)
   window.removeEventListener(OPEN_TAB_ORGANIZER_EVENT, openTabOrganizer)
-  window.removeEventListener('opentubex:android-back', handleAndroidBack)
   window.removeEventListener('opentubex:android-pip', handleAndroidPictureInPictureChange)
   window.removeEventListener('opentubex:hardware-keyboard', handleHardwareKeyboardChange)
   document.removeEventListener('contextmenu', handleMobileLinkContextMenu, true)
@@ -4027,6 +4025,9 @@ function enableOpenUrl() {
 }
 
 async function enableCapacitorIntegrations() {
+  const backButtonHandle = Capacitor.getPlatform() === 'android'
+    ? await CapacitorApp.addListener('backButton', handleAndroidBack)
+    : null
   const urlHandle = await CapacitorApp.addListener('appUrlOpen', ({ url }) => {
     if (url) handleYoutubeLink(url)
   })
@@ -4070,6 +4071,7 @@ async function enableCapacitorIntegrations() {
   return () => {
     stopShortcutUpdates()
     shortcutHandle.remove()
+    backButtonHandle?.remove()
     urlHandle.remove()
     appStateHandle.remove()
     setAndroidAppVisible(null)
