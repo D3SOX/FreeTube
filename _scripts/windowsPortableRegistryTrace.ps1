@@ -13,13 +13,6 @@ $registrySuccessStatus = 0
 $newRegistryKeyDisposition = 1
 $keyWriteTimeInformationClass = 0
 
-function Test-WindowsMuiCacheSnapshotLine {
-  param([Parameter(Mandatory)] [string] $Line)
-
-  return $Line.Trim() -match
-    '^HKCU\\Software:\s+HKEY_CURRENT_USER\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\MuiCache:\s+[A-Z]:\\(?:.*\\)?OpenTubeX\.exe\.(?:FriendlyAppName|ApplicationCompany)\s+REG_SZ(?:\s+.*)?$'
-}
-
 function ConvertTo-MatchingRegistryState {
   param(
     [Parameter(Mandatory)] [AllowEmptyCollection()] [AllowEmptyString()]
@@ -105,11 +98,19 @@ function Test-SuccessfulRegistryMutation {
   return $false
 }
 
+# Windows may maintain its own execution history, certificates, and networking
+# state. Only application-owned registry keys are part of the portable boundary.
+function Test-OpenTubeXRegistryPath {
+  param([Parameter(Mandatory)] [AllowEmptyString()] [string] $Path)
+
+  return $Path.Trim() -match
+    '(?:^|\\)(?:OpenTubeX|electron\.app\.OpenTubeX|io\.opentubex\.opentubex)(?:\\|$)'
+}
+
 function Test-PortableHostRegistryMutation {
   param(
     [Parameter(Mandatory)] [int] $EventId,
-    [Parameter(Mandatory)] [hashtable] $EventData,
-    [Parameter(Mandatory)] [bool] $IsAppProcess
+    [Parameter(Mandatory)] [hashtable] $EventData
   )
 
   if (-not (Test-SuccessfulRegistryMutation -EventId $EventId `
@@ -117,40 +118,11 @@ function Test-PortableHostRegistryMutation {
     return $false
   }
 
-  if ($EventId -ne $registryEventId.SetValue) {
-    return $true
-  }
-
-  foreach ($requiredField in @(
-    'DataSize', 'KeyName', 'ResolvedKeyName', 'Type', 'ValueName'
-  )) {
-    if (-not $EventData.ContainsKey($requiredField)) {
+  foreach ($field in @('KeyName', 'ResolvedKeyName')) {
+    if ($EventData.ContainsKey($field) -and
+        (Test-OpenTubeXRegistryPath -Path $EventData[$field])) {
       return $true
     }
   }
-
-  # Windows records executable launches under the Background Activity
-  # Moderator key before a user-mode proxy DLL can load. When that key was
-  # opened before tracing began, ETW reports only its final SID component.
-  $isBamExecutionHistoryWrite =
-    -not $EventData.KeyName.Trim() -and
-    (Convert-RegistryEventNumber $EventData.DataSize) -eq 24 -and
-    (Convert-RegistryEventNumber $EventData.Type) -eq 3 -and
-    $EventData.ResolvedKeyName.Trim() -match
-      '^(?:\\REGISTRY\\MACHINE\\SYSTEM\\(?:CURRENTCONTROLSET|CONTROLSET\d{3})\\SERVICES\\BAM\\STATE\\USERSETTINGS\\)?S-1-5-(?:\d+-)+\d+$' -and
-    $EventData.ValueName.Trim() -match
-      '^\\Device\\HarddiskVolume\d+\\.+\\OpenTubeX\.exe$'
-
-  # Explorer writes display metadata for newly observed executables from its
-  # own process, which the packaged application's Interposer cannot affect.
-  $isMuiCacheMetadataWrite =
-    -not $IsAppProcess -and
-    -not $EventData.KeyName.Trim() -and
-    (Convert-RegistryEventNumber $EventData.Type) -eq 1 -and
-    $EventData.ResolvedKeyName.Trim() -match
-      '^\\REGISTRY\\USER\\S-1-5-(?:\d+-)+\d+_Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\MuiCache$' -and
-    $EventData.ValueName.Trim() -match
-      '^(?:[A-Z]:\\|\\Device\\HarddiskVolume\d+\\).+\\OpenTubeX\.exe\.(?:FriendlyAppName|ApplicationCompany)$'
-
-  return -not ($isBamExecutionHistoryWrite -or $isMuiCacheMetadataWrite)
+  return $false
 }
