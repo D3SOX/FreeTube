@@ -395,20 +395,28 @@ public class AndroidPlaybackPlugin extends Plugin {
                 call.reject("No video frame is available yet");
                 return;
             }
-            frameEncoder.execute(() -> {
-                java.io.ByteArrayOutputStream bytes = new java.io.ByteArrayOutputStream();
-                try {
-                    boolean jpeg = "jpeg".equals(call.getString("format"));
-                    bitmap.compress(jpeg ? android.graphics.Bitmap.CompressFormat.JPEG : android.graphics.Bitmap.CompressFormat.PNG,
-                        jpeg ? 90 : 100, bytes);
-                    JSObject result = new JSObject();
-                    result.put("dataUrl", "data:image/" + (jpeg ? "jpeg" : "png") + ";base64," + Base64.encodeToString(bytes.toByteArray(), Base64.NO_WRAP));
-                    call.resolve(result);
-                } finally {
-                    bitmap.recycle();
-                }
-            });
+            frameEncoder.execute(() -> encodeFrame(bitmap, call));
         });
+    }
+
+    static void encodeFrame(android.graphics.Bitmap bitmap, PluginCall call) {
+        try {
+            java.io.ByteArrayOutputStream bytes = new java.io.ByteArrayOutputStream();
+            boolean jpeg = "jpeg".equals(call.getString("format"));
+            boolean compressed = bitmap.compress(jpeg ? android.graphics.Bitmap.CompressFormat.JPEG : android.graphics.Bitmap.CompressFormat.PNG,
+                jpeg ? 90 : 100, bytes);
+            if (!compressed) {
+                call.reject("The video frame could not be encoded");
+                return;
+            }
+            JSObject result = new JSObject();
+            result.put("dataUrl", "data:image/" + (jpeg ? "jpeg" : "png") + ";base64," + Base64.encodeToString(bytes.toByteArray(), Base64.NO_WRAP));
+            call.resolve(result);
+        } catch (RuntimeException | OutOfMemoryError error) {
+            call.reject("The video frame could not be encoded");
+        } finally {
+            bitmap.recycle();
+        }
     }
 
     @PluginMethod

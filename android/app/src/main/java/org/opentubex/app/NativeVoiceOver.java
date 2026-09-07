@@ -71,6 +71,10 @@ final class NativeVoiceOver {
         } else player.pause();
     }
 
+    void syncPlaybackRate() {
+        if (player != null) player.setPlaybackSpeed(original.getPlaybackParameters().speed);
+    }
+
     JSObject snapshot() {
         if (player == null) return null;
         JSObject state = new JSObject();

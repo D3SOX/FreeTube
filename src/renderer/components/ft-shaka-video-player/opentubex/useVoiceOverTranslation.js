@@ -107,7 +107,11 @@ export function useVoiceOverTranslation({
   async function updateOriginalVolume() {
     const initialGain = enabled.value ? originalVolume.value : 1
     if (video.value?.nativePlayback) {
-      await video.value.nativePlayback.setOutputGain(initialGain)
+      try {
+        await video.value.nativePlayback.setOutputGain(initialGain)
+      } catch (error) {
+        console.warn('Unable to adjust original audio volume', error)
+      }
       return
     }
     if (!outputGainNode && initialGain !== 1) {

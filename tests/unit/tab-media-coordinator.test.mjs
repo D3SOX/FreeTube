@@ -15,6 +15,37 @@ function enableCapacitorMode(t) {
   })
 }
 
+test('coalesces rapid ownership changes and delivers changes made by listeners', async t => {
+  enableCapacitorMode(t)
+  const states = []
+  t.after(() => {
+    tabMediaCoordinator.unregister('coalesced-first')
+    tabMediaCoordinator.unregister('coalesced-second')
+    tabMediaCoordinator.setPresented(null)
+  })
+  tabMediaCoordinator.subscribeOwnership('coalesced-first', active => states.push(active))
+  tabMediaCoordinator.subscribeOwnership('coalesced-second', () => {})
+  tabMediaCoordinator.setPresented('coalesced-first')
+  await new Promise(resolve => setImmediate(resolve))
+  states.length = 0
+
+  tabMediaCoordinator.setMiniPlayer('coalesced-second', true)
+  tabMediaCoordinator.setMiniPlayer('coalesced-first', true)
+  tabMediaCoordinator.setMiniPlayer('coalesced-second', true)
+  await new Promise(resolve => setImmediate(resolve))
+  assert.deepEqual(states, [false])
+
+  let redirect = false
+  tabMediaCoordinator.subscribeOwnership('coalesced-second', active => {
+    if (!active && redirect) tabMediaCoordinator.setMiniPlayer('coalesced-second', true)
+  })
+  redirect = true
+  states.length = 0
+  tabMediaCoordinator.setMiniPlayer('coalesced-first', true)
+  await new Promise(resolve => setImmediate(resolve))
+  assert.deepEqual(states, [true, false])
+})
+
 test('native acquisition follows the presented tab and the detached mini player', async t => {
   enableCapacitorMode(t)
   const states = { first: [], second: [] }

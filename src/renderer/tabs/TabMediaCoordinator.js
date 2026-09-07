@@ -17,6 +17,7 @@ let playSequence = 0
 let powerSaveBlocked = false
 const ownershipListeners = new Map()
 let notifiedOwnerTabId = null
+let ownershipNotificationPending = false
 
 function getEntry(tabId) {
   if (!tabId) {
@@ -85,10 +86,13 @@ function getActionHandlers(entry) {
 
 function applyOwner(playbackStartedTabId = null) {
   ownerTabId = chooseOwner()
-  if (notifiedOwnerTabId !== ownerTabId) {
-    notifiedOwnerTabId = ownerTabId
+  if (notifiedOwnerTabId !== ownerTabId && !ownershipNotificationPending) {
+    ownershipNotificationPending = true
     queueMicrotask(() => {
+      ownershipNotificationPending = false
       const selected = chooseOwner()
+      if (notifiedOwnerTabId === selected) return
+      notifiedOwnerTabId = selected
       for (const [tabId, listener] of ownershipListeners) listener(tabId === selected)
     })
   }

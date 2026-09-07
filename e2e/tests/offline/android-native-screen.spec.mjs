@@ -6,12 +6,11 @@ import { mockPlayableWatchPage } from '../../helpers/watch.mjs'
 const helperRoot = new URL('../../../src/renderer/helpers/player/', import.meta.url)
 // Exercise the native screen's actual renderer layout with the real Watch page.
 // Native decoding and Android touch routing have separate device tests.
-const screenSource = (await readFile(new URL('androidNativeScreen.js', helperRoot), 'utf8'))
-  .replace(/^import .*\n/gm, '').replace('export function ', 'function ')
-const overrideSource = (await readFile(new URL('overrideShakaMethods.js', helperRoot), 'utf8'))
-  .replace('export function ', 'function ')
-const mediaElementSource = (await readFile(new URL('androidMediaElement.js', helperRoot), 'utf8'))
-  .replace('export function ', 'function ')
+const inlineHelper = async name => (await readFile(new URL(name, helperRoot), 'utf8'))
+  .replace(/^import .*\n/gm, '').replace(/^export function /gm, 'function ')
+const screenSource = await inlineHelper('androidNativeScreen.js')
+const overrideSource = await inlineHelper('overrideShakaMethods.js')
+const mediaElementSource = await inlineHelper('androidMediaElement.js')
 const screenCss = await readFile(new URL('androidNativeScreen.css', helperRoot), 'utf8')
 
 test.use({ seed: { settings: { videoPlaybackEngine: 'built-in', ytDlpPlaybackEngineDefaultMigration: true, useQuickPlaybackSpeedBar: true } } })

@@ -142,6 +142,7 @@ final class NativePlaybackEngine implements NativePlaybackSession.Playback {
             }
 
             @Override public void onPlaybackParametersChanged(androidx.media3.common.PlaybackParameters parameters) {
+                voiceOver.syncPlaybackRate();
                 updateCaptionCues();
                 publish("ratechange");
             }
@@ -304,7 +305,7 @@ final class NativePlaybackEngine implements NativePlaybackSession.Playback {
 
     @Override public void stop() {
         voiceOver.clear();
-        setCaptionCues(null, true);
+        setCaptionCues(null, captionsVisible);
         handler.removeCallbacks(publishPosition);
         player.pause();
         player.stop();
