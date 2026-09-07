@@ -142,5 +142,5 @@ body:
       label: Nightly Build
       description: Please ensure you've completed the following, if applicable.
       options:
-        - label: I have encountered this bug in the latest **official** [nightly build](https://opentubex.org/downloads/#automated-builds), do not check this box if you are using an unofficial or custom build.
+        - label: I have encountered this bug in the latest **official** [nightly build](https://opentubex.org/downloads/#development), do not check this box if you are using an unofficial or custom build.
           required: false
