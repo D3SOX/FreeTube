@@ -15,17 +15,14 @@ export function createAndroidNativeScreen({ element, container, getController, g
   let restoreControls = null
   let attached = false
   let lastInlineClip = ''
+  let clippedPage = null
   const inlineOwner = {}
 
-  function syncInlineBackground(visible) {
-    if (!attached || open) return
-    inlineScreenOwner = inlineOwner
-    document.documentElement.classList.toggle('nativePlaybackInline', true)
-    const bounds = container.getBoundingClientRect()
+  function inlineClip(bounds, visible, origin = { x: 0, y: 0 }) {
     const style = getComputedStyle(container)
     const radius = Math.max(0, Math.min(parseFloat(style.borderTopLeftRadius) || 0, bounds.width / 2, bounds.height / 2))
-    const left = bounds.x
-    const top = bounds.y
+    const left = bounds.x - origin.x
+    const top = bounds.y - origin.y
     const right = left + bounds.width
     const bottom = top + bounds.height
     // Preserve the page background everywhere except the native video's window.
@@ -33,14 +30,47 @@ export function createAndroidNativeScreen({ element, container, getController, g
     const hole = visible && !hasVideoCanvas?.()
       ? `M ${left + radius} ${top} H ${right - radius} Q ${right} ${top} ${right} ${top + radius} V ${bottom - radius} Q ${right} ${bottom} ${right - radius} ${bottom} H ${left + radius} Q ${left} ${bottom} ${left} ${bottom - radius} V ${top + radius} Q ${left} ${top} ${left + radius} ${top} Z`
       : ''
-    const clip = `path(evenodd, "M -100000 -100000 H 100000 V 100000 H -100000 Z ${hole}")`
+    return `path(evenodd, "M -100000 -100000 H 100000 V 100000 H -100000 Z ${hole}")`
+  }
+
+  function clearPageClip() {
+    if (inlineScreenOwner === inlineOwner) {
+      clippedPage?.removeAttribute('data-native-player-backdrop')
+      clippedPage?.style.removeProperty('--native-player-content-clip')
+    }
+    clippedPage = null
+  }
+
+  function syncInlineBackground(visible) {
+    if (!attached || open) return
+    inlineScreenOwner = inlineOwner
+    document.documentElement.classList.toggle('nativePlaybackInline', true)
+    const bounds = container.getBoundingClientRect()
+    const clip = inlineClip(bounds, visible)
     if (clip !== lastInlineClip) {
       document.documentElement.style.setProperty('--native-inline-background-clip', clip)
       lastInlineClip = clip
     }
+    // Floating native video sits below the WebView. Cut the route's content
+    // out too, while its teleported controls stay in the separate overlay layer.
+    const page = container.closest?.('#cross-tab-mini-player-layer')
+      ? document.querySelector('.app > .flexBox')
+      : null
+    if (page !== clippedPage) {
+      clearPageClip()
+      clippedPage = page
+      page?.setAttribute('data-native-player-backdrop', '')
+    }
+    if (page) {
+      const pageClip = inlineClip(bounds, visible, page.getBoundingClientRect())
+      if (page.style.getPropertyValue('--native-player-content-clip') !== pageClip) {
+        page.style.setProperty('--native-player-content-clip', pageClip)
+      }
+    }
   }
 
   function releaseInlineBackground() {
+    clearPageClip()
     if (inlineScreenOwner === inlineOwner) {
       document.documentElement.classList.toggle('nativePlaybackInline', false)
       document.documentElement.style.removeProperty('--native-inline-background-clip')
@@ -103,12 +133,19 @@ export function createAndroidNativeScreen({ element, container, getController, g
     const playerMenus = [...container.querySelectorAll('.shaka-overflow-menu:not(.shaka-hidden), .shaka-settings-menu:not(.shaka-hidden), .shaka-sub-menu:not(.shaka-hidden), .shaka-context-menu:not(.shaka-hidden), .skippedSegmentsWrapper')]
     // Global dialogs such as Quick Settings can cover only one native button.
     // Keep their whole rectangle above native controls, not just the center hit.
+    const appChrome = open ? [] : [...document.querySelectorAll('.topNav, .sideNav, .tabBar, .capacitorTabletTabBar')]
     const globalMenus = open
       ? []
       : [...document.querySelectorAll('[role="dialog"], [role="menu"], [aria-modal="true"]')]
           .filter(menu => !container.contains(menu))
-    const menuElements = [...playerMenus, ...globalMenus]
-    const menus = menuElements.map(menu => menu.getBoundingClientRect()).filter(menu => menu.width > 0 && menu.height > 0)
+    const menuElements = [...playerMenus, ...globalMenus, ...appChrome]
+    const menus = menuElements.map(menu => {
+      const bounds = menu.getBoundingClientRect()
+      // Include the status-bar area above the fixed app header.
+      return menu.matches?.('.topNav') && bounds.height > 0
+        ? { x: bounds.x, y: 0, width: bounds.width, height: bounds.y + bounds.height }
+        : bounds
+    }).filter(menu => menu.width > 0 && menu.height > 0)
     const panelOpen = ['fullscreenDockLayoutOpen', 'chaptersOverlayOpen'].some(name => container.classList.contains(name))
     const layout = {
       x: bounds.x,
@@ -121,15 +158,19 @@ export function createAndroidNativeScreen({ element, container, getController, g
       controlsWidth: controlBounds.width,
       controlsHeight: controlBounds.height,
       videoVisible: visible,
-      controlsVisible: visible && sharedControls?.hasAttribute('shown') === true &&
+      controlsVisible: visible && controlBounds.width > 0 && controlBounds.height > 0 &&
+        !container.classList.contains('scrollMiniPlayer') && sharedControls?.hasAttribute('shown') === true &&
         (!centerElement || container.contains(centerElement)),
       menus: menus.map(({ x, y, width, height }) => ({ x, y, width, height })),
-      overlayActive: menus.length > 0 || panelOpen
+      overlayActive: panelOpen || [...playerMenus, ...globalMenus].some(menu => {
+        const bounds = menu.getBoundingClientRect()
+        return bounds.width > 0 && bounds.height > 0
+      })
     }
     const signature = JSON.stringify(layout)
     // Transforms do not trigger ResizeObserver. Follow zoom transitions until
     // their final frame so native video matches the shared gesture geometry.
-    if ([element, ...menuElements].some(target => target.getAnimations().some(animation => animation.playState === 'running'))) scheduleLayout()
+    if ([container, element, ...menuElements].some(target => target.getAnimations().some(animation => animation.playState === 'running'))) scheduleLayout()
     if (signature === lastLayout) return
     lastLayout = signature
     getController()?.layout(layout).catch(onError)

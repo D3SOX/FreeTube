@@ -23,6 +23,29 @@ public class AndroidUiPlugin extends Plugin {
     private Rational pictureInPictureAspectRatio = new Rational(16, 9);
 
     @PluginMethod
+    public void setSystemBarsBackground(PluginCall call) {
+        final int color;
+        try {
+            color = com.getcapacitor.util.WebColor.parseColor(call.getString("color", "#000000"));
+        } catch (IllegalArgumentException error) {
+            call.reject("Invalid system bar background color", error);
+            return;
+        }
+        getActivity().runOnUiThread(() -> {
+            android.view.Window window = getActivity().getWindow();
+            // Capacitor pads the WebView parent on older WebViews. Its native
+            // inset background must follow the same theme as the shared UI.
+            // SystemBars reapplies the OS theme background on style/rotation
+            // changes. A tint preserves the app theme through those updates.
+            window.getDecorView().setBackgroundTintList(android.content.res.ColorStateList.valueOf(color));
+            window.getDecorView().setBackgroundColor(color);
+            window.setStatusBarColor(color);
+            window.setNavigationBarColor(color);
+            call.resolve();
+        });
+    }
+
+    @PluginMethod
     public void getPictureInPictureSupport(PluginCall call) {
         JSObject result = new JSObject();
         result.put("supported", supportsPictureInPicture());

@@ -13,6 +13,28 @@ import org.junit.runner.RunWith;
 
 @RunWith(AndroidJUnit4.class)
 public class NativePlaybackReviewTest {
+    @Test public void appThemeSurvivesSystemBarBackgroundResets() {
+        try (androidx.test.core.app.ActivityScenario<MainActivity> scenario =
+                androidx.test.core.app.ActivityScenario.launch(MainActivity.class)) {
+            scenario.onActivity(activity -> {
+                AndroidUiPlugin plugin = (AndroidUiPlugin) activity.getBridge().getPlugin("AndroidUi").getInstance();
+                android.view.View decor = activity.getWindow().getDecorView();
+                for (String color : new String[] { "#0f0f0f", "#f1f1f1" }) {
+                    PluginCall call = new PluginCall(null, "AndroidUi", "test", "setSystemBarsBackground",
+                            new JSObject().put("color", color)) {
+                        @Override public void resolve() {}
+                    };
+                    plugin.setSystemBarsBackground(call);
+                    // Capacitor SystemBars does this on style/configuration changes.
+                    decor.setBackgroundColor(android.graphics.Color.WHITE);
+                    assertNotNull(decor.getBackgroundTintList());
+                    assertEquals(android.graphics.Color.parseColor(color),
+                            decor.getBackgroundTintList().getDefaultColor());
+                }
+            });
+        }
+    }
+
     @Test public void voiceOverFollowsNativeSpeedChangesWithoutTheRenderer() {
         InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
             android.content.Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();

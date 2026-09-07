@@ -142,6 +142,103 @@ test('inline playback presents the native surface without copying frames through
 for (const uiScale of [100, 125]) {
   test.describe(`inline native surface at ${uiScale}%`, () => {
     test.use({ seed: { settings: { videoPlaybackEngine: 'built-in', ytDlpPlaybackEngineDefaultMigration: true, uiScale, ambientMode: false } } })
+    for (const trigger of ['widening the panel', 'removing chapters', 'shortening titles', 'removing thumbnails']) {
+      test(`clamps chapter scrolling after ${trigger}`, async ({ app, page }) => {
+        await mockPlayableWatchPage(app, page)
+        await openMockedVideo(page)
+        const watch = await page.evaluateHandle(findWatchComponent)
+        await watch.evaluate(component => {
+          component.proxy.videoChapters = Array.from({ length: 24 }, (_, index) => ({
+            title: `Chapter ${index} with a long title for responsive wrapping`,
+            timestamp: `${index}:00`,
+            startSeconds: index * 30
+          }))
+          component.proxy.showSidebarChapters = true
+        })
+        const chapters = page.locator('.watchVideoChaptersPanel .chaptersWrapper')
+        await expect(chapters).toBeAttached()
+        await chapters.evaluate(element => { element.style.width = '160px' })
+        await expect.poll(() => chapters.evaluate(element => element.scrollHeight)).toBeGreaterThan(1000)
+        await chapters.evaluate(element => { element.scrollTop = element.scrollHeight })
+        await expect.poll(() => chapters.evaluate(element => element.scrollTop)).toBeGreaterThan(500)
+        if (trigger === 'widening the panel') {
+          await chapters.evaluate(element => { element.style.width = '440px' })
+        } else {
+          await watch.evaluate((component, trigger) => {
+            if (trigger === 'removing thumbnails') {
+              component.proxy.thumbnail = ''
+              component.proxy.videoChapterThumbnails = []
+              return
+            }
+            component.proxy.videoChapters = trigger === 'removing chapters'
+              ? component.proxy.videoChapters.slice(0, 4)
+              : component.proxy.videoChapters.map(chapter => ({ ...chapter, title: 'Intro' }))
+          }, trigger)
+        }
+        await expect.poll(() => chapters.evaluate(element => {
+          const rows = element.querySelectorAll('.chapter')
+          const viewport = element.getBoundingClientRect()
+          const last = rows[rows.length - 1].getBoundingClientRect()
+          const scale = viewport.height / element.clientHeight
+          const contentEnd = element.scrollTop + (last.bottom - viewport.top) / scale
+          return element.scrollTop - Math.max(0, contentEnd - element.clientHeight)
+        })).toBeLessThanOrEqual(1)
+        await expect.poll(() => chapters.evaluate(element => {
+          const last = [...element.querySelectorAll('.chapter')].at(-1).getBoundingClientRect()
+          const viewport = element.getBoundingClientRect()
+          return element.scrollHeight - element.scrollTop - (last.bottom - viewport.top) / (viewport.height / element.clientHeight)
+        })).toBeLessThanOrEqual(1)
+      })
+    }
+    test('keeps page content behind the native scroll mini player', async ({ app, page }) => {
+      await mockPlayableWatchPage(app, page)
+      await openMockedVideo(page)
+      await openNativeScreen(page, false)
+      const player = page.locator('.ftVideoPlayer')
+      await player.evaluate(element => window.scrollTo(0, window.scrollY + element.getBoundingClientRect().bottom))
+      await expect(player).toHaveClass(/scrollMiniPlayer/)
+      await expect(player).not.toHaveClass(/scrollMiniPlayerAnimating/)
+      // The Android template teleports native mini players into this layer.
+      // This Electron fixture supplies only the native screen adapter.
+      await player.evaluate(element => document.querySelector('#cross-tab-mini-player-layer').append(element))
+      const bounds = await player.boundingBox()
+      await page.evaluate(bounds => {
+        // A page element that would normally sit behind the floating player.
+        const marker = document.createElement('div')
+        Object.assign(marker.style, {
+          position: 'fixed',
+          left: `${bounds.x}px`,
+          top: `${bounds.y}px`,
+          width: `${bounds.width}px`,
+          height: `${bounds.height}px`,
+          background: 'red'
+        })
+        document.querySelector('.watchVideoInfo').append(marker)
+        document.querySelector('.scrollMiniPlayerControls').style.visibility = 'hidden'
+      }, bounds)
+      // Playwright's viewport screenshot clips zoomed Electron windows. Capture
+      // the compositor directly so fractional UI scales sample the real pixels.
+      const cdp = await page.context().newCDPSession(page)
+      await cdp.send('Emulation.setDefaultBackgroundColorOverride', { color: { r: 0, g: 0, b: 0, a: 0 } })
+      const { data } = await cdp.send('Page.captureScreenshot')
+      await cdp.send('Emulation.setDefaultBackgroundColorOverride')
+      await cdp.detach()
+      const screenshot = Buffer.from(data, 'base64')
+      const pixel = await page.evaluate(async ({ imageData, bounds }) => {
+        const image = new Image()
+        image.src = `data:image/png;base64,${imageData}`
+        await image.decode()
+        const canvas = document.createElement('canvas')
+        canvas.width = image.width; canvas.height = image.height
+        const context = canvas.getContext('2d')
+        context.drawImage(image, 0, 0)
+        const scale = image.width / innerWidth
+        return [...context.getImageData(Math.floor((bounds.x + bounds.width / 2) * scale),
+          Math.floor((bounds.y + bounds.height / 2) * scale), 1, 1).data]
+      }, { imageData: screenshot.toString('base64'), bounds })
+      expect(pixel[3], 'Page content must not paint inside the native video window').toBe(0)
+      await page.evaluate(() => window.nativeScreenTest.destroy())
+    })
     test('keeps a transparent rounded video window and an opaque themed page', async ({ app, page }) => {
       await mockPlayableWatchPage(app, page)
       await openMockedVideo(page)
@@ -220,7 +317,7 @@ test('global Quick Settings clips native controls wherever its menu overlaps inl
   }).toBe(true)
   await page.locator('.profileTrigger').click()
   await expect(menu).not.toBeVisible()
-  await expect.poll(() => page.evaluate(() => window.nativeLayoutTest.menus.length)).toBe(0)
+  await expect.poll(() => page.evaluate(() => window.nativeLayoutTest.overlayActive)).toBe(false)
   await page.evaluate(() => window.nativeScreenTest.destroy())
 })
 
@@ -815,6 +912,8 @@ for (const fullscreen of [false, true]) {
       await enableMobileInput(page)
       const video = await openMockedVideo(page)
       await openNativeScreen(page, fullscreen)
+      // Playwright's viewport screenshot clips zoomed Electron windows. Capture
+      // the compositor directly so fractional UI scales sample the real pixels.
       const cdp = await page.context().newCDPSession(page)
       try {
         for (const shown of [false, true]) {

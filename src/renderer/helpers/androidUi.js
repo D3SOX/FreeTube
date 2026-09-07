@@ -74,3 +74,10 @@ export function getAndroidDeviceArchitecture() {
 export function setAndroidPictureInPictureDocumentState(active) {
   document.body.classList.toggle('androidPictureInPicture', active)
 }
+
+/** Colors native inset padding used by Android WebViews without edge-to-edge CSS. */
+export function setAndroidSystemBarsBackground(color) {
+  if (Capacitor.getPlatform() !== 'android') return Promise.resolve()
+  const hex = color.replace(/^#([\da-f])([\da-f])([\da-f])$/i, '#$1$1$2$2$3$3')
+  return AndroidUi?.setSystemBarsBackground({ color: hex }) ?? Promise.resolve()
+}

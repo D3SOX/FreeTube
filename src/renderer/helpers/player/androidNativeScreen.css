@@ -17,6 +17,10 @@
   clip-path: var(--native-inline-background-clip, inset(0));
 }
 
+.nativePlaybackInline [data-native-player-backdrop] {
+  clip-path: var(--native-player-content-clip);
+}
+
 .nativePlaybackScreen {
   /* A fixed native screen does not get the browser Fullscreen API's scroll
      lock. Keep panel boundary gestures from scrolling the hidden Watch page. */

@@ -7,7 +7,7 @@ import { overrideShakaMethods } from '../../src/renderer/helpers/player/override
 const source = (await readFile(new URL('../../src/renderer/helpers/player/androidNativeScreen.js', import.meta.url), 'utf8'))
   .replace(/^import .*\n/gm, '').replace('export function ', 'function ')
 
-async function fixture({ fullscreen = true } = {}) {
+async function fixture({ fullscreen = true, chrome = [] } = {}) {
   const frames = new Map()
   const layouts = []
   const presentations = []
@@ -15,13 +15,16 @@ async function fixture({ fullscreen = true } = {}) {
   let shown = true
   let menu = false
   let panel = false
+  let animating = false
   let id = 0
   const bounds = { x: 0, y: 0, width: 640, height: 360 }
   const controlsElement = { hasAttribute: () => shown, getBoundingClientRect: () => bounds }
   const container = Object.assign(new EventTarget(), {
-    classList: { contains: () => panel },
+    classList: { contains: name => panel && ['fullscreenDockLayoutOpen', 'chaptersOverlayOpen'].includes(name) },
+    contains: () => false,
     getBoundingClientRect: () => bounds,
     toggleAttribute() {},
+    getAnimations: () => animating ? [{ playState: 'running' }] : [],
     querySelectorAll() { return menu ? [{ getAnimations: () => [], getBoundingClientRect: () => ({ x: 400, y: 100, width: 200, height: 240 }) }] : [] },
     querySelector(selector) {
       if (selector === '.shaka-controls-container') return controlsElement
@@ -31,7 +34,7 @@ async function fixture({ fullscreen = true } = {}) {
   const element = Object.assign(new EventTarget(), {
     getBoundingClientRect: () => bounds, getAnimations: () => [],
   })
-  const document = Object.assign(new EventTarget(), { elementFromPoint: () => null, querySelectorAll: () => [], documentElement: { classList: { toggle() {} }, style: { setProperty() {}, removeProperty() {} } } })
+  const document = Object.assign(new EventTarget(), { elementFromPoint: () => null, querySelectorAll: selector => selector.includes('.topNav') ? chrome : [], documentElement: { classList: { toggle() {} }, style: { setProperty() {}, removeProperty() {} } } })
   class Observer {
     constructor(callback) { this.callback = callback; observers.push(this) }
     observe(target, options) { if (options) this.options = { attributeFilter: [...(this.options?.attributeFilter ?? []), ...options.attributeFilter] } }
@@ -54,11 +57,35 @@ async function fixture({ fullscreen = true } = {}) {
   if (fullscreen) await screen.show()
   else await screen.attach()
   await flush()
-  return { screen, layouts, presentations, bounds, observers, flush, change({ visible = shown, menuOpen = menu, panelOpen = panel }) {
+  return { screen, layouts, presentations, bounds, observers, flush, change({ visible = shown, menuOpen = menu, panelOpen = panel, containerAnimating = animating }) {
     shown = visible; menu = menuOpen; panel = panelOpen
+    animating = containerAnimating
     for (const observer of observers) observer.callback()
   } }
 }
+
+test('app chrome clips native controls when scrolling carries the player under the header', async () => {
+  const header = { x: 0, y: 24, width: 1000, height: 60 }
+  const f = await fixture({ fullscreen: false, chrome: [{ matches: () => true, getAnimations: () => [], getBoundingClientRect: () => header }] })
+  assert.ok(f.layouts.at(-1).menus.some(rect => rect.y === 0 && rect.height === 84))
+  assert.equal(f.layouts.at(-1).overlayActive, false, 'App chrome does not count as an open panel')
+  f.screen.destroy()
+})
+
+test('native geometry follows every frame of a mini-player container animation', async () => {
+  const f = await fixture({ fullscreen: false })
+  f.change({ containerAnimating: true })
+  await f.flush()
+  f.bounds.y = 100
+  await f.flush()
+  assert.equal(f.layouts.at(-1).y, 100, 'Ancestor transforms need a fresh native layout without another DOM mutation')
+  f.bounds.y = 200
+  await f.flush()
+  assert.equal(f.layouts.at(-1).y, 200)
+  f.change({ containerAnimating: false })
+  await f.flush()
+  f.screen.destroy()
+})
 
 test('initial attachment requests an inline native surface without a fullscreen transition', async () => {
   const f = await fixture({ fullscreen: false })

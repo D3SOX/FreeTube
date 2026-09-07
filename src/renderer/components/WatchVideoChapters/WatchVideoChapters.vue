@@ -10,54 +10,61 @@
     @keydown.arrow-down.stop.prevent="navigateChapters('down')"
   >
     <div
-      v-for="(chapter, index) in chaptersWithThumbnails"
-      :key="index"
-      class="chapter"
-      :class="{ current: index === currentIndex }"
-      role="listitem"
+      ref="chaptersContent"
+      class="chaptersContent"
+      role="presentation"
     >
-      <button
-        class="chapterSeek"
-        type="button"
-        :aria-current="index === currentIndex ? 'true' : null"
-        @click="changeChapter(index)"
+      <div
+        v-for="(chapter, index) in chaptersWithThumbnails"
+        :key="index"
+        class="chapter"
+        :class="{ current: index === currentIndex }"
+        role="listitem"
       >
-        <span
-          v-if="!compact"
-          aria-hidden="true"
-          class="chapterThumbnail"
-          :style="getThumbnailStyle(chapter.displayThumbnail)"
-        />
-        <span class="chapterInfo">
+        <button
+          class="chapterSeek"
+          type="button"
+          :aria-current="index === currentIndex ? 'true' : null"
+          @click="changeChapter(index)"
+        >
           <span
-            class="chapterTitle"
-            dir="auto"
-          >
-            {{ chapter.title }}
+            v-if="!compact"
+            aria-hidden="true"
+            class="chapterThumbnail"
+            :style="getThumbnailStyle(chapter.displayThumbnail)"
+          />
+          <span class="chapterInfo">
+            <span
+              class="chapterTitle"
+              dir="auto"
+            >
+              {{ chapter.title }}
+            </span>
+            <span class="chapterTimestamp">
+              {{ chapter.timestamp }}
+            </span>
           </span>
-          <span class="chapterTimestamp">
-            {{ chapter.timestamp }}
-          </span>
-        </span>
-      </button>
-      <button
-        class="copyTimestamp"
-        type="button"
-        :aria-label="$t('Chapters.Copy Timestamp Link', { timestamp: chapter.timestamp })"
-        :title="$t('Chapters.Copy Timestamp Link', { timestamp: chapter.timestamp })"
-        @click="copyTimestamp(index)"
-      >
-        <FtIcon :icon="['fas', 'share-alt']" />
-      </button>
+        </button>
+        <button
+          class="copyTimestamp"
+          type="button"
+          :aria-label="$t('Chapters.Copy Timestamp Link', { timestamp: chapter.timestamp })"
+          :title="$t('Chapters.Copy Timestamp Link', { timestamp: chapter.timestamp })"
+          @click="copyTimestamp(index)"
+        >
+          <FtIcon :icon="['fas', 'share-alt']" />
+        </button>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { computed, ref, useTemplateRef, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, useTemplateRef, watch } from 'vue'
 import { FtIcon } from '@opentubex/icons'
 
 import { getCenteredChapterScrollTop } from './chapterScroll'
+import { clampOverlayScrollTop, restoreOverlayScrollTop } from '../../helpers/overlayScrollbars'
 
 const props = defineProps({
   chapters: {
@@ -81,6 +88,28 @@ const props = defineProps({
 const emit = defineEmits(['copy-timestamp', 'timestamp-event'])
 
 const chaptersWrapper = useTemplateRef('chaptersWrapper')
+const chaptersContent = useTemplateRef('chaptersContent')
+let scrollFrame = null
+const resizeObserver = new ResizeObserver(scheduleScrollClamp)
+
+function scheduleScrollClamp() {
+  if (scrollFrame !== null) return
+  scrollFrame = requestAnimationFrame(() => {
+    scrollFrame = null
+    if (chaptersWrapper.value && chaptersContent.value) {
+      clampOverlayScrollTop(chaptersWrapper.value, chaptersContent.value)
+    }
+  })
+}
+
+onMounted(() => {
+  resizeObserver.observe(chaptersWrapper.value)
+  resizeObserver.observe(chaptersContent.value)
+})
+onBeforeUnmount(() => {
+  resizeObserver.disconnect()
+  if (scrollFrame !== null) cancelAnimationFrame(scrollFrame)
+})
 const currentIndex = ref(props.currentChapterIndex)
 
 watch(() => props.currentChapterIndex, (value) => {
@@ -105,6 +134,8 @@ const chaptersWithThumbnails = computed(() => {
     return { ...chapter, displayThumbnail }
   })
 })
+
+watch(chaptersWithThumbnails, scheduleScrollClamp, { flush: 'post' })
 
 /** @type {import('vue').ComputedRef<boolean>} */
 const compact = computed(() => {
@@ -173,7 +204,7 @@ function copyTimestamp(index) {
  * @param {'up' | 'down'} direction
  */
 function navigateChapters(direction) {
-  const chapterRows = Array.from(chaptersWrapper.value.children)
+  const chapterRows = Array.from(chaptersContent.value.children)
   const focusedRow = document.activeElement?.closest('.chapter')
   const focusedIndex = chapterRows.indexOf(focusedRow)
   const offset = direction === 'up' ? -1 : 1
@@ -193,12 +224,13 @@ function navigateChapters(direction) {
  */
 function scrollToCurrentChapter(remainingAttempts = 5) {
   const container = chaptersWrapper.value
-  const currentItem = container?.querySelectorAll(':scope > .chapter')[currentIndex.value]
+  const currentItem = chaptersContent.value?.children[currentIndex.value]
 
   if (!container || !currentItem) {
     return
   }
 
+  clampOverlayScrollTop(container, chaptersContent.value)
   const containerRect = container.getBoundingClientRect()
   const currentItemRect = currentItem.getBoundingClientRect()
 
@@ -221,6 +253,7 @@ function scrollToCurrentChapter(remainingAttempts = 5) {
     return
   }
 
+  restoreOverlayScrollTop(container, container.scrollTop)
   container.scrollTo({ top, behavior: 'smooth' })
 }
 

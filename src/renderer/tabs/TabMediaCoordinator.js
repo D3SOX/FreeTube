@@ -44,7 +44,10 @@ function chooseOwner() {
     if (miniPlayerTabId && mediaByTabId.has(miniPlayerTabId)) {
       return miniPlayerTabId
     }
-    return presentedTabId && mediaByTabId.has(presentedTabId) ? presentedTabId : null
+    if (presentedTabId && mediaByTabId.has(presentedTabId)) return presentedTabId
+    // Browsing a non-video tab hides the surface, but keeps native audio and
+    // its buffer alive. Another video tab can still take over the single player.
+    return mediaByTabId.get(ownerTabId)?.nativeOwner ? ownerTabId : null
   }
 
   if (pictureInPictureTabId && mediaByTabId.has(pictureInPictureTabId)) {
@@ -201,12 +204,12 @@ export const tabMediaCoordinator = {
     presentedTabId = tabId
 
     if (process.env.IS_CAPACITOR && outgoingTabId && outgoingTabId !== tabId) {
-      ownerTabId = null
+      if (!mediaByTabId.get(ownerTabId)?.nativeOwner) ownerTabId = null
       queueMicrotask(() => {
         if (miniPlayerTabId !== outgoingTabId) {
           const outgoing = mediaByTabId.get(outgoingTabId)
           const pause = getActionHandlers(outgoing).pause
-          if (outgoing?.playbackState === 'playing' && typeof pause === 'function') pause()
+          if (!outgoing?.nativeOwner && outgoing?.playbackState === 'playing' && typeof pause === 'function') pause()
         }
         applyOwner()
       })
