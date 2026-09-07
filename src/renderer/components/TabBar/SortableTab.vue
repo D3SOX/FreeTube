@@ -1,147 +1,95 @@
 <template>
-  <!-- eslint-disable-next-line vuejs-accessibility/click-events-have-key-events -->
-  <div
-    ref="tabRef"
-    class="tab tabBarReorderItem"
-    :data-tab-id="tab.id"
-    :data-reorder-id="tab.id"
-    :class="tabClasses"
-    :style="tabStyle"
-    :aria-label="displayTitle"
-    :aria-describedby="isTooltipVisible ? tooltipId : undefined"
-    :aria-pressed="isSelected"
-    role="button"
-    tabindex="-1"
-    @click="handleClick"
-    @pointerenter="handlePointerEnter"
-    @pointerleave="handlePointerLeave"
-    @focusin="showTooltip"
-    @focusout="hideTooltip"
-    @pointerdown="handlePointerDown"
-    @mousedown.middle.prevent
-    @auxclick.prevent="handleAuxClick"
+  <TabTooltip
+    :title="displayTitle"
+    :tabs="[tab]"
+    :group="group"
+    :is-active="tab.isActive"
+    :tab-bar-position="tabBarPosition"
+    :disable-tooltips="disableTooltips || isDragging"
+    :close-tooltips-signal="closeTooltipsSignal"
+    :show-preview="showPreview"
   >
-    <FtIcon
-      v-if="tab.isPinned"
-      :icon="['fas', 'thumbtack']"
-      class="pinBadge"
-      aria-hidden="true"
-    />
-    <span class="tabTitle">
-      <FtIcon
-        v-if="group"
-        :icon="['fas', 'layer-group']"
-        class="groupBadge"
-        aria-hidden="true"
-      />
-      <span
-        v-if="tab.isLoading"
-        class="loadingDot"
-        aria-hidden="true"
-      />
-      <FtIcon
-        v-else-if="tab.isPlaying"
-        :icon="['fas', 'play']"
-        class="playingIcon"
-        aria-hidden="true"
-      />
-      <img
-        v-else-if="showIcon && usableTabAvatarUrl"
-        :src="tabAvatarUrl"
-        class="tabAvatar"
-        alt=""
-        draggable="false"
-        @error="handleAvatarError"
-      >
-      <FtIcon
-        v-else-if="showIcon && tabPageIcon"
-        :icon="tabPageIcon"
-        class="tabPageIcon"
-        aria-hidden="true"
-      />
-      <span class="tabTitleText">{{ displayTitle }}</span>
-    </span>
-    <button
-      class="closeButton"
-      :aria-label="closeLabel"
-      :title="closeLabel"
-      @click.stop="$emit('close', tab.id)"
-      @pointerdown.stop
-    >
-      <FtIcon
-        :icon="['fas', 'times']"
-        class="closeIcon"
-      />
-    </button>
-  </div>
-  <Teleport to="body">
-    <Transition name="tab-tooltip">
+    <template #anchor="{ bindings }">
+      <!-- eslint-disable-next-line vuejs-accessibility/click-events-have-key-events -->
       <div
-        v-if="isTooltipVisible"
-        :id="tooltipId"
-        ref="tooltipRef"
-        class="tabTooltip"
-        :class="{ withPreview: showPreview }"
-        data-tab-preview-overlay
-        :style="tooltipStyle"
-        role="tooltip"
+        v-bind="bindings"
+        class="tab tabBarReorderItem"
+        :data-tab-id="tab.id"
+        :data-reorder-id="tab.id"
+        :class="tabClasses"
+        :style="tabStyle"
+        :aria-label="displayTitle"
+        :aria-pressed="isSelected"
+        role="button"
+        tabindex="-1"
+        @click="handleClick"
+        @mousedown.middle.prevent
+        @auxclick.prevent="handleAuxClick"
       >
-        <div class="tabTooltipTitle">
-          {{ displayTitle }}
-        </div>
-        <div
-          v-if="group"
-          class="tabTooltipGroup"
-          :style="{ '--tab-group-color': groupColor || 'var(--secondary-text-color)' }"
-        >
+        <FtIcon
+          v-if="tab.isPinned"
+          :icon="['fas', 'thumbtack']"
+          class="pinBadge"
+          aria-hidden="true"
+        />
+        <span class="tabTitle">
           <FtIcon
+            v-if="group"
             :icon="['fas', 'layer-group']"
-            class="tabTooltipGroupIcon"
+            class="groupBadge"
             aria-hidden="true"
           />
-          {{ group.name }}
-        </div>
-        <div
-          v-if="showPreview"
-          class="tabTooltipPreview"
-        >
+          <span
+            v-if="tab.isLoading"
+            class="loadingDot"
+            aria-hidden="true"
+          />
+          <FtIcon
+            v-else-if="tab.isPlaying"
+            :icon="['fas', 'play']"
+            class="playingIcon"
+            aria-hidden="true"
+          />
           <img
-            v-if="tooltipPreviewUrl"
-            :src="tooltipPreviewUrl"
-            :alt="tooltipPreviewAlt"
-            draggable="false"
-            @error="handleTooltipPreviewError"
-          >
-          <img
-            v-else-if="usableTabAvatarUrl"
-            :src="usableTabAvatarUrl"
-            :alt="tooltipPreviewAlt"
-            class="tabTooltipPreviewAvatar"
+            v-else-if="showIcon && usableTabAvatarUrl"
+            :src="tabAvatarUrl"
+            class="tabAvatar"
+            alt=""
             draggable="false"
             @error="handleAvatarError"
           >
-          <div
-            v-else
-            class="tabTooltipPreviewFallback"
+          <FtIcon
+            v-else-if="showIcon && tabPageIcon"
+            :icon="tabPageIcon"
+            class="tabPageIcon"
             aria-hidden="true"
-          >
-            <FtIcon
-              :icon="tabPageIcon || ['fas', 'display']"
-              class="tabTooltipFallbackIcon"
-            />
-          </div>
-        </div>
+          />
+          <span class="tabTitleText">{{ displayTitle }}</span>
+        </span>
+        <button
+          class="closeButton"
+          :aria-label="closeLabel"
+          :title="closeLabel"
+          @click.stop="$emit('close', tab.id)"
+          @pointerdown.stop
+        >
+          <FtIcon
+            :icon="['fas', 'times']"
+            class="closeIcon"
+          />
+        </button>
       </div>
-    </Transition>
-  </Teleport>
+    </template>
+  </TabTooltip>
 </template>
 
 <script setup>
 import { FtIcon } from '@opentubex/icons'
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, useTemplateRef, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { getTabAccentColor } from '../../constants/tabColors'
 import { getTabAvatarUrl, getTabPageIcon, getTabPreviewFallbackUrl } from '../../tabs/tabPreview'
 import { formatTabTitle } from '../../tabs/tabTitle'
+import TabTooltip from './TabTooltip.vue'
 
 const props = defineProps({
   tab: {
@@ -209,22 +157,7 @@ const props = defineProps({
 
 const emit = defineEmits(['activate', 'close', 'middleClick'])
 
-const TOOLTIP_MAX_WIDTH_PX = 340
-const TOOLTIP_ESTIMATED_HEIGHT_PX = 240
-const TOOLTIP_TITLE_ONLY_ESTIMATED_HEIGHT_PX = 35
-const TOOLTIP_MARGIN_PX = 8
-const TOOLTIP_OFFSET_PX = 6
-const TOOLTIP_SHOW_DELAY_MS = 80
-
-const tabRef = useTemplateRef('tabRef')
-const tooltipRef = useTemplateRef('tooltipRef')
-const isTooltipVisible = ref(false)
-const tooltipPreviewUrl = ref(null)
 const failedAvatarUrl = ref(null)
-const tooltipStyle = ref({})
-const tooltipRequestId = ref(0)
-let showTooltipTimeoutId = null
-let suppressTooltipUntilPointerLeave = false
 
 const tabColor = computed(() => getTabAccentColor(props.tab.color))
 const groupColor = computed(() => getTabAccentColor(props.group?.color))
@@ -259,12 +192,6 @@ const tabStyle = computed(() => {
 
 const displayTitle = computed(() => formatTabTitle(props.tab.title))
 
-const tooltipId = computed(() => `tab-tooltip-${props.tab.id}`)
-const tooltipPreviewAlt = computed(() => `${displayTitle.value} preview`)
-const tooltipEstimatedHeight = computed(() => props.showPreview
-  ? TOOLTIP_ESTIMATED_HEIGHT_PX
-  : TOOLTIP_TITLE_ONLY_ESTIMATED_HEIGHT_PX)
-
 // When a tab points at a channel page and no screenshot has been captured yet,
 // fall back to the channel's profile picture (cached by the Channel view).
 const tabAvatarUrl = computed(() => getTabAvatarUrl(props.tab))
@@ -279,10 +206,6 @@ function handleAvatarError() {
   failedAvatarUrl.value = usableTabAvatarUrl.value
 }
 
-function handleTooltipPreviewError() {
-  tooltipPreviewUrl.value = null
-}
-
 function handleClick(event) {
   emit('activate', event, props.tab.id)
 }
@@ -295,234 +218,6 @@ function handleAuxClick(event) {
     emit('middleClick', event, props.tab.id)
   }
 }
-
-function showTooltip() {
-  if (props.disableTooltips || props.isDragging || suppressTooltipUntilPointerLeave) {
-    return
-  }
-
-  clearShowTooltipTimeout()
-  showTooltipTimeoutId = window.setTimeout(() => {
-    showTooltipTimeoutId = null
-    if (props.disableTooltips || props.isDragging || suppressTooltipUntilPointerLeave) {
-      return
-    }
-
-    updateTooltipPosition()
-    isTooltipVisible.value = true
-    nextTick(updateTooltipPosition)
-    addTooltipDismissListeners()
-    window.addEventListener('resize', updateTooltipPosition)
-    loadTooltipPreview()
-  }, TOOLTIP_SHOW_DELAY_MS)
-}
-
-function handlePointerEnter() {
-  suppressTooltipUntilPointerLeave = false
-  showTooltip()
-}
-
-function handlePointerLeave() {
-  if (document.hasFocus()) {
-    suppressTooltipUntilPointerLeave = false
-  }
-  hideTooltip()
-}
-
-function handlePointerDown() {
-  suppressTooltipUntilPointerLeave = true
-  hideTooltip()
-}
-
-function handleWindowBlur() {
-  suppressTooltipUntilPointerLeave = true
-  hideTooltip()
-}
-
-function hideTooltip() {
-  clearShowTooltipTimeout()
-  isTooltipVisible.value = false
-  tooltipPreviewUrl.value = null
-  tooltipRequestId.value++
-  removeTooltipDismissListeners()
-  window.removeEventListener('resize', updateTooltipPosition)
-}
-
-function clearShowTooltipTimeout() {
-  if (showTooltipTimeoutId != null) {
-    clearTimeout(showTooltipTimeoutId)
-    showTooltipTimeoutId = null
-  }
-}
-
-function addTooltipDismissListeners() {
-  document.addEventListener('pointerdown', hideTooltip, true)
-  document.addEventListener('wheel', hideTooltip, true)
-  document.addEventListener('visibilitychange', hideTooltip, true)
-  document.addEventListener('keydown', handleTooltipKeydown, true)
-}
-
-function removeTooltipDismissListeners() {
-  document.removeEventListener('pointerdown', hideTooltip, true)
-  document.removeEventListener('wheel', hideTooltip, true)
-  document.removeEventListener('visibilitychange', hideTooltip, true)
-  document.removeEventListener('keydown', handleTooltipKeydown, true)
-}
-
-/**
- * @param {KeyboardEvent} event
- */
-function handleTooltipKeydown(event) {
-  if (event.key === 'Escape') {
-    hideTooltip()
-  }
-}
-
-function updateTooltipPosition() {
-  const element = tabRef.value
-  if (!(element instanceof HTMLElement)) {
-    return
-  }
-
-  const rect = element.getBoundingClientRect()
-  const maxTooltipWidth = Math.min(
-    TOOLTIP_MAX_WIDTH_PX,
-    Math.max(120, window.innerWidth - TOOLTIP_MARGIN_PX * 2)
-  )
-  const renderedTooltipWidth = tooltipRef.value?.getBoundingClientRect().width
-  const tooltipWidth = !props.showPreview && renderedTooltipWidth > 0
-    ? Math.min(renderedTooltipWidth, maxTooltipWidth)
-    : maxTooltipWidth
-  if (props.vertical) {
-    // Place the tooltip beside the tab, keeping it inside the viewport.
-    const top = Math.max(
-      TOOLTIP_MARGIN_PX,
-      Math.min(window.innerHeight - tooltipEstimatedHeight.value, rect.top)
-    )
-    const tabBarRect = element.closest('.tabBar')?.getBoundingClientRect()
-    let adjacentEdge = props.tabBarPosition === 'right'
-      ? (tabBarRect?.left ?? rect.left)
-      : (tabBarRect?.right ?? rect.right)
-    if (props.tabBarPosition === 'right') {
-      const pageScrollbar = document.querySelector(
-        'body > .os-scrollbar-vertical:not(.os-scrollbar-unusable)'
-      )
-      if (pageScrollbar instanceof HTMLElement) {
-        adjacentEdge = Math.min(adjacentEdge, pageScrollbar.getBoundingClientRect().left)
-      }
-    }
-
-    const availableWidth = props.tabBarPosition === 'right'
-      ? adjacentEdge - TOOLTIP_OFFSET_PX - TOOLTIP_MARGIN_PX
-      : window.innerWidth - adjacentEdge - TOOLTIP_OFFSET_PX - TOOLTIP_MARGIN_PX
-    const constrainedWidth = Math.min(tooltipWidth, Math.max(120, availableWidth))
-    const horizontalPosition = props.tabBarPosition === 'right'
-      ? {
-          left: 'auto',
-          // Anchor the outer tooltip edge directly to the rail. Calculating a
-          // left position from its width drifts when preview content changes
-          // the tooltip's final box size after the first render.
-          right: `${Math.round(window.innerWidth - adjacentEdge + TOOLTIP_OFFSET_PX)}px`,
-          transformOrigin: 'right top'
-        }
-      : {
-          left: `${Math.round(adjacentEdge + TOOLTIP_OFFSET_PX)}px`,
-          right: 'auto',
-          transformOrigin: 'left top'
-        }
-    tooltipStyle.value = {
-      ...horizontalPosition,
-      maxInlineSize: `${Math.round(constrainedWidth)}px`,
-      top: `${Math.round(top)}px`
-    }
-    return
-  }
-
-  const left = Math.max(
-    TOOLTIP_MARGIN_PX,
-    Math.min(
-      window.innerWidth - tooltipWidth - TOOLTIP_MARGIN_PX,
-      rect.left + rect.width / 2 - tooltipWidth / 2
-    )
-  )
-
-  const top = props.tabBarPosition === 'bottom'
-    ? rect.top - tooltipEstimatedHeight.value - TOOLTIP_OFFSET_PX
-    : rect.bottom + TOOLTIP_OFFSET_PX
-  tooltipStyle.value = {
-    left: `${Math.round(left)}px`,
-    top: `${Math.round(Math.max(TOOLTIP_MARGIN_PX, top))}px`
-  }
-}
-
-async function loadTooltipPreview() {
-  const requestId = ++tooltipRequestId.value
-  tooltipPreviewUrl.value = null
-
-  if (
-    !props.showPreview ||
-    !process.env.IS_ELECTRON ||
-    typeof window.ftElectron?.tabs?.capturePreview !== 'function'
-  ) {
-    return
-  }
-
-  try {
-    const dataUrl = await window.ftElectron.tabs.capturePreview(props.tab.id)
-    if (requestId !== tooltipRequestId.value || !isTooltipVisible.value) {
-      return
-    }
-    tooltipPreviewUrl.value = typeof dataUrl === 'string' && dataUrl.length > 0
-      ? dataUrl
-      : null
-  } catch {
-    if (requestId === tooltipRequestId.value) {
-      tooltipPreviewUrl.value = null
-    }
-  }
-}
-
-onMounted(() => {
-  window.addEventListener('blur', handleWindowBlur)
-})
-
-onBeforeUnmount(() => {
-  window.removeEventListener('blur', handleWindowBlur)
-  hideTooltip()
-})
-
-watch(() => props.closeTooltipsSignal, () => {
-  hideTooltip()
-})
-
-watch(() => props.tab.isActive, (isActive) => {
-  if (isActive) {
-    hideTooltip()
-  }
-})
-
-watch(() => props.isDragging, (isDragging) => {
-  if (isDragging) {
-    hideTooltip()
-  }
-})
-
-watch(() => props.disableTooltips, (disableTooltips) => {
-  if (disableTooltips) {
-    hideTooltip()
-  }
-})
-
-watch(() => props.showPreview, (showPreview) => {
-  tooltipPreviewUrl.value = null
-  tooltipRequestId.value++
-  if (isTooltipVisible.value) {
-    nextTick(updateTooltipPosition)
-    if (showPreview) {
-      loadTooltipPreview()
-    }
-  }
-})
 
 watch(tabAvatarUrl, (avatarUrl) => {
   if (avatarUrl !== failedAvatarUrl.value) {
@@ -800,111 +495,4 @@ watch(tabAvatarUrl, (avatarUrl) => {
   font-size: 10px;
 }
 
-.tabTooltip {
-  box-sizing: border-box;
-  position: fixed;
-  z-index: 10000;
-  inline-size: max-content;
-  max-inline-size: min(340px, calc(100vw - 16px));
-  padding: 8px;
-  border: 1px solid var(--border-color);
-  border-radius: calc(8px * var(--ui-roundness));
-  background-color: var(--card-bg-color);
-  backdrop-filter: var(--card-bg-blur, none);
-  box-shadow: 0 8px 26px rgb(0 0 0 / 32%);
-  color: var(--primary-text-color);
-  font-family: var(--app-font-family);
-  font-weight: 400;
-  letter-spacing: 0;
-  pointer-events: none;
-  -webkit-app-region: no-drag;
-}
-
-.tabTooltip.withPreview {
-  inline-size: min(340px, calc(100vw - 16px));
-}
-
-.tabTooltipGroup {
-  align-items: center;
-  color: var(--secondary-text-color);
-  display: flex;
-  font-size: 11px;
-  gap: 6px;
-  margin-block-start: 3px;
-}
-
-.tabTooltip.withPreview .tabTooltipGroup {
-  margin-block-end: 7px;
-}
-
-.tabTooltipGroupIcon {
-  color: var(--tab-group-color);
-  flex: 0 0 auto;
-  font-size: 10px;
-}
-
-.tab-tooltip-enter-active,
-.tab-tooltip-leave-active {
-  transition: opacity 0.14s ease, transform 0.14s ease;
-}
-
-.tab-tooltip-enter-from,
-.tab-tooltip-leave-to {
-  opacity: 0;
-  transform: translateY(-4px) scale(0.985);
-}
-
-.tabTooltipPreview {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  aspect-ratio: 16 / 9;
-  inline-size: 100%;
-  overflow: hidden;
-  border-radius: calc(5px * var(--ui-roundness));
-  background-color: var(--secondary-card-bg-color);
-  backdrop-filter: var(--secondary-card-bg-blur, none);
-}
-
-.tabTooltipPreview img {
-  display: block;
-  inline-size: 100%;
-  block-size: 100%;
-  object-fit: contain;
-}
-
-.tabTooltipPreview .tabTooltipPreviewAvatar {
-  inline-size: auto;
-  block-size: 72%;
-  aspect-ratio: 1;
-  object-fit: cover;
-  border-radius: 50%;
-}
-
-.tabTooltipPreviewFallback {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  inline-size: 100%;
-  block-size: 100%;
-  color: var(--tertiary-text-color);
-}
-
-.tabTooltipFallbackIcon {
-  font-size: 24px;
-  opacity: 0.72;
-}
-
-.tabTooltipTitle {
-  margin-block-end: 7px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-size: 12px;
-  line-height: 1.35;
-}
-
-.tabTooltipTitle:only-child {
-  margin-block-end: 0;
-}
 </style>
