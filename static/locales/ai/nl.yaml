@@ -95,6 +95,7 @@ Stats:
   Hours: '{hours} uur'
   Hours and minutes: '{hours} uur {minutes} min'
 Home Page:
+  Keep disabled and hide this section: "Uitgeschakeld houden en deze sectie verbergen"
   Familiar description: "Geef voorrang aan onbekeken video’s van kanalen die je al leuk vindt."
   Balanced description: "Combineer vertrouwde kanalen met nieuwe die bij je interesses passen."
   Explore description: "Geef meer ruimte aan nieuwe kanalen die aansluiten bij je interesses."

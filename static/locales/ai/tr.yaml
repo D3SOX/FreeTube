@@ -95,6 +95,7 @@ Stats:
   Hours: '{hours} sa'
   Hours and minutes: '{hours} sa {minutes} dk'
 Home Page:
+  Keep disabled and hide this section: "Devre dışı bırakılmış olarak tut ve bu bölümü gizle"
   Familiar description: "Zaten sevdiğiniz kanallardan izlemediğiniz videolara öncelik verin."
   Balanced description: "Tanıdık kanalları ilgi alanlarınıza uyan yeni kanallarla harmanlayın."
   Explore description: "İlgi alanlarınızla ilgili yeni kanallara daha fazla yer verin."

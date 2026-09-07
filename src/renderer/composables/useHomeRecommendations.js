@@ -16,6 +16,7 @@ export function useHomeRecommendations(visible) {
   let candidates = []
   let generation = 0
   let requestController = null
+  let initialized = false
   let round = 0
   let limit = 24
   let feedId = crypto.randomUUID()
@@ -40,7 +41,7 @@ export function useHomeRecommendations(visible) {
   const recommendations = computed(() => enabled.value && hasHistory.value
     ? ranked.value.filter(video => {
         const record = store.state.recommendations.recommendationRecords[video.videoId]
-        return isVisible(video) && !store.getters.getHistoryCacheById[video.videoId] &&
+        return isVisible(video) &&
       !['dismiss', 'blockChannel'].includes(record?.feedback) &&
       !records.value.some(record => record.feedback === 'blockChannel' && record.authorId === video.authorId)
       })
@@ -74,7 +75,8 @@ export function useHomeRecommendations(visible) {
       .map(item => ({ ...item.video, recommendationReason: item.reason }))
   }
   const sourceIdentity = videos => videos.map(video => [video.videoId, video.timeWatched, video.title])
-  // Do not restart discovery on every playback tick or viewport impression.
+  // This identifies reusable candidates when opening Home, not a reason to
+  // replace a feed that is already on screen.
   const context = computed(() => JSON.stringify({
     visible: visible.value,
     enabled: enabled.value,
@@ -93,28 +95,27 @@ export function useHomeRecommendations(visible) {
   }))
 
   async function refresh(useCache = false, append = false) {
-    const requestGeneration = ++generation
-    requestController?.abort()
-    requestController = null
+    cancelRequest()
+    const requestGeneration = generation
     hasError.value = false
-    isLoading.value = false
     if (!visible.value || !enabled.value || !store.getters.getRememberHistory) {
-      candidates = []; ranked.value = []; cachedCandidates = null
+      clearFeed()
       return
     }
     if (!presented.value) return
+    if (!append) initialized = false
     if (!store.getters.getRecommendationEpoch) {
       try { await store.dispatch('loadRecommendations') } catch { hasError.value = true }
-      // The epoch update schedules a fresh generation with the loaded evidence.
-      return
+      if (requestGeneration !== generation || !store.getters.getRecommendationEpoch) return
     }
-    if (!hasHistory.value) { ranked.value = []; candidates = []; cachedCandidates = null; return }
+    if (!hasHistory.value) { clearFeed(); return }
     const requestContext = context.value
     if (!append) {
       limit = 24
       if (useCache && cachedCandidates?.context === requestContext && Date.now() - cachedCandidates.at < CACHE_LIFETIME) {
         candidates = cachedCandidates.videos; feedId = cachedCandidates.feedId; round = cachedCandidates.round
         rerank()
+        initialized = true
         return
       }
       candidates = []; ranked.value = []; feedId = crypto.randomUUID(); feedVersion.value++
@@ -129,7 +130,6 @@ export function useHomeRecommendations(visible) {
       .toSorted(([a], [b]) => (learned.channelWeights.get(b) ?? 0) - (learned.channelWeights.get(a) ?? 0))
       .slice(0, 12).flatMap(([id, entry]) => (entry.videos ?? []).slice(0, 30)
         .map(video => ({ ...video, recommendationSources: [{ type: 'subscription', id }] })))])
-    rerank(learned)
     isLoading.value = true
     requestController = new AbortController()
     const signal = requestController.signal
@@ -147,14 +147,15 @@ export function useHomeRecommendations(visible) {
         async () => (await getLocalSearchResults(query, searchSettings, familyFriendly, signal)).results,
         () => getInvidiousSearchResults(query, 1, searchSettings, signal), signal
       ),
-      onCandidates: videos => {
-        if (generation !== requestGeneration) return
-        candidates = mergeRecommendationCandidates([...candidates, ...videos]).slice(0, 1600); rerank(learned)
-      },
       isCancelled: () => generation !== requestGeneration,
       signal,
     })
     if (generation !== requestGeneration) return
+    // Publish one completed ranking so each source response cannot reshuffle
+    // cards while the user is choosing a video.
+    candidates = mergeRecommendationCandidates([...candidates, ...result.videos]).slice(0, 1600)
+    rerank(learned)
+    initialized = true
     hasError.value = result.failedSources > 0
     isLoading.value = false
     if (!hasError.value) cachedCandidates = { context: requestContext, videos: candidates, feedId, round, at: Date.now() }
@@ -166,16 +167,62 @@ export function useHomeRecommendations(visible) {
   async function feedback(video, type) {
     try {
       await store.dispatch('recordRecommendationEvent', { video, type })
-      rerank()
     } catch { hasError.value = true }
   }
   function recordImpression(video, visible, entry) {
     if (!visible || !presented.value || !enabled.value || entry?.target.closest('[aria-hidden="true"]')) return
     store.dispatch('recordRecommendationEvent', { type: 'impression', video, feedId }).catch(() => { hasError.value = true })
   }
-  watch([context, presented], () => refresh(true), { immediate: true })
+  function cancelRequest() {
+    generation++
+    requestController?.abort()
+    requestController = null
+    isLoading.value = false
+  }
+  function clearFeed() {
+    initialized = false
+    candidates = []; ranked.value = []; cachedCandidates = null
+  }
+  // Load persisted feedback before deciding whether there are any seeds.
+  const available = computed(() => visible.value && enabled.value && store.getters.getRememberHistory &&
+    (hasHistory.value || !store.getters.getRecommendationEpoch))
+  watch([available, presented], () => {
+    if (!available.value) {
+      cancelRequest()
+      clearFeed()
+    } else if (!presented.value) {
+      cancelRequest()
+    } else if (!initialized) {
+      refresh(true)
+    }
+  }, { immediate: true })
+  // Revoking learning or changing the backend cancels obsolete requests.
+  // A completed feed stays put; the next explicit refresh uses the new context.
+  watch([
+    () => store.getters.getRecommendationEpoch,
+    () => store.getters.getBackendPreference,
+    () => store.getters.getBackendFallback,
+    () => store.getters.getCurrentInvidiousInstanceUrl,
+    () => store.getters.getCurrentInvidiousInstanceAuthorization,
+    () => store.getters.getShowFamilyFriendlyOnly,
+  ], () => {
+    cachedCandidates = null
+    if (isLoading.value) {
+      cancelRequest()
+      initialized = true
+    }
+  })
+  watch([() => history.value.length === 0, () => store.getters.getRecommendationEpoch],
+    ([empty, epoch], [wasEmpty, previousEpoch]) => {
+      if (!empty || (wasEmpty && (!previousEpoch || epoch === previousEpoch))) return
+      // Clearing history also discards its visible suggestions when favorites
+      // or subscriptions still supply seeds. Only Refresh should replace them.
+      cancelRequest()
+      clearFeed()
+      initialized = available.value
+    })
   watch(exploration, () => rerank())
-  onBeforeUnmount(() => { generation++; requestController?.abort() })
+  onBeforeUnmount(cancelRequest)
   return {
     enabled,
     hasHistory,
@@ -189,7 +236,7 @@ export function useHomeRecommendations(visible) {
     feedback,
     recordImpression,
     setExploration: value => store.dispatch('updateRecommendationExploration', Number(value)),
-    reset: () => store.dispatch('resetRecommendations'),
+    reset: async () => { await store.dispatch('resetRecommendations'); await refresh() },
     setEnabled: value => store.dispatch('updateEnableHomeRecommendations', value),
   }
 }

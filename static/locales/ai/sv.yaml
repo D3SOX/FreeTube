@@ -95,6 +95,7 @@ Stats:
   Hours: '{hours} tim'
   Hours and minutes: '{hours} tim {minutes} min'
 Home Page:
+  Keep disabled and hide this section: "Behåll inaktiverat och dölj det här avsnittet"
   Familiar description: "Prioritera osedda videor från kanaler du redan gillar."
   Balanced description: "Blanda bekanta kanaler med nya som matchar dina intressen."
   Explore description: "Ge mer plats åt nya kanaler som är kopplade till dina intressen."

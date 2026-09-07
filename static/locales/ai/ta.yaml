@@ -98,6 +98,7 @@ Stats:
   Hours: '{hours} மணி'
   Hours and minutes: '{hours} மணி {minutes} நிமி.'
 Home Page:
+  Keep disabled and hide this section: "முடக்கப்பட்ட நிலையிலேயே வைத்து இந்தப் பகுதியை மறை"
   Familiar description: "நீங்கள் ஏற்கனவே விரும்பும் சேனல்களில் பார்க்காத காணொளிகளுக்கு முன்னுரிமை அளிக்கவும்."
   Balanced description: "பழக்கமான சேனல்களுடன் உங்கள் ஆர்வங்களுக்கு ஏற்ற புதிய சேனல்களைக் கலக்கவும்."
   Explore description: "உங்கள் ஆர்வங்களுடன் தொடர்புடைய புதிய சேனல்களுக்கு அதிக இடம் அளிக்கவும்."

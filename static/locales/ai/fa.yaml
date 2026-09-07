@@ -105,6 +105,7 @@ Stats:
   Hours: '{hours} ساعت'
   Hours and minutes: '{hours} ساعت و {minutes} دقیقه'
 Home Page:
+  Keep disabled and hide this section: "غیرفعال بماند و این بخش پنهان شود"
   Familiar description: "ویدیوهای ندیده از کانال‌هایی را ترجیح دهید که از قبل دوست دارید."
   Balanced description: "کانال‌های آشنا را با کانال‌های جدید متناسب با علایقتان ترکیب کنید."
   Explore description: "فضای بیشتری به کانال‌های جدید مرتبط با علایقتان بدهید."

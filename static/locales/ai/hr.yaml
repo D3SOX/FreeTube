@@ -95,6 +95,7 @@ Stats:
   Hours: '{hours} h'
   Hours and minutes: '{hours} h {minutes} min'
 Home Page:
+  Keep disabled and hide this section: "Ostavi isključeno i sakrij ovaj odjeljak"
   Familiar description: "Daj prednost nepogledanim videozapisima s kanala koje već voliš."
   Balanced description: "Kombiniraj poznate kanale s novima koji odgovaraju tvojim interesima."
   Explore description: "Daj više prostora novim kanalima povezanima s tvojim interesima."

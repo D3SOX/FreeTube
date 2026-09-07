@@ -95,6 +95,7 @@ Stats:
   Hours: '{hours} ώρες'
   Hours and minutes: '{hours} ώρες {minutes} λεπτά'
 Home Page:
+  Keep disabled and hide this section: "Διατήρηση απενεργοποίησης και απόκρυψη αυτής της ενότητας"
   Familiar description: "Προτίμηση σε βίντεο που δεν έχετε δει από κανάλια που ήδη σας αρέσουν."
   Balanced description: "Συνδυασμός γνωστών καναλιών με νέα που ταιριάζουν στα ενδιαφέροντά σας."
   Explore description: "Περισσότερος χώρος για νέα κανάλια σχετικά με τα ενδιαφέροντά σας."

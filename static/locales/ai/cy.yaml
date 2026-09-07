@@ -95,6 +95,7 @@ Stats:
   Hours: '{hours} awr'
   Hours and minutes: '{hours} awr {minutes} mun'
 Home Page:
+  Keep disabled and hide this section: "Cadw wedi ei analluogi a chuddio’r adran hon"
   Familiar description: "Ffafrio fideos heb eu gwylio o sianeli rydych eisoes yn eu mwynhau."
   Balanced description: "Cymysgu sianeli cyfarwydd â rhai newydd sy’n cyd-fynd â’ch diddordebau."
   Explore description: "Rhoi mwy o le i sianeli newydd sy’n gysylltiedig â’ch diddordebau."

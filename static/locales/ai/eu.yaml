@@ -95,6 +95,7 @@ Stats:
   Hours: '{hours} h'
   Hours and minutes: '{hours} h {minutes} min'
 Home Page:
+  Keep disabled and hide this section: "Mantendu desgaituta eta ezkutatu atal hau"
   Familiar description: "Lehenetsi ikusi gabeko bideoak dagoeneko gustuko dituzun kanaletatik."
   Balanced description: "Nahastu kanal ezagunak zure interesekin bat datozen kanal berriekin."
   Explore description: "Eman leku gehiago zure interesekin lotutako kanal berriei."

@@ -95,6 +95,7 @@ Stats:
   Hours: "{hours} e"
   Hours and minutes: "{hours} e {minutes} min"
 Home Page:
+  Keep disabled and hide this section: "Lezel diweredekaet ha kuzhat ar rann-mañ"
   Familiar description: "Roit ar c'hentañ plas d'ar videoioù n'ho peus ket gwelet eus chadennoù a blij deoc'h dija."
   Balanced description: "Meskit chadennoù anavezet gant re nevez a glot gant ho tec'hoù."
   Explore description: "Roit muioc'h a blas da chadennoù nevez liammet ouzh ho tec'hoù."

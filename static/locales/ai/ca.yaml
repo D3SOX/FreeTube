@@ -125,6 +125,7 @@ Stats:
   Hours: '{hours} h'
   Hours and minutes: '{hours} h {minutes} min'
 Home Page:
+  Keep disabled and hide this section: "Mantén les recomanacions desactivades i amaga aquesta secció"
   Familiar description: "Prioritza vídeos no vistos de canals que ja t’agraden."
   Balanced description: "Combina canals coneguts amb altres de nous que coincideixin amb els teus interessos."
   Explore description: "Dona més espai a canals nous relacionats amb els teus interessos."

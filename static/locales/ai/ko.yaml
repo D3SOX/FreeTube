@@ -102,6 +102,7 @@ Stats:
   Hours: '{hours}시간'
   Hours and minutes: '{hours}시간 {minutes}분'
 Home Page:
+  Keep disabled and hide this section: "비활성화 상태를 유지하고 이 섹션 숨기기"
   Familiar description: "이미 좋아하는 채널의 아직 보지 않은 동영상을 우선합니다."
   Balanced description: "익숙한 채널과 관심사에 맞는 새로운 채널을 섞어 추천합니다."
   Explore description: "관심사와 관련된 새로운 채널을 더 많이 추천합니다."

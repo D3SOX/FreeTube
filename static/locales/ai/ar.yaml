@@ -95,6 +95,7 @@ Stats:
   Hours: '{hours} ساعة'
   Hours and minutes: '{hours} ساعة {minutes} دقيقة'
 Home Page:
+  Keep disabled and hide this section: "إبقاء الاقتراحات معطلة وإخفاء هذا القسم"
   Familiar description: "فضّل الفيديوهات التي لم تشاهدها من قنوات تستمتع بها بالفعل."
   Balanced description: "امزج القنوات المألوفة بقنوات جديدة تناسب اهتماماتك."
   Explore description: "امنح مساحة أكبر لقنوات جديدة مرتبطة باهتماماتك."

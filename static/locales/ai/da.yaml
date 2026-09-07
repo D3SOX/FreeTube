@@ -97,6 +97,7 @@ Stats:
   Hours: '{hours} t.'
   Hours and minutes: '{hours} t. {minutes} min.'
 Home Page:
+  Keep disabled and hide this section: "Behold deaktiveret, og skjul denne sektion"
   Familiar description: "Foretræk videoer, du ikke har set, fra kanaler, du allerede kan lide."
   Balanced description: "Bland kendte kanaler med nye, der matcher dine interesser."
   Explore description: "Giv mere plads til nye kanaler med relation til dine interesser."

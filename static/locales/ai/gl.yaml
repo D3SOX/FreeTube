@@ -95,6 +95,7 @@ Stats:
   Hours: '{hours} h'
   Hours and minutes: '{hours} h {minutes} min'
 Home Page:
+  Keep disabled and hide this section: "Manter desactivadas e agochar esta sección"
   Familiar description: "Prioriza vídeos sen ver de canles que xa che gustan."
   Balanced description: "Combina canles coñecidas con outras novas que coincidan cos teus intereses."
   Explore description: "Dá máis espazo a canles novas relacionadas cos teus intereses."

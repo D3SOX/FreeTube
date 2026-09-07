@@ -95,6 +95,7 @@ Stats:
   Hours: '{hours} jam'
   Hours and minutes: '{hours} jam {minutes} mnt'
 Home Page:
+  Keep disabled and hide this section: "Tetap nonaktifkan dan sembunyikan bagian ini"
   Familiar description: "Utamakan video yang belum ditonton dari channel yang sudah Anda sukai."
   Balanced description: "Padukan channel yang dikenal dengan channel baru yang sesuai minat Anda."
   Explore description: "Beri lebih banyak ruang untuk channel baru yang terkait dengan minat Anda."

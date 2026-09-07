@@ -95,6 +95,7 @@ Stats:
   Hours: '{hours} שע׳'
   Hours and minutes: '{hours} שע׳ {minutes} דק׳'
 Home Page:
+  Keep disabled and hide this section: "להשאיר מושבת ולהסתיר את המקטע הזה"
   Familiar description: "העדפת סרטונים שטרם נצפו מערוצים שכבר אהבת."
   Balanced description: "שילוב ערוצים מוכרים עם ערוצים חדשים שתואמים לתחומי העניין שלך."
   Explore description: "מתן יותר מקום לערוצים חדשים הקשורים לתחומי העניין שלך."

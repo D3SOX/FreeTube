@@ -95,6 +95,7 @@ Stats:
   Hours: '{hours} ч'
   Hours and minutes: '{hours} ч {minutes} мин'
 Home Page:
+  Keep disabled and hide this section: "Оставяне изключено и скриване на този раздел"
   Familiar description: "Предпочитане на негледани видеоклипове от канали, които вече харесвате."
   Balanced description: "Смесване на познати канали с нови, които отговарят на интересите ви."
   Explore description: "Повече място за нови канали, свързани с интересите ви."

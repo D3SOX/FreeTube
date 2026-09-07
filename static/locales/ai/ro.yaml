@@ -95,6 +95,7 @@ Stats:
   Hours: '{hours} h'
   Hours and minutes: '{hours} h {minutes} min'
 Home Page:
+  Keep disabled and hide this section: "Păstrează dezactivat și ascunde această secțiune"
   Familiar description: "Preferă videoclipuri nevizionate de la canale care îți plac deja."
   Balanced description: "Combină canale cunoscute cu unele noi care corespund intereselor tale."
   Explore description: "Oferă mai mult spațiu canalelor noi legate de interesele tale."

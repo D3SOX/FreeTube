@@ -95,6 +95,7 @@ Stats:
   Hours: '{hours} 小時'
   Hours and minutes: '{hours} 小時 {minutes} 分鐘'
 Home Page:
+  Keep disabled and hide this section: "保持停用並隱藏此區塊"
   Familiar description: "優先推薦你已喜歡的頻道中尚未觀看的影片。"
   Balanced description: "混合推薦熟悉的頻道和符合你興趣的新頻道。"
   Explore description: "為與你興趣相關的新頻道提供更多推薦機會。"

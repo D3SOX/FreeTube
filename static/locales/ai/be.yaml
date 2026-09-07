@@ -101,6 +101,7 @@ Stats:
   Hours: '{hours} гад'
   Hours and minutes: '{hours} гад {minutes} хв'
 Home Page:
+  Keep disabled and hide this section: "Пакінуць выключаным і схаваць гэты раздзел"
   Familiar description: "Аддавайце перавагу непрагледжаным відэа з каналаў, якія вам ужо падабаюцца."
   Balanced description: "Спалучайце знаёмыя каналы з новымі, што адпавядаюць вашым інтарэсам."
   Explore description: "Давайце больш месца новым каналам, звязаным з вашымі інтарэсамі."
