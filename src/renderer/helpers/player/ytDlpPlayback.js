@@ -1,3 +1,4 @@
+import { ytDlp } from '../ytDlp'
 import { FormatUtils, Misc } from 'youtubei.js'
 
 import { MANIFEST_TYPE_DASH, MANIFEST_TYPE_HLS } from './utils'
@@ -104,7 +105,7 @@ async function cacheYtDlpPlaybackSource(videoId, cacheKey, source) {
   if (source.expiryDate === null) return
 
   try {
-    await window.ftElectron.ytDlpPlaybackCacheSet(
+    await ytDlp.ytDlpPlaybackCacheSet(
       videoId,
       cacheKey,
       source.expiryDate.getTime(),
@@ -131,7 +132,7 @@ export function invalidateYtDlpPlaybackSource(videoId) {
   if (playbackSourceCache.delete(videoId)) {
     notifyPlaybackSourceCacheChanged()
   }
-  window.ftElectron.ytDlpPlaybackCacheDelete(videoId).catch(error => {
+  ytDlp.ytDlpPlaybackCacheDelete(videoId).catch(error => {
     console.warn('Could not remove an entry from the persistent yt-dlp playback cache', error)
   })
 }
@@ -140,7 +141,7 @@ export function invalidateAllYtDlpPlaybackSources() {
   if (playbackSourceCache.clear()) {
     notifyPlaybackSourceCacheChanged()
   }
-  return window.ftElectron.ytDlpPlaybackCacheClear().catch(error => {
+  return ytDlp.ytDlpPlaybackCacheClear().catch(error => {
     console.warn('Could not clear the persistent yt-dlp playback cache', error)
     return false
   })
@@ -567,7 +568,7 @@ async function loadYtDlpPlaybackSource(
 
   if (cachedSource === null) {
     try {
-      const entry = await window.ftElectron.ytDlpPlaybackCacheGet(videoId, effectiveCacheKey)
+      const entry = await ytDlp.ytDlpPlaybackCacheGet(videoId, effectiveCacheKey)
       if (entry !== null) {
         const source = {
           ...entry.source,
@@ -582,7 +583,7 @@ async function loadYtDlpPlaybackSource(
         cachedSource = playbackSourceCache.get(videoId, effectiveCacheKey)
 
         if (cachedSource === null) {
-          await window.ftElectron.ytDlpPlaybackCacheDelete(videoId)
+          await ytDlp.ytDlpPlaybackCacheDelete(videoId)
         }
       }
     } catch (error) {
@@ -611,7 +612,7 @@ async function loadYtDlpPlaybackSource(
       onDefaultClientsFallback?.()
     }
 
-    const info = await window.ftElectron.ytDlpGetPlaybackInfo(
+    const info = await ytDlp.ytDlpGetPlaybackInfo(
       videoId,
       useDefaultClients,
       useAuthentication,

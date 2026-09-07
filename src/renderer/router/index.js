@@ -1,3 +1,4 @@
+import { supportsYtDlp } from '../helpers/ytDlpCapabilities'
 import { defineAsyncComponent, h, markRaw, shallowRef } from 'vue'
 import { createRouter, createWebHashHistory } from 'vue-router'
 import { getFixedInternalRouteTitle } from '../../internalRoutes'
@@ -147,7 +148,7 @@ export const routes = [
     },
     component: History
   },
-  ...(process.env.IS_ELECTRON
+  ...(supportsYtDlp
     ? [{
         path: '/downloads',
         name: 'downloads',

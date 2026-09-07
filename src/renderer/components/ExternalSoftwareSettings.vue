@@ -16,6 +16,7 @@
         </h4>
         <div class="externalSoftwareToolControls">
           <FtSelect
+            v-if="!IS_CAPACITOR"
             class="externalSoftwareSelect"
             :placeholder="t('Settings.External Software Settings.yt-dlp Source')"
             :value="ytDlpSource"
@@ -103,6 +104,7 @@
         </h4>
         <div class="externalSoftwareToolControls">
           <FtSelect
+            v-if="!IS_CAPACITOR"
             class="externalSoftwareSelect"
             :placeholder="t('Settings.External Software Settings.FFmpeg Source')"
             :value="ytDlpFfmpegSource"
@@ -170,7 +172,7 @@
           </p>
         </div>
         <FtButton
-          v-if="ytDlpFfmpegSource === 'managed'"
+          v-if="!IS_CAPACITOR && ytDlpFfmpegSource === 'managed'"
           class="externalSoftwareToolAction"
           :label="ffmpegBinaryDownloadInProgress
             ? t('Settings.External Software Settings.Downloading FFmpeg and FFprobe')
@@ -309,6 +311,7 @@
 </template>
 
 <script setup>
+import { ytDlp } from '../helpers/ytDlp'
 import { FtIcon } from '@opentubex/icons'
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -332,7 +335,7 @@ const SOURCE_VALUES = ['system', 'managed']
 const CHANNEL_NAMES = ['Stable', 'Nightly', 'Master']
 const CHANNEL_VALUES = ['stable', 'nightly', 'master']
 const UPDATE_MODE_VALUES = ['automatic', 'ask', 'manual']
-const AUTHENTICATION_MODE_VALUES = ['none', 'file', 'browser']
+const AUTHENTICATION_MODE_VALUES = process.env.IS_CAPACITOR ? ['none', 'file'] : ['none', 'file', 'browser']
 
 const sourceNames = computed(() => [
   t('Settings.External Software Settings.Sources.System'),
@@ -348,11 +351,12 @@ const updateModeNames = computed(() => [
 const authenticationModeNames = computed(() => [
   t('Settings.External Software Settings.Cookie Sources.None'),
   t('Settings.External Software Settings.Cookie Sources.File'),
-  t('Settings.External Software Settings.Cookie Sources.Browser')
+  ...(!IS_CAPACITOR ? [t('Settings.External Software Settings.Cookie Sources.Browser')] : [])
 ])
 
 /** @type {import('vue').ComputedRef<'system' | 'managed'>} */
-const ytDlpSource = computed(() => store.getters.getYtDlpSource)
+const IS_CAPACITOR = !!process.env.IS_CAPACITOR
+const ytDlpSource = computed(() => IS_CAPACITOR ? 'managed' : store.getters.getYtDlpSource)
 
 /** @type {import('vue').ComputedRef<'stable' | 'nightly' | 'master'>} */
 const ytDlpChannel = computed(() => store.getters.getYtDlpChannel)
@@ -361,7 +365,7 @@ const ytDlpChannel = computed(() => store.getters.getYtDlpChannel)
 const ytDlpPath = computed(() => store.getters.getYtDlpPath)
 
 /** @type {import('vue').ComputedRef<'none' | 'file' | 'browser'>} */
-const ytDlpPlaybackAuthMode = computed(() => store.getters.getYtDlpPlaybackAuthMode)
+const ytDlpPlaybackAuthMode = computed(() => IS_CAPACITOR && store.getters.getYtDlpPlaybackAuthMode === 'browser' ? 'none' : store.getters.getYtDlpPlaybackAuthMode)
 
 /** @type {import('vue').ComputedRef<string>} */
 const ytDlpPlaybackCookiesPath = computed(() => store.getters.getYtDlpPlaybackCookiesPath)
@@ -377,7 +381,7 @@ const ytDlpPlaybackAlwaysUseCookies = computed(() => store.getters.getYtDlpPlayb
 const ytDlpSubtitleUseCookies = computed(() => store.getters.getYtDlpSubtitleUseCookies)
 
 /** @type {import('vue').ComputedRef<'system' | 'managed'>} */
-const ytDlpFfmpegSource = computed(() => store.getters.getYtDlpFfmpegSource)
+const ytDlpFfmpegSource = computed(() => IS_CAPACITOR ? 'managed' : store.getters.getYtDlpFfmpegSource)
 
 /** @type {import('vue').ComputedRef<string>} */
 const ytDlpFfmpegPath = computed(() => store.getters.getYtDlpFfmpegPath)
@@ -461,11 +465,11 @@ let refreshTimeout = null
 /**
  * A failed check has to be reported as "not available" rather than left pending,
  * otherwise the status stays at "Checking…" and the download buttons stay disabled.
- * @param {Parameters<typeof window.ftElectron.ytDlpGetInfo>[0]} options
+ * @param {Parameters<typeof ytDlp.ytDlpGetInfo>[0]} options
  */
 async function getBinariesInfo(options) {
   try {
-    return await window.ftElectron.ytDlpGetInfo(options)
+    return await ytDlp.ytDlpGetInfo(options)
   } catch (error) {
     console.error('Checking the yt-dlp, FFmpeg, and FFprobe binaries failed', error)
 
@@ -567,7 +571,7 @@ function updateBinaryDownloadProgress(progress) {
 onMounted(() => {
   refreshBinariesInfo()
 
-  window.ftElectron.setYtDlpBinaryDownloadProgressListener((progress) => {
+  ytDlp.setYtDlpBinaryDownloadProgressListener((progress) => {
     const inProgress = progress.binary === 'yt-dlp'
       ? ytDlpBinaryDownloadInProgress
       : ffmpegBinaryDownloadInProgress
@@ -596,7 +600,7 @@ onBeforeUnmount(() => {
   managedInfoRequestId++
   activeBinaryDownloads.clear()
   binaryDownloadPercentages.clear()
-  window.ftElectron.setYtDlpBinaryDownloadProgressListener(null)
+  ytDlp.setYtDlpBinaryDownloadProgressListener(null)
 })
 
 // Re-check path-dependent system binaries after edits. Source switches use
@@ -705,7 +709,7 @@ async function downloadBinary(binary) {
   inProgress.value = true
 
   try {
-    const result = await window.ftElectron.ytDlpDownloadBinary(binary)
+    const result = await ytDlp.ytDlpDownloadBinary(binary)
 
     if (result != null && 'version' in result) {
       const key = binary === 'yt-dlp' ? 'ytDlp' : 'ffmpeg'
@@ -753,7 +757,7 @@ async function downloadBinary(binary) {
  */
 async function chooseExecutablePath(binary) {
   const currentPath = binary === 'yt-dlp' ? ytDlpPath.value : ytDlpFfmpegPath.value
-  const path = await window.ftElectron.ytDlpChooseExecutable(currentPath)
+  const path = await ytDlp.ytDlpChooseExecutable(currentPath)
 
   if (typeof path === 'string' && path.length > 0) {
     store.dispatch(binary === 'yt-dlp' ? 'updateYtDlpPath' : 'updateYtDlpFfmpegPath', path)
@@ -761,7 +765,7 @@ async function chooseExecutablePath(binary) {
 }
 
 async function chooseCookiesPath() {
-  const path = await window.ftElectron.ytDlpChooseCookies(ytDlpPlaybackCookiesPath.value)
+  const path = await ytDlp.ytDlpChooseCookies(ytDlpPlaybackCookiesPath.value)
 
   if (typeof path === 'string' && path.length > 0) {
     store.dispatch('updateYtDlpPlaybackCookiesPath', path)
@@ -769,7 +773,7 @@ async function chooseCookiesPath() {
 }
 
 async function chooseBrowserProfilePath() {
-  const path = await window.ftElectron.ytDlpChooseBrowserProfile(ytDlpPlaybackCookiesBrowserProfile.value)
+  const path = await ytDlp.ytDlpChooseBrowserProfile(ytDlpPlaybackCookiesBrowserProfile.value)
 
   if (typeof path === 'string' && path.length > 0) {
     store.dispatch('updateYtDlpPlaybackCookiesBrowserProfile', path)

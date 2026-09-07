@@ -85,7 +85,7 @@ import { MUSIC_MEDIA_TYPE } from '../../helpers/player/musicMediaType'
 import { resolveSegmentPrefetchLimit } from '../../helpers/player/segmentPrefetch'
 import { AUTO_QUALITY_FALLBACK, streamsSupportAutoQuality } from '../../helpers/player/autoQuality'
 import { setupSabrScheme } from '../../helpers/player/SabrSchemePlugin'
-import { shouldUseGoogleVideoPostRequest } from '../../helpers/player/playbackRequestPolicy'
+import { prepareGoogleVideoRequest } from '../../helpers/player/playbackRequestPolicy'
 import { getRememberedPlayerVolume, setRememberedPlayerVolume } from '../../helpers/player/volume-storage'
 import { parseChannelPreferences } from '../../helpers/channel-preferences'
 import { findLegacyFormatForQuality } from '../../helpers/player/legacyFormats'
@@ -6703,19 +6703,7 @@ export default defineComponent({
         const url = new URL(request.uris[0])
         const isSabrRequest = props.sabrData && url.protocol === `${props.sabrData.scheme}:`
 
-        // only when we aren't proxying through Invidious,
-        // it doesn't like the range param and makes get requests to youtube anyway
-        if (shouldUseGoogleVideoPostRequest(url, isSabrRequest)) {
-          request.method = 'POST'
-          request.body = new Uint8Array([0x78, 0]) // protobuf: { 15: 0 } (no idea what it means but this is what YouTube uses)
-
-          if (request.headers.Range) {
-            request.uris[0] += `&range=${request.headers.Range.split('=')[1]}`
-            delete request.headers.Range
-          }
-
-          request.uris[0] += '&alr=yes'
-        }
+        prepareGoogleVideoRequest(request, isSabrRequest)
       }
     }
 

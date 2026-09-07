@@ -1526,6 +1526,8 @@ CommandPalette:
     Download Finished: لم يعد هذا التنزيل قيد التشغيل
     Video: افتح الفيديو أولاً
 Downloads:
+  Export Failed: "تعذر حفظ الملف الذي تم تنزيله. اختر مجلد تنزيلات يمكن الكتابة فيه وحاول مجددًا."
+  Remove File Permanently Warning: "سيؤدي هذا إلى حذف \"{title}\" نهائيًا."
   Download: تحميل
   Download Video: تحميل فيديو
   Download Playlist: تحميل قائمة التشغيل

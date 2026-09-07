@@ -1,0 +1,156 @@
+/** @typedef {import('./main/ytDlp').YtDlpPlaybackFormat} YtDlpPlaybackFormat */
+/** @typedef {import('./main/ytDlp').YtDlpPlaybackCaption} YtDlpPlaybackCaption */
+
+const PLAYBACK_FORMAT_OUTPUT_FIELDS = [
+  'format_id',
+  'url',
+  'manifest_url',
+  'protocol',
+  'ext',
+  'container',
+  'vcodec',
+  'acodec',
+  'width',
+  'height',
+  'fps',
+  'tbr',
+  'asr',
+  'audio_channels',
+  'language',
+  'format_note',
+  'dynamic_range',
+  'available_at',
+  'target_duration',
+  // Every Post-Live-DVR fragment carries the total count, so one is enough.
+  'fragments.0.fragment_count'
+].join(',')
+export const PLAYBACK_INFO_OUTPUT_TEMPLATE = [
+  '{"title":%(title|null)j',
+  ',"is_live":%(is_live|null)j',
+  ',"live_status":%(live_status|null)j',
+  ',"duration":%(duration|null)j',
+  ',"manifest_url":%(manifest_url|null)j',
+  ',"requested_subtitles":%(requested_subtitles|null)j',
+  `,"formats":%(formats.:.{${PLAYBACK_FORMAT_OUTPUT_FIELDS}})j`,
+  // Selecting sb0 keeps the complete high-resolution storyboard without
+  // retaining the much larger media-fragment arrays from every format.
+  ',"storyboard":%(.{protocol,width,height,fps,rows,columns,fragments})j}'
+].join('')
+
+/**
+ * @param {unknown} value
+ * @returns {number | null}
+ */
+export function toFiniteNumber(value) {
+  const number = typeof value === 'string' ? parseFloat(value) : value
+  return typeof number === 'number' && Number.isFinite(number) ? number : null
+}
+
+/**
+ * @param {unknown} value
+ * @returns {string | null}
+ */
+export function toNonEmptyString(value) {
+  return typeof value === 'string' && value.length > 0 ? value : null
+}
+
+/**
+ * @param {Record<string, unknown>} format
+ * @returns {YtDlpPlaybackFormat}
+ */
+export function mapPlaybackFormat(format) {
+  const bitrate = toFiniteNumber(format.tbr)
+
+  return {
+    formatId: String(format.format_id),
+    url: toNonEmptyString(format.url),
+    manifestUrl: toNonEmptyString(format.manifest_url),
+    protocol: typeof format.protocol === 'string' ? format.protocol : '',
+    ext: typeof format.ext === 'string' ? format.ext : '',
+    container: toNonEmptyString(format.container),
+    vcodec: toNonEmptyString(format.vcodec),
+    acodec: toNonEmptyString(format.acodec),
+    width: toFiniteNumber(format.width),
+    height: toFiniteNumber(format.height),
+    fps: toFiniteNumber(format.fps),
+    // yt-dlp reports bitrates in kbit/s
+    bitrate: bitrate === null ? null : Math.round(bitrate * 1000),
+    audioSampleRate: toFiniteNumber(format.asr),
+    audioChannels: toFiniteNumber(format.audio_channels),
+    language: toNonEmptyString(format.language),
+    formatNote: toNonEmptyString(format.format_note),
+    dynamicRange: toNonEmptyString(format.dynamic_range),
+    availableAt: toFiniteNumber(format.available_at),
+    targetDuration: toFiniteNumber(format.target_duration),
+    fragmentCount: toFiniteNumber(format['fragments.0.fragment_count']) ??
+      (Array.isArray(format.fragments) ? format.fragments.length : null)
+  }
+}
+
+/**
+ * Maps yt-dlp's selected WebVTT subtitles and keeps translated tracks separate,
+ * so the player can load translations only when the user selects one.
+ * @param {unknown} requestedSubtitles
+ * @returns {{ captions: YtDlpPlaybackCaption[], captionTranslations: YtDlpPlaybackCaption[] }}
+ */
+export function mapPlaybackCaptions(requestedSubtitles) {
+  if (requestedSubtitles === null || typeof requestedSubtitles !== 'object') {
+    return { captions: [], captionTranslations: [] }
+  }
+
+  const captions = new Map()
+  const captionTranslations = new Map()
+
+  for (const [requestedLanguage, subtitle] of Object.entries(requestedSubtitles)) {
+    if (subtitle === null || typeof subtitle !== 'object' || subtitle.ext !== 'vtt') continue
+
+    const subtitleUrl = toNonEmptyString(subtitle.url)
+    if (subtitleUrl === null) continue
+
+    let url
+    try {
+      url = new URL(subtitleUrl)
+    } catch {
+      continue
+    }
+    if (url.protocol !== 'https:') continue
+
+    const sourceLanguage = toNonEmptyString(url.searchParams.get('lang'))
+    const rawTargetLanguage = toNonEmptyString(url.searchParams.get('tlang'))
+    const sourceSuffix = sourceLanguage === null ? '' : `-${sourceLanguage}`
+    const targetLanguage = rawTargetLanguage?.endsWith(sourceSuffix) && sourceSuffix !== ''
+      ? rawTargetLanguage.slice(0, -sourceSuffix.length)
+      : rawTargetLanguage
+    const isTranslation = targetLanguage !== null && targetLanguage !== sourceLanguage
+    const language = isTranslation
+      ? targetLanguage
+      : sourceLanguage ?? requestedLanguage.replace(/-orig$/, '')
+    const subtitleName = toNonEmptyString(subtitle.name)
+    const label = subtitleName ?? language
+    const caption = {
+      url: url.toString(),
+      language,
+      label,
+      mimeType: 'text/vtt',
+      ...(isTranslation
+        ? {
+            id: `yt-dlp:${requestedLanguage}`,
+            translationName: label,
+            ...(sourceLanguage === null ? {} : { originalLanguage: sourceLanguage })
+          }
+        : { isAutoGenerated: true })
+    }
+    const destination = isTranslation ? captionTranslations : captions
+    const existing = destination.get(language)
+    const priority = Number(requestedLanguage === language) + Number(subtitleName !== null)
+
+    if (existing === undefined || priority > existing.priority) {
+      destination.set(language, { caption, priority })
+    }
+  }
+
+  return {
+    captions: [...captions.values()].map(({ caption }) => caption),
+    captionTranslations: [...captionTranslations.values()].map(({ caption }) => caption)
+  }
+}

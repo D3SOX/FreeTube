@@ -392,6 +392,7 @@
 </template>
 
 <script setup>
+import { supportsYtDlp } from '../../helpers/ytDlpCapabilities'
 import { FtIcon } from '@opentubex/icons'
 import { computed, onBeforeUnmount, onMounted, ref, toRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -840,7 +841,7 @@ const extraThumbnailActionButton = computed(() => {
         icon: ['fab', 'youtube']
       }
     case 'download':
-      return process.env.IS_ELECTRON && enableDownloads.value
+      return supportsYtDlp && enableDownloads.value
         ? {
             title: t('Downloads.Download Video'),
             icon: ['fas', 'download']
@@ -936,7 +937,7 @@ const dropdownOptions = computed(() => {
           icon: ['fas', 'trash']
         }]
       : [],
-    ...(process.env.IS_ELECTRON && enableDownloads.value && !isUpcoming.value
+    ...(supportsYtDlp && enableDownloads.value && !isUpcoming.value
       ? [{
           label: t('Downloads.Download Video'),
           value: 'download',

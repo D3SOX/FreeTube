@@ -1,3 +1,5 @@
+import { normalizeAutomaticDownloadRule } from './automaticDownloadRules.js'
+
 const FEED_TYPES = ['videos', 'shorts', 'live', 'posts']
 
 export class AndroidSubscriptionRefreshPayloadError extends Error {
@@ -83,6 +85,7 @@ export function createSubscriptionRefreshStartController() {
  * The native side receives channel IDs only, never browser datastore files.
  * @param {{
  *   profiles: object[],
+ *   automaticDownloadRules?: Record<string, object>,
  *   closedAppRefreshEnabled: boolean,
  *   intervals: Record<string, string | number>,
  *   hiddenFeedTypes: string[],
@@ -93,6 +96,16 @@ export function createSubscriptionRefreshStartController() {
  * }} input
  */
 export function createAndroidSubscriptionRefreshConfiguration(input) {
+  const automaticChannels = Object.fromEntries(FEED_TYPES.map(feedType => [feedType,
+    (input.profiles?.[0]?.subscriptions ?? []).filter(channel => {
+      const rawRule = input.automaticDownloadRules?.[channel.id]
+      if (!rawRule || feedType === 'posts') return false
+      const rule = normalizeAutomaticDownloadRule(rawRule)
+      if (feedType === 'shorts') return rule.includeShorts
+      if (feedType === 'live') return rule.includeLivestreams
+      return rule.includeVideos || rule.includeLivestreams
+    }).map(channel => channel.id)
+  ]))
   const hiddenFeedTypes = new Set(input.hiddenFeedTypes)
   const intervals = Object.fromEntries(FEED_TYPES.map(feedType => {
     const interval = Number(input.intervals[feedType])
@@ -119,7 +132,7 @@ export function createAndroidSubscriptionRefreshConfiguration(input) {
             (!Array.isArray(channel.feedTypes) || channel.feedTypes.includes(feedType))
             ))
             .map(channel => channel.id)
-          return [feedType, [...new Set(channelIds)]]
+          return [feedType, [...new Set([...channelIds, ...automaticChannels[feedType]])]]
         }))
         return [{ id: profile._id, channels }]
       })

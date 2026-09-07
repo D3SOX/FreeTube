@@ -237,7 +237,7 @@
           v-if="activeDownload.status === 'failed' && activeDownload.errorMessage !== 'ENOENT' && activeDownload.errorMessage"
           class="downloadErrorDetails"
         >
-          {{ activeDownload.errorMessage }}
+          {{ downloadErrorMessage(activeDownload.errorMessage, t) }}
         </p>
         <p
           v-if="activeDownload.titleTruncated"
@@ -337,6 +337,7 @@
 </template>
 
 <script setup>
+import { ytDlp } from '../../helpers/ytDlp'
 import { FtIcon } from '@opentubex/icons'
 import { computed, nextTick, reactive, ref, useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -353,6 +354,7 @@ import FtToggleSwitch from '../FtToggleSwitch/FtToggleSwitch.vue'
 import store from '../../store/index'
 import { DEFAULT_DOWNLOAD_TEMPLATES, replaceAutomaticDownloadTemplateReferences } from '../../helpers/downloadTemplates'
 import { showToast } from '../../helpers/utils'
+import { downloadErrorMessage } from '../../helpers/downloadErrors'
 
 const props = defineProps({
   videoId: { type: String, default: '' },
@@ -579,17 +581,17 @@ const runningDownload = Object.values(store.getters.getYtDlpDownloads).filter(do
 ).at(-1)
 const downloadId = ref(runningDownload?.id ?? null)
 const downloadFolderPath = computed(() => store.getters.getYtDlpDownloadFolderPath)
-const downloadFolderRequired = computed(() => window.ftElectron.isFlatpak && downloadFolderPath.value === '')
+const downloadFolderRequired = computed(() => (process.env.IS_CAPACITOR || window.ftElectron?.isFlatpak) && downloadFolderPath.value === '')
 const downloadFolderDisplay = computed(() => downloadFolderPath.value || (downloadFolderRequired.value
   ? t('Downloads.Folder Required')
   : t('Downloads.System Downloads Folder')))
 
 async function chooseDownloadFolder() {
-  const path = await window.ftElectron.ytDlpChooseDownloadFolder(downloadFolderPath.value)
+  const path = await ytDlp.ytDlpChooseDownloadFolder(downloadFolderPath.value)
   if (typeof path === 'string' && path.length > 0) store.dispatch('updateYtDlpDownloadFolderPath', path)
 }
 async function startDownload() {
-  const result = await window.ftElectron.ytDlpDownload({
+  const result = await ytDlp.ytDlpDownload({
     ...normalizeOptions(options),
     videoId: props.videoId,
     videoIds: [...props.videoIds],
@@ -624,7 +626,7 @@ const statusLine = computed(() => {
   return download.errorMessage === 'ENOENT' ? t('Downloads.yt-dlp Not Found') : t('Downloads.Download Failed')
 })
 function cancelDownload() {
-  if (downloadId.value !== null) window.ftElectron.ytDlpCancelDownload(downloadId.value)
+  if (downloadId.value !== null) ytDlp.ytDlpCancelDownload(downloadId.value)
 }
 function openDownloads() {
   close()

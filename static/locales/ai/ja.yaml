@@ -1514,6 +1514,8 @@ CommandPalette:
     Download Finished: このダウンロードはすでに終了しています
     Video: 先に動画を開いてください
 Downloads:
+  Export Failed: "ダウンロードしたファイルを保存できませんでした。書き込み可能なダウンロードフォルダーを選択して、もう一度お試しください。"
+  Remove File Permanently Warning: "「{title}」を完全に削除します。"
   Download: ダウンロード
   Download Video: 動画をダウンロード
   Download Playlist: プレイリストをダウンロード

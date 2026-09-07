@@ -383,6 +383,8 @@
 </template>
 
 <script setup>
+import { initializeAndroidYtDlp, ytDlp } from './helpers/ytDlp'
+import { parseAutomaticDownloadRules } from './helpers/automaticDownloadRules'
 import { isAppHidden, setAndroidAppVisible } from './helpers/appVisibility.js'
 import { FtIcon } from '@opentubex/icons'
 import { App as CapacitorApp } from '@capacitor/app'
@@ -792,6 +794,7 @@ let removeConfirmMultipleTabsActionListener = null
 let removeOpenUrlListener = null
 let removeCapacitorIntegrationListeners = null
 let removeYtDlpBinaryUpdatedListener = null
+let removeAndroidYtDlpSettingsListener = null
 let removeOpenTabOrganizerListener = null
 let removeAndroidSubscriptionRefreshCancelledListener = null
 let removeGamepadNavigation = () => {}
@@ -879,11 +882,11 @@ const tabSwitcherSelectedTabId = computed(() => {
  * @param {('yt-dlp' | 'ffmpeg')[] | null} requestedUpdates
  */
 async function initializeManagedExternalSoftware(requestedUpdates = null) {
-  if (!isElectron) {
+  if (!isElectron && !isCapacitor) {
     return
   }
 
-  const info = await window.ftElectron.ytDlpGetInfo()
+  const info = await ytDlp.ytDlpGetInfo()
   if (info === null) {
     return
   }
@@ -907,7 +910,7 @@ async function initializeManagedExternalSoftware(requestedUpdates = null) {
   const automaticUpdates = updateMode === 'automatic'
   let missingManagedBinaries = missingBinaries
   if (!automaticUpdates && missingBinaries.length > 0) {
-    const managedInfo = await window.ftElectron.ytDlpGetInfo({
+    const managedInfo = await ytDlp.ytDlpGetInfo({
       ytDlpSource: 'managed',
       ytDlpPath: '',
       ffmpegSource: 'managed',
@@ -924,12 +927,12 @@ async function initializeManagedExternalSoftware(requestedUpdates = null) {
   }
 
   if (missingManagedBinaries.includes('yt-dlp') ||
-    (store.getters.getYtDlpSource === 'managed' &&
+    ((isCapacitor || store.getters.getYtDlpSource === 'managed') &&
       (automaticUpdates || requestedUpdates?.includes('yt-dlp')))) {
     binariesToUpdate.push('yt-dlp')
   }
   if (missingManagedBinaries.includes('ffmpeg') || missingManagedBinaries.includes('ffprobe') ||
-    (store.getters.getYtDlpFfmpegSource === 'managed' &&
+    (!isCapacitor && store.getters.getYtDlpFfmpegSource === 'managed' &&
       (automaticUpdates || requestedUpdates?.includes('ffmpeg')))) {
     binariesToUpdate.push('ffmpeg')
   }
@@ -980,7 +983,7 @@ async function initializeManagedExternalSoftware(requestedUpdates = null) {
   const progressByBinary = Object.fromEntries(
     binariesToUpdate.map(binary => [binary, 0])
   )
-  const removeProgressListener = window.ftElectron.addYtDlpBinaryDownloadProgressListener(({ binary, percent, inProgress }) => {
+  const removeProgressListener = ytDlp.addYtDlpBinaryDownloadProgressListener(({ binary, percent, inProgress }) => {
     if (!binariesToUpdate.includes(binary) || !inProgress || percent === null) {
       return
     }
@@ -1005,7 +1008,7 @@ async function initializeManagedExternalSoftware(requestedUpdates = null) {
   try {
     const results = await Promise.all(binariesToUpdate.map(async binary => {
       try {
-        return { binary, result: await window.ftElectron.ytDlpDownloadBinary(binary) }
+        return { binary, result: await ytDlp.ytDlpDownloadBinary(binary) }
       } catch (error) {
         return { binary, result: { error: String(error) } }
       }
@@ -1050,16 +1053,16 @@ async function initializeManagedExternalSoftware(requestedUpdates = null) {
  */
 async function notifyAboutManagedExternalSoftwareUpdates(binariesInstalledThisRun) {
   const candidates = []
-  if (store.getters.getYtDlpSource === 'managed' && !binariesInstalledThisRun.includes('yt-dlp')) {
+  if ((isCapacitor || store.getters.getYtDlpSource === 'managed') && !binariesInstalledThisRun.includes('yt-dlp')) {
     candidates.push('yt-dlp')
   }
-  if (store.getters.getYtDlpFfmpegSource === 'managed' &&
+  if (!isCapacitor && store.getters.getYtDlpFfmpegSource === 'managed' &&
     !binariesInstalledThisRun.includes('ffmpeg') && !binariesInstalledThisRun.includes('ffprobe')) {
     candidates.push('ffmpeg')
   }
 
   const checks = await Promise.all(candidates.map(async binary => {
-    const result = await window.ftElectron.ytDlpCheckBinaryUpdate(binary)
+    const result = await ytDlp.ytDlpCheckBinaryUpdate(binary)
     if (result !== null && 'error' in result) {
       console.warn(`Checking for a managed ${binary} update failed`, result.error)
     }
@@ -1157,12 +1160,12 @@ onMounted(async () => {
     onPlayPause: handleGamepadPlayPause,
   })
   let tabsReady = Promise.resolve()
+  if (isElectron || isCapacitor) {
+    removeYtDlpBinaryUpdatedListener = ytDlp.addYtDlpBinaryUpdatedListener(invalidateAllYtDlpPlaybackSources)
+  }
 
   if (isElectron) {
     window.addEventListener(MANAGED_TOOLS_UPDATE_PREVIEW_EVENT, previewManagedExternalSoftwareUpdatePrompt)
-    removeYtDlpBinaryUpdatedListener = window.ftElectron.addYtDlpBinaryUpdatedListener(
-      invalidateAllYtDlpPlaybackSources
-    )
     tabsReady = store.dispatch('initializeTabs').then((removeListener) => {
       removeTabsStateListener = removeListener
       window.ftElectron.tabs.rendererReady()
@@ -1171,7 +1174,10 @@ onMounted(async () => {
     tabsReady = capacitorTabService.initialize(route)
   }
 
-  const settingsReady = store.dispatch('grabUserSettings')
+  const settingsReady = store.dispatch('grabUserSettings').then(tutorialState => {
+    removeAndroidYtDlpSettingsListener = initializeAndroidYtDlp()
+    return tutorialState
+  })
   const customThemesReady = loadCustomThemes().catch((error) => {
     console.error('Failed to load custom theme:', error)
     return []
@@ -1400,6 +1406,7 @@ onBeforeUnmount(() => {
   removeOpenUrlListener?.()
   removeCapacitorIntegrationListeners?.()
   removeYtDlpBinaryUpdatedListener?.()
+  removeAndroidYtDlpSettingsListener?.()
   removeOpenTabOrganizerListener?.()
   removeAndroidSubscriptionRefreshCancelledListener?.()
 })
@@ -1486,6 +1493,7 @@ const androidSubscriptionRefreshConfiguration = computed(() => {
 
   return createAndroidSubscriptionRefreshConfiguration({
     profiles: store.getters.getProfileList,
+    automaticDownloadRules: store.getters.getEnableDownloads ? parseAutomaticDownloadRules(store.getters.getYtDlpAutomaticDownloadRules) : {},
     closedAppRefreshEnabled: enableClosedAppSubscriptionRefresh.value,
     intervals: {
       videos: subscriptionFeedAutoRefreshInterval.value,

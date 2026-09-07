@@ -1,3 +1,4 @@
+import { ytDlp } from './ytDlp'
 import {
   DefaultKeyboardShortcuts,
   getConfiguredKeyboardShortcuts,
@@ -143,7 +144,7 @@ export function createCommandPaletteRegistry(context) {
   }))
 
   for (const [section, labelKey, , aliases] of SETTINGS_SECTIONS) {
-    const desktopOnly = section === 'download' && !isElectron
+    const desktopOnly = section === 'download' && !isElectron && !isCapacitor
     // eslint-disable-next-line @intlify/vue-i18n/no-dynamic-keys
     commands.push(command(`settings.${section}`, t(labelKey), groups.settings, {
       aliases,
@@ -159,6 +160,7 @@ export function createCommandPaletteRegistry(context) {
     groups,
     store,
     isElectron,
+    isCapacitor,
     openSettingsSearchResult,
     supportsLocalApi,
     isMac,
@@ -185,7 +187,7 @@ export function createCommandPaletteRegistry(context) {
     command('downloads.open', t('Settings.Download Settings.Download Settings'), groups.downloads, {
       aliases: ['files', 'yt-dlp'],
       icon: ['fas', 'download'],
-      disabledReason: !isElectron ? t('CommandPalette.Unavailable.Desktop') : '',
+      disabledReason: !isElectron && !process.env.IS_CAPACITOR ? t('CommandPalette.Unavailable.Desktop') : '',
       run: () => openSettingsView('downloads'),
     })
   )
@@ -281,6 +283,7 @@ function addSettingsSearchCommands(commands, context) {
     groups,
     store,
     isElectron,
+    isCapacitor,
     openSettingsSearchResult,
     supportsLocalApi,
     isMac,
@@ -288,7 +291,7 @@ function addSettingsSearchCommands(commands, context) {
     systemUsesDarkTheme,
   } = context
   const sections = SETTINGS_SECTIONS
-    .filter(([section]) => section !== 'download' || isElectron)
+    .filter(([section]) => section !== 'download' || isElectron || isCapacitor)
     .map(([type, labelKey, descriptionKey]) => ({
       type,
       // eslint-disable-next-line @intlify/vue-i18n/no-dynamic-keys
@@ -301,6 +304,7 @@ function addSettingsSearchCommands(commands, context) {
     tm,
     store,
     usingElectron: isElectron,
+    isCapacitor,
     supportsLocalApi,
     isMac,
     isLinuxWayland,
@@ -420,7 +424,7 @@ function addPlaylistCommands(commands, { t, groups, store, navigate }) {
 }
 
 function addDownloadCommands(commands, { t, groups, store, isElectron }) {
-  if (!isElectron) return
+  if (!isElectron && !process.env.IS_CAPACITOR) return
   const activeStatuses = new Set(['downloading', 'processing'])
   for (const download of Object.values(store.getters.getYtDlpDownloads)) {
     commands.push(command(`downloads.cancel.${download.id}`, t('CommandPalette.Cancel Download', {
@@ -431,7 +435,7 @@ function addDownloadCommands(commands, { t, groups, store, isElectron }) {
       disabledReason: activeStatuses.has(download.status)
         ? ''
         : t('CommandPalette.Unavailable.Download Finished'),
-      run: () => window.ftElectron.ytDlpCancelDownload(download.id),
+      run: () => ytDlp.ytDlpCancelDownload(download.id),
       contextual: true,
     }))
   }

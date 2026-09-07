@@ -1,3 +1,9 @@
+import {
+  buildYtDlpDownloadArguments, ID_REGEX, PLAYLIST_ID_REGEX, DOWNLOAD_TITLE_FILENAME_BYTE_LIMIT,
+  SUBTITLE_FORMATS, MAX_LOCAL_PLAYLIST_VIDEOS, DENIED_CUSTOM_ARGS, AUTOMATIC_NUMBER_LIMITS,
+  splitArguments, automaticNumber,
+} from '../ytDlpArguments'
+import { PLAYBACK_INFO_OUTPUT_TEMPLATE, toFiniteNumber, toNonEmptyString, mapPlaybackFormat, mapPlaybackCaptions } from '../ytDlpMetadata'
 import { execFile, spawn } from 'node:child_process'
 import { existsSync } from 'node:fs'
 import { chmod, mkdir, mkdtemp, readFile, rename, rm, stat, statfs, writeFile } from 'node:fs/promises'
@@ -114,7 +120,6 @@ function takeGetInfoAbortSignal(key) {
  * @property {string | null} errorMessage
  */
 
-const ID_REGEX = /^[\w-]{11}$/
 const CHANNEL_ID_REGEX = /^UC[\w-]{22}$/
 const AUTOMATIC_DISCOVERY_CACHE_TTL_MS = 60_000
 const AUTOMATIC_DISCOVERY_TIMEOUT_MS = 15_000
@@ -124,13 +129,6 @@ const AUTOMATIC_DISCOVERY_E2E_FIXTURE = 'automatic-download-discovery.xml'
 const MANAGED_BINARY_UPDATE_CHECK_TIMEOUT_MS = 15_000
 const AUTOMATIC_TITLE_TERM_LIMIT = 20
 const AUTOMATIC_TITLE_TERM_LENGTH_LIMIT = 100
-const AUTOMATIC_NUMBER_LIMITS = Object.freeze({
-  minDurationSeconds: 31_536_000,
-  maxDurationSeconds: 31_536_000,
-  minFileSizeMb: 1_000_000,
-  maxFileSizeMb: 1_000_000,
-  maxAgeDays: 36_500
-})
 const BUILT_IN_AUTOMATIC_TEMPLATE_OPTIONS = new Map([
   ['video:best', { mode: 'video' }],
   ['video:best:mp4', { mode: 'video', videoFormat: 'mp4' }],
@@ -145,30 +143,6 @@ const BUILT_IN_AUTOMATIC_TEMPLATE_OPTIONS = new Map([
   ['subtitles:srt', { mode: 'subtitles', subtitleFormat: 'srt' }],
   ['subtitles:vtt', { mode: 'subtitles', subtitleFormat: 'vtt' }]
 ])
-const PLAYLIST_ID_REGEX = /^[\w-]{10,128}$/
-const QUALITY_REGEX = /^\d{3,4}$/
-const VIDEO_FORMATS = ['mp4', 'mkv', 'webm']
-const VIDEO_CODECS = ['h264', 'h265', 'vp9', 'av1']
-const AUDIO_FORMATS = ['mp3', 'm4a', 'opus', 'flac']
-const SUBTITLE_FORMATS = ['srt', 'vtt', 'ass', 'lrc']
-const SPONSORBLOCK_CATEGORIES = ['sponsor', 'intro', 'outro', 'selfpromo', 'interaction', 'music_offtopic', 'preview', 'filler']
-// Keeps local-playlist URLs comfortably below Windows' process command-line limit.
-const MAX_LOCAL_PLAYLIST_VIDEOS = 500
-const DENIED_CUSTOM_ARGS = [
-  '--alias',
-  '--config-location',
-  '--config-locations',
-  '--downloader',
-  '--downloader-args',
-  '--exec',
-  '--exec-before-download',
-  '--external-downloader',
-  '--external-downloader-args',
-  '--ffmpeg-location',
-  '--plugin-dirs',
-  '--remote-components'
-]
-const TIME_REGEX = /^(?:\d+:)?[0-5]?\d:[0-5]\d(?:\.\d+)?$/
 const YT_DLP_RELEASE_REPOSITORIES = {
   stable: 'yt-dlp/yt-dlp',
   nightly: 'yt-dlp/yt-dlp-nightly-builds',
@@ -181,9 +155,6 @@ const MERGER_REGEX = /^\[Merger\] Merging formats into "(.+)"$/
 const SUBTITLE_DESTINATION_REGEX = /^\[info\] Writing video subtitles to: (.+)$/
 const FINAL_PATH_PREFIX = '__OPENTUBEX_FILE__:'
 const FINAL_METADATA_PREFIX = '__OPENTUBEX_METADATA__:'
-// yt-dlp's B conversion limits UTF-8 bytes. Leave room for IDs, extensions,
-// format suffixes, and temporary-file suffixes within a 255-byte file name.
-const DOWNLOAD_TITLE_FILENAME_BYTE_LIMIT = 200
 
 let downloadCounter = 0
 let downloadQueuePositionCounter = 0
@@ -1440,59 +1411,6 @@ export async function handleYtDlpDownloadBinary(event, binary) {
 // Post-Live-DVR info dump hundreds of megabytes for long broadcasts.
 const PLAYBACK_INFO_MAX_BUFFER = 32 * 1024 * 1024
 const PLAYBACK_INFO_TIMEOUT = 60_000
-const PLAYBACK_FORMAT_OUTPUT_FIELDS = [
-  'format_id',
-  'url',
-  'manifest_url',
-  'protocol',
-  'ext',
-  'container',
-  'vcodec',
-  'acodec',
-  'width',
-  'height',
-  'fps',
-  'tbr',
-  'asr',
-  'audio_channels',
-  'language',
-  'format_note',
-  'dynamic_range',
-  'available_at',
-  'target_duration',
-  // Every Post-Live-DVR fragment carries the total count, so one is enough.
-  'fragments.0.fragment_count'
-].join(',')
-const PLAYBACK_INFO_OUTPUT_TEMPLATE = [
-  '{"title":%(title|null)j',
-  ',"is_live":%(is_live|null)j',
-  ',"live_status":%(live_status|null)j',
-  ',"duration":%(duration|null)j',
-  ',"manifest_url":%(manifest_url|null)j',
-  ',"requested_subtitles":%(requested_subtitles|null)j',
-  `,"formats":%(formats.:.{${PLAYBACK_FORMAT_OUTPUT_FIELDS}})j`,
-  // Selecting sb0 keeps the complete high-resolution storyboard without
-  // retaining the much larger media-fragment arrays from every format.
-  ',"storyboard":%(.{protocol,width,height,fps,rows,columns,fragments})j}'
-].join('')
-
-/**
- * @param {unknown} value
- * @returns {number | null}
- */
-function toFiniteNumber(value) {
-  const number = typeof value === 'string' ? parseFloat(value) : value
-  return typeof number === 'number' && Number.isFinite(number) ? number : null
-}
-
-/**
- * @param {unknown} value
- * @returns {string | null}
- */
-function toNonEmptyString(value) {
-  return typeof value === 'string' && value.length > 0 ? value : null
-}
-
 /**
  * Adds the cookie source selected specifically for restricted playback.
  * @param {string[]} args
@@ -1562,107 +1480,6 @@ export async function handleYtDlpGetSubtitle(event, url) {
     return { error: 'Unable to load subtitle with configured cookies' }
   } finally {
     if (subtitleRequests.get(key) === request) subtitleRequests.delete(key)
-  }
-}
-
-/**
- * @param {any} format
- * @returns {YtDlpPlaybackFormat}
- */
-function mapPlaybackFormat(format) {
-  const bitrate = toFiniteNumber(format.tbr)
-
-  return {
-    formatId: String(format.format_id),
-    url: toNonEmptyString(format.url),
-    manifestUrl: toNonEmptyString(format.manifest_url),
-    protocol: typeof format.protocol === 'string' ? format.protocol : '',
-    ext: typeof format.ext === 'string' ? format.ext : '',
-    container: toNonEmptyString(format.container),
-    vcodec: toNonEmptyString(format.vcodec),
-    acodec: toNonEmptyString(format.acodec),
-    width: toFiniteNumber(format.width),
-    height: toFiniteNumber(format.height),
-    fps: toFiniteNumber(format.fps),
-    // yt-dlp reports bitrates in kbit/s
-    bitrate: bitrate === null ? null : Math.round(bitrate * 1000),
-    audioSampleRate: toFiniteNumber(format.asr),
-    audioChannels: toFiniteNumber(format.audio_channels),
-    language: toNonEmptyString(format.language),
-    formatNote: toNonEmptyString(format.format_note),
-    dynamicRange: toNonEmptyString(format.dynamic_range),
-    availableAt: toFiniteNumber(format.available_at),
-    targetDuration: toFiniteNumber(format.target_duration),
-    fragmentCount: toFiniteNumber(format['fragments.0.fragment_count']) ??
-      (Array.isArray(format.fragments) ? format.fragments.length : null)
-  }
-}
-
-/**
- * Maps yt-dlp's selected WebVTT subtitles and keeps translated tracks separate,
- * so the player can load translations only when the user selects one.
- * @param {unknown} requestedSubtitles
- * @returns {{ captions: YtDlpPlaybackCaption[], captionTranslations: YtDlpPlaybackCaption[] }}
- */
-function mapPlaybackCaptions(requestedSubtitles) {
-  if (requestedSubtitles === null || typeof requestedSubtitles !== 'object') {
-    return { captions: [], captionTranslations: [] }
-  }
-
-  const captions = new Map()
-  const captionTranslations = new Map()
-
-  for (const [requestedLanguage, subtitle] of Object.entries(requestedSubtitles)) {
-    if (subtitle === null || typeof subtitle !== 'object' || subtitle.ext !== 'vtt') continue
-
-    const subtitleUrl = toNonEmptyString(subtitle.url)
-    if (subtitleUrl === null) continue
-
-    let url
-    try {
-      url = new URL(subtitleUrl)
-    } catch {
-      continue
-    }
-    if (url.protocol !== 'https:') continue
-
-    const sourceLanguage = toNonEmptyString(url.searchParams.get('lang'))
-    const rawTargetLanguage = toNonEmptyString(url.searchParams.get('tlang'))
-    const sourceSuffix = sourceLanguage === null ? '' : `-${sourceLanguage}`
-    const targetLanguage = rawTargetLanguage?.endsWith(sourceSuffix) && sourceSuffix !== ''
-      ? rawTargetLanguage.slice(0, -sourceSuffix.length)
-      : rawTargetLanguage
-    const isTranslation = targetLanguage !== null && targetLanguage !== sourceLanguage
-    const language = isTranslation
-      ? targetLanguage
-      : sourceLanguage ?? requestedLanguage.replace(/-orig$/, '')
-    const subtitleName = toNonEmptyString(subtitle.name)
-    const label = subtitleName ?? language
-    const caption = {
-      url: url.toString(),
-      language,
-      label,
-      mimeType: 'text/vtt',
-      ...(isTranslation
-        ? {
-            id: `yt-dlp:${requestedLanguage}`,
-            translationName: label,
-            ...(sourceLanguage === null ? {} : { originalLanguage: sourceLanguage })
-          }
-        : { isAutoGenerated: true })
-    }
-    const destination = isTranslation ? captionTranslations : captions
-    const existing = destination.get(language)
-    const priority = Number(requestedLanguage === language) + Number(subtitleName !== null)
-
-    if (existing === undefined || priority > existing.priority) {
-      destination.set(language, { caption, priority })
-    }
-  }
-
-  return {
-    captions: [...captions.values()].map(({ caption }) => caption),
-    captionTranslations: [...captionTranslations.values()].map(({ caption }) => caption)
   }
 }
 
@@ -1902,30 +1719,6 @@ export async function handleYtDlpGetRecommendations(event, currentVideoId) {
 }
 
 /**
- * Splits a command line argument string into an array of arguments,
- * treating single and double quoted sections as a single argument
- * @param {string} argsString
- * @returns {string[]}
- */
-function splitArguments(argsString) {
-  const args = []
-  const tokenRegex = /"([^"]*)"|'([^']*)'|(\S+)/g
-
-  let match
-  while ((match = tokenRegex.exec(argsString)) !== null) {
-    args.push(match[1] ?? match[2] ?? match[3])
-  }
-
-  return args
-}
-
-function automaticNumber(value, maximum) {
-  return Number.isFinite(Number(value)) && Number(value) > 0 && Number(value) <= maximum
-    ? Number(value)
-    : null
-}
-
-/**
  * Loads recent video IDs for a channel from a main-process-owned source. This
  * prevents a renderer from turning a persisted channel rule into permission to
  * download an arbitrary video that was not present in the subscription feed.
@@ -2038,24 +1831,6 @@ function automaticTitleTerms(value) {
         .filter(Boolean)
         .slice(0, AUTOMATIC_TITLE_TERM_LIMIT)
     : []
-}
-
-function escapeRegularExpression(value) {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-}
-
-function automaticTitleRegex(includedTerms, excludedTerms) {
-  if (includedTerms.length === 0 && excludedTerms.length === 0) {
-    return null
-  }
-
-  const include = includedTerms.length === 0
-    ? ''
-    : `(?=.*(?:${includedTerms.map(escapeRegularExpression).join('|')}))`
-  const exclude = excludedTerms.length === 0
-    ? ''
-    : `(?!.*(?:${excludedTerms.map(escapeRegularExpression).join('|')}))`
-  return `(?i)^${include}${exclude}.*$`
 }
 
 async function getAutomaticTemplateOptions(template) {
@@ -2271,10 +2046,6 @@ async function startYtDlpDownload(
     `${subtitlesOnly ? 'video' : 'after_move'}:${FINAL_METADATA_PREFIX}%(id)j\t%(title)j\t%(thumbnail)j`
   ]
 
-  if (!isRemotePlaylist) {
-    args.push('--no-playlist')
-  }
-
   await pushProxyArgument(args)
   args.push(...globalCustomArgs)
 
@@ -2297,147 +2068,8 @@ async function startYtDlpDownload(
 
   /** @type {string} */
   const downloadFolder = (await settings._findOne('ytDlpDownloadFolderPath'))?.value || app.getPath('downloads')
-  let outputTemplate = typeof payload.filenameTemplate === 'string' && payload.filenameTemplate.trim() !== ''
-    ? payload.filenameTemplate.trim()
-    : '{title} [{id}].{ext}'
-  const truncatesLongTitles = outputTemplate.includes('{title}')
-  let localPlaylistTitle = typeof payload.title === 'string'
-    ? payload.title.replaceAll(/[<>:"/\\|?*]/g, '_')
-      .split('').map(character => {
-        if (character.charCodeAt(0) < 32) return '_'
-        return character
-      }).join('')
-      .replace(/[. ]+$/, '').slice(0, 120) || 'Playlist'
-    : 'Playlist'
-  if (/^(?:con|prn|aux|nul|com[1-9]|lpt[1-9])(?:\.|$)/i.test(localPlaylistTitle)) {
-    localPlaylistTitle = `_${localPlaylistTitle}`
-  }
-  localPlaylistTitle = localPlaylistTitle.replaceAll('%', '%%')
-  const templateFields = {
-    title: `%(title).${DOWNLOAD_TITLE_FILENAME_BYTE_LIMIT}B`,
-    author: '%(uploader)s',
-    upload_date: '%(upload_date)s',
-    id: '%(id)s',
-    playlist: isRemotePlaylist ? '%(playlist_title)s' : localPlaylistTitle,
-    playlist_index: isRemotePlaylist ? '%(playlist_index)03d' : '%(autonumber)03d',
-    ext: '%(ext)s'
-  }
-  for (const [field, replacement] of Object.entries(templateFields)) {
-    outputTemplate = outputTemplate.replaceAll(`{${field}}`, replacement)
-  }
-  if (!outputTemplate.includes('%(ext)')) {
-    outputTemplate += '.%(ext)s'
-  }
-  if (payload.isPlaylist === true && !outputTemplate.includes('%(playlist') && !outputTemplate.startsWith(`${localPlaylistTitle}/`)) {
-    outputTemplate = isRemotePlaylist
-      ? `%(playlist_title)s/%(playlist_index)03d - ${outputTemplate}`
-      : `${localPlaylistTitle}/%(autonumber)03d - ${outputTemplate}`
-  }
-  args.push('--paths', downloadFolder, '--output', outputTemplate)
-
-  switch (payload.mode) {
-    case 'video': {
-      const formatSorting = []
-      if (typeof payload.quality === 'string' && QUALITY_REGEX.test(payload.quality)) {
-        formatSorting.push(`res:${payload.quality}`)
-      }
-      if (typeof payload.videoCodec === 'string' && VIDEO_CODECS.includes(payload.videoCodec)) {
-        formatSorting.push(`codec:${payload.videoCodec}`)
-      }
-      if (formatSorting.length > 0) {
-        args.push('-S', formatSorting.join(','))
-      }
-      if (typeof payload.videoFormat === 'string' && VIDEO_FORMATS.includes(payload.videoFormat)) {
-        args.push('--merge-output-format', payload.videoFormat, '--remux-video', payload.videoFormat)
-      }
-      break
-    }
-    case 'audio':
-      args.push('--extract-audio')
-      if (typeof payload.audioFormat === 'string' && AUDIO_FORMATS.includes(payload.audioFormat)) {
-        args.push('--audio-format', payload.audioFormat)
-      }
-      break
-    case 'subtitles':
-      // `--print` turns on quiet mode, which hides the lines naming the written
-      // subtitle files. Nothing else reports them, as only the media file yt-dlp
-      // isn't downloading here would reach the `after_move` print below.
-      args.push('--skip-download', '--no-quiet')
-      break
-    case 'custom':
-      break
-  }
-
-  if (!subtitlesOnly && payload.splitChapters === true) {
-    args.push('--split-chapters')
-  }
-  if (!subtitlesOnly && payload.removeSponsorblock === true) {
-    const categories = Array.isArray(payload.sponsorBlockCategories)
-      ? payload.sponsorBlockCategories.filter(category => SPONSORBLOCK_CATEGORIES.includes(category))
-      : SPONSORBLOCK_CATEGORIES
-    if (categories.length > 0) args.push('--sponsorblock-remove', categories.join(','))
-  }
-  if (subtitlesOnly || payload.includeSubtitles === true) {
-    // YouTube advertises a machine translation of every subtitle track into every other
-    // language, which multiplies a language selector like `de.*` into dozens of requests
-    // and runs into its rate limiting. Custom arguments can override this again.
-    args.push('--write-subs', '--write-auto-subs', '--extractor-args', 'youtube:skip=translated_subs')
-    if (!subtitlesOnly && payload.embedSubtitles === true) {
-      args.push('--embed-subs')
-    }
-    if (typeof payload.subtitleLanguages === 'string' && payload.subtitleLanguages.trim() !== '') {
-      args.push('--sub-langs', payload.subtitleLanguages.trim())
-    }
-    if (subtitleFormat !== '') {
-      // YouTube serves most formats itself, so prefer downloading the requested one directly.
-      // The converter only runs once every track has downloaded, so it would otherwise leave
-      // the original files behind whenever a download fails partway through.
-      args.push('--sub-format', `${subtitleFormat}/best`, '--convert-subs', subtitleFormat)
-    }
-  }
-  if (!subtitlesOnly && payload.embedThumbnail === true) {
-    args.push('--embed-thumbnail')
-  }
-  if (!subtitlesOnly && payload.embedMetadata === true) {
-    args.push('--embed-metadata', '--embed-chapters')
-  }
-  if (payload.automatic === true) {
-    const minDurationSeconds = automaticNumber(payload.minDurationSeconds, AUTOMATIC_NUMBER_LIMITS.minDurationSeconds)
-    const maxDurationSeconds = automaticNumber(payload.maxDurationSeconds, AUTOMATIC_NUMBER_LIMITS.maxDurationSeconds)
-    const minFileSizeMb = automaticNumber(payload.minFileSizeMb, AUTOMATIC_NUMBER_LIMITS.minFileSizeMb)
-    const maxFileSizeMb = automaticNumber(payload.maxFileSizeMb, AUTOMATIC_NUMBER_LIMITS.maxFileSizeMb)
-    const maxAgeDays = automaticNumber(payload.maxAgeDays, AUTOMATIC_NUMBER_LIMITS.maxAgeDays)
-    const titleRegex = automaticTitleRegex(
-      Array.isArray(payload.titleIncludes) ? payload.titleIncludes : [],
-      Array.isArray(payload.titleExcludes) ? payload.titleExcludes : []
-    )
-    const durationFilters = [
-      `channel_id = ${payload.channelId}`,
-      minDurationSeconds === null ? null : `duration >= ${minDurationSeconds}`,
-      maxDurationSeconds === null ? null : `duration <= ${maxDurationSeconds}`
-    ].filter(Boolean)
-
-    if (durationFilters.length > 0) args.push('--match-filter', durationFilters.join(' & '))
-    if (minFileSizeMb !== null) args.push('--min-filesize', `${minFileSizeMb}M`)
-    if (maxFileSizeMb !== null) args.push('--max-filesize', `${maxFileSizeMb}M`)
-    if (maxAgeDays !== null) args.push('--dateafter', `now-${Math.ceil(maxAgeDays)}days`)
-    if (titleRegex !== null) args.push('--match-title', titleRegex)
-    args.push('--no-overwrites')
-  }
-  const startTime = !subtitlesOnly && typeof payload.startTime === 'string' && TIME_REGEX.test(payload.startTime) ? payload.startTime : ''
-  const endTime = !subtitlesOnly && typeof payload.endTime === 'string' && TIME_REGEX.test(payload.endTime) ? payload.endTime : ''
-  if (startTime !== '' || endTime !== '') {
-    args.push('--download-sections', `*${startTime || '0'}-${endTime || 'inf'}`, '--force-keyframes-at-cuts')
-  }
-  args.push(...customArgs)
-
-  if (isRemotePlaylist) {
-    args.push(`https://www.youtube.com/playlist?list=${payload.playlistId}`)
-  } else if (videoIds.length > 0) {
-    args.push(...videoIds.map(videoId => `https://www.youtube.com/watch?v=${videoId}`))
-  } else {
-    args.push(`https://www.youtube.com/watch?v=${payload.videoId}`)
-  }
+  const { args: downloadArgs, truncatesLongTitles } = buildYtDlpDownloadArguments(payload)
+  args.push('--paths', downloadFolder, ...downloadArgs)
 
   const { source, executable } = await resolveExecutable('ytDlpSource', 'ytDlpPath', 'yt-dlp')
 

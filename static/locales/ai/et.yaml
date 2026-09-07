@@ -1520,6 +1520,8 @@ CommandPalette:
     Download Finished: See allalaadimine ei ole enam pooleli
     Video: Ava esmalt video
 Downloads:
+  Export Failed: "Allalaaditud faili ei saanud salvestada. Vali allalaadimiskaust, kuhu saab kirjutada, ja proovi uuesti."
+  Remove File Permanently Warning: "See kustutab faili „{title}“ jäädavalt."
   Download: Laadi alla
   Download Video: Laadi video alla
   Download Playlist: Laadi esitusloend alla

@@ -57,3 +57,12 @@ test('keeps members-only content when restricted playback authentication is conf
   assert.equal(shouldHideMembersOnlyContent(true, restrictedPlaybackSettings(), true), true)
   assert.equal(shouldHideMembersOnlyContent(false, restrictedPlaybackSettings(), true), false)
 })
+
+test('Android accepts cookie files but cannot use a desktop browser cookie store', () => {
+  assert.equal(hasConfiguredRestrictedPlaybackAuthentication(restrictedPlaybackSettings({
+    getYtDlpPlaybackAuthMode: 'browser', getYtDlpPlaybackCookiesBrowser: 'firefox'
+  }), true, true), false)
+  assert.equal(hasConfiguredRestrictedPlaybackAuthentication(restrictedPlaybackSettings({
+    getYtDlpPlaybackAuthMode: 'file', getYtDlpPlaybackCookiesPath: '/private/cookies.txt'
+  }), true, true), true)
+})

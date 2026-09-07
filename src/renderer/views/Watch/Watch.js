@@ -1,3 +1,6 @@
+import { Capacitor } from '@capacitor/core'
+import { ytDlp } from '../../helpers/ytDlp'
+import { supportsYtDlp } from '../../helpers/ytDlpCapabilities'
 import { isAppHidden } from '../../helpers/appVisibility.js'
 import { defineComponent } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -827,7 +830,7 @@ export default defineComponent({
       return this.$store.getters.getDefaultVideoFormat
     },
     videoPlaybackEngine: function () {
-      return process.env.IS_ELECTRON ? this.$store.getters.getVideoPlaybackEngine : 'built-in'
+      return supportsYtDlp ? this.$store.getters.getVideoPlaybackEngine : 'built-in'
     },
     playbackEngineSelection: function () {
       if (this.ytDlpStreamsPending) {
@@ -860,7 +863,7 @@ export default defineComponent({
         : this.t('Video.Retry With Built-in Extraction')
     },
     canRetryWithOtherPlaybackEngine: function () {
-      return process.env.IS_ELECTRON &&
+      return supportsYtDlp &&
         this.errorMessage !== null &&
         !this.localFilePlayback &&
         !this.isUpcoming &&
@@ -910,7 +913,7 @@ export default defineComponent({
     },
     upcomingYtDlpPreloadVideoIds: function () {
       if (
-        !process.env.IS_ELECTRON ||
+        !supportsYtDlp ||
         this.videoPlaybackEngine !== 'yt-dlp' ||
         !this.$store.getters.getYtDlpPreloadEnabled
       ) return []
@@ -2054,12 +2057,12 @@ export default defineComponent({
       if (!Number.isInteger(downloadId)) return false
 
       const download = this.$store.getters.getYtDlpDownloads[downloadId]
-      const file = download?.status === 'completed' && ['video', 'audio'].includes(download.mode)
+      const file = (download?.status === 'completed' || (process.env.IS_CAPACITOR && download?.status === 'failed')) && ['video', 'audio'].includes(download.mode)
         ? download.files?.find(file => file.videoId === this.videoId && file.available !== false)
         : null
       if (!file) return false
 
-      const extension = file.path.split('.').at(-1)?.toLowerCase() ?? ''
+      const extension = file.extension ?? file.path.split('.').at(-1)?.toLowerCase() ?? ''
       const mimeType = download.mode === 'audio' && extension === 'webm'
         ? 'audio/webm'
         : download.mode === 'audio' && extension === 'mp4'
@@ -2069,7 +2072,7 @@ export default defineComponent({
 
       this.cacheOnlinePlaybackSource()
       this.sabrData = null
-      const url = `downloadmedia://file/${downloadId}/${this.videoId}`
+      const url = process.env.IS_CAPACITOR ? Capacitor.convertFileSrc(file.path) : `downloadmedia://file/${downloadId}/${this.videoId}`
       if (download.mode === 'audio') {
         this.manifestSrc = url
         this.manifestMimeType = mimeType
@@ -2554,7 +2557,7 @@ export default defineComponent({
     },
 
     isYtDlpPlaybackRequested: function () {
-      return process.env.IS_ELECTRON &&
+      return supportsYtDlp &&
         this.playbackEngineFallbackTarget !== 'built-in' &&
         (
           this.videoPlaybackEngine === 'yt-dlp' ||
@@ -2700,7 +2703,7 @@ export default defineComponent({
 
     loadAuthenticatedYtDlpRecommendations: async function (loadGeneration, videoId) {
       try {
-        const result = await window.ftElectron.ytDlpGetRecommendations(videoId)
+        const result = await ytDlp.ytDlpGetRecommendations(videoId)
         if (!this.isCurrentVideoLoad(loadGeneration, videoId)) { return }
 
         if (result === null || 'error' in result) {
@@ -4354,7 +4357,7 @@ export default defineComponent({
      */
     handlePlaybackEngineChange: async function (playbackEngine) {
       if (
-        !process.env.IS_ELECTRON ||
+        !supportsYtDlp ||
         playbackEngine === this.playbackEngineSelection
       ) {
         return
@@ -5015,7 +5018,7 @@ export default defineComponent({
      */
     tryPlaybackEngineFallback: async function (error) {
       if (
-        !process.env.IS_ELECTRON ||
+        !supportsYtDlp ||
         this.playbackEngineFallbackAttemptedForCurrentVideo ||
         this.isUpcoming
       ) {
@@ -5185,7 +5188,7 @@ export default defineComponent({
       }
 
       if (
-        !process.env.IS_ELECTRON ||
+        !supportsYtDlp ||
         this.playbackEngineFallbackTarget === 'built-in' ||
         (
           this.videoPlaybackEngine !== 'yt-dlp' &&

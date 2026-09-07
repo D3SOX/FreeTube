@@ -1522,6 +1522,8 @@ CommandPalette:
     Download Finished: Това изтегляне вече не се изпълнява
     Video: Първо отворете видеоклип
 Downloads:
+  Export Failed: "Изтегленият файл не можа да бъде запазен. Изберете папка за изтегляния с разрешение за запис и опитайте отново."
+  Remove File Permanently Warning: "Това ще изтрие „{title}“ завинаги."
   Download: Изтегляне
   Download Video: Изтегляне на видеоклип
   Download Playlist: Изтегляне на плейлист

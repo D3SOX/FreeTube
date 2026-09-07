@@ -220,6 +220,7 @@
 </template>
 
 <script setup>
+import { supportsYtDlp } from '../../helpers/ytDlpCapabilities'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { isNavigationFailure, NavigationFailureType, onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
@@ -355,7 +356,7 @@ const backendPreference = computed(() => store.getters.getBackendPreference)
 const backendFallback = computed(() => store.getters.getBackendFallback)
 
 const playlistPreloadAvailable = computed(() => {
-  return process.env.IS_ELECTRON && store.getters.getVideoPlaybackEngine === 'yt-dlp'
+  return supportsYtDlp && store.getters.getVideoPlaybackEngine === 'yt-dlp'
 })
 
 const playlistPreloadVideoIds = computed(() => [...new Set(playlistItems.value

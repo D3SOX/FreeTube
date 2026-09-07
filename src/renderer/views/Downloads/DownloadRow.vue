@@ -174,6 +174,7 @@
 </template>
 
 <script setup>
+import { ytDlp } from '../../helpers/ytDlp'
 import { FtIcon } from '@opentubex/icons'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -182,6 +183,7 @@ import FtIconButton from '../../components/FtIconButton/FtIconButton.vue'
 import thumbnailPlaceholder from '../../assets/img/thumbnail_placeholder.svg'
 import { downloadTemplateName } from '../../helpers/downloadTemplates'
 import { formatBytes } from '../../helpers/fileSize'
+import { downloadErrorMessage } from '../../helpers/downloadErrors'
 
 // keeps a playlist download from filling the page with one line per video
 const MAX_VISIBLE_DESTINATIONS = 3
@@ -210,12 +212,12 @@ const canRetry = computed(() => (
   (props.download.retryPayload || props.download.videoId || props.download.playlistId)
 ))
 const canAccessFiles = computed(() => (
-  props.download.status === 'completed' &&
+  (props.download.status === 'completed' || (process.env.IS_CAPACITOR && props.download.status === 'failed')) &&
   props.download.destination &&
   props.download.availability !== 'missing'
 ))
 const canPlay = computed(() => (
-  props.download.status === 'completed' &&
+  (props.download.status === 'completed' || (process.env.IS_CAPACITOR && props.download.status === 'failed')) &&
   ['video', 'audio'].includes(props.download.mode) &&
   Array.isArray(props.download.files) &&
   props.download.files.some(file => file.available !== false)
@@ -275,7 +277,7 @@ const errorText = computed(() => {
   }
   return props.download.errorMessage === 'ENOENT'
     ? t('Downloads.yt-dlp Not Found')
-    : props.download.errorMessage
+    : downloadErrorMessage(props.download.errorMessage, t)
 })
 const spaceWarningText = computed(() => {
   if (!['queued', 'downloading', 'processing', 'pausing', 'paused'].includes(props.download.status)) return ''
@@ -313,7 +315,7 @@ const statusText = computed(() => {
   }
 })
 function cancelDownload() {
-  window.ftElectron.ytDlpCancelDownload(props.download.id)
+  ytDlp.ytDlpCancelDownload(props.download.id)
 }
 </script>
 
