@@ -149,6 +149,11 @@ extern "C" int wmain(int argc, wchar_t** argv)
             Require(status == ERROR_FILE_NOT_FOUND, "overlay created a host key");
             return 0;
         }
+        if (mode == L"--remove-parent")
+        {
+            Check(RegDeleteTreeW(HKEY_CURRENT_USER, L"Software\\OpenTubeXRegressionContainer"), "remove host parent");
+            return 0;
+        }
         if (mode == L"--cleanup")
         {
             Check(RegDeleteTreeW(HKEY_CURRENT_USER, fixture.c_str()), "cleanup host fixture");
@@ -159,6 +164,7 @@ extern "C" int wmain(int argc, wchar_t** argv)
         HKEY preexisting = nullptr;
         if (primary)
         {
+            Write(L"Software\\OpenTubeXRegressionContainer", L"Seed", L"host parent");
             Write(fixture, L"Original", L"host");
             Write(fixture, L"Deleted", L"keep on host");
             Write(fixture + L"\\HostChild", L"Value", L"host child");
@@ -188,6 +194,10 @@ extern "C" int wmain(int argc, wchar_t** argv)
             CheckRegistryViews();
             wchar_t executable[32768];
             Require(GetModuleFileNameW(nullptr, executable, 32768) != 0, "get test executable");
+            Write(L"Software\\OpenTubeXRegressionContainer\\OpenTubeX", L"Value", L"portable");
+            Child(executable, L"--remove-parent", dll, fixture);
+            Require(Read(HKEY_CURRENT_USER, L"Software\\OpenTubeXRegressionContainer\\OpenTubeX", L"Value") == L"portable",
+                "portable key became unreadable after its host parent disappeared");
             Child(executable, L"--host", dll, fixture);
             Child(executable, L"--overlay", dll, fixture);
             Require(Read(HKEY_CURRENT_USER, fixture, L"FromChild") == L"shared", "child overlay write was lost");
