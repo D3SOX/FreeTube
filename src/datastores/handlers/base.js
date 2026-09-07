@@ -3,6 +3,9 @@ import { updateSettingIfUnchanged } from '../settingRepair'
 import { PlaylistVideoAddResult } from '../../constants'
 import { hasReachedWatchedThreshold, migrateLegacyHistoryRecord } from '../../history'
 import { resolveSearchHistoryEntry } from '../../search-history'
+import { createRecommendationStore } from '../recommendations'
+
+const recommendations = createRecommendationStore(db.recommendations)
 
 const HISTORY_WATCHED_STATUS_MIGRATION_ID = 'historyWatchedStatusMigrated'
 
@@ -122,6 +125,9 @@ class History {
 
   static async overwrite(records) {
     const migratedRecords = records.map(migrateLegacyHistoryRecord)
+    const retained = new Set(migratedRecords.map(record => record.videoId))
+    const removed = (await db.history.findAsync({}, { videoId: 1 })).map(record => record.videoId).filter(id => !retained.has(id))
+    if (removed.length) await recommendations.remove(removed)
 
     await db.history.removeAsync({}, { multi: true })
 
@@ -133,6 +139,7 @@ class History {
     const migratedUpdates = updates.map(migrateLegacyHistoryRecord)
 
     if (deletions.length > 0) {
+      await recommendations.remove(deletions)
       await db.history.removeAsync({ videoId: { $in: deletions } }, { multi: true })
     }
     for (const record of migratedUpdates) {
@@ -230,7 +237,8 @@ class History {
     )
   }
 
-  static delete(videoId) {
+  static async delete(videoId) {
+    await recommendations.remove([videoId])
     return db.history.removeAsync({ videoId })
   }
 
@@ -244,13 +252,15 @@ class History {
     const videoIds = records.map(record => record.videoId)
 
     if (videoIds.length > 0) {
+      await recommendations.remove(videoIds)
       await db.history.removeAsync({ videoId: { $in: videoIds } }, { multi: true })
     }
 
     return videoIds
   }
 
-  static deleteAll() {
+  static async deleteAll() {
+    await recommendations.reset()
     return db.history.removeAsync({}, { multi: true })
   }
 }
@@ -801,6 +811,7 @@ function loadDatastores() {
     db.settings.loadDatabaseAsync(),
     db.history.loadDatabaseAsync(),
     db.watchStats.loadDatabaseAsync(),
+    db.recommendations.loadDatabaseAsync(),
     db.profiles.loadDatabaseAsync(),
     db.playlists.loadDatabaseAsync(),
     db.searchHistory.loadDatabaseAsync(),
@@ -816,6 +827,7 @@ function compactAllDatastores() {
     db.settings.compactDatafileAsync(),
     db.history.compactDatafileAsync(),
     db.watchStats.compactDatafileAsync(),
+    db.recommendations.compactDatafileAsync(),
     db.profiles.compactDatafileAsync(),
     db.playlists.compactDatafileAsync(),
     db.searchHistory.compactDatafileAsync(),
@@ -831,6 +843,7 @@ export {
   Settings as settings,
   History as history,
   WatchStats as watchStats,
+  recommendations,
   Profiles as profiles,
   Playlists as playlists,
   SearchHistory as searchHistory,

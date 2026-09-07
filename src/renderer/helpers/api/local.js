@@ -88,9 +88,10 @@ if (process.env.SUPPORTS_LOCAL_API) {
  * @param {import('youtubei.js').ClientType} options.clientType use an alterate client
  * @param {boolean} options.generateSessionLocally generate the session locally or let YouTube generate it (local is faster, remote is more accurate)
  * @param {?import('youtubei.js').FetchFunction} options.fetchFunc optional custom fetch function
+ * @param {AbortSignal} [options.signal] cancels requests made by this instance
  * @returns the Innertube instance
  */
-async function createInnertube({ withPlayer = false, location = undefined, safetyMode = false, clientType = undefined, generateSessionLocally = true, fetchFunc = null } = {}) {
+async function createInnertube({ withPlayer = false, location = undefined, safetyMode = false, clientType = undefined, generateSessionLocally = true, fetchFunc = null, signal } = {}) {
   let cache
   if (withPlayer) {
     if (process.env.IS_ELECTRON) {
@@ -99,6 +100,8 @@ async function createInnertube({ withPlayer = false, location = undefined, safet
       cache = new UniversalCache(false)
     }
   }
+
+  const fetch = fetchFunc ?? localApiFetch
 
   return await Innertube.create({
     // This setting is enabled by default and results in YouTube.js reusing the same session across different Innertube instances.
@@ -113,7 +116,7 @@ async function createInnertube({ withPlayer = false, location = undefined, safet
     client_type: clientType,
 
     // Use native HTTP in Capacitor without patching global fetch.
-    fetch: (fetchFunc ?? localApiFetch),
+    fetch: signal ? (input, init) => fetch(input, { ...init, signal }) : fetch,
     cache,
     generate_session_locally: !!generateSessionLocally
   })
@@ -378,9 +381,13 @@ export async function getLocalTrending(location, tab) {
  * @param {string} query
  * @param {object} filters
  * @param {boolean} safetyMode
+ * @param {AbortSignal} [signal]
  */
-export async function getLocalSearchResults(query, filters, safetyMode) {
-  const innertube = await createInnertube({ safetyMode })
+export async function getLocalSearchResults(query, filters, safetyMode, signal) {
+  const innertube = await createInnertube({
+    safetyMode,
+    signal,
+  })
   const response = await innertube.search(query, convertSearchFilters(filters))
 
   return handleSearchResponse(response)
@@ -964,6 +971,18 @@ export async function getLocalShortLinkedVideo(id) {
   return parseLocalShortLinkedVideo(response)
 }
 
+/** Fetch related metadata without player or stream setup. */
+export async function getLocalRelatedVideos(id, safetyMode = false, signal) {
+  const innertube = await createInnertube({
+    safetyMode,
+    signal,
+  })
+  const response = await innertube.actions.execute('/next', { videoId: id, parse: true })
+  return response.contents_memo?.getType(YTNodes.CompactVideo, YTNodes.CompactMovie, YTNodes.LockupView)
+    .filter(video => video.type !== 'LockupView' || ['VIDEO', 'STATION'].includes(video.content_type))
+    .map(parseLocalWatchNextVideo).filter(Boolean) ?? []
+}
+
 const LOCAL_VIDEO_CHANNELS_CACHE_SIZE = 100
 const LOCAL_VIDEO_CHANNELS_TIMEOUT_MS = 15_000
 const localVideoChannelsCache = new Map()
@@ -1179,9 +1198,14 @@ export async function getLocalChannel(id) {
 
 /**
  * @param {string} id
+ * @param {boolean} [safetyMode]
+ * @param {AbortSignal} [signal]
  */
-export async function getLocalChannelVideos(id) {
-  const innertube = await createInnertube()
+export async function getLocalChannelVideos(id, safetyMode = false, signal) {
+  const innertube = await createInnertube({
+    safetyMode,
+    signal,
+  })
 
   try {
     const response = await innertube.actions.execute('/browse', {
@@ -1225,7 +1249,7 @@ export async function getLocalChannelVideos(id) {
       videos
     }
   } catch (error) {
-    console.error(error)
+    if (!signal?.aborted) console.error(error)
     if (error instanceof Utils.ChannelError) {
       return null
     } else {

@@ -8,6 +8,28 @@ Search Listing:
   Label:
     Members Only: Tylko dla wspierających
 Home Page:
+  Familiar description: "Preferuj nieobejrzane filmy z kanałów, które już lubisz."
+  Balanced description: "Łącz znane kanały z nowymi, pasującymi do Twoich zainteresowań."
+  Explore description: "Daj więcej miejsca nowym kanałom związanym z Twoimi zainteresowaniami."
+  Turn off recommendations: Wyłącz rekomendacje
+  Recommended for you: "Polecane dla ciebie"
+  Recommendations description: "Porządkuj filmy na swoim urządzeniu na podstawie historii oglądania. Identyfikatory kanałów i zapytania tematyczne są wysyłane do wybranego backendu w celu wyszukania filmów."
+  Enable recommendations: "Włącz rekomendacje"
+  Recommendations need history: "Obejrzyj kilka filmów z włączoną historią, aby otrzymać rekomendacje."
+  No recommendations: "Nie znaleziono rekomendacji. Spróbuj odświeżyć po obejrzeniu kolejnych filmów."
+  Recommendations unavailable: "Nie udało się wczytać rekomendacji. Spróbuj ponownie później."
+  More like this: "Więcej podobnych"
+  Not interested: "Nie interesuje mnie to"
+  Hide this channel: "Ukryj ten kanał"
+  Reset recommendations: "Zresetuj rekomendacje"
+  Discovery: "Odkrywanie"
+  Familiar: "Znajome"
+  Balanced: "Zrównoważone"
+  Explore: "Odkrywaj"
+  Related to: "Powiązane z {title}"
+  More from: "Więcej od {channel}"
+  Matches interest: "Pasuje do Twojego zainteresowania tematem {topic}"
+  Related discovery privacy: "Identyfikatory filmów są również wysyłane w celu znalezienia powiązanych filmów."
   Home: Strona główna
   Description: Kontynuuj od miejsca, w którym przerwano, i zobacz ostatnią aktywność.
   Customize: Dostosuj stronę główną

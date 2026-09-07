@@ -95,6 +95,28 @@ Stats:
   Hours: '{hours} jam'
   Hours and minutes: '{hours} jam {minutes} mnt'
 Home Page:
+  Familiar description: "Utamakan video yang belum ditonton dari channel yang sudah Anda sukai."
+  Balanced description: "Padukan channel yang dikenal dengan channel baru yang sesuai minat Anda."
+  Explore description: "Beri lebih banyak ruang untuk channel baru yang terkait dengan minat Anda."
+  Turn off recommendations: Nonaktifkan rekomendasi
+  Recommended for you: "Direkomendasikan untuk Anda"
+  Recommendations description: "Urutkan video di perangkat Anda berdasarkan histori tontonan. ID channel dan pencarian topik dikirim ke backend yang Anda pilih untuk menemukan video."
+  Enable recommendations: "Aktifkan rekomendasi"
+  Recommendations need history: "Tonton beberapa video dengan histori diaktifkan untuk mendapatkan rekomendasi."
+  No recommendations: "Tidak ada rekomendasi yang ditemukan. Coba muat ulang setelah menonton lebih banyak video."
+  Recommendations unavailable: "Tidak dapat memuat rekomendasi. Coba lagi nanti."
+  More like this: "Lebih banyak seperti ini"
+  Not interested: "Tidak tertarik"
+  Hide this channel: "Sembunyikan kanal ini"
+  Reset recommendations: "Atur ulang rekomendasi"
+  Discovery: "Penemuan"
+  Familiar: "Familier"
+  Balanced: "Seimbang"
+  Explore: "Jelajahi"
+  Related to: "Terkait dengan {title}"
+  More from: "Lainnya dari {channel}"
+  Matches interest: "Sesuai minat Anda pada {topic}"
+  Related discovery privacy: "ID video juga dikirim untuk menemukan video terkait."
   Home: Beranda
   Description: Lanjutkan dari bagian terakhir dan lihat aktivitas terbaru.
   Customize: Sesuaikan Beranda

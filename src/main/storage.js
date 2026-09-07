@@ -13,6 +13,7 @@ const USER_DATA_FILES = {
   searchHistory: 'search-history.db',
   history: 'history.db',
   watchStats: 'watch-stats.db',
+  recommendations: 'recommendations.db',
   playlists: 'playlists.db',
   profiles: 'profiles.db',
   settings: 'settings.db',

@@ -95,6 +95,28 @@ Stats:
   Hours: '{hours} t'
   Hours and minutes: '{hours} t {minutes} min'
 Home Page:
+  Familiar description: "Suosi katsomattomia videoita kanavilta, joista jo pidät."
+  Balanced description: "Yhdistä tuttuja kanavia uusiin, kiinnostuksenkohteitasi vastaaviin kanaviin."
+  Explore description: "Anna enemmän tilaa uusille kanaville, jotka liittyvät kiinnostuksenkohteisiisi."
+  Turn off recommendations: Poista suositukset käytöstä
+  Recommended for you: "Sinulle suositeltua"
+  Recommendations description: "Järjestä videot laitteellasi katseluhistoriasi perusteella. Kanavatunnukset ja aihehaut lähetetään valitsemaasi taustapalveluun videoiden löytämiseksi."
+  Enable recommendations: "Ota suositukset käyttöön"
+  Recommendations need history: "Saat suosituksia katsomalla videoita katseluhistorian ollessa käytössä."
+  No recommendations: "Suosituksia ei löytynyt. Kokeile päivittää, kun olet katsonut lisää videoita."
+  Recommendations unavailable: "Suosituksia ei voitu ladata. Yritä myöhemmin uudelleen."
+  More like this: "Lisää tällaista"
+  Not interested: "Ei kiinnosta"
+  Hide this channel: "Piilota tämä kanava"
+  Reset recommendations: "Nollaa suositukset"
+  Discovery: "Löytäminen"
+  Familiar: "Tuttua"
+  Balanced: "Tasapainoinen"
+  Explore: "Tutki"
+  Related to: "Liittyy videoon {title}"
+  More from: "Lisää kanavalta {channel}"
+  Matches interest: "Vastaa kiinnostustasi aiheeseen {topic}"
+  Related discovery privacy: "Myös videotunnuksia lähetetään liittyvien videoiden löytämiseksi."
   Home: Etusivu
   Description: Jatka siitä, mihin jäit, ja katso viimeaikaiset tapahtumat.
   Customize: Mukauta etusivua

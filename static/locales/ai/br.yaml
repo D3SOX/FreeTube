@@ -95,6 +95,28 @@ Stats:
   Hours: "{hours} e"
   Hours and minutes: "{hours} e {minutes} min"
 Home Page:
+  Familiar description: "Roit ar c'hentañ plas d'ar videoioù n'ho peus ket gwelet eus chadennoù a blij deoc'h dija."
+  Balanced description: "Meskit chadennoù anavezet gant re nevez a glot gant ho tec'hoù."
+  Explore description: "Roit muioc'h a blas da chadennoù nevez liammet ouzh ho tec'hoù."
+  Turn off recommendations: Diweredekaat an erbedadennoù
+  Recommended for you: "Erbedet evidoc'h"
+  Recommendations description: "Renkit ar videoioù war ho trevnad hervez ho roll istor gweladenniñ. Kaset e vez anavezerioù ar chadennoù ha klaskoù dre sujed d'ar backend hoc'h eus dibabet evit kavout videoioù."
+  Enable recommendations: "Gweredekaat an erbedadennoù"
+  Recommendations need history: "Sellit ouzh un nebeud videoioù gant ar roll istor gweladenniñ gweredekaet evit kaout erbedadennoù."
+  No recommendations: "N'eus bet kavet erbedadenn ebet. Klaskit freskaat goude bezañ sellet ouzh muioc'h a videoioù."
+  Recommendations unavailable: "N'eus ket bet gallet kargañ an erbedadennoù. Klaskit en-dro diwezhatoc'h."
+  More like this: "Muioc’h a draoù heñvel"
+  Not interested: "N’on ket dedennet"
+  Hide this channel: "Kuzhat ar chadenn-mañ"
+  Reset recommendations: "Adderaouekaat an erbedadennoù"
+  Discovery: "Dizoleiñ"
+  Familiar: "Anavezet"
+  Balanced: "Kempouezet"
+  Explore: "Ergerzhout"
+  Related to: "Liammet ouzh {title}"
+  More from: "Muioc’h digant {channel}"
+  Matches interest: "Klotañ a ra gant hoc’h dedenn evit {topic}"
+  Related discovery privacy: "Kaset e vez ivez anaouderioù videoioù evit kavout videoioù kar."
   Home: Degemer
   Description: "Kenderc'hel adalek al lec'h ma oa bet paouezet ha gwelet an obererezh nevez."
   Customize: Personelaat ar bajenn degemer

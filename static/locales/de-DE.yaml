@@ -93,6 +93,28 @@ Search Filters:
     Location: Region
   Clear Filters: Suchfilter zurücksetzen
 Home Page:
+  Familiar description: "Bevorzuge ungesehene Videos von Kanälen, die du bereits magst."
+  Balanced description: "Mische vertraute Kanäle mit neuen, die zu deinen Interessen passen."
+  Explore description: "Gib neuen Kanälen, die zu deinen Interessen passen, mehr Raum."
+  Turn off recommendations: Empfehlungen ausschalten
+  Recommended for you: "Für dich empfohlen"
+  Recommendations description: "Sortiere Videos auf deinem Gerät anhand deines Wiedergabeverlaufs. Kanal-IDs und thematische Suchanfragen werden an dein ausgewähltes Backend gesendet, um Videos zu finden."
+  Enable recommendations: "Empfehlungen aktivieren"
+  Recommendations need history: "Sieh dir einige Videos mit aktiviertem Wiedergabeverlauf an, um Empfehlungen zu erhalten."
+  No recommendations: "Keine Empfehlungen gefunden. Sieh dir weitere Videos an und versuche dann, zu aktualisieren."
+  Recommendations unavailable: "Empfehlungen konnten nicht geladen werden. Versuche es später erneut."
+  More like this: "Mehr davon"
+  Not interested: "Kein Interesse"
+  Hide this channel: "Diesen Kanal ausblenden"
+  Reset recommendations: "Empfehlungen zurücksetzen"
+  Discovery: "Entdeckungen"
+  Familiar: "Vertraut"
+  Balanced: "Ausgewogen"
+  Explore: "Neues entdecken"
+  Related to: "Ähnlich wie {title}"
+  More from: "Mehr von {channel}"
+  Matches interest: "Passend zu deinem Interesse an {topic}"
+  Related discovery privacy: "Auch Video-IDs werden gesendet, um ähnliche Videos zu finden."
   Home: Startseite
   Description: Setze dort fort, wo du aufgehört hast, und sieh dir deine letzten Aktivitäten an.
   Customize: Startseite anpassen

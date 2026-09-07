@@ -95,6 +95,28 @@ Stats:
   Hours: '{hours} h'
   Hours and minutes: '{hours} h {minutes} min'
 Home Page:
+  Familiar description: "Preferă videoclipuri nevizionate de la canale care îți plac deja."
+  Balanced description: "Combină canale cunoscute cu unele noi care corespund intereselor tale."
+  Explore description: "Oferă mai mult spațiu canalelor noi legate de interesele tale."
+  Turn off recommendations: Dezactivează recomandările
+  Recommended for you: "Recomandate pentru tine"
+  Recommendations description: "Ordonează videoclipurile pe dispozitivul tău pe baza istoricului vizionărilor. Identificatorii canalelor și căutările după subiect sunt trimise către backendul selectat pentru a găsi videoclipuri."
+  Enable recommendations: "Activează recomandările"
+  Recommendations need history: "Vizionează câteva videoclipuri cu istoricul activat pentru a primi recomandări."
+  No recommendations: "Nu s-au găsit recomandări. Încearcă să reîmprospătezi după ce vizionezi mai multe videoclipuri."
+  Recommendations unavailable: "Nu s-au putut încărca recomandările. Încearcă din nou mai târziu."
+  More like this: "Mai mult conținut similar"
+  Not interested: "Nu mă interesează"
+  Hide this channel: "Ascunde acest canal"
+  Reset recommendations: "Resetează recomandările"
+  Discovery: "Descoperire"
+  Familiar: "Familiar"
+  Balanced: "Echilibrat"
+  Explore: "Explorează"
+  Related to: "Legat de {title}"
+  More from: "Mai multe de la {channel}"
+  Matches interest: "Corespunde interesului tău pentru {topic}"
+  Related discovery privacy: "Identificatorii videoclipurilor sunt trimiși și pentru a găsi videoclipuri similare."
   Home: Acasă
   Description: Continuă de unde ai rămas și vezi activitatea recentă.
   Customize: Personalizează pagina principală

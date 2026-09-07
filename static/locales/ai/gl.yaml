@@ -95,6 +95,28 @@ Stats:
   Hours: '{hours} h'
   Hours and minutes: '{hours} h {minutes} min'
 Home Page:
+  Familiar description: "Prioriza vídeos sen ver de canles que xa che gustan."
+  Balanced description: "Combina canles coñecidas con outras novas que coincidan cos teus intereses."
+  Explore description: "Dá máis espazo a canles novas relacionadas cos teus intereses."
+  Turn off recommendations: Desactivar as recomendacións
+  Recommended for you: "Recomendado para ti"
+  Recommendations description: "Ordena os vídeos no teu dispositivo segundo o teu historial de reproducións. Os identificadores das canles e as buscas por temas envíanse ao backend que seleccionaches para atopar vídeos."
+  Enable recommendations: "Activar recomendacións"
+  Recommendations need history: "Mira algúns vídeos co historial activado para obter recomendacións."
+  No recommendations: "Non se atoparon recomendacións. Proba a actualizar despois de ver máis vídeos."
+  Recommendations unavailable: "Non se puideron cargar as recomendacións. Téntao de novo máis tarde."
+  More like this: "Máis contido semellante"
+  Not interested: "Non me interesa"
+  Hide this channel: "Agochar esta canle"
+  Reset recommendations: "Restablecer as recomendacións"
+  Discovery: "Descubrimento"
+  Familiar: "Familiar"
+  Balanced: "Equilibrado"
+  Explore: "Explorar"
+  Related to: "Relacionado con {title}"
+  More from: "Máis de {channel}"
+  Matches interest: "Coincide co teu interese en {topic}"
+  Related discovery privacy: "Tamén se envían identificadores de vídeos para atopar vídeos relacionados."
   Home: Inicio
   Description: Continúa onde o deixaches e consulta a actividade recente.
   Customize: Personalizar o inicio

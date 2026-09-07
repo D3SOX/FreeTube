@@ -117,6 +117,8 @@ const IpcChannels = {
   DB_SETTINGS: 'db-settings',
   DB_HISTORY: 'db-history',
   DB_WATCH_STATS: 'db-watch-stats',
+  DB_RECOMMENDATIONS: 'db-recommendations',
+  SYNC_RECOMMENDATIONS: 'sync-recommendations',
   DB_PROFILES: 'db-profiles',
   DB_PLAYLISTS: 'db-playlists',
   DB_SEARCH_HISTORY: 'db-search-history',

@@ -19,6 +19,7 @@
 - For scrolling changes, cover every relevant content-shortening trigger in the affected component with a regression test. First scroll to the bottom, trigger the shorter state, then verify that no obsolete offset or empty space remains and that the rendered scrollbar thumb/overflow state matches the new scroll range.
 - Every nested element that can show a scrollbar through `overflow: auto`, `overflow: scroll`, `overflow-x`, or `overflow-y` must use the app's `v-overlay-scrollbars` directive so it matches the active theme and scrollbar settings. Treat native nested scrollbars as a bug unless the element is explicitly documented as an exception; whenever adding or changing scrollable CSS, verify the corresponding template element has the directive.
 - New icons must be registered in the icon registry and mapped for every currently supported icon pack: Material and Remix. If neither pack has a suitable glyph, a raw custom icon may be used directly without a registry entry or pack mappings.
+- Labeled action buttons, such as Enable, Load more, Refresh, and Reset, must include a relevant icon alongside their text. Reuse the icon registry and keep the visible label; decorative icons must be hidden from assistive technology.
 - When adding or changing icon-pack mappings, get human confirmation that the mapped glyphs fit visually in Material and Remix before considering the mapping work done.
 
 ## Dependencies and data formats

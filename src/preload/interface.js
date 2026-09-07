@@ -603,6 +603,12 @@ export default {
     return ipcRenderer.invoke(IpcChannels.DB_WATCH_STATS, data ? { action, data } : { action })
   },
 
+  dbRecommendations: (action, data) => ipcRenderer.invoke(IpcChannels.DB_RECOMMENDATIONS, { action, data }),
+
+  handleSyncRecommendations: handler => {
+    ipcRenderer.on(IpcChannels.SYNC_RECOMMENDATIONS, (_, data) => handler(data))
+  },
+
   /**
    * @param {number} action
    * @param {any} [data]

@@ -49,7 +49,7 @@ function configureWorktree() {
   port = 0
   const projectPath = realpathSync(path.resolve(__dirname, '..'))
   const profileId = createHash('sha256').update(projectPath).digest('hex').slice(0, 12)
-  const profilePath = path.join(tmpdir(), `opentubex-dev-${profileId}`)
+  const profilePath = path.resolve(process.env.OPENTUBEX_DEV_USER_DATA_DIR || path.join(tmpdir(), `opentubex-dev-${profileId}`))
   mkdirSync(profilePath, { recursive: true, mode: 0o700 })
 
   process.env.OPENTUBEX_DEV_USER_DATA_DIR = profilePath

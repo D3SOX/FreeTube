@@ -362,6 +362,8 @@ const state = {
   hideLabelsSideBar: false,
   hideChapters: false,
   homeSectionLayout: DEFAULT_HOME_SECTION_LAYOUT.map(section => ({ ...section })),
+  enableHomeRecommendations: false,
+  recommendationExploration: 0.2,
   showDistractionFreeTitles: false,
   showPlayerControlsWhenPaused: true,
   showVideoTitleWhenPaused: true,
@@ -1414,6 +1416,10 @@ const customActions = {
           default:
             console.error('watch stats: invalid sync event received')
         }
+      })
+
+      window.ftElectron.handleSyncRecommendations(data => {
+        dispatch('receiveRecommendationUpdate', data).catch(error => console.error('Could not sync recommendation learning', error))
       })
 
       window.ftElectron.handleSyncSearchHistory((event, data) => {

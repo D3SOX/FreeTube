@@ -95,6 +95,28 @@ Stats:
   Hours: '{hours} h'
   Hours and minutes: '{hours} h {minutes} min'
 Home Page:
+  Familiar description: "Uprednostniť nepozreté videá z kanálov, ktoré už máte radi."
+  Balanced description: "Kombinovať známe kanály s novými, ktoré zodpovedajú vašim záujmom."
+  Explore description: "Dať viac priestoru novým kanálom súvisiacim s vašimi záujmami."
+  Turn off recommendations: Vypnúť odporúčania
+  Recommended for you: "Odporúčané pre vás"
+  Recommendations description: "Zoraďte videá vo svojom zariadení podľa histórie pozerania. Identifikátory kanálov a tematické vyhľadávacie dopyty sa odosielajú do vami zvoleného backendu na vyhľadanie videí."
+  Enable recommendations: "Povoliť odporúčania"
+  Recommendations need history: "Ak chcete dostávať odporúčania, pozrite si niekoľko videí so zapnutou históriou."
+  No recommendations: "Nenašli sa žiadne odporúčania. Skúste obnoviť po pozretí ďalších videí."
+  Recommendations unavailable: "Odporúčania sa nepodarilo načítať. Skúste to znova neskôr."
+  More like this: "Viac podobného"
+  Not interested: "Nemám záujem"
+  Hide this channel: "Skryť tento kanál"
+  Reset recommendations: "Obnoviť odporúčania"
+  Discovery: "Objavovanie"
+  Familiar: "Známe"
+  Balanced: "Vyvážené"
+  Explore: "Preskúmať"
+  Related to: "Súvisí s {title}"
+  More from: "Viac od {channel}"
+  Matches interest: "Zodpovedá vášmu záujmu o {topic}"
+  Related discovery privacy: "Na vyhľadanie súvisiacich videí sa odosielajú aj identifikátory videí."
   Home: Domov
   Description: Pokračujte tam, kde ste prestali, a pozrite si nedávnu aktivitu.
   Customize: Prispôsobiť domovskú stránku

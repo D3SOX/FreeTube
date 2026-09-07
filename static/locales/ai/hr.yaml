@@ -95,6 +95,28 @@ Stats:
   Hours: '{hours} h'
   Hours and minutes: '{hours} h {minutes} min'
 Home Page:
+  Familiar description: "Daj prednost nepogledanim videozapisima s kanala koje već voliš."
+  Balanced description: "Kombiniraj poznate kanale s novima koji odgovaraju tvojim interesima."
+  Explore description: "Daj više prostora novim kanalima povezanima s tvojim interesima."
+  Turn off recommendations: Isključi preporuke
+  Recommended for you: "Preporučeno za vas"
+  Recommendations description: "Rangirajte videozapise na svom uređaju na temelju povijesti gledanja. Identifikatori kanala i pretraživanja po temama šalju se odabranom pozadinskom sustavu radi pronalaženja videozapisa."
+  Enable recommendations: "Omogući preporuke"
+  Recommendations need history: "Pogledajte nekoliko videozapisa s uključenom poviješću kako biste dobili preporuke."
+  No recommendations: "Nema pronađenih preporuka. Pokušajte osvježiti nakon što pogledate još videozapisa."
+  Recommendations unavailable: "Preporuke nije bilo moguće učitati. Pokušajte ponovno kasnije."
+  More like this: "Više sličnog sadržaja"
+  Not interested: "Ne zanima me"
+  Hide this channel: "Sakrij ovaj kanal"
+  Reset recommendations: "Poništi preporuke"
+  Discovery: "Otkrivanje"
+  Familiar: "Poznato"
+  Balanced: "Uravnoteženo"
+  Explore: "Istraži"
+  Related to: "Povezano s {title}"
+  More from: "Više s kanala {channel}"
+  Matches interest: "Odgovara vašem interesu za {topic}"
+  Related discovery privacy: "Šalju se i identifikatori videozapisa radi pronalaženja povezanih videozapisa."
   Home: Početna
   Description: Nastavite gdje ste stali i pogledajte nedavnu aktivnost.
   Customize: Prilagodi početnu

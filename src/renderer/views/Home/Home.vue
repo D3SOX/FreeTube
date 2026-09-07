@@ -1,5 +1,8 @@
 <template>
-  <div class="homePage">
+  <div
+    ref="homePage"
+    class="homePage"
+  >
     <FtCard class="homeIntro">
       <div class="homeHeading">
         <div>
@@ -137,6 +140,124 @@
             </ul>
           </template>
         </HomeShelf>
+      </FtCard>
+
+      <FtCard
+        v-else-if="section.id === 'recommendations'"
+        class="homeSection"
+        data-home-section="recommendations"
+        :aria-busy="recommendationsLoading"
+      >
+        <div class="sectionHeading">
+          <div class="recommendationHeading">
+            <HomeSectionHeading
+              :title="sectionLabel(section.id)"
+              :icon="['fas', 'thumbs-up']"
+            />
+            <FtTooltip
+              v-if="recommendationsEnabled"
+              class="recommendationInfo"
+              :tooltip="recommendationDescription"
+            />
+          </div>
+          <div
+            v-if="recommendationsEnabled"
+            class="recommendationHeaderActions"
+          >
+            <FtIconButton
+              v-if="recommendationsHaveHistory"
+              :title="t('KeyboardShortcutPrompt.Refresh')"
+              :icon="['fas', 'sync']"
+              :disabled="recommendationsLoading"
+              :use-shadow="false"
+              theme="base-no-default"
+              @click="refreshRecommendations"
+            />
+            <HomeRecommendationOptions
+              :exploration="recommendationExploration"
+              @update:exploration="setRecommendationExploration"
+              @reset="resetRecommendations"
+              @disable="setRecommendationsEnabled(false)"
+            />
+          </div>
+        </div>
+        <div
+          v-if="!recommendationsEnabled"
+          class="recommendationIntroduction"
+        >
+          <p>{{ recommendationDescription }}</p>
+          <FtButton
+            :label="t('Home Page.Enable recommendations')"
+            :icon="['fas', 'power-off']"
+            @click="setRecommendationsEnabled(true)"
+          />
+        </div>
+        <template v-if="recommendationsEnabled">
+          <p
+            v-if="!recommendationsHaveHistory"
+            role="status"
+          >
+            {{ t('Home Page.Recommendations need history') }}
+          </p>
+          <FtLoader v-else-if="recommendationsLoading && recommendations.length === 0" />
+          <p
+            v-else-if="recommendations.length === 0"
+            role="status"
+          >
+            {{ recommendationsError ? t('Home Page.Recommendations unavailable') : t('Home Page.No recommendations') }}
+          </p>
+          <FtAutoGrid
+            v-else
+            :key="recommendationFeedVersion"
+            class="recommendationFeed"
+            :grid="recommendationListType !== 'list'"
+            :item-count="recommendations.length"
+          >
+            <div
+              v-for="video in recommendations"
+              :key="video.videoId"
+              v-observe-visibility="{
+                callback: (visible, entry) => recordRecommendationImpression(video, visible, entry),
+                intersection: { threshold: 0.6 },
+                throttle: 1000,
+                throttleOptions: { leading: false },
+              }"
+              class="recommendationEntry"
+            >
+              <FtListVideo
+                :data="video"
+                appearance="result"
+                @display-title-change="recommendationDisplayTitles.set(video.videoId, $event)"
+                @click.capture="recordRecommendationClick(video, $event)"
+                @auxclick.capture="recordRecommendationClick(video, $event)"
+              />
+              <div class="recommendationDetails">
+                <p class="recommendationReason">
+                  {{ recommendationReason(video) }}
+                </p>
+                <div class="recommendationActions">
+                  <FtIconButton
+                    v-for="action in recommendationActions"
+                    :key="action.type"
+                    :title="t('Display Label', { label: action.label, value: action.type === 'blockChannel' ? video.author : (recommendationDisplayTitles.get(video.videoId) ?? video.title) })"
+                    :icon="action.icon"
+                    :use-shadow="false"
+                    theme="base-no-default"
+                    @click="recommendationFeedback(video, action.type)"
+                  />
+                </div>
+              </div>
+            </div>
+          </FtAutoGrid>
+          <FtButton
+            v-if="recommendations.length > 0"
+            class="recommendationLoadMore"
+            :label="t('Subscriptions.Load More Videos')"
+            :icon="['fas', 'angle-down']"
+            :disabled="recommendationsLoading"
+            @click="loadMoreRecommendations"
+          />
+        </template>
       </FtCard>
 
       <FtCard
@@ -398,16 +519,22 @@
 
 <script setup>
 import { FtIcon } from '@opentubex/icons'
-import { computed, onBeforeUnmount, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, useTemplateRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
+import FtAutoGrid from '../../components/FtAutoGrid/FtAutoGrid.vue'
+import FtListVideo from '../../components/FtListVideo/FtListVideo.vue'
+import { clampOverlayScrollTop } from '../../helpers/overlayScrollbars'
 import FtButton from '../../components/FtButton/FtButton.vue'
 import FtCard from '../../components/ft-card/ft-card.vue'
 import FtIconButton from '../../components/FtIconButton/FtIconButton.vue'
+import FtLoader from '../../components/FtLoader/FtLoader.vue'
 import FtRetryImage from '../../components/FtRetryImage.vue'
+import FtTooltip from '../../components/FtTooltip/FtTooltip.vue'
 import FtToggleSwitch from '../../components/FtToggleSwitch/FtToggleSwitch.vue'
 import HomeShelf from './HomeShelf.vue'
 import HomeSectionHeading from './HomeSectionHeading.vue'
+import HomeRecommendationOptions from './HomeRecommendationOptions.vue'
 
 import store from '../../store/index'
 import {
@@ -423,10 +550,15 @@ import {
 import { hasConfiguredRestrictedPlaybackAuthentication } from '../../helpers/restricted-playback'
 import thumbnailPlaceholder from '../../assets/img/thumbnail_placeholder.svg'
 import { formatDateTime } from '../../helpers/dateFormat'
+import { useHomeRecommendations } from '../../composables/useHomeRecommendations'
 
 const { locale, t } = useI18n()
 const IS_ELECTRON = process.env.IS_ELECTRON
 const customizing = ref(false)
+const homePage = useTemplateRef('homePage')
+const recommendationListType = computed(() => store.getters.getListType)
+const recommendationDescription = computed(() => `${t('Home Page.Recommendations description')} ${t('Home Page.Related discovery privacy')}`)
+let homeResizeObserver = null
 const reorderStatus = ref('')
 const reminders = ref([])
 const dateFormat = computed(() => store.getters.getDateFormat)
@@ -444,6 +576,45 @@ const configurableSections = computed(() => (
 ))
 const visibleSections = computed(() => configurableSections.value.filter(section => section.visible))
 const allSectionsHidden = computed(() => visibleSections.value.length === 0)
+const {
+  enabled: recommendationsEnabled,
+  hasHistory: recommendationsHaveHistory,
+  isLoading: recommendationsLoading,
+  hasError: recommendationsError,
+  recommendations,
+  refresh: refreshRecommendations,
+  setEnabled: setRecommendationsEnabled,
+  exploration: recommendationExploration,
+  setExploration: setRecommendationExploration,
+  reset: resetRecommendations,
+  feedback: recommendationFeedback,
+  recordImpression: recordRecommendationImpression,
+  loadMore: loadMoreRecommendations,
+  feedVersion: recommendationFeedVersion,
+} = useHomeRecommendations(computed(() => visibleSections.value.some(section => section.id === 'recommendations')))
+
+const recommendationActions = computed(() => [
+  { type: 'positive', label: t('Home Page.More like this'), icon: ['fas', 'thumbs-up'] },
+  { type: 'dismiss', label: t('Home Page.Not interested'), icon: ['fas', 'thumbs-down'] },
+  { type: 'blockChannel', label: t('Home Page.Hide this channel'), icon: ['fas', 'eye-slash'] },
+])
+
+// Share the card's resolved text, including original and DeArrow titles.
+const recommendationDisplayTitles = ref(new Map())
+watch(recommendations, videos => {
+  const visibleIds = new Set(videos.map(video => video.videoId))
+  for (const videoId of recommendationDisplayTitles.value.keys()) {
+    if (!visibleIds.has(videoId)) recommendationDisplayTitles.value.delete(videoId)
+  }
+})
+
+function recommendationReason(video) {
+  const reason = video.recommendationReason
+  if (reason?.type === 'related') return t('Home Page.Related to', { title: reason.text })
+  if (reason?.type === 'channel') return t('Home Page.More from', { channel: reason.text })
+  if (reason?.type === 'topic') return t('Home Page.Matches interest', { topic: reason.text })
+  return t('Subscriptions.Subscriptions')
+}
 
 const continueWatching = computed(() => getContinueWatchingEntries(
   store.getters.getHistoryCacheSorted
@@ -501,6 +672,10 @@ const thumbnailOrigin = computed(() => store.getters.getBackendPreference === 'i
   : 'https://i.ytimg.com')
 
 const sectionDefinitions = computed(() => ({
+  recommendations: {
+    label: t('Home Page.Recommended for you'),
+    hasContent: true,
+  },
   continueWatching: {
     label: t('Home Page.Continue watching'),
     hasContent: continueWatching.value.length > 0,
@@ -534,7 +709,9 @@ const sectionDefinitions = computed(() => ({
 const renderedSections = computed(() => visibleSections.value.filter(
   section => sectionDefinitions.value[section.id].hasContent
 ))
-const hasVisibleActivity = computed(() => renderedSections.value.length > 0)
+const hasVisibleActivity = computed(() => renderedSections.value.some(section => (
+  section.id !== 'recommendations' || recommendations.value.length > 0
+)))
 const sectionLabel = sectionId => sectionDefinitions.value[sectionId]?.label ?? sectionId
 
 function videoThumbnail(video) {
@@ -756,7 +933,26 @@ watch(
   { immediate: true }
 )
 
+function recordRecommendationClick(video, event) {
+  if (event.button > 1) return
+  const link = event.target.closest('a[href]')
+  if (link?.getAttribute('href')?.startsWith(`#/watch/${video.videoId}`)) {
+    recommendationFeedback(video, 'click')
+  }
+}
+
+onMounted(() => {
+  // Grid/list switches, feedback and refresh can all shorten the page.
+  homeResizeObserver = new ResizeObserver(() => {
+    if (!homePage.value?.getClientRects().length) return
+    const content = homePage.value.closest('.app > .routerView')
+    if (content) clampOverlayScrollTop(document.body, content)
+  })
+  homeResizeObserver.observe(homePage.value)
+})
+
 onBeforeUnmount(() => {
+  homeResizeObserver?.disconnect()
   reminderLoadGeneration++
   removeReminderListener?.()
 })

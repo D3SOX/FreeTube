@@ -240,7 +240,7 @@ test('shows local activity and keeps Home customization after relaunch', async (
   await customizer.getByText('Recent playlists', { exact: true }).click()
   await expect(page.getByRole('checkbox', { name: 'Recent playlists' })).not.toBeChecked()
 
-  for (let index = 0; index < 6; index++) {
+  for (let index = 0; index < 7; index++) {
     await page.getByRole('button', { name: 'Move Watch statistics up' }).click()
   }
 

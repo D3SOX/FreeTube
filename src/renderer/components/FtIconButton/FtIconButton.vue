@@ -102,7 +102,7 @@
       >
         <div
           ref="dropdown"
-          v-overlay-scrollbars
+          v-overlay-scrollbars="!$slots['dropdown-header']"
           tabindex="-1"
           class="iconDropdown"
           :class="{
@@ -112,12 +112,29 @@
             bottom: dropdownPositionY === 'bottom',
             top: dropdownPositionY === 'top',
             portal: dropdownPortal,
+            hasFixedHeader: !!$slots['dropdown-header'],
             [dropdownClass]: dropdownClass !== ''
           }"
           @focusout="handleDropdownFocusOut"
           @keydown.esc.stop="handleDropdownEscape"
         >
-          <slot>
+          <div
+            v-if="$slots['dropdown-header']"
+            class="iconDropdownHeader"
+          >
+            <slot name="dropdown-header" />
+          </div>
+          <div
+            v-if="$slots['dropdown-header']"
+            ref="dropdownContent"
+            v-overlay-scrollbars
+            class="iconDropdownContent"
+          >
+            <div ref="dropdownContentInner">
+              <slot />
+            </div>
+          </div>
+          <slot v-else>
             <ul
               v-if="dropdownOptions.length > 0"
               class="list"
@@ -165,6 +182,7 @@ import { FtIcon, FtIconLayers } from '@opentubex/icons'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, useId, useTemplateRef, watch } from 'vue'
 
 import FtPrompt from '../FtPrompt/FtPrompt.vue'
+import { clampOverlayScrollTop } from '../../helpers/overlayScrollbars'
 
 const props = defineProps({
   title: {
@@ -273,6 +291,15 @@ if (props.dropdownModalOnMobile) {
 }
 
 const dropdown = useTemplateRef('dropdown')
+const dropdownContent = useTemplateRef('dropdownContent')
+const dropdownContentInner = useTemplateRef('dropdownContentInner')
+
+watch(dropdownContentInner, (content, _, onCleanup) => {
+  if (!content) return
+  const observer = new ResizeObserver(scheduleDropdownViewportUpdate)
+  observer.observe(content)
+  onCleanup(() => observer.disconnect())
+})
 
 watch(dropdownShown, (shown) => {
   if (shown && !useModal.value) {
@@ -385,7 +412,11 @@ function keepDropdownInViewport() {
   const availableHeight = window.innerHeight - minTop - viewportMargin
   if (dropdown.value.getBoundingClientRect().height > availableHeight) {
     dropdown.value.style.maxBlockSize = `${availableHeight}px`
-    dropdown.value.style.overflowY = 'auto'
+    dropdown.value.style.overflowY = dropdownContent.value ? 'hidden' : 'auto'
+  }
+
+  if (dropdownContent.value) {
+    clampOverlayScrollTop(dropdownContent.value, dropdownContentInner.value)
   }
 
   if (props.dropdownPortal) {

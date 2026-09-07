@@ -23,9 +23,20 @@ test('falls back to the complete default Home layout for invalid settings', () =
     DEFAULT_HOME_SECTION_LAYOUT
   )
   assert.deepEqual(
-    normalizeHomeSectionLayout(DEFAULT_HOME_SECTION_LAYOUT.slice(1)),
+    normalizeHomeSectionLayout([{ id: 'unknown', visible: true }]),
     DEFAULT_HOME_SECTION_LAYOUT
   )
+})
+
+test('adds recommendations without resetting existing Home order or visibility', () => {
+  const previousLayout = DEFAULT_HOME_SECTION_LAYOUT
+    .filter(section => section.id !== 'recommendations')
+    .toReversed()
+    .map(section => ({ ...section, visible: false }))
+  assert.deepEqual(normalizeHomeSectionLayout(previousLayout), [
+    ...previousLayout,
+    { id: 'recommendations', visible: true },
+  ])
 })
 
 test('recent downloads include active and completed entries only', () => {
@@ -45,8 +56,8 @@ test('moves Home sections without mutating the stored layout', () => {
   const reordered = moveHomeSection(layout, 'watchQueue', -1)
 
   assert.equal(reordered[0].id, 'continueWatching')
-  assert.equal(reordered[1].id, 'watchQueue')
-  assert.equal(reordered[2].id, 'newSinceLastVisit')
+  assert.equal(reordered[2].id, 'watchQueue')
+  assert.equal(reordered[3].id, 'newSinceLastVisit')
   assert.equal(layout[0].id, 'continueWatching')
 })
 

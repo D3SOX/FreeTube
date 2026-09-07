@@ -95,6 +95,28 @@ Stats:
   Hours: '{hours} uur'
   Hours and minutes: '{hours} uur {minutes} min'
 Home Page:
+  Familiar description: "Geef voorrang aan onbekeken video’s van kanalen die je al leuk vindt."
+  Balanced description: "Combineer vertrouwde kanalen met nieuwe die bij je interesses passen."
+  Explore description: "Geef meer ruimte aan nieuwe kanalen die aansluiten bij je interesses."
+  Turn off recommendations: Aanbevelingen uitschakelen
+  Recommended for you: "Aanbevolen voor jou"
+  Recommendations description: "Rangschik video's op je apparaat op basis van je kijkgeschiedenis. Kanaal-ID's en zoekopdrachten op onderwerp worden naar de gekozen backend gestuurd om video's te vinden."
+  Enable recommendations: "Aanbevelingen inschakelen"
+  Recommendations need history: "Bekijk enkele video's met de geschiedenis ingeschakeld om aanbevelingen te krijgen."
+  No recommendations: "Geen aanbevelingen gevonden. Probeer te vernieuwen nadat je meer video's hebt bekeken."
+  Recommendations unavailable: "Kan aanbevelingen niet laden. Probeer het later opnieuw."
+  More like this: "Meer zoals dit"
+  Not interested: "Niet geïnteresseerd"
+  Hide this channel: "Dit kanaal verbergen"
+  Reset recommendations: "Aanbevelingen resetten"
+  Discovery: "Ontdekken"
+  Familiar: "Vertrouwd"
+  Balanced: "Evenwichtig"
+  Explore: "Verkennen"
+  Related to: "Gerelateerd aan {title}"
+  More from: "Meer van {channel}"
+  Matches interest: "Past bij je interesse in {topic}"
+  Related discovery privacy: "Ook video-ID’s worden verstuurd om gerelateerde video’s te vinden."
   Home: Start
   Description: Ga verder waar je gebleven was en bekijk recente activiteit.
   Customize: Startpagina aanpassen

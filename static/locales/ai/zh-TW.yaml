@@ -95,6 +95,28 @@ Stats:
   Hours: '{hours} 小時'
   Hours and minutes: '{hours} 小時 {minutes} 分鐘'
 Home Page:
+  Familiar description: "優先推薦你已喜歡的頻道中尚未觀看的影片。"
+  Balanced description: "混合推薦熟悉的頻道和符合你興趣的新頻道。"
+  Explore description: "為與你興趣相關的新頻道提供更多推薦機會。"
+  Turn off recommendations: 關閉推薦
+  Recommended for you: "為你推薦"
+  Recommendations description: "根據觀看記錄在你的裝置上對影片進行排序。頻道 ID 和主題搜尋請求會傳送到你所選的後端，以尋找影片。"
+  Enable recommendations: "啟用推薦"
+  Recommendations need history: "啟用觀看記錄並觀看一些影片，即可獲得推薦。"
+  No recommendations: "找不到推薦內容。觀看更多影片後，請嘗試重新整理。"
+  Recommendations unavailable: "無法載入推薦內容。請稍後再試。"
+  More like this: "更多類似內容"
+  Not interested: "不感興趣"
+  Hide this channel: "隱藏此頻道"
+  Reset recommendations: "重設推薦"
+  Discovery: "發現"
+  Familiar: "熟悉內容"
+  Balanced: "均衡"
+  Explore: "探索"
+  Related to: "與 {title} 相關"
+  More from: "來自 {channel} 的更多內容"
+  Matches interest: "符合你對 {topic} 的興趣"
+  Related discovery privacy: "也會傳送影片 ID 以尋找相關影片。"
   Home: 首頁
   Description: 從上次中斷的位置繼續，並查看最近的活動。
   Customize: 自訂首頁

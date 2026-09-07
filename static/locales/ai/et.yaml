@@ -95,6 +95,28 @@ Stats:
   Hours: '{hours} t'
   Hours and minutes: '{hours} t {minutes} min'
 Home Page:
+  Familiar description: "Eelista vaatamata videoid kanalitelt, mis sulle juba meeldivad."
+  Balanced description: "Sega tuttavaid kanaleid uutega, mis vastavad sinu huvidele."
+  Explore description: "Anna rohkem ruumi uutele kanalitele, mis on seotud sinu huvidega."
+  Turn off recommendations: Lülita soovitused välja
+  Recommended for you: "Sulle soovitatud"
+  Recommendations description: "Järjesta videoid oma seadmes vaatamisajaloo põhjal. Kanalite ID-d ja teemaotsingud saadetakse videote leidmiseks sinu valitud taustateenusele."
+  Enable recommendations: "Luba soovitused"
+  Recommendations need history: "Soovituste saamiseks vaata mõnda videot, kui ajalugu on lubatud."
+  No recommendations: "Soovitusi ei leitud. Proovi värskendada pärast rohkemate videote vaatamist."
+  Recommendations unavailable: "Soovituste laadimine nurjus. Proovi hiljem uuesti."
+  More like this: "Rohkem selliseid"
+  Not interested: "Ei huvita"
+  Hide this channel: "Peida see kanal"
+  Reset recommendations: "Lähtesta soovitused"
+  Discovery: "Avastamine"
+  Familiar: "Tuttav"
+  Balanced: "Tasakaalustatud"
+  Explore: "Avasta"
+  Related to: "Seotud videoga {title}"
+  More from: "Rohkem kanalilt {channel}"
+  Matches interest: "Vastab sinu huvile teema {topic} vastu"
+  Related discovery privacy: "Seotud videote leidmiseks saadetakse ka videote identifikaatoreid."
   Home: Avaleht
   Description: Jätka sealt, kus pooleli jäid, ja vaata hiljutisi tegevusi.
   Customize: Kohanda avalehte

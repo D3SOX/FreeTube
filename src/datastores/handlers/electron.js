@@ -16,6 +16,14 @@ function toPlain(data) {
 const dbSettings = (action, data) => window.ftElectron.dbSettings(action, toPlain(data))
 const dbHistory = (action, data) => window.ftElectron.dbHistory(action, toPlain(data))
 const dbWatchStats = (action, data) => window.ftElectron.dbWatchStats(action, toPlain(data))
+const dbRecommendations = (action, data) => window.ftElectron.dbRecommendations(action, toPlain(data))
+
+export const recommendations = {
+  find: () => dbRecommendations(DBActions.GENERAL.FIND),
+  record: event => dbRecommendations(DBActions.GENERAL.UPSERT, event),
+  remove: ids => dbRecommendations(DBActions.GENERAL.DELETE_MULTIPLE, ids),
+  reset: () => dbRecommendations(DBActions.GENERAL.DELETE_ALL),
+}
 const dbProfiles = (action, data) => window.ftElectron.dbProfiles(action, toPlain(data))
 const dbPlaylists = (action, data) => window.ftElectron.dbPlaylists(action, toPlain(data))
 const dbSearchHistory = (action, data) => window.ftElectron.dbSearchHistory(action, toPlain(data))

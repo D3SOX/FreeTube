@@ -95,6 +95,28 @@ Stats:
   Hours: '{hours} ساعة'
   Hours and minutes: '{hours} ساعة {minutes} دقيقة'
 Home Page:
+  Familiar description: "فضّل الفيديوهات التي لم تشاهدها من قنوات تستمتع بها بالفعل."
+  Balanced description: "امزج القنوات المألوفة بقنوات جديدة تناسب اهتماماتك."
+  Explore description: "امنح مساحة أكبر لقنوات جديدة مرتبطة باهتماماتك."
+  Turn off recommendations: إيقاف التوصيات
+  Recommended for you: "مقترَح لك"
+  Recommendations description: "رتّب الفيديوهات على جهازك باستخدام سجل المشاهدة. تُرسَل معرّفات القنوات وطلبات البحث عن المواضيع إلى الواجهة الخلفية التي اخترتها للعثور على فيديوهات."
+  Enable recommendations: "تفعيل الاقتراحات"
+  Recommendations need history: "شاهد بعض الفيديوهات مع تفعيل سجل المشاهدة للحصول على اقتراحات."
+  No recommendations: "لم يُعثَر على اقتراحات. جرّب التحديث بعد مشاهدة المزيد من الفيديوهات."
+  Recommendations unavailable: "تعذّر تحميل الاقتراحات. حاول مرة أخرى لاحقًا."
+  More like this: "المزيد مثل هذا"
+  Not interested: "لست مهتمًا"
+  Hide this channel: "إخفاء هذه القناة"
+  Reset recommendations: "إعادة ضبط التوصيات"
+  Discovery: "الاكتشاف"
+  Familiar: "مألوف"
+  Balanced: "متوازن"
+  Explore: "استكشاف"
+  Related to: "مرتبط بـ {title}"
+  More from: "المزيد من {channel}"
+  Matches interest: "يطابق اهتمامك بـ {topic}"
+  Related discovery privacy: "تُرسل أيضًا معرّفات الفيديوهات للعثور على فيديوهات ذات صلة."
   Home: الرئيسية
   Description: تابع من حيث توقفت واطّلع على النشاط الأخير.
   Customize: تخصيص الصفحة الرئيسية

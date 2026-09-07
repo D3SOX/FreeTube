@@ -70,6 +70,28 @@ Stats:
   Hours: '{hours} ч'
   Hours and minutes: '{hours} ч {minutes} мин'
 Home Page:
+  Familiar description: "Отдавайте предпочтение непросмотренным видео с каналов, которые вам уже нравятся."
+  Balanced description: "Сочетайте знакомые каналы с новыми, соответствующими вашим интересам."
+  Explore description: "Давайте больше места новым каналам, связанным с вашими интересами."
+  Turn off recommendations: Отключить рекомендации
+  Recommended for you: "Рекомендуем вам"
+  Recommendations description: "Ранжируйте видео на своём устройстве на основе истории просмотров. Идентификаторы каналов и поисковые запросы по темам отправляются в выбранный вами бэкенд для поиска видео."
+  Enable recommendations: "Включить рекомендации"
+  Recommendations need history: "Посмотрите несколько видео с включённой историей, чтобы получить рекомендации."
+  No recommendations: "Рекомендации не найдены. Попробуйте обновить после просмотра других видео."
+  Recommendations unavailable: "Не удалось загрузить рекомендации. Повторите попытку позже."
+  More like this: "Больше похожего"
+  Not interested: "Не интересует"
+  Hide this channel: "Скрыть этот канал"
+  Reset recommendations: "Сбросить рекомендации"
+  Discovery: "Открытия"
+  Familiar: "Знакомое"
+  Balanced: "Сбалансированно"
+  Explore: "Исследовать"
+  Related to: "Связано с {title}"
+  More from: "Больше от {channel}"
+  Matches interest: "Соответствует вашему интересу к теме {topic}"
+  Related discovery privacy: "Для поиска похожих видео также отправляются идентификаторы видео."
   Home: Главная
   Description: Продолжайте с того места, где остановились, и просматривайте недавние действия.
   Customize: Настроить главную
