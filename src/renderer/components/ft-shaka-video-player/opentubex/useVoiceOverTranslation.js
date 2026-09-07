@@ -106,6 +106,10 @@ export function useVoiceOverTranslation({
 
   async function updateOriginalVolume() {
     const initialGain = enabled.value ? originalVolume.value : 1
+    if (video.value?.nativePlayback) {
+      await video.value.nativePlayback.setOutputGain(initialGain)
+      return
+    }
     if (!outputGainNode && initialGain !== 1) {
       try {
         outputGraphSetupPromise ??= setupOutputGraph()
@@ -204,7 +208,7 @@ export function useVoiceOverTranslation({
   function setAudioSource(url, shouldEnable) {
     discardAudio()
 
-    audio = new Audio()
+    audio = video.value?.nativePlayback?.createAudio() ?? new Audio()
     audio.preload = 'auto'
     audio.addEventListener('error', handleAudioError)
     audio.src = url

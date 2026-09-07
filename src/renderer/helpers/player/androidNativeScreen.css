@@ -1,0 +1,120 @@
+/* Keep native video below the WebView in both inline and fullscreen layouts.
+   The page backdrop leaves only the active player's rounded window transparent. */
+.nativePlaybackInline,
+.nativePlaybackInline body,
+.nativePlaybackInline body :has([data-native-player-controls]),
+.nativePlaybackInline [data-native-player-controls] {
+  background: transparent !important;
+}
+
+.nativePlaybackInline body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: var(--bg-color);
+  clip-path: var(--native-inline-background-clip, inset(0));
+}
+
+.nativePlaybackScreen {
+  /* A fixed native screen does not get the browser Fullscreen API's scroll
+     lock. Keep panel boundary gestures from scrolling the hidden Watch page. */
+  overflow: hidden !important;
+}
+
+.nativePlaybackScreen,
+.nativePlaybackScreen body {
+  background: transparent !important;
+}
+
+.nativePlaybackScreen body {
+  visibility: hidden;
+}
+
+/* Keep Watch's inherited styles and gesture event path. Container queries and
+   tab transitions must not make fixed positioning relative to the tab. */
+.nativePlaybackScreen body :has([data-native-player-screen]) {
+  container-type: normal !important;
+  transform: none !important;
+}
+
+.nativePlaybackScreen [data-native-player-screen] {
+  --mobile-fullscreen-actions-block-end: calc(
+    120px + var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px))
+  ) !important;
+
+  position: fixed !important;
+  z-index: 2147483647;
+  inset: 0 !important;
+  visibility: visible;
+  inline-size: 100vw !important;
+  block-size: 100dvh !important;
+  margin: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+}
+
+[data-native-player-controls] video {
+  opacity: 0 !important;
+}
+
+[data-native-player-controls] .shaka-play-button-container,
+[data-native-player-controls] .shaka-big-buttons-container,
+[data-native-player-screen] .shaka-scrim-container {
+  visibility: hidden;
+}
+
+/* Keep the shared toolbar's captions, PiP, quick speeds and timeline features.
+   Menus form a higher layer, including where they overlap the seek bar. */
+[data-native-player-controls] .ft-controls-overflow-pip > .shaka-pip-button,
+[data-native-player-controls] .ft-controls-overflow-captions > .caption-toggle-button {
+  display: none;
+}
+
+/* Keep PiP in exactly one place as the measured toolbar width changes.
+   The captions settings remain available for choosing language/appearance
+   even when the quick caption toggle fits in the toolbar. */
+/* stylelint-disable-next-line selector-max-compound-selectors */
+[data-native-player-controls]:has(
+  .shaka-controls-button-panel:not(.ft-controls-overflow-pip) > .shaka-pip-button:not(.shaka-hidden)
+) .shaka-overflow-menu .shaka-pip-button {
+  display: none;
+}
+
+[data-native-player-screen] .shaka-controls-button-panel {
+  min-block-size: 76px;
+}
+
+[data-native-player-screen] .shaka-seek-bar-container {
+  position: absolute;
+  inset-block: auto calc(70px + var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)));
+  inset-inline: 16px;
+  inline-size: auto;
+  margin: 0;
+}
+
+[data-native-player-screen] .shaka-bottom-controls {
+  z-index: 1;
+}
+
+[data-native-player-controls] .shaka-overflow-menu,
+[data-native-player-controls] .shaka-settings-menu,
+[data-native-player-controls] .shaka-sub-menu,
+[data-native-player-controls] .shaka-context-menu {
+  z-index: 4;
+}
+
+
+/* Chapters use their desktop title when it fits, otherwise the settings tile. */
+.ftVideoPlayer[data-native-player-controls] .shaka-controls-button-panel.ft-controls-compact-chapters > .ft-chapters-button {
+  display: none;
+}
+
+/* stylelint-disable-next-line selector-max-compound-selectors */
+[data-native-player-controls]:has(
+  .shaka-controls-button-panel:not(.ft-controls-compact-chapters) > .ft-chapters-button
+) .shaka-overflow-menu .ft-chapters-button {
+  display: none;
+}

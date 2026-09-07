@@ -15,6 +15,8 @@ let pictureInPictureTabId = null
 let miniPlayerTabId = null
 let playSequence = 0
 let powerSaveBlocked = false
+const ownershipListeners = new Map()
+let notifiedOwnerTabId = null
 
 function getEntry(tabId) {
   if (!tabId) {
@@ -27,6 +29,7 @@ function getEntry(tabId) {
       playbackState: 'none',
       lastPlayedAt: 0,
       metadata: null,
+      nativeOwner: null,
       positionState: null,
       actionHandlerSources: new Map()
     }
@@ -82,6 +85,13 @@ function getActionHandlers(entry) {
 
 function applyOwner(playbackStartedTabId = null) {
   ownerTabId = chooseOwner()
+  if (notifiedOwnerTabId !== ownerTabId) {
+    notifiedOwnerTabId = ownerTabId
+    queueMicrotask(() => {
+      const selected = chooseOwner()
+      for (const [tabId, listener] of ownershipListeners) listener(tabId === selected)
+    })
+  }
   const owner = mediaByTabId.get(ownerTabId)
   const actionHandlers = getActionHandlers(owner)
 
@@ -113,6 +123,7 @@ function applyOwner(playbackStartedTabId = null) {
     metadata: owner?.metadata,
     positionState: owner?.positionState,
     actionHandlers,
+    nativeOwner: owner?.nativeOwner,
   })
 
   globalThis.window?.ftElectron?.tabs?.setMediaSessionState?.({
@@ -144,6 +155,24 @@ function applyPowerSaveState() {
 }
 
 export const tabMediaCoordinator = {
+  subscribeOwnership(tabId, listener) {
+    getEntry(tabId)
+    ownershipListeners.set(tabId, listener)
+    listener(tabId === chooseOwner())
+    return () => {
+      if (ownershipListeners.get(tabId) === listener) ownershipListeners.delete(tabId)
+    }
+  },
+
+  setNativeOwner(tabId, nativeOwner) {
+    const entry = getEntry(tabId)
+    if (!entry || entry.nativeOwner === nativeOwner) return
+    if (nativeOwner && entry.playbackState === 'none') entry.playbackState = 'paused'
+    if (!nativeOwner && entry.nativeOwner) entry.playbackState = 'none'
+    entry.nativeOwner = nativeOwner
+    applyOwner()
+  },
+
   dispatchAction(action, details = {}) {
     if (!MEDIA_SESSION_ACTIONS.includes(action)) {
       return
@@ -275,6 +304,7 @@ export const tabMediaCoordinator = {
   },
 
   unregister(tabId) {
+    ownershipListeners.delete(tabId)
     mediaByTabId.delete(tabId)
     if (pictureInPictureTabId === tabId) {
       pictureInPictureTabId = null

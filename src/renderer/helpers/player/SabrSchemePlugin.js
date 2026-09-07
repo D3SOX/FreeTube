@@ -15,7 +15,6 @@ import {
 } from 'googlevideo/protos'
 import shaka from 'shaka-player'
 
-import { deepCopy } from '../utils'
 import {
   createAbandonedSabrResponse,
   extractRawProtobufField,
@@ -638,38 +637,13 @@ async function doRequest(
  * @return SabrStream
  */
 export function setupSabrScheme(sabrData, getPlayer, getManifest, playerWidth, playerHeight) {
-  const eventEmitter = new EventEmitterLike()
-
-  /**
-   * Caches the init data until the video ends
-   * that way changing qualities and between audio and DASH
-   * doesn't have to fetch the init data and segment index again
-   * @type {Map<string, Uint8Array>}
-   */
-  const initDataCache = new Map()
-
-  const poToken = base64ToU8(sabrData.poToken)
-  const videoPlaybackUstreamerConfig = base64ToU8(sabrData.ustreamerConfig)
-  const clientInfo = deepCopy(sabrData.clientInfo)
-
-  /** @type {SabrStreamState} */
-  const sabrStreamState = {
-    sabrUrl: sabrData.url,
-    activeSabrContextTypes: new Set(),
-    sabrContexts: new Map(),
-    nextRequestPolicy: undefined,
-    playbackCookieBytes: undefined,
-    playerReloadRequested: false,
-    requestNumber: 0,
-  }
-
-  shaka.net.NetworkingEngine.registerScheme(sabrData.scheme, (uri, request, requestType, _progressUpdated, headersReceived, _config) => {
+  const transport = createSabrTransport(sabrData, (uri, request) => {
     // lazily fetch it as the variable is only set after setupSabrScheme is called
     // but it will definitely exist when we receive a request here.
     const player = getPlayer()
     if (player == null) {
       // This is true during reload, returning a promise to suppress error
-      return new AbortableOperation(Promise.resolve(createAbandonedSabrResponse(uri, request)))
+      return null
     }
 
     let isAudioOnly
@@ -678,17 +652,13 @@ export function setupSabrScheme(sabrData, getPlayer, getManifest, playerWidth, p
     } catch {
       // Shaka keeps the cast proxy reachable after destroying its sender. A
       // request queued before teardown can therefore throw on property access.
-      return new AbortableOperation(Promise.resolve(createAbandonedSabrResponse(uri, request)))
+      return null
     }
 
     const url = new URL(request.uris[0])
 
     const isInit = url.searchParams.has('init')
     const formatIdString = url.searchParams.get('formatId')
-
-    if (isInit && initDataCache.has(formatIdString)) {
-      return /** @__NOINLINE__ */ createCacheResponse(uri, request, initDataCache.get(formatIdString))
-    }
 
     const variantTracks = player.getVariantTracks()
     const activeVariant = variantTracks.find(track => track.active)
@@ -733,33 +703,96 @@ export function setupSabrScheme(sabrData, getPlayer, getManifest, playerWidth, p
       /** @__NOINLINE__ */ fillBufferedRanges(player, getManifest(), isAudioOnly, streamIsVideo, streamIsAudio, bufferedRanges, activeVariant)
     }
 
-    let playerTimeMs = '0'
-
-    if (url.searchParams.has('startTimeMs')) {
-      playerTimeMs = url.searchParams.get('startTimeMs')
-    }
-
     const drcEnabled = url.searchParams.has('drc') || !!(activeVariant && activeVariant.audioRoles.includes('drc'))
     const enableVoiceBoost = url.searchParams.has('vb') || !!(activeVariant && activeVariant.audioRoles.includes('vb'))
 
+    return {
+      audioFormatId,
+      videoFormatId,
+      bufferedRanges,
+      drcEnabled,
+      enableVoiceBoost,
+      bandwidthEstimate: player.getStats().estimatedBandwidth,
+      playbackRate: player.getPlaybackRate(),
+      width: playerWidth.value,
+      height: playerHeight.value,
+    }
+  })
+  shaka.net.NetworkingEngine.registerScheme(sabrData.scheme, transport.request)
+  return {
+    ...transport,
+    cleanup() {
+      shaka.net.NetworkingEngine.unregisterScheme(sabrData.scheme)
+      transport.cleanup()
+    },
+  }
+}
+
+/**
+ * Shared SABR wire transport. The decoder supplies its selected formats and
+ * playback state; neither protocol handling nor fetching requires a Shaka player.
+ */
+export function createSabrTransport(sabrData, getRequestContext) {
+  const eventEmitter = new EventEmitterLike()
+
+  /**
+   * Caches the init data until the video ends
+   * that way changing qualities and between audio and DASH
+   * doesn't have to fetch the init data and segment index again
+   * @type {Map<string, Uint8Array>}
+   */
+  const initDataCache = new Map()
+  const operations = new Set()
+  let cleanedUp = false
+
+  const poToken = base64ToU8(sabrData.poToken)
+  const videoPlaybackUstreamerConfig = base64ToU8(sabrData.ustreamerConfig)
+  const clientInfo = JSON.parse(JSON.stringify(sabrData.clientInfo))
+
+  /** @type {SabrStreamState} */
+  const sabrStreamState = {
+    sabrUrl: sabrData.url,
+    activeSabrContextTypes: new Set(),
+    sabrContexts: new Map(),
+    nextRequestPolicy: undefined,
+    playbackCookieBytes: undefined,
+    playerReloadRequested: false,
+    requestNumber: 0,
+  }
+
+  const requestSegment = (uri, request, requestType, _progressUpdated, headersReceived = () => {}) => {
+    const context = cleanedUp ? null : getRequestContext(uri, request)
+    if (!context) {
+      return AbortableOperation.completed(createAbandonedSabrResponse(uri, request))
+    }
+    const url = new URL(request.uris[0])
+    const isInit = url.searchParams.has('init')
+    const formatIdString = url.searchParams.get('formatId')
+    if (isInit && initDataCache.has(formatIdString)) {
+      return createCacheResponse(uri, request, initDataCache.get(formatIdString))
+    }
+    const streamIsAudio = url.pathname === 'audio'
+    const streamIsVideo = url.pathname === 'video'
     const resolution = streamIsVideo ? parseInt(url.searchParams.get('resolution')) : undefined
+    const playerTimeMs = url.searchParams.get('startTimeMs') ?? '0'
+    const { audioFormatId, videoFormatId, bufferedRanges, drcEnabled, enableVoiceBoost } = context
 
     const { sabrContexts, unsentSabrContexts } = prepareSabrContexts(sabrStreamState)
 
     /** @type {VideoPlaybackAbrRequest} */
     const requestData = {
       clientAbrState: {
-        bandwidthEstimate: String(Math.round(player.getStats().estimatedBandwidth)),
+        bandwidthEstimate: String(Math.round(context.bandwidthEstimate)),
         timeSinceLastManualFormatSelectionMs: streamIsVideo ? '0' : undefined,
         stickyResolution: resolution,
         lastManualSelectedResolution: resolution,
-        playbackRate: player.getPlaybackRate(),
+        playbackRate: context.playbackRate,
         enabledTrackTypesBitfield: streamIsAudio ? 1 : 0,
         drcEnabled,
         enableVoiceBoost,
         playerTimeMs,
-        clientViewportWidth: playerWidth.value,
-        clientViewportHeight: playerHeight.value,
+        clientViewportWidth: context.width,
+        clientViewportHeight: context.height,
         clientViewportIsFlexible: false
       },
       preferredAudioFormatIds: [audioFormatId],
@@ -863,25 +896,26 @@ export function setupSabrScheme(sabrData, getPlayer, getManifest, playerWidth, p
       return Promise.resolve()
     })
 
-    if (timeoutController) {
-      op.finally(() => {
-        timeoutController.clearTimeout()
-      })
-    }
+    operations.add(op)
+    op.finally(() => {
+      timeoutController?.clearTimeout()
+      operations.delete(op)
+    })
 
     return op
-  })
+  }
 
-  let cleanedUp = false
   const cleanup = () => {
     if (cleanedUp) return
     cleanedUp = true
 
-    shaka.net.NetworkingEngine.unregisterScheme(sabrData.scheme)
+    for (const operation of operations) operation.abort()
+    operations.clear()
     initDataCache.clear()
   }
 
   return {
+    request: requestSegment,
     onBackoffRequested(callback) {
       eventEmitter.on('backoff-requested', callback)
     },

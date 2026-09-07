@@ -39,3 +39,9 @@ test('only pauses a backgrounded Android player after the user opts out', () => 
   assert.equal(shouldPauseAndroidPlaybackOnAppStateChange(false, false), true)
   assert.equal(shouldPauseAndroidPlaybackOnAppStateChange(true, false), false)
 })
+
+test('keeps the native source owner on renderer notification updates', () => {
+  const payload = createAndroidMediaSessionState({ playbackState: 'playing', nativeOwner: 'android-source-1' })
+  assert.equal(payload.nativeOwner, 'android-source-1')
+  assert.equal(Object.hasOwn(createAndroidMediaSessionState(), 'nativeOwner'), false)
+})

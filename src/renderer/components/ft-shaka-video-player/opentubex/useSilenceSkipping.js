@@ -576,6 +576,7 @@ export function useSilenceSkipping({ available, enabled, isLive, video }) {
   }
 
   function startAnalysisPipeline() {
+    if (video.value?.nativePlayback) return
     if (!enabled.value || isLive.value || destroyed) {
       return
     }
@@ -618,6 +619,7 @@ export function useSilenceSkipping({ available, enabled, isLive, video }) {
   }
 
   function updateSkipState() {
+    if (video.value?.nativePlayback) return
     if (shouldSkip()) {
       if (skipFrame === null) {
         skipFrame = requestAnimationFrame(skipKnownSilence)
@@ -748,6 +750,11 @@ export function useSilenceSkipping({ available, enabled, isLive, video }) {
   }
 
   function updateEnabledState() {
+    if (video.value?.nativePlayback) {
+      video.value.nativePlayback.setSkipSilence(enabled.value && !isLive.value)
+        .catch(error => console.warn('Unable to update native silence skipping', error))
+      return
+    }
     if (!enabled.value || isLive.value) {
       destroyAnalysisPipeline()
       silenceRanges = []

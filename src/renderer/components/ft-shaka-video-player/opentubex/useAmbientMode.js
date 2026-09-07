@@ -1,5 +1,6 @@
 import { isAppHidden } from '../../../helpers/appVisibility.js'
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { capturePlayerFrame } from '../../../helpers/player/capturePlayerFrame'
 
 const AMBIENT_FRAME_INTERVAL_MS = 100
 const AMBIENT_FRAME_BLEND_ALPHA = 0.14
@@ -29,8 +30,10 @@ export function useAmbientMode({ enabled, video }) {
   let blendTicksRemaining = 0
   let hasAmbientFrame = false
   let hasLoggedRenderError = false
+  let framePending = false
 
-  function drawAmbientFrame() {
+  async function drawAmbientFrame() {
+    if (framePending) return
     const canvas = ambientCanvas.value
     const videoElement = video.value
 
@@ -61,10 +64,12 @@ export function useAmbientMode({ enabled, video }) {
     }
 
     const wasInitialized = hasAmbientFrame
-    context.globalAlpha = wasInitialized ? AMBIENT_FRAME_BLEND_ALPHA : 1
-
+    framePending = true
     try {
-      context.drawImage(videoElement, 0, 0, canvas.width, canvas.height)
+      const frame = await capturePlayerFrame(videoElement, canvas.width, canvas.height)
+      if (!enabled.value || isAppHidden() || canvas !== ambientCanvas.value || videoElement !== video.value) return
+      context.globalAlpha = wasInitialized ? AMBIENT_FRAME_BLEND_ALPHA : 1
+      context.drawImage(frame, 0, 0, canvas.width, canvas.height)
       hasAmbientFrame = true
       lastVideoTime = videoElement.currentTime
       blendTicksRemaining = wasInitialized ? Math.max(0, blendTicksRemaining - 1) : 0
@@ -82,6 +87,7 @@ export function useAmbientMode({ enabled, video }) {
         hasLoggedRenderError = true
       }
     } finally {
+      framePending = false
       context.globalAlpha = 1
     }
   }

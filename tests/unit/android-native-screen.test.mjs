@@ -1,0 +1,120 @@
+import assert from 'node:assert/strict'
+import test from 'node:test'
+import { readFile } from 'node:fs/promises'
+import vm from 'node:vm'
+import { overrideShakaMethods } from '../../src/renderer/helpers/player/overrideShakaMethods.js'
+
+const source = (await readFile(new URL('../../src/renderer/helpers/player/androidNativeScreen.js', import.meta.url), 'utf8'))
+  .replace(/^import .*\n/gm, '').replace('export function ', 'function ')
+
+async function fixture({ fullscreen = true } = {}) {
+  const frames = new Map()
+  const layouts = []
+  const presentations = []
+  const observers = []
+  let shown = true
+  let menu = false
+  let panel = false
+  let id = 0
+  const bounds = { x: 0, y: 0, width: 640, height: 360 }
+  const controlsElement = { hasAttribute: () => shown, getBoundingClientRect: () => bounds }
+  const container = Object.assign(new EventTarget(), {
+    classList: { contains: () => panel },
+    getBoundingClientRect: () => bounds,
+    toggleAttribute() {},
+    querySelectorAll() { return menu ? [{ getAnimations: () => [], getBoundingClientRect: () => ({ x: 400, y: 100, width: 200, height: 240 }) }] : [] },
+    querySelector(selector) {
+      if (selector === '.shaka-controls-container') return controlsElement
+      return null
+    },
+  })
+  const element = Object.assign(new EventTarget(), {
+    getBoundingClientRect: () => bounds, getAnimations: () => [],
+  })
+  const document = Object.assign(new EventTarget(), { elementFromPoint: () => null, querySelectorAll: () => [], documentElement: { classList: { toggle() {} }, style: { setProperty() {}, removeProperty() {} } } })
+  class Observer {
+    constructor(callback) { this.callback = callback; observers.push(this) }
+    observe(target, options) { if (options) this.options = { attributeFilter: [...(this.options?.attributeFilter ?? []), ...options.attributeFilter] } }
+    disconnect() {}
+  }
+  const create = vm.runInNewContext(`${source}\ncreateAndroidNativeScreen`, {
+    document, window: Object.assign(new EventTarget(), { innerWidth: 1000, innerHeight: 700 }), Event,
+    ResizeObserver: Observer, MutationObserver: Observer, overrideShakaMethods,
+    getComputedStyle: () => ({ borderTopLeftRadius: '12px' }),
+    requestAnimationFrame(callback) { frames.set(++id, callback); return id },
+    cancelAnimationFrame(id) { frames.delete(id) },
+  })
+  const screen = create({ element, container, getController: () => ({
+    async show(value) { presentations.push(value) }, async hide() {}, async layout(value) { layouts.push(value) },
+  }), getLocale: () => 'en-US', onError: error => { throw error } })
+  async function flush() {
+    for (const [id, callback] of [...frames]) { frames.delete(id); callback() }
+    await Promise.resolve()
+  }
+  if (fullscreen) await screen.show()
+  else await screen.attach()
+  await flush()
+  return { screen, layouts, presentations, bounds, observers, flush, change({ visible = shown, menuOpen = menu, panelOpen = panel }) {
+    shown = visible; menu = menuOpen; panel = panelOpen
+    for (const observer of observers) observer.callback()
+  } }
+}
+
+test('initial attachment requests an inline native surface without a fullscreen transition', async () => {
+  const f = await fixture({ fullscreen: false })
+  assert.equal(f.screen.isOpen(), false)
+  assert.equal(f.screen.hasSurface(), true)
+  assert.equal(f.presentations.at(-1).fullscreen, false)
+  await f.screen.show()
+  assert.equal(f.screen.isOpen(), true)
+  assert.equal(f.presentations.at(-1).fullscreen, true)
+  f.screen.destroy()
+})
+
+test('native controls follow shared shown state, including paused tap-to-hide', async () => {
+  const f = await fixture()
+  assert.equal(f.layouts.at(-1).controlsVisible, true)
+  assert.ok(f.observers.some(observer => observer.options?.attributeFilter.includes('shown')))
+  f.change({ visible: false })
+  await f.flush()
+  assert.equal(f.layouts.at(-1).controlsVisible, false)
+  f.change({ visible: true })
+  await f.flush()
+  assert.equal(f.layouts.at(-1).controlsVisible, true)
+  f.screen.destroy()
+})
+
+test('side panels and menus retain transport controls inside the video column', async () => {
+  const f = await fixture()
+  f.change({ panelOpen: true })
+  await f.flush()
+  assert.equal(f.layouts.at(-1).overlayActive, true)
+  assert.equal(f.layouts.at(-1).controlsVisible, true)
+  assert.equal(f.layouts.at(-1).controlsWidth, 640)
+  f.change({ menuOpen: true })
+  await f.flush()
+  assert.equal(f.layouts.at(-1).controlsVisible, true)
+  assert.equal(JSON.stringify(f.layouts.at(-1).menus), JSON.stringify([{ x: 400, y: 100, width: 200, height: 240 }]))
+  f.change({ menuOpen: false })
+  await f.flush()
+  assert.equal(f.layouts.at(-1).menus.length, 0)
+  f.screen.destroy()
+})
+
+test('inline native controls follow the player bounds and shared visibility after leaving fullscreen', async () => {
+  const f = await fixture()
+  await f.screen.hide()
+  f.bounds.x = 20
+  f.bounds.y = 120
+  f.bounds.width = 360
+  f.bounds.height = 203
+  f.change({ visible: true })
+  await f.flush()
+  assert.equal(f.layouts.at(-1).controlsX, 20)
+  assert.equal(f.layouts.at(-1).controlsY, 120)
+  assert.equal(f.layouts.at(-1).controlsVisible, true)
+  f.change({ visible: false })
+  await f.flush()
+  assert.equal(f.layouts.at(-1).controlsVisible, false)
+  f.screen.destroy()
+})

@@ -46,6 +46,8 @@
   min-inline-size: var(--fixed-tab-width, 100px);
   max-inline-size: var(--fixed-tab-width, 200px);
   background-color: transparent;
+  border-radius: calc(6px * var(--ui-roundness)) calc(6px * var(--ui-roundness)) 0 0;
+  overflow: clip;
   transition: background-color 150ms ease, transform 160ms ease;
 }
 
@@ -63,6 +65,7 @@
   z-index: 3;
   background-color: var(--card-bg-color);
   box-shadow: 0 0 8px var(--primary-shadow-color);
+
 }
 
 .capacitorTabletTab.active {
@@ -108,6 +111,7 @@
   flex: 0 0 48px;
   inline-size: 48px;
   font-size: 16px;
+  border-radius: calc(4px * var(--ui-roundness));
 }
 
 .capacitorTabletTabClose :deep(.ft-icon),
@@ -123,14 +127,16 @@
   align-self: stretch;
 }
 
-.capacitorTabletTabTarget:hover,
-.capacitorTabletTabClose:hover,
+.capacitorTabletTab:has(.capacitorTabletTabTarget:is(:hover, :active)),
 .capacitorTabletNewTab:hover,
-.capacitorTabletTabTarget:active,
-.capacitorTabletTabClose:active,
 .capacitorTabletNewTab:active {
   background-color: var(--side-nav-hover-color);
   color: var(--side-nav-hover-text-color);
+}
+
+.capacitorTabletTabClose:is(:hover, :active) {
+  background-color: color-mix(in srgb, var(--destructive-color) 25%, transparent);
+  color: var(--destructive-color);
 }
 
 .capacitorTabletTabTarget:focus-visible,

@@ -45,15 +45,17 @@
         @click="closeSideNav"
       />
     </Transition>
+    <!-- Fixed mini players must stay outside the route's query container. -->
+    <div
+      id="cross-tab-mini-player-layer"
+      class="crossTabMiniPlayerLayer"
+      :inert="isAnyPromptOpen"
+    />
     <FtFlexBox
       class="flexBox routerView"
       role="main"
       :inert="isAnyPromptOpen"
     >
-      <div
-        id="cross-tab-mini-player-layer"
-        class="crossTabMiniPlayerLayer"
-      />
       <template v-if="usesLogicalTabs">
         <TabContent
           v-for="tab in tabContainers"

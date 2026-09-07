@@ -1285,7 +1285,7 @@ export default defineComponent({
   },
   methods: {
     updateAndroidBackgroundPlaybackFormat() {
-      if (!process.env.IS_CAPACITOR) return
+      if (!process.env.IS_CAPACITOR || this.$refs.player?.isNativePlayback?.()) return
 
       const change = resolveAndroidBackgroundPlaybackFormat({
         hidden: isAppHidden(),
@@ -1478,6 +1478,7 @@ export default defineComponent({
       }
     },
     handleFullscreenMetadataChange({ open, target, presentationActive = false }) {
+      const wasOpen = this.fullscreenMetadataOpen
       this.fullscreenMetadataTarget = target
       this.fullscreenMetadataOpen = open && target !== null
 
@@ -1488,6 +1489,7 @@ export default defineComponent({
 
       if (this.fullscreenMetadataOpen) {
         this.$nextTick(() => {
+          if (!wasOpen) restoreOverlayScrollTop(target, 0)
           if (this.showTranscript && !this.fullscreenTranscriptOpen) {
             this.$refs.player?.setFullscreenTranscript(true)
           }

@@ -1,4 +1,6 @@
 import { isAppHidden } from '../../helpers/appVisibility.js'
+import { capturePlayerFrame } from '../../helpers/player/capturePlayerFrame'
+import { createAndroidPlayer } from '../../helpers/player/androidPlayer'
 import { computed, defineComponent, inject, nextTick, onBeforeUnmount, onMounted, onUnmounted, reactive, ref, shallowRef, watch } from 'vue'
 import FtPaidPromotionBadge from '../FtPaidPromotionBadge/FtPaidPromotionBadge.vue'
 import FtSelect from '../FtSelect/FtSelect.vue'
@@ -654,6 +656,7 @@ export default defineComponent({
 
     /** @type {shaka.ui.Overlay|null} */
     let ui = null
+    let nativePlaybackCleanup = null
 
     // Set when a UI reconfigure is requested while the player is not loaded, so
     // it can be flushed once loading finishes (see configureUI).
@@ -1540,13 +1543,13 @@ export default defineComponent({
 
     watch(enterFullscreenOnDisplayRotate, (newValue) => {
       ui.configure({
-        enableFullscreenOnRotation: newValue
+        enableFullscreenOnRotation: !process.env.IS_CAPACITOR && newValue
       })
     })
 
     watch(rotateFullscreenToLandscape, (enabled) => {
       if (!isNativeFullscreenActive()) return
-      setFullscreenOrientation(true, video.value, enabled).catch(() => {})
+      setFullscreenOrientation(true, video.value, enabled && !player?.nativePlayback?.isFullscreenFromRotation()).catch(() => {})
     })
 
     /** @type {import('vue').ComputedRef<number>} */
@@ -3688,6 +3691,10 @@ export default defineComponent({
 
     /** @param {PointerEvent} event */
     function handleVideoZoomPointerDown(event) {
+      if (event.pointerType === 'touch' && !event.isPrimary && temporaryPlaybackRatePointerId !== null) {
+        temporaryPlaybackRatePointerCancelled = true
+        finishTemporaryPlaybackRateHold(TEMPORARY_PLAYBACK_RATE_POINTER_SOURCE)
+      }
       startMobileFullscreenGesture(event)
 
       if (
@@ -3753,6 +3760,11 @@ export default defineComponent({
 
     /** @param {PointerEvent} event */
     function handleVideoZoomPointerMove(event) {
+      if (event.pointerType === 'touch' && event.pointerId === temporaryPlaybackRatePointerId &&
+        Math.hypot(event.clientX - temporaryPlaybackRatePointerStart.x, event.clientY - temporaryPlaybackRatePointerStart.y) > 12) {
+        temporaryPlaybackRatePointerCancelled = true
+        finishTemporaryPlaybackRateHold(TEMPORARY_PLAYBACK_RATE_POINTER_SOURCE)
+      }
       if (videoZoomTouchPointers.has(event.pointerId)) {
         videoZoomTouchPointers.set(event.pointerId, { x: event.clientX, y: event.clientY })
       }
@@ -4280,7 +4292,7 @@ export default defineComponent({
         ...(!isCapacitorMobilePlayer() ? ['mute', 'volume'] : []),
         'time_and_duration',
         'ft_playback_adjusted_time',
-        ...(!onlyUseOverFlowMenu.value && props.chapters.length > 0
+        ...((!onlyUseOverFlowMenu.value || isCapacitorMobilePlayer()) && !props.shortsPlayer && props.chapters.length > 0
           ? ['ft_chapters']
           : []),
         'ft_sponsorblock_highlight',
@@ -4293,6 +4305,7 @@ export default defineComponent({
         topControlPanelElements: [],
         overflowMenuButtons: [],
         contextMenuElements: contextMenuElements.value,
+        customContextMenu: !isCapacitorMobilePlayer(),
         // Shorts have interactive controls over nearly the entire video
         // surface. Do not let Shaka interpret rapid control clicks as a
         // request to enter fullscreen.
@@ -4337,7 +4350,7 @@ export default defineComponent({
           'ft_loop',
           'ft_ab_repeat',
           'ft_screenshot',
-          ...(!isCapacitorMobilePlayer() || props.shortsPlayer ? [pictureInPictureElement] : []),
+          pictureInPictureElement,
           'ft_full_window',
           'recenter_vr',
           'toggle_stereoscopic',
@@ -4346,7 +4359,7 @@ export default defineComponent({
         elementList = uiConfig.overflowMenuButtons
 
         uiConfig.controlPanelElements.push(
-          ...(props.shortsPlayer && useQuickPlaybackSpeedBar.value && !isLive.value
+          ...((props.shortsPlayer || isCapacitorMobilePlayer()) && useQuickPlaybackSpeedBar.value && !isLive.value
             ? ['ft_quick_playback_rate_bar']
             : []),
           'ft_caption_toggle',
@@ -4519,7 +4532,7 @@ export default defineComponent({
 
           // these have their own watchers
           bigButtons: displayVideoPlayButton.value || isCapacitorMobilePlayer() ? ['play_pause'] : [],
-          enableFullscreenOnRotation: enterFullscreenOnDisplayRotate.value,
+          enableFullscreenOnRotation: !process.env.IS_CAPACITOR && enterFullscreenOnDisplayRotate.value,
           playbackRates: playbackRates.value,
           tapSeekDistance: defaultSkipInterval.value,
 
@@ -4725,16 +4738,18 @@ export default defineComponent({
      * @returns {boolean}
      */
     function isPlayerSurfaceTarget(target) {
-      if (!(target instanceof HTMLElement)) {
-        return target === video.value
-      }
+      if (target === video.value) return true
+      if (!(target instanceof Element)) return false
 
-      return target === video.value || [
+      // The visible web play button owns its click. Only its hidden native
+      // counterpart is part of the surface handled by the mobile recognizer.
+      if (target.closest('.shaka-play-button') && !container.value?.hasAttribute('data-native-player-controls')) return false
+
+      // Seek feedback remains hit-testable while transparent, including its
+      // text and SVG paths. Those descendants belong to the player surface.
+      return target.closest('.shaka-fast-forward-container, .shaka-rewind-container, .shaka-play-button') !== null || [
         'shaka-scrim-container',
-        'shaka-fast-forward-container',
-        'shaka-rewind-container',
         'shaka-play-button-container',
-        'shaka-play-button',
         'shaka-controls-container',
       ].some(className => target.classList.contains(className))
     }
@@ -4777,9 +4792,15 @@ export default defineComponent({
       isFullscreenMetadataShown: () => showFullscreenMetadata.value,
       isFullscreenSwipeEnabled: () => enableMobileFullscreenSwipe.value,
       isPlaybackEnded: () => video.value?.ended === true,
-      isPlaybackPaused: () => video.value?.paused === true,
       isPlayerSurfaceTarget,
       isScrollMiniPlayerActive: () => scrollMiniPlayerActive.value,
+      seekOnDoubleTap: seconds => {
+        if (!canSeek()) return 0
+        const multiplier = seekIntervalMultiplyByPlaybackRate.value ? getCurrentPlaybackRate() : 1
+        const distance = seconds * multiplier
+        seekBySeconds(distance, true, false, false)
+        return distance
+      },
       setFullscreenMetadata,
       setShowUiOnPaused,
       showOverlayControls,
@@ -4788,6 +4809,7 @@ export default defineComponent({
 
     /** @type {number | null} */
     let temporaryPlaybackRatePointerId = null
+    let temporaryPlaybackRatePointerStart = { x: 0, y: 0 }
     let temporaryPlaybackRatePointerCancelled = false
     let suppressTemporaryPlaybackRateClick = false
 
@@ -4796,7 +4818,7 @@ export default defineComponent({
      */
     function handleTemporaryPlaybackRatePointerDown(event) {
       if (
-        event.pointerType !== 'mouse' ||
+        !['mouse', 'touch'].includes(event.pointerType) ||
         event.button !== 0 ||
         !event.isPrimary ||
         event.ctrlKey ||
@@ -4809,7 +4831,9 @@ export default defineComponent({
       }
 
       temporaryPlaybackRatePointerId = event.pointerId
+      temporaryPlaybackRatePointerStart = { x: event.clientX, y: event.clientY }
       temporaryPlaybackRatePointerCancelled = false
+      suppressTemporaryPlaybackRateClick = false
       startTemporaryPlaybackRateHold(TEMPORARY_PLAYBACK_RATE_POINTER_SOURCE)
     }
 
@@ -4831,7 +4855,25 @@ export default defineComponent({
       if (suppressTemporaryPlaybackRateClick) {
         setTimeout(() => {
           suppressTemporaryPlaybackRateClick = false
-        })
+        }, event.pointerType === 'touch' ? 350 : 0)
+      }
+    }
+
+    /** @param {TouchEvent} event */
+    function handlePlayerTouchEnd(event) {
+      if (suppressTemporaryPlaybackRateClick) {
+        event.preventDefault()
+        event.stopImmediatePropagation()
+        return
+      }
+      handleMobilePlayerTouchEnd(event)
+    }
+
+    /** @param {MouseEvent} event */
+    function handlePlayerContextMenu(event) {
+      if (isCapacitorMobilePlayer() && isPlayerSurfaceTarget(event.target)) {
+        event.preventDefault()
+        event.stopImmediatePropagation()
       }
     }
 
@@ -5505,7 +5547,9 @@ export default defineComponent({
     const controlPanelCompactClasses = [
       'ft-controls-hide-highlight-label',
       'ft-controls-compact-chapters',
-      'ft-controls-stack-times'
+      'ft-controls-stack-times',
+      'ft-controls-overflow-pip',
+      'ft-controls-overflow-captions'
     ]
 
     /**
@@ -5884,7 +5928,7 @@ export default defineComponent({
     }
 
     function handlePlay() {
-      setShowUiOnPaused(true)
+      if (!temporaryPlaybackRateActive) setShowUiOnPaused(true)
       playerPaused.value = false
       clearPausedInterfaceReveal()
       shortsPaused.value = false
@@ -5943,7 +5987,8 @@ export default defineComponent({
     }
 
     function handlePause() {
-      setShowUiOnPaused(true)
+      if (!preserveControlsOnTemporaryPause) setShowUiOnPaused(true)
+      preserveControlsOnTemporaryPause = false
       playerPaused.value = true
       clearPausedInterfaceReveal()
       shortsPaused.value = true
@@ -6068,7 +6113,7 @@ export default defineComponent({
         setFullscreenOrientation(
           true,
           video.value,
-          rotateFullscreenToLandscape.value
+          rotateFullscreenToLandscape.value && !player?.nativePlayback?.isFullscreenFromRotation()
         ).catch(() => {})
       }
     }
@@ -6680,7 +6725,7 @@ export default defineComponent({
     }
 
     function ensureSabrStream() {
-      if (!process.env.SUPPORTS_LOCAL_API || sabrStream || !props.sabrData) return
+      if (process.env.IS_CAPACITOR || !process.env.SUPPORTS_LOCAL_API || sabrStream || !props.sabrData) return
 
       sabrStream = /** @__NOINLINE__ */ setupSabrScheme(props.sabrData, () => player, () => sabrManifest, playerWidth, playerHeight)
       sabrAbortController = new AbortController()
@@ -7082,7 +7127,12 @@ export default defineComponent({
       const canvas = document.createElement('canvas')
       canvas.width = width
       canvas.height = height
-      canvas.getContext('2d').drawImage(video_, 0, 0)
+      try {
+        canvas.getContext('2d').drawImage(await capturePlayerFrame(video_, width, height), 0, 0)
+      } catch (error) {
+        showToast({ message: t('Screenshot Error', { error: error.message }), icon: ['fas', 'circle-exclamation'] })
+        return
+      }
 
       // Navigator Clipboard API only supports PNG
       const format = screenshotMode.value === 'clipboard' ? 'png' : screenshotFormat.value
@@ -7440,6 +7490,15 @@ export default defineComponent({
      * @param {MouseEvent} event
      */
     function handlePlayerMouseMove(event) {
+      // Android sends a synthetic mouse move when a long press opens the
+      // context menu, before the speed hold activates. Touch gestures own UI visibility.
+      if (isCapacitorMobilePlayer() && event.sourceCapabilities?.firesTouchEvents && isPlayerSurfaceTarget(event.target)) {
+        event.stopImmediatePropagation()
+        return
+      }
+      // Touch browsers synthesize mouse movement after tapping a notice.
+      // The notice keeps its own interactions without revealing player UI.
+      if (event.target instanceof Element && event.target.closest('.skippedSegmentsWrapper')) return
       updateShortsQuickPlaybackRateBarProximity(event)
 
       const videoElement = video.value
@@ -8869,7 +8928,6 @@ export default defineComponent({
         player.trickPlay(temporaryPlaybackRate, false)
         temporaryPlaybackRateIndicatorMessage.value = `${Number.parseFloat(temporaryPlaybackRate.toFixed(2))}x`
         showTemporaryPlaybackRateIndicator.value = true
-        showOverlayControls()
         if (wasPausedBeforeTemporaryPlayback) {
           video.value.play()
         }
@@ -8906,6 +8964,8 @@ export default defineComponent({
       temporaryPlaybackRateHoldTimeouts.set(source, timeoutId)
     }
 
+    let preserveControlsOnTemporaryPause = false
+
     function restoreTemporaryPlaybackRate() {
       if (!temporaryPlaybackRateActive) {
         return
@@ -8922,8 +8982,9 @@ export default defineComponent({
           }
         }
 
-        if (wasPausedBeforeTemporaryPlayback) {
-          video.value?.pause()
+        if (wasPausedBeforeTemporaryPlayback && video.value && !video.value.paused) {
+          preserveControlsOnTemporaryPause = true
+          video.value.pause()
         }
       } catch (error) {
         console.error('Failed to restore playback after temporary playback rate:', error)
@@ -9071,8 +9132,9 @@ export default defineComponent({
      * @param {number} seconds The number of seconds to seek by, positive values seek forwards, negative ones seek backwards
      * @param {boolean} canSeekResult Allow functions that have already checked whether seeking is possible, to skip the extra check (e.g. frameByFrame)
      * @param {boolean} showPopUp Whether to show a pop-up with the seconds seeked
+     * @param {boolean} revealControls Whether seeking should reveal the player controls
      */
-    function seekBySeconds(seconds, canSeekResult = false, showPopUp = false) {
+    function seekBySeconds(seconds, canSeekResult = false, showPopUp = false, revealControls = true) {
       if (!(canSeekResult || canSeek())) {
         return
       }
@@ -9104,7 +9166,7 @@ export default defineComponent({
         showValueChange(`${formattedSeconds}s`, popUpLayout.icon, popUpLayout.invertContentOrder)
       }
 
-      showOverlayControls()
+      if (revealControls) showOverlayControls()
     }
 
     // #endregion mouse and keyboard helpers
@@ -9948,7 +10010,7 @@ export default defineComponent({
       setFullscreenOrientation(
         fullscreen,
         video.value,
-        rotateFullscreenToLandscape.value
+        rotateFullscreenToLandscape.value && !player?.nativePlayback?.isFullscreenFromRotation()
       ).catch(() => {})
       syncAndroidStatusBarVisibility()
 
@@ -10070,7 +10132,25 @@ export default defineComponent({
 
       await initializeActiveTab()
 
-      const localPlayer = new shaka.Player()
+      const localPlayer = process.env.IS_CAPACITOR
+        ? createAndroidPlayer(videoElement, container.value, () => ({
+            presented: isActiveTab.value || isCrossTabMiniPlayerPresented.value,
+            vrCanvas: vrCanvas.value,
+            sabrData: props.sabrData,
+            captions: props.captions,
+            audioOnly: props.format === 'audio',
+            skipSilence: skipSilence.value,
+            continueInBackground: store.getters.getContinuePlaybackWhenScreenIsLocked,
+            seekSeconds: defaultSkipInterval.value,
+            scaleSeekWithRate: seekIntervalMultiplyByPlaybackRate.value,
+            fullscreenOnRotation: enterFullscreenOnDisplayRotate.value,
+            locale: locale.value,
+            metadata: { title: props.title, artist: props.artist, artwork: props.thumbnail },
+            onOwnerChange: owner => tabMediaCoordinator.setNativeOwner(mediaTabId, owner),
+            onReload: () => emit('player-reload-requested', getSabrReloadState()),
+            onBackoff: ({ backoffMs }) => startSabrBackoffTimer(backoffMs),
+          }))
+        : new shaka.Player()
 
       ui = new shaka.ui.Overlay(
         localPlayer,
@@ -10096,6 +10176,19 @@ export default defineComponent({
 
       const controls = ui.getControls()
       player = controls.getPlayer()
+      if (player.nativePlayback) {
+        player.nativePlayback.bindControls(controls)
+        const removeOwnershipListener = tabMediaCoordinator.subscribeOwnership(mediaTabId, active => {
+          localPlayer.nativePlayback.setPresented(active).catch(error => handleError(error, 'native playback ownership'))
+        })
+        const stopBackgroundWatch = watch(() => store.getters.getContinuePlaybackWhenScreenIsLocked, enabled => {
+          localPlayer.nativePlayback.setContinueInBackground(enabled)?.catch(error => handleError(error, 'native background preference'))
+        })
+        const stopSeekWatch = watch([defaultSkipInterval, seekIntervalMultiplyByPlaybackRate], ([seconds, scaleWithRate]) => {
+          localPlayer.nativePlayback.setSeekPreferences(seconds, scaleWithRate)?.catch(error => handleError(error, 'native seek preference'))
+        })
+        nativePlaybackCleanup = () => { removeOwnershipListener(); stopBackgroundWatch(); stopSeekWatch() }
+      }
       wrapTextTrackSelection()
       player.addEventListener('textchanged', syncShortsCaptionsEnabled)
 
@@ -10929,6 +11022,8 @@ export default defineComponent({
      * }>}
      */
     async function destroyPlayer() {
+      nativePlaybackCleanup?.()
+      nativePlaybackCleanup = null
       ignoreErrors = true
       cancelPendingVolumeUserSet()
       cancelSponsorBlockSkipSchedule()
@@ -10978,6 +11073,7 @@ export default defineComponent({
         }
 
         // destroying the ui also destroys the player
+        await player?.nativePlayback?.hide().catch(() => {})
         await ui.destroy()
         ui = null
         player = null
@@ -11005,6 +11101,7 @@ export default defineComponent({
     }
 
     expose({
+      isNativePlayback: () => !!player?.nativePlayback,
       hasLoaded,
       hasPlaybackPosition,
 
@@ -11079,6 +11176,7 @@ export default defineComponent({
 
     return {
       hasLoaded,
+      useNativePlayback: process.env.IS_CAPACITOR,
       videoLayoutReady,
       shortsPaused,
       shortsEnded,
@@ -11098,6 +11196,8 @@ export default defineComponent({
       updateVideoElementGeometry,
       openShortsOverflowMenu,
       positionShortsContextMenu,
+      handlePlayerContextMenu,
+      handlePlayerTouchEnd,
       handlePlayerMouseMove,
       handlePlayerMouseLeave,
       handlePlayerFocusIn,

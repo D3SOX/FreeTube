@@ -35,7 +35,7 @@ export function getScrollMiniInlineLayoutHeight(container, lastKnownHeight = 0) 
   return Math.max(measuredHeight, expectedHeight, lastKnownHeight)
 }
 
-/** @typedef {{ left: number, top: number, width: number, height: number, dock: 'left' | 'right', verticalDock?: 'top' | 'bottom', verticalOffset?: number }} ScrollMiniPlayerRect */
+/** @typedef {{ left: number, top: number, width: number, height: number, dock: 'left' | 'right', verticalDock?: 'top' | 'bottom', verticalOffset?: number, stashedSide?: 'left' | 'right' }} ScrollMiniPlayerRect */
 
 /** @type {Record<'scroll' | 'tab', ScrollMiniPlayerRect | null>} */
 const savedScrollMiniPlayerRects = { scroll: null, tab: null }
@@ -90,10 +90,18 @@ export function parseScrollMiniPlayerSavedRect(value) {
       height: parsed.height,
       dock: parsed.dock === 'left' ? 'left' : 'right',
       ...pickScrollMiniVerticalAnchor(parsed),
+      ...pickScrollMiniStashedSide(parsed),
     }
   } catch {
     return null
   }
+}
+
+/** @param {Partial<ScrollMiniPlayerRect>} rect */
+function pickScrollMiniStashedSide(rect) {
+  return rect.stashedSide === 'left' || rect.stashedSide === 'right'
+    ? { stashedSide: rect.stashedSide }
+    : {}
 }
 
 /**
@@ -192,6 +200,7 @@ export function serializeScrollMiniPlayerSavedRect(rect) {
     height: rect.height,
     dock: rect.dock,
     ...anchor,
+    ...pickScrollMiniStashedSide(rect),
   })
 }
 

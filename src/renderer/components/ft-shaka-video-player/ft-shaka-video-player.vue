@@ -41,7 +41,7 @@
     <!-- eslint-disable vue/html-indent -->
     <Teleport
       to="#cross-tab-mini-player-layer"
-      :disabled="!scrollMiniPlayerDetached"
+      :disabled="!scrollMiniPlayerDetached && !(useNativePlayback && scrollMiniPlayerActive)"
     >
     <!-- Keep controls visibility out of :class: Vue would erase Shaka's
          no-cursor class when the controls time out. -->
@@ -108,10 +108,11 @@
       @pointermove.capture="handleVideoZoomPointerMove"
       @pointerup.capture="handleVideoZoomPointerUp"
       @pointercancel.capture="handleVideoZoomPointerCancel"
-      @touchend.capture="handleMobilePlayerTouchEnd"
+      @touchend.capture="handlePlayerTouchEnd"
       @focusin="handlePlayerFocusIn"
       @focusout="handleScrollMiniPlayerLeave"
       @contextmenu="positionShortsContextMenu"
+      @contextmenu.capture="handlePlayerContextMenu"
       @dblclick.capture="handlePlayerControlDoubleClick"
     >
       <!-- Ambient glow surface for fullscreen, where the host-level canvases are not rendered. -->
@@ -125,7 +126,7 @@
       <video
         ref="video"
         class="player"
-        :class="{ audioOnly: format === 'audio', musicAudioTrack }"
+        :class="{ audioOnly: format === 'audio', musicAudioTrack, nativePlayer: useNativePlayback }"
         :style="videoZoomStyle"
         preload="auto"
         crossorigin="anonymous"
@@ -948,7 +949,14 @@
       </Transition>
       <div
         v-if="sponsorBlockShowSkippedToast && (promptSponsorBlockSegments.length > 0 || skippedSponsorBlockSegments.length > 0)"
-        class="skippedSegmentsWrapper"
+        class="skippedSegmentsWrapper shaka-no-propagation"
+        @pointerdown.stop
+        @touchstart.stop
+        @touchmove.stop
+        @touchend.stop
+        @mousemove.stop
+        @focusin.stop
+        @click.stop
       >
         <div
           v-for="{ uuid, translatedCategory, color } in promptSponsorBlockSegments"

@@ -15,6 +15,30 @@ function enableCapacitorMode(t) {
   })
 }
 
+test('native acquisition follows the presented tab and the detached mini player', async t => {
+  enableCapacitorMode(t)
+  const states = { first: [], second: [] }
+  t.after(() => {
+    tabMediaCoordinator.unregister('native-first')
+    tabMediaCoordinator.unregister('native-second')
+    tabMediaCoordinator.setPresented(null)
+  })
+  tabMediaCoordinator.setPresented('native-first')
+  tabMediaCoordinator.subscribeOwnership('native-first', active => states.first.push(active))
+  tabMediaCoordinator.subscribeOwnership('native-second', active => states.second.push(active))
+  assert.equal(states.first.at(-1), true)
+  assert.equal(states.second.at(-1), false)
+  tabMediaCoordinator.setMiniPlayer('native-first', true)
+  tabMediaCoordinator.setPresented('native-second')
+  await new Promise(resolve => setImmediate(resolve))
+  assert.equal(states.first.at(-1), true)
+  assert.equal(states.second.at(-1), false)
+  tabMediaCoordinator.setMiniPlayer('native-first', false)
+  await new Promise(resolve => setImmediate(resolve))
+  assert.equal(states.first.at(-1), false)
+  assert.equal(states.second.at(-1), true)
+})
+
 test('keeps Android media controls on a detached cross-tab mini player', async (t) => {
   enableCapacitorMode(t)
   const actions = []
