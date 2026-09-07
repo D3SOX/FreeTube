@@ -274,6 +274,13 @@ test.describe('tab previews disabled', () => {
   })
 })
 
+/**
+ * Groups the active tab with unloaded tabs so previews cover both captured pages
+ * and fallbacks without fetching remote content.
+ * @param {import('@playwright/test').Page} page
+ * @param {number} count total tabs in the collapsed group, including the active tab
+ * @returns {Promise<{groupId: string, tabIds: string[]}>}
+ */
 async function createCollapsedPreviewGroup(page, count = 4) {
   return page.evaluate(async count => {
     const state = await window.ftElectron.tabs.getState()
