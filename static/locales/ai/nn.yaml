@@ -995,6 +995,8 @@ Settings:
     Import playlists formats: 'Støtta format: OpenTubeX / FreeTube (.db)'
     Import search history formats: 'Støtta format: OpenTubeX / FreeTube (.db), YouTube Takeout (.json)'
   Sync Settings:
+    Turn Flashlight On: Slå på lommelykta
+    Turn Flashlight Off: Slå av lommelykta
     Devices: "Einingar"
     Devices Hint: "Sjå gjennom einingane som har tilgang til denne synkroniseringskontoen."
     Change Password: "Endre passord"

@@ -1429,6 +1429,8 @@ Settings:
     Import search history formats: 'Supported formats: OpenTubeX / FreeTube (.db), YouTube Takeout (.json)'
     Manage Subscriptions: Manage Subscriptions
   Sync Settings:
+    Turn Flashlight On: Turn flashlight on
+    Turn Flashlight Off: Turn flashlight off
     Sync Settings: Sync
     Enable Sync: Enable Sync
     Privacy Passphrase: Privacy passphrase

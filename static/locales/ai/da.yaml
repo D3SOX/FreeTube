@@ -835,6 +835,8 @@ Settings:
     Import playlists formats: 'Understøttede formater: OpenTubeX / FreeTube (.db)'
     Import search history formats: 'Understøttede formater: OpenTubeX / FreeTube (.db), YouTube Takeout (.json)'
   Sync Settings:
+    Turn Flashlight On: Tænd lommelygten
+    Turn Flashlight Off: Sluk lommelygten
     Devices: "Enheder"
     Devices Hint: "Gennemse de enheder, der har adgang til denne synkroniseringskonto."
     Change Password: "Skift adgangskode"

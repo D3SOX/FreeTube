@@ -794,6 +794,8 @@ Settings:
     Import playlists formats: 'Podporované formáty: OpenTubeX / FreeTube (.db)'
     Import search history formats: 'Podporované formáty: OpenTubeX / FreeTube (.db), YouTube Takeout (.json)'
   Sync Settings:
+    Turn Flashlight On: Zapnúť baterku
+    Turn Flashlight Off: Vypnúť baterku
     Devices: "Zariadenia"
     Devices Hint: "Skontrolujte zariadenia, ktoré majú prístup k tomuto synchronizačnému účtu."
     Change Password: "Zmeniť heslo"

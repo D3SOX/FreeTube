@@ -805,6 +805,8 @@ Settings:
     Import playlists formats: 'Formate acceptate: OpenTubeX / FreeTube (.db)'
     Import search history formats: 'Formate acceptate: OpenTubeX / FreeTube (.db), YouTube Takeout (.json)'
   Sync Settings:
+    Turn Flashlight On: Aprinde lanterna
+    Turn Flashlight Off: Stinge lanterna
     Devices: "Dispozitive"
     Devices Hint: "Verificați dispozitivele care pot accesa acest cont de sincronizare."
     Change Password: "Schimbați parola"

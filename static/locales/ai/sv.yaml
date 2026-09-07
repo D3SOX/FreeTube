@@ -796,6 +796,8 @@ Settings:
     Import playlists formats: 'Format som stöds: OpenTubeX / FreeTube (.db)'
     Import search history formats: 'Format som stöds: OpenTubeX / FreeTube (.db), YouTube Takeout (.json)'
   Sync Settings:
+    Turn Flashlight On: Slå på ficklampan
+    Turn Flashlight Off: Slå av ficklampan
     Devices: "Enheter"
     Devices Hint: "Granska enheterna som har åtkomst till det här synkroniseringskontot."
     Change Password: "Byt lösenord"

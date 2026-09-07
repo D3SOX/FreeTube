@@ -154,7 +154,11 @@
     <div class="pairingContent">
       <template v-if="approveStage === 'scanning'">
         <p>{{ t('Settings.Sync Settings.Pairing Scan Hint') }}</p>
-        <div class="scannerFrame">
+        <FtLoader v-if="usingNativeScanner" />
+        <div
+          v-else
+          class="scannerFrame"
+        >
           <video
             ref="scannerVideo"
             class="scannerVideo"
@@ -352,6 +356,7 @@ const props = defineProps({
 
 const emit = defineEmits(['paired'])
 const { locale, t } = useI18n()
+const usingNativeScanner = Boolean(process.env.IS_CAPACITOR)
 const timeFormat = computed(() => store.getters.getTimeFormat)
 
 const receivePromptOpen = ref(false)
@@ -640,6 +645,23 @@ async function startScanner() {
   stopScanner()
   scannerHandled = false
   try {
+    if (usingNativeScanner) {
+      const { scanNativePairingCode } = await import('../../helpers/nativePairingScanner')
+      if (sequence !== approveSequence || !approvePromptOpen.value) return
+      const code = await scanNativePairingCode({
+        instructions: t('Settings.Sync Settings.Pairing Scan Hint'),
+        cancelLabel: t('Cancel'),
+        torchOnLabel: t('Settings.Sync Settings.Turn Flashlight Off'),
+        torchOffLabel: t('Settings.Sync Settings.Turn Flashlight On'),
+      })
+      if (sequence !== approveSequence || !approvePromptOpen.value) return
+      if (code === null) {
+        await openManualEntry()
+      } else {
+        await handleScan({ data: code })
+      }
+      return
+    }
     scanner = new QrScanner(scannerVideo.value, handleScan, {
       highlightScanRegion: true,
       highlightCodeOutline: true,
@@ -649,10 +671,11 @@ async function startScanner() {
     })
     await scanner.start()
   } catch {
-    stopScanner()
     if (sequence !== approveSequence || !approvePromptOpen.value) return
+    stopScanner()
+    if (usingNativeScanner) await openManualEntry()
     approveError.value = t('Settings.Sync Settings.Camera Unavailable')
-    approveStage.value = 'error'
+    if (!usingNativeScanner) approveStage.value = 'error'
   }
 }
 

@@ -796,6 +796,8 @@ Settings:
     Import playlists formats: 'Onartutako formatuak: OpenTubeX / FreeTube (.db)'
     Import search history formats: 'Onartutako formatuak: OpenTubeX / FreeTube (.db), YouTube Takeout (.json)'
   Sync Settings:
+    Turn Flashlight On: Piztu linterna
+    Turn Flashlight Off: Itzali linterna
     Devices: "Gailuak"
     Devices Hint: "Berrikusi sinkronizazio-kontu hau atzi dezaketen gailuak."
     Change Password: "Aldatu pasahitza"

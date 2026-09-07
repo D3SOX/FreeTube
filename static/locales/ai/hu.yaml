@@ -794,6 +794,8 @@ Settings:
     Import playlists formats: 'Támogatott formátumok: OpenTubeX / FreeTube (.db)'
     Import search history formats: 'Támogatott formátumok: OpenTubeX / FreeTube (.db), YouTube Takeout (.json)'
   Sync Settings:
+    Turn Flashlight On: Zseblámpa bekapcsolása
+    Turn Flashlight Off: Zseblámpa kikapcsolása
     Devices: "Eszközök"
     Devices Hint: "Tekintse át azokat az eszközöket, amelyek hozzáférhetnek ehhez a szinkronizálási fiókhoz."
     Change Password: "Jelszó módosítása"

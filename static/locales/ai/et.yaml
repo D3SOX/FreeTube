@@ -794,6 +794,8 @@ Settings:
     Import playlists formats: 'Toetatud vormingud: OpenTubeX / FreeTube (.db)'
     Import search history formats: 'Toetatud vormingud: OpenTubeX / FreeTube (.db), YouTube Takeout (.json)'
   Sync Settings:
+    Turn Flashlight On: Lülita taskulamp sisse
+    Turn Flashlight Off: Lülita taskulamp välja
     Devices: "Seadmed"
     Devices Hint: "Vaata üle seadmed, millel on juurdepääs sellele sünkroonimiskontole."
     Change Password: "Muuda parooli"
