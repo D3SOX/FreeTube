@@ -64,6 +64,7 @@
       <FtButton
         :label="t('KeyboardShortcutPrompt.Reset to Defaults')"
         :icon="['fas', 'undo']"
+        :disabled="isDefaultQuickSettings"
         theme="secondary"
         @click="resetQuickSettings"
       />
@@ -92,6 +93,11 @@
           aria-hidden="true"
           @dragstart="startDragging($event, setting.id)"
           @dragend="stopDragging"
+          @pointerdown="startPointerDrag($event, setting.id)"
+          @pointermove="movePointerDrag"
+          @pointerup="endPointerDrag"
+          @pointercancel="cancelPointerDrag"
+          @lostpointercapture="cancelPointerDrag"
         >
           <FtIcon :icon="['fas', 'grip']" />
         </span>
@@ -192,6 +198,10 @@ const settingPickerRef = useTemplateRef('settingPickerRef')
 const catalog = computed(() => createQuickSettingCatalog(t, process.env.IS_ELECTRON))
 const catalogById = computed(() => new Map(catalog.value.map(setting => [setting.id, setting])))
 const quickSettings = computed(() => store.getters.getQuickSettings)
+const isDefaultQuickSettings = computed(() => (
+  quickSettings.value.length === DEFAULT_QUICK_SETTINGS.length &&
+  quickSettings.value.every((id, index) => id === DEFAULT_QUICK_SETTINGS[index])
+))
 const selectedSettings = computed(() => quickSettings.value
   .map(id => catalogById.value.get(id))
   .filter(setting => setting != null))
@@ -289,9 +299,14 @@ const {
   handleDragOver,
   startDragging,
   stopDragging,
+  startPointerDrag,
+  movePointerDrag,
+  endPointerDrag,
+  cancelPointerDrag,
 } = useOrderedItemDrag({
   items: quickSettings,
   rowSelector: '.selectedSetting',
+  itemIdAttribute: 'data-setting-id',
   updateItems: items => store.dispatch('updateQuickSettings', items),
   announceMoved: announceQuickSettingMoved,
 })
@@ -407,6 +422,7 @@ function resetQuickSettings() {
 }
 
 .dragHandle {
+  touch-action: none;
   align-items: center;
   align-self: stretch;
   color: var(--secondary-text-color);
