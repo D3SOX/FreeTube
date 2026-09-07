@@ -341,6 +341,33 @@ test.describe('watch history', () => {
   })
 })
 
+test.describe('fractional history durations', () => {
+  const examples = [
+    { videoId: 'fraction001', lengthSeconds: 4125.721, timestamp: '1:08:45' },
+    { videoId: 'fraction002', lengthSeconds: 153.839, timestamp: '2:33' },
+    { videoId: 'fraction003', lengthSeconds: 125.109, timestamp: '2:05' },
+    { videoId: 'fraction004', lengthSeconds: 116.889, timestamp: '1:56' },
+    { videoId: 'fraction005', lengthSeconds: 104.768, timestamp: '1:44' }
+  ]
+
+  test.use({
+    seed: {
+      history: examples.map(({ videoId, lengthSeconds }, index) => historyEntry(
+        videoId, `Fractional duration ${index}`, now - index, false, { lengthSeconds }
+      ))
+    }
+  })
+
+  test('shows whole-second duration badges for persisted fractional durations', async ({ page }) => {
+    await goTo(page, 'history')
+
+    for (const [index, { timestamp }] of examples.entries()) {
+      const video = page.locator('.ft-list-video').filter({ hasText: `Fractional duration ${index}` })
+      await expect(video.locator('.videoDuration')).toHaveText(timestamp)
+    }
+  })
+})
+
 test.describe('history search pagination', () => {
   test.use({
     seed: {

@@ -714,6 +714,9 @@ export function formatDurationAsTimestamp(lengthSeconds) {
     return lengthSeconds
   }
 
+  // Media durations can include milliseconds; timestamps display whole seconds.
+  lengthSeconds = Math.floor(lengthSeconds)
+
   if (lengthSeconds === 0) {
     return '0:00'
   }
