@@ -18,12 +18,11 @@ const sourceDirectory = path.join(
   '_scripts',
   'windows-interposer'
 )
-const cacheKey = [
-  WINDOWS_INTERPOSER_VERSION,
-  WINDOWS_INTERPOSER_COMMIT.slice(0, 12),
-  WINDOWS_INTERPOSER_PATCH_SHA256,
-  sha256(Buffer.concat(['registry.cpp', 'registry.h'].map(name => readFileSync(path.join(sourceDirectory, name)))))
-].join('-')
+// Keep the checkout short enough for Windows build tools without long-path support.
+const cacheKey = sha256(Buffer.concat([
+  Buffer.from(WINDOWS_INTERPOSER_COMMIT + WINDOWS_INTERPOSER_PATCH_SHA256),
+  ...['registry.cpp', 'registry.h'].map(name => readFileSync(path.join(sourceDirectory, name)))
+])).slice(0, 24)
 const cacheDirectory = path.join(
   repositoryRoot,
   '.cache',
