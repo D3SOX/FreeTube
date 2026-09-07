@@ -25,7 +25,6 @@
 
 .capacitorPhoneTabSwitcherButton :deep(.ft-icon),
 .capacitorPhoneTabHeaderButton :deep(.ft-icon),
-.capacitorPhoneTabDragHandle :deep(.ft-icon),
 .capacitorPhoneTabClose :deep(.ft-icon),
 .capacitorPhoneTabFab :deep(.ft-icon),
 .capacitorPhoneSyncedSessionTab :deep(.ft-icon),
@@ -165,13 +164,16 @@
 }
 
 .capacitorPhoneTabClose {
-  align-self: center;
+  position: absolute;
+  inset-block-end: 4px;
+  inset-inline-end: 0;
 }
 
 .capacitorPhoneTabList {
   min-block-size: 0;
-  padding-block: 8px 88px;
-  overflow-y: auto;
+  padding-block: 12px 88px;
+  padding-inline: 12px;
+  overflow: hidden auto;
   overscroll-behavior: contain;
 }
 
@@ -180,112 +182,87 @@
   min-block-size: max-content;
 }
 
+.capacitorPhoneOpenTabs,
+.capacitorPhoneSyncedTabList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 9rem), 1fr));
+  gap: 12px;
+}
+
 .capacitorPhoneTabRow {
-  display: flex;
-  align-items: stretch;
-  gap: 8px;
-  min-block-size: 64px;
-  margin-block: 4px;
-  margin-inline: 8px;
-  border-inline-start: 3px solid transparent;
+  position: relative;
+  min-inline-size: 0;
+  border: 2px solid var(--border-color);
   border-radius: calc(8px * var(--ui-roundness));
   background-color: var(--card-bg-color);
   touch-action: pan-y;
   transition: transform 160ms ease, opacity 160ms ease;
-  will-change: transform;
 }
 
-.capacitorPhoneTabRow.swiping {
+.capacitorPhoneTabRow.swiping,
+.capacitorPhoneTabRow.dragging,
+.capacitorPhoneTabRow.noTransition {
   transition: none;
 }
 
+.capacitorPhoneTabRow.holding {
+  outline: 2px solid var(--primary-color);
+  outline-offset: -2px;
+}
+
 .capacitorPhoneTabRow.dragging {
-  opacity: 0.72;
+  box-shadow: 0 8px 24px var(--primary-shadow-color);
+  cursor: grabbing;
+}
+
+.capacitorPhoneTabRow:is(.swiping, .closing, .dragging, .settling) {
+  z-index: 2;
 }
 
 .capacitorPhoneTabRow.active {
-  border-inline-start-color: var(--primary-color);
+  border-color: var(--primary-color);
   background-color: var(--side-nav-hover-color);
 }
 
 .capacitorPhoneTabTarget {
   display: flex;
-  align-items: center;
-  gap: 12px;
-  flex: 1 1 auto;
+  flex-direction: column;
+  inline-size: 100%;
   min-inline-size: 0;
-  min-block-size: 56px;
-  padding-block: 4px;
-  padding-inline: 13px 4px;
+  padding: 0;
+  overflow: hidden;
   color: inherit;
   background-color: transparent;
   border: 0;
-  border-radius: calc(8px * var(--ui-roundness));
+  border-radius: calc(6px * var(--ui-roundness));
   cursor: pointer;
+  font: inherit;
   text-align: start;
   touch-action: manipulation;
 }
 
-.capacitorPhoneTabDragHandle {
-  display: grid;
-  place-items: center;
-  flex: 0 0 48px;
-  inline-size: 48px;
-  min-block-size: 56px;
-  padding: 0;
-  color: var(--secondary-text-color);
-  background: transparent;
-  border: 0;
-  border-radius: calc(8px * var(--ui-roundness));
-  cursor: grab;
-  touch-action: none;
-}
-
-.capacitorPhoneTabDragHandle:active {
-  cursor: grabbing;
-}
-
-.capacitorPhoneTabPageIcon {
-  position: relative;
-  display: grid;
-  place-items: center;
-  flex: 0 0 32px;
-  inline-size: 32px;
-  block-size: 32px;
-  color: var(--secondary-text-color);
-  font-size: 18px;
-}
-
-.capacitorPhoneTabAvatar {
-  display: block;
-  inline-size: 28px;
-  block-size: 28px;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
-.capacitorPhoneTabPinBadge {
-  position: absolute;
-  inset-inline-end: -4px;
-  inset-block-end: -3px;
-  padding: 2px;
-  color: var(--primary-color);
-  background-color: var(--card-bg-color);
-  border-radius: 50%;
-  font-size: 9px;
-}
-
 .capacitorPhoneTabTitle {
+  display: flex;
+  align-items: center;
+  align-self: stretch;
   min-inline-size: 0;
+  block-size: 2.7em;
+  margin-block: 8px;
+  margin-inline: 8px 48px;
   overflow: hidden;
   font-size: 15px;
   line-height: 1.35;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
+}
+
+.capacitorPhoneTabTitle > span {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 .capacitorPhoneTabHeaderButton:focus-visible,
-.capacitorPhoneTabDragHandle:focus-visible,
 .capacitorPhoneTabTarget:focus-visible,
 .capacitorPhoneTabClose:focus-visible {
   outline: 2px solid var(--primary-color);
@@ -294,8 +271,6 @@
 
 .capacitorPhoneTabHeaderButton:not(:disabled):hover,
 .capacitorPhoneTabHeaderButton:not(:disabled):active,
-.capacitorPhoneTabDragHandle:hover,
-.capacitorPhoneTabDragHandle:active,
 .capacitorPhoneTabTarget:hover,
 .capacitorPhoneTabTarget:active,
 .capacitorPhoneTabClose:hover,
@@ -502,34 +477,33 @@
 }
 
 .capacitorPhoneSyncedTabList {
-  display: grid;
-  gap: 4px;
   margin-block-start: 8px;
   border-block-start: 1px solid var(--border-color);
   padding-block-start: 8px;
 }
 
 .capacitorPhoneSyncedTabTarget {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
   inline-size: 100%;
-}
-
-.capacitorPhoneSyncedTabIcon {
-  display: grid;
-  place-items: center;
-  inline-size: 24px;
-  block-size: 24px;
-}
-
-.capacitorPhoneSyncedTabIcon .capacitorPhoneTabAvatar {
-  inline-size: 24px;
-  block-size: 24px;
-}
-
-.capacitorPhoneSyncedTabList span {
   min-inline-size: 0;
+  padding: 0;
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  border: 1px solid var(--border-color);
+}
+
+.capacitorPhoneSyncedTabTarget > span[dir] {
+  display: -webkit-box;
+  align-self: stretch;
+  min-inline-size: 0;
+  margin: 8px;
+  overflow: hidden;
+  font-size: 15px;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 :global(.prompt:has(.capacitorPhoneDeletePrompt)) {

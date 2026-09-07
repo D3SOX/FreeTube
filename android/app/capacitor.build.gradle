@@ -14,10 +14,12 @@ dependencies {
     implementation project(':capacitor-browser')
     implementation project(':capacitor-clipboard')
     implementation project(':capacitor-device')
+    implementation project(':capacitor-filesystem')
     implementation project(':capacitor-local-notifications')
     implementation project(':capacitor-share')
     implementation project(':capawesome-capacitor-app-shortcuts')
     implementation project(':capawesome-capacitor-screen-orientation')
+    implementation project(':capawesome-capacitor-screenshot')
     implementation project(':capawesome-capacitor-settings-launcher')
 
 }

@@ -138,32 +138,21 @@
                     active: tab.id === activeTabId,
                     pinned: tab.isPinned,
                     unloaded: tab.isUnloaded,
-                    dragging: drag.tabId === tab.id,
+                    holding: drag.tabId === tab.id && drag.ready,
+                    dragging: drag.tabId === tab.id && drag.moved && !dragSettling,
+                    settling: drag.tabId === tab.id && dragSettling,
+                    noTransition: suppressDragTransition,
                     swiping: swipe.tabId === tab.id && swipe.dragging,
                     closing: swipe.tabId === tab.id && swipe.closing
                   }"
-                  :style="swipeStyle(tab.id)"
-                  @pointerdown="startTabSwipe($event, tab.id)"
-                  @pointermove="moveTabSwipe"
-                  @pointerup="finishTabSwipe"
-                  @pointercancel="cancelTabSwipe"
-                  @contextmenu.prevent="openTabActions(tab.id)"
+                  :style="tabCardStyle(tab.id)"
+                  @pointerdown="startTabGesture($event, tab.id)"
+                  @pointermove="moveTabGesture"
+                  @pointerup="finishTabGesture"
+                  @pointercancel="cancelTabGesture"
+                  @touchmove="preventHoldScroll"
+                  @contextmenu.prevent="handleTabContextMenu($event, tab.id)"
                 >
-                  <button
-                    type="button"
-                    class="capacitorPhoneTabDragHandle"
-                    :aria-label="`${t('Context Menu.Move Tab')}: ${tabTitle(tab)}`"
-                    :title="t('Context Menu.Move Tab')"
-                    @pointerdown.stop.prevent="startTabDrag($event, tab.id)"
-                    @pointermove.stop.prevent="moveTabDrag"
-                    @pointerup.stop.prevent="finishTabDrag"
-                    @pointercancel.stop.prevent="cancelTabDrag"
-                  >
-                    <FtIcon
-                      :icon="['fas', 'bars']"
-                      aria-hidden="true"
-                    />
-                  </button>
                   <button
                     type="button"
                     class="capacitorPhoneTabTarget"
@@ -175,30 +164,10 @@
                     @click="activateTab(tab.id)"
                     @keydown="handleTabTargetKeydown($event, tab.id)"
                   >
-                    <span class="capacitorPhoneTabPageIcon">
-                      <FtRetryImage
-                        v-if="getTabAvatarUrl(tab)"
-                        :src="getTabAvatarUrl(tab)"
-                        class="capacitorPhoneTabAvatar"
-                        alt=""
-                        draggable="false"
-                      />
-                      <FtIcon
-                        v-else-if="getTabPageIcon(tab)"
-                        :icon="getTabPageIcon(tab)"
-                        aria-hidden="true"
-                      />
-                      <FtIcon
-                        v-if="tab.isPinned"
-                        class="capacitorPhoneTabPinBadge"
-                        :icon="['fas', 'thumbtack']"
-                        aria-hidden="true"
-                      />
+                    <CapacitorTabPreview :tab="tab" />
+                    <span class="capacitorPhoneTabTitle">
+                      <span dir="auto">{{ tabTitle(tab) }}</span>
                     </span>
-                    <span
-                      class="capacitorPhoneTabTitle"
-                      dir="auto"
-                    >{{ tabTitle(tab) }}</span>
                   </button>
                   <button
                     type="button"
@@ -305,21 +274,7 @@
                         class="capacitorPhoneSyncedTabButton capacitorPhoneSyncedTabTarget"
                         @click="openOtherDeviceSession({ ...activeOtherDeviceSession, tabs: [tab] })"
                       >
-                        <span class="capacitorPhoneSyncedTabIcon">
-                          <FtRetryImage
-                            v-if="getTabAvatarUrl(tab)"
-                            v-show="!failedSyncedTabAvatarUrls.has(getTabAvatarUrl(tab))"
-                            :src="getTabAvatarUrl(tab)"
-                            class="capacitorPhoneTabAvatar"
-                            @error="failedSyncedTabAvatarUrls.add(getTabAvatarUrl(tab))"
-                            @load="failedSyncedTabAvatarUrls.delete(getTabAvatarUrl(tab))"
-                          />
-                          <FtIcon
-                            v-if="!getTabAvatarUrl(tab) || failedSyncedTabAvatarUrls.has(getTabAvatarUrl(tab))"
-                            :icon="getTabPageIcon(tab) || ['fas', 'display']"
-                            aria-hidden="true"
-                          />
-                        </span>
+                        <CapacitorTabPreview :tab="tab" />
                         <span dir="auto">{{ tab.title || tab.url }}</span>
                       </button>
                     </div>
@@ -383,12 +338,14 @@ import { clampOverlayScrollTop, restoreOverlayScrollTop } from '../../helpers/ov
 import { formatDeviceSessionLabel, shouldShowOtherDeviceSessions } from '../../helpers/sync-sessions'
 import { showToast } from '../../helpers/utils'
 import { getCapacitorTabService } from '../../tabs/CapacitorTabService'
-import { getSyncedTabPreview, getTabAvatarUrl, getTabPageIcon } from '../../tabs/tabPreview'
+import { getSyncedTabPreview } from '../../tabs/tabPreview'
 import FtPrompt from '../FtPrompt/FtPrompt.vue'
-import FtRetryImage from '../FtRetryImage.vue'
+import { captureBeforeTabOrganizer } from '../../tabs/capacitorTabPreviews'
+import CapacitorTabPreview from './CapacitorTabPreview.vue'
 import { lockBodyScroll, unlockBodyScroll } from '../FtPrompt/scrollLock'
 import CapacitorTabActionsMenu from './CapacitorTabActionsMenu.vue'
 import { useCapacitorTabActions } from './useCapacitorTabActions'
+import { getTabGridReorder } from './tabGridReorder'
 
 const props = defineProps({
   enabled: {
@@ -405,7 +362,6 @@ const syncedSessionIdPrefix = `capacitor-phone-synced-session-${useId().replaceA
 const syncedSessionPanelId = `${syncedSessionIdPrefix}-panel`
 const selectedOtherDeviceSessionKey = ref(null)
 const sessionToDelete = ref(null)
-const failedSyncedTabAvatarUrls = ref(new Set())
 const triggerRef = useTemplateRef('triggerRef')
 const dialogRef = useTemplateRef('dialogRef')
 const openTabsScrollRef = useTemplateRef('openTabsScrollRef')
@@ -451,6 +407,16 @@ const triggerLabel = computed(() => `${t('Tab Organizer.Title')}: ${t(
   tabs.value.length
 )}`)
 let swipeResetTimer = null
+let holdTimer = null
+let dropTimer = null
+let dragFrame = null
+let dragRects = []
+let dragScrollStart = 0
+let dragMaximumScrollTop = 0
+let dragLayout = null
+const dragOffsets = ref({})
+const dragSettling = ref(false)
+const suppressDragTransition = ref(false)
 let contentResizeObserver = null
 const viewScrollTop = { open: 0, synced: 0 }
 const swipe = reactive({
@@ -465,7 +431,16 @@ const swipe = reactive({
   suppressClick: false,
   rowWidth: 0,
 })
-const drag = reactive({ tabId: null, pointerId: null, moved: false })
+const drag = reactive({
+  tabId: null,
+  pointerId: null,
+  startX: 0,
+  startY: 0,
+  currentX: 0,
+  currentY: 0,
+  ready: false,
+  moved: false,
+})
 const {
   actionTab,
   actionTabYoutubeUrl,
@@ -508,7 +483,14 @@ const {
   },
 })
 
-function openSwitcher() {
+let openingSwitcher = false
+let disposed = false
+async function openSwitcher() {
+  if (openingSwitcher || open.value) return
+  openingSwitcher = true
+  await captureBeforeTabOrganizer()
+  openingSwitcher = false
+  if (disposed || !props.enabled) return
   activeView.value = 'open'
   open.value = true
   if (showSyncedTabsView.value) {
@@ -544,6 +526,7 @@ function activeContentRef() {
 }
 
 function clampActiveContentScroll() {
+  if (drag.ready) cancelTabGesture()
   const scroll = activeScrollRef()
   const content = activeContentRef()
   if (scroll && content) clampOverlayScrollTop(scroll, content)
@@ -641,7 +624,9 @@ async function handleDeleteSessionPrompt(option) {
   }
 }
 
-function swipeStyle(tabId) {
+function tabCardStyle(tabId) {
+  const offset = dragOffsets.value[tabId]
+  if (offset) return { transform: `translate3d(${offset.x}px, ${offset.y}px, 0)` }
   if (swipe.tabId !== tabId) return undefined
 
   return {
@@ -650,56 +635,187 @@ function swipeStyle(tabId) {
   }
 }
 
-function startTabSwipe(event, tabId) {
-  const tab = tabs.value.find(candidate => candidate.id === tabId)
-  if (event.button !== 0 || tab?.isPinned ||
-      event.target.closest('.capacitorPhoneTabClose, .capacitorPhoneTabDragHandle')) return
+function startTabGesture(event, tabId) {
+  if (dragSettling.value || event.button !== 0 || event.target.closest('.capacitorPhoneTabClose')) return
 
+  resetTabDrag()
   resetTabSwipe()
+  drag.tabId = tabId
+  drag.pointerId = event.pointerId
+  drag.startX = event.clientX
+  drag.startY = event.clientY
+  drag.currentX = event.clientX
+  drag.currentY = event.clientY
+  const target = event.target.closest('.capacitorPhoneTabTarget')
+  holdTimer = window.setTimeout(() => {
+    holdTimer = null
+    dragRects = Array.from(openTabsContentRef.value.querySelectorAll('.capacitorPhoneTabRow')).map(row => {
+      const rect = row.getBoundingClientRect()
+      const id = row.querySelector('[data-tab-id]').dataset.tabId
+      return {
+        id,
+        left: rect.left,
+        top: rect.top,
+        width: rect.width,
+        height: rect.height,
+        isPinned: tabs.value.find(tab => tab.id === id).isPinned === true,
+      }
+    })
+    dragScrollStart = openTabsScrollRef.value.scrollTop
+    const viewport = openTabsScrollRef.value
+    const contentBottom = openTabsContentRef.value.getBoundingClientRect().bottom
+    dragMaximumScrollTop = Math.max(0, contentBottom - viewport.getBoundingClientRect().top +
+      dragScrollStart + Number.parseFloat(getComputedStyle(viewport).paddingBottom) - viewport.clientHeight)
+    drag.ready = true
+    target?.setPointerCapture(event.pointerId)
+    openTabActions(tabId)
+  }, 400)
+
+  const tab = tabs.value.find(candidate => candidate.id === tabId)
+  if (tab?.isPinned) return
+
   swipe.tabId = tabId
   swipe.pointerId = event.pointerId
   swipe.startX = event.clientX
   swipe.startY = event.clientY
   swipe.startTime = performance.now()
   swipe.rowWidth = event.currentTarget.getBoundingClientRect().width
-  event.currentTarget.setPointerCapture(event.pointerId)
 }
 
-function startTabDrag(event, tabId) {
-  if (event.button !== 0) return
-
-  resetTabSwipe()
-  drag.tabId = tabId
-  drag.pointerId = event.pointerId
-  drag.moved = false
-  event.currentTarget.setPointerCapture(event.pointerId)
+function moveTabGesture(event) {
+  if (dragSettling.value) return
+  if (drag.pointerId === event.pointerId) {
+    const moved = Math.hypot(event.clientX - drag.startX, event.clientY - drag.startY) > 8
+    if (drag.ready) {
+      if (moved) drag.moved = true
+      if (drag.moved) {
+        event.preventDefault()
+        if (actionTab.value) closeTabActions()
+        drag.currentX = event.clientX
+        drag.currentY = event.clientY
+        updateTabDrag()
+        startDragAutoScroll()
+      }
+      return
+    }
+    if (moved) resetTabDrag()
+  }
+  moveTabSwipe(event)
 }
 
-function moveTabDrag(event) {
-  if (drag.pointerId !== event.pointerId || drag.tabId === null) return
-
-  const row = document.elementFromPoint(event.clientX, event.clientY)
-    ?.closest('.capacitorPhoneTabRow')
-  const targetId = row?.querySelector('[data-tab-id]')?.dataset.tabId
-  const targetIndex = tabs.value.findIndex(tab => tab.id === targetId)
-  if (targetIndex === -1 || targetId === drag.tabId) return
-
-  drag.moved = getCapacitorTabService().moveTab(drag.tabId, targetIndex) || drag.moved
+function preventHoldScroll(event) {
+  // touch-action cannot change halfway through a gesture. Cancel native
+  // scrolling only after the hold, so a quick vertical swipe still scrolls.
+  if (drag.ready && event.touches.length === 1) event.preventDefault()
 }
 
-function finishTabDrag(event) {
-  if (drag.pointerId !== event.pointerId) return
+function finishTabGesture(event) {
+  if (dragSettling.value) return
+  if (drag.pointerId === event.pointerId && drag.ready) {
+    swipe.suppressClick = true
+    if (drag.moved) {
+      stopDragAutoScroll()
+      const tabId = drag.tabId
+      const targetIndex = dragLayout.targetIndex
+      dragSettling.value = true
+      dragOffsets.value = { ...dragOffsets.value, [tabId]: dragLayout.dropOffset }
+      const duration = matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 160
+      dropTimer = window.setTimeout(() => {
+        dropTimer = null
+        if (dragRects[targetIndex].id !== tabId) {
+          getCapacitorTabService().moveTab(tabId, targetIndex)
+        }
+        resetTabDrag()
+        scheduleSwipeReset()
+      }, duration)
+    } else {
+      resetTabDrag()
+    }
+    return
+  }
   resetTabDrag()
+  finishTabSwipe(event)
 }
 
-function cancelTabDrag() {
+function cancelTabGesture() {
+  const wasHeld = drag.ready
   resetTabDrag()
+  if (wasHeld) {
+    swipe.suppressClick = true
+    scheduleSwipeReset()
+  }
+  cancelTabSwipe()
+}
+
+function handleTabContextMenu(event, tabId) {
+  // The hold timer already handles touch menus; right-click stays instant.
+  if (drag.tabId === tabId || (event.pointerType === 'touch' && swipe.suppressClick)) return
+  openTabActions(tabId)
+}
+
+function updateTabDrag() {
+  const scrollDelta = openTabsScrollRef.value.scrollTop - dragScrollStart
+  dragLayout = getTabGridReorder(
+    dragRects, drag.tabId,
+    drag.currentX - drag.startX,
+    drag.currentY - drag.startY + scrollDelta
+  )
+  dragOffsets.value = dragLayout.offsets
+}
+
+function startDragAutoScroll() {
+  if (dragFrame !== null) return
+  let previousTime = performance.now()
+  const scroll = (time) => {
+    const viewport = openTabsScrollRef.value
+    const bounds = viewport.getBoundingClientRect()
+    const edge = 48
+    const speed = drag.currentY < bounds.top + edge
+      ? -Math.min(1, (bounds.top + edge - drag.currentY) / edge)
+      : Math.max(0, Math.min(1, (drag.currentY - bounds.bottom + edge) / edge))
+    const before = viewport.scrollTop
+    // Transforms can extend scrollHeight. Bound scrolling by the real grid,
+    // otherwise the floating card continuously creates room beneath itself.
+    viewport.scrollTop = Math.max(0, Math.min(dragMaximumScrollTop,
+      before + speed * Math.min(time - previousTime, 32) * 0.6))
+    previousTime = time
+    if (viewport.scrollTop !== before) updateTabDrag()
+    dragFrame = requestAnimationFrame(scroll)
+  }
+  dragFrame = requestAnimationFrame(scroll)
+}
+
+function stopDragAutoScroll() {
+  cancelAnimationFrame(dragFrame)
+  dragFrame = null
 }
 
 function resetTabDrag() {
+  const hadOffsets = Object.keys(dragOffsets.value).length > 0
+  if (hadOffsets) suppressDragTransition.value = true
+  stopDragAutoScroll()
+  window.clearTimeout(dropTimer)
+  dropTimer = null
+  dragSettling.value = false
+  dragOffsets.value = {}
+  dragRects = []
+  dragLayout = null
+  window.clearTimeout(holdTimer)
+  holdTimer = null
   drag.tabId = null
   drag.pointerId = null
+  drag.ready = false
   drag.moved = false
+  if (hadOffsets) {
+    nextTick(() => {
+      if (openTabsScrollRef.value && openTabsContentRef.value) {
+        clampOverlayScrollTop(openTabsScrollRef.value, openTabsContentRef.value)
+      }
+      requestAnimationFrame(() => {
+        suppressDragTransition.value = false
+      })
+    })
+  }
 }
 
 function moveTabSwipe(event) {
@@ -714,6 +830,7 @@ function moveTabSwipe(event) {
     }
     if (Math.abs(deltaX) < 8) return
     swipe.dragging = true
+    event.currentTarget.setPointerCapture(event.pointerId)
   }
 
   event.preventDefault()
@@ -826,6 +943,10 @@ watch(showSyncedTabsView, (visible) => {
   if (!visible && activeView.value !== 'open') selectView('open')
 })
 
+watch(() => tabs.value.map(tab => `${tab.id}:${tab.isPinned}`).join(','), () => {
+  if (drag.ready) cancelTabGesture()
+})
+
 watch(
   () => [tabs.value.length, ...otherDeviceSessions.value.map(session => session.tabs.length)],
   async () => {
@@ -835,6 +956,7 @@ watch(
 )
 
 onBeforeUnmount(() => {
+  disposed = true
   resetTabSwipe()
   resetTabDrag()
   stopObservingContent()

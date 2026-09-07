@@ -46,7 +46,23 @@
   min-inline-size: var(--fixed-tab-width, 100px);
   max-inline-size: var(--fixed-tab-width, 200px);
   background-color: transparent;
-  transition: background-color 150ms ease;
+  transition: background-color 150ms ease, transform 160ms ease;
+}
+
+.capacitorTabletTab.dragging,
+.capacitorTabletTab.noTransition {
+  transition: none;
+}
+
+.capacitorTabletTab.holding {
+  outline: 2px solid var(--primary-color);
+  outline-offset: -2px;
+}
+
+.capacitorTabletTab:is(.dragging, .settling) {
+  z-index: 3;
+  background-color: var(--card-bg-color);
+  box-shadow: 0 0 8px var(--primary-shadow-color);
 }
 
 .capacitorTabletTab.active {
@@ -160,6 +176,10 @@
   line-height: 1.25;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.capacitorTabletTab.dragging .capacitorTabletTabTarget {
+  cursor: grabbing;
 }
 
 @media only screen and (width >= 768px) {
