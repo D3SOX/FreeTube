@@ -1,0 +1,32 @@
+name: Windows portable registry
+
+on:
+  push:
+    branches: [restore-portable-registry-isolation]
+  pull_request:
+    paths:
+      - '_scripts/windows-interposer/**'
+      - '_scripts/windows-registry-tests/**'
+      - '_scripts/windowsInterposer.mjs'
+      - '.github/workflows/windows-registry.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  registry:
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Build registry regression test
+        run: |
+          cmake -S _scripts/windows-registry-tests -B .cache/registry-tests -A x64
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cmake --build .cache/registry-tests --config Release
+      - name: Check isolation and verified HTTPS
+        run: |
+          & .cache/registry-tests/Release/registry-tests.exe --test none 'Software\OpenTubeX\RegistryRegression'
+          exit $LASTEXITCODE
