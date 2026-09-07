@@ -1,11 +1,16 @@
 import assert from 'node:assert/strict'
-import { readFile } from 'node:fs/promises'
+import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import test from 'node:test'
 import { runInNewContext } from 'node:vm'
 import { compileScript, parse } from 'vue/compiler-sfc'
+import webpack from 'webpack'
 
 const { descriptor } = parse(await readFile(new URL('../../src/renderer/components/SyncSettings/SyncPairing.vue', import.meta.url), 'utf8'))
-const source = compileScript(descriptor, { id: 'pairing-scanner-test' }).content
+const compiledSource = compileScript(descriptor, { id: 'pairing-scanner-test' }).content
+const source = compiledSource
   .replace(/^import[\s\S]*?from ['"][^'"]+['"]\n/gm, '')
   .replace('export default', 'const Pairing =')
   .replace("import('../../helpers/nativePairingScanner')", 'loadNativeScanner()')
@@ -106,4 +111,34 @@ test('desktop and web retain the embedded scanner and stop it when pairing close
   await flush()
   f.state.closeScanner()
   assert.deepEqual(f.counts(), { nativeLoads: 0, browserStarts: 1, browserStops: 1 })
+})
+
+test('desktop bundles exclude the native scanner while Capacitor bundles include it', async () => {
+  const directory = await mkdtemp(join(tmpdir(), 'pairing-bundle-'))
+  const helper = fileURLToPath(new URL('../../src/renderer/helpers/nativePairingScanner.js', import.meta.url))
+  try {
+    const entry = join(directory, 'pairing.js')
+    await writeFile(entry, compiledSource.replace("'../../helpers/nativePairingScanner'", JSON.stringify(helper)))
+    for (const native of [false, true]) {
+      const stats = await new Promise((resolve, reject) => {
+        webpack({
+          mode: 'production',
+          entry,
+          output: { path: join(directory, String(native)) },
+          // Only inspect pairing's native import; other component dependencies are unrelated.
+          externals: [({ request }, callback) => {
+            if (request === entry || request === helper) callback()
+            else callback(null, `commonjs ${request}`)
+          }],
+          plugins: [new webpack.DefinePlugin({ 'process.env.IS_CAPACITOR': JSON.stringify(native) })],
+        }, (error, result) => error ? reject(error) : resolve(result))
+      })
+      assert.equal(stats.hasErrors(), false, stats.toString({ all: false, errors: true }))
+      const modules = stats.toJson({ all: false, modules: true }).modules
+      assert.equal(modules.some(module => module.name?.includes('nativePairingScanner')), native,
+        native ? 'Capacitor must include its native scanner' : 'Desktop must not emit the native scanner chunk')
+    }
+  } finally {
+    await rm(directory, { recursive: true, force: true })
+  }
 })

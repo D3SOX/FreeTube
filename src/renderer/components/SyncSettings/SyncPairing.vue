@@ -645,7 +645,8 @@ async function startScanner() {
   stopScanner()
   scannerHandled = false
   try {
-    if (usingNativeScanner) {
+    // Keep the build flag here so Webpack excludes native scanner chunks on desktop/web.
+    if (process.env.IS_CAPACITOR) {
       const { scanNativePairingCode } = await import('../../helpers/nativePairingScanner')
       if (sequence !== approveSequence || !approvePromptOpen.value) return
       const code = await scanNativePairingCode({
