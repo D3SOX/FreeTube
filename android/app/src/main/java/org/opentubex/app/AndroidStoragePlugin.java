@@ -1,5 +1,6 @@
 package org.opentubex.app;
 
+import android.content.Context;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
@@ -14,11 +15,7 @@ import java.util.concurrent.TimeUnit;
 public class AndroidStoragePlugin extends Plugin {
     @PluginMethod
     public void getUsage(PluginCall call) {
-        AndroidStorage.Usage usage = AndroidStorage.measure(
-            getContext().getDataDir(),
-            getContext().getCacheDir(),
-            getContext().getCodeCacheDir()
-        );
+        AndroidStorage.Usage usage = getUsage(getContext());
         JSObject result = new JSObject();
         result.put("appDataBytes", usage.appDataBytes);
         result.put("cacheBytes", usage.cacheBytes);
@@ -28,8 +25,6 @@ public class AndroidStoragePlugin extends Plugin {
 
     @PluginMethod
     public void clearCache(PluginCall call) {
-        File cacheDirectory = getContext().getCacheDir();
-        File codeCacheDirectory = getContext().getCodeCacheDir();
         CountDownLatch webViewCacheCleared = new CountDownLatch(1);
 
         getActivity().runOnUiThread(() -> {
@@ -48,11 +43,30 @@ public class AndroidStoragePlugin extends Plugin {
             return;
         }
 
-        boolean cleared = AndroidStorage.clearDirectory(cacheDirectory);
-        cleared &= AndroidStorage.clearDirectory(codeCacheDirectory);
+        boolean cleared = clearCacheFiles(getContext());
 
         JSObject result = new JSObject();
         result.put("cleared", cleared);
         call.resolve(result);
+    }
+
+    static AndroidStorage.Usage getUsage(Context context) {
+        return AndroidStorage.measure(context.getDataDir(), cacheDirectories(context));
+    }
+
+    static boolean clearCacheFiles(Context context) {
+        synchronized (YtDlpPlugin.PLAYBACK_CACHE_LOCK) {
+            boolean cleared = true;
+            for (File directory : cacheDirectories(context)) cleared &= AndroidStorage.clearDirectory(directory);
+            return cleared;
+        }
+    }
+
+    private static File[] cacheDirectories(Context context) {
+        return new File[] {
+            context.getCacheDir(),
+            context.getCodeCacheDir(),
+            YtDlpPlugin.playbackCacheDirectory(context)
+        };
     }
 }

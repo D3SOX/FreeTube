@@ -4,6 +4,7 @@ import static java.util.Arrays.asList;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.Context;
 import android.net.Uri;
 import androidx.activity.result.ActivityResult;
 import com.getcapacitor.*;
@@ -33,7 +34,7 @@ public final class YtDlpPlugin extends Plugin {
     private volatile String version;
     private String ffmpegVersion;
     private String ffprobeVersion;
-    private final Object cacheLock = new Object();
+    static final Object PLAYBACK_CACHE_LOCK = new Object();
 
     @Override public void load() {
         downloads = YtDlpDownloads.get(getContext());
@@ -199,9 +200,26 @@ public final class YtDlpPlugin extends Plugin {
         });
     }
     @PluginMethod public void cache(PluginCall call) {
+        cache(getContext(), call);
+    }
+
+    static File playbackCacheDirectory(Context context) {
+        return new File(context.getNoBackupFilesDir(), "yt-dlp-playback");
+    }
+
+    void cache(Context context, PluginCall call) {
         run(call, () -> {
-            synchronized (cacheLock) {
-            File directory = new File(getContext().getCacheDir(), "yt-dlp-playback");
+            synchronized (PLAYBACK_CACHE_LOCK) {
+            // Keep signed playback URLs across restarts and APK replacements,
+            // outside Android's reclaimable cache and device backups.
+            File directory = playbackCacheDirectory(context);
+            if (!directory.exists()) {
+                File previousDirectory = new File(context.getCacheDir(), "yt-dlp-playback");
+                directory.getParentFile().mkdirs();
+                if (previousDirectory.isDirectory() && !previousDirectory.renameTo(directory)) {
+                    throw new IOException("Unable to preserve the existing playback cache");
+                }
+            }
             directory.mkdirs();
             String action = call.getString("action", "");
             if (action.equals("clear")) { YtDlpFiles.deleteTree(directory); return new JSONObject(); }
