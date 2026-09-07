@@ -626,7 +626,7 @@ import { clampOverlayScrollTop, restoreOverlayScrollTop } from '../../helpers/ov
 import { formatDeviceSessionLabel, getSyncTabRoute, shouldShowOtherDeviceSessions } from '../../helpers/sync-sessions'
 import { showToast } from '../../helpers/utils'
 import store from '../../store/index'
-import { getTabAvatarUrl, getTabPageIcon } from '../../tabs/tabPreview'
+import { getSyncedTabPreview as syncedTabPreview, getTabAvatarUrl, getTabPageIcon } from '../../tabs/tabPreview'
 import { formatTabTitle } from '../../tabs/tabTitle'
 import FtCheckboxList from '../FtCheckboxList/FtCheckboxList.vue'
 import FtPrompt from '../FtPrompt/FtPrompt.vue'
@@ -834,15 +834,6 @@ function handleTabAvatarError(tab) {
   failedTabAvatarUrls.value = {
     ...failedTabAvatarUrls.value,
     [tab.id]: getTabAvatarUrl(tab)
-  }
-}
-
-function syncedTabPreview(tab) {
-  try {
-    const url = new URL(getSyncTabRoute(tab.url), window.location.origin)
-    return { ...tab, route: { path: url.pathname } }
-  } catch {
-    return tab
   }
 }
 

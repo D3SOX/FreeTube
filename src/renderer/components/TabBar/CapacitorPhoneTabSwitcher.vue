@@ -299,16 +299,27 @@
                     </header>
                     <div class="capacitorPhoneSyncedTabList">
                       <button
-                        v-for="tab in activeOtherDeviceSession.tabs"
+                        v-for="tab in activeOtherDeviceTabs"
                         :key="tab.id"
                         type="button"
                         class="capacitorPhoneSyncedTabButton capacitorPhoneSyncedTabTarget"
                         @click="openOtherDeviceSession({ ...activeOtherDeviceSession, tabs: [tab] })"
                       >
-                        <FtIcon
-                          :icon="['fas', 'arrow-up-right-from-square']"
-                          aria-hidden="true"
-                        />
+                        <span class="capacitorPhoneSyncedTabIcon">
+                          <FtRetryImage
+                            v-if="getTabAvatarUrl(tab)"
+                            v-show="!failedSyncedTabAvatarUrls.has(getTabAvatarUrl(tab))"
+                            :src="getTabAvatarUrl(tab)"
+                            class="capacitorPhoneTabAvatar"
+                            @error="failedSyncedTabAvatarUrls.add(getTabAvatarUrl(tab))"
+                            @load="failedSyncedTabAvatarUrls.delete(getTabAvatarUrl(tab))"
+                          />
+                          <FtIcon
+                            v-if="!getTabAvatarUrl(tab) || failedSyncedTabAvatarUrls.has(getTabAvatarUrl(tab))"
+                            :icon="getTabPageIcon(tab) || ['fas', 'display']"
+                            aria-hidden="true"
+                          />
+                        </span>
                         <span dir="auto">{{ tab.title || tab.url }}</span>
                       </button>
                     </div>
@@ -372,7 +383,7 @@ import { clampOverlayScrollTop, restoreOverlayScrollTop } from '../../helpers/ov
 import { formatDeviceSessionLabel, shouldShowOtherDeviceSessions } from '../../helpers/sync-sessions'
 import { showToast } from '../../helpers/utils'
 import { getCapacitorTabService } from '../../tabs/CapacitorTabService'
-import { getTabAvatarUrl, getTabPageIcon } from '../../tabs/tabPreview'
+import { getSyncedTabPreview, getTabAvatarUrl, getTabPageIcon } from '../../tabs/tabPreview'
 import FtPrompt from '../FtPrompt/FtPrompt.vue'
 import FtRetryImage from '../FtRetryImage.vue'
 import { lockBodyScroll, unlockBodyScroll } from '../FtPrompt/scrollLock'
@@ -394,6 +405,7 @@ const syncedSessionIdPrefix = `capacitor-phone-synced-session-${useId().replaceA
 const syncedSessionPanelId = `${syncedSessionIdPrefix}-panel`
 const selectedOtherDeviceSessionKey = ref(null)
 const sessionToDelete = ref(null)
+const failedSyncedTabAvatarUrls = ref(new Set())
 const triggerRef = useTemplateRef('triggerRef')
 const dialogRef = useTemplateRef('dialogRef')
 const openTabsScrollRef = useTemplateRef('openTabsScrollRef')
@@ -412,6 +424,9 @@ const activeOtherDeviceSession = computed(() => (
   otherDeviceSessions.value.find(session => (
     otherDeviceSessionKey(session) === selectedOtherDeviceSessionKey.value
   )) ?? otherDeviceSessions.value[0] ?? null
+))
+const activeOtherDeviceTabs = computed(() => (
+  activeOtherDeviceSession.value?.tabs.map(getSyncedTabPreview) ?? []
 ))
 const activeOtherDeviceSessionKey = computed(() => (
   activeOtherDeviceSession.value ? otherDeviceSessionKey(activeOtherDeviceSession.value) : null
