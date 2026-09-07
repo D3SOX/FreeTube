@@ -1,8 +1,9 @@
 import { readFile } from 'node:fs/promises'
 import path from 'node:path'
 
-import { test, expect, goToSettingsSection, latestSettings } from '../../helpers/app.mjs'
+import { test, expect, expectScrollAtRenderedEnd, goToSettingsSection, latestSettings } from '../../helpers/app.mjs'
 import { DEFAULT_QUICK_SETTINGS } from '../../../src/renderer/helpers/quickSettings.js'
+import { DEFAULT_CUSTOM_THEME } from '../../../src/customTheme.js'
 
 const ALL_QUICK_SETTINGS = [
   ...DEFAULT_QUICK_SETTINGS,
@@ -28,6 +29,121 @@ const ADDITIONAL_QUICK_SETTINGS = [
   ['enableCaptionTranslations', 'Enable Caption Translations', 'Language and region'],
   ['enableCommentTranslations', 'Enable comment translations', 'Language and region'],
 ]
+
+test.describe('quick system themes', () => {
+  test.use({ seed: { settings: { quickSettings: ['baseTheme'], baseTheme: 'system', currentLocale: 'en-US', uiScale: 125 } } })
+
+  test('adds light and dark selectors and persists their choices across restart', async ({ app, page }, testInfo) => {
+    const appearance = await goToSettingsSection(page, 'appearance')
+    await appearance.getByRole('button', { name: 'Customize quick settings' }).click()
+    await page.getByRole('button', { name: 'Add setting' }).click()
+    const search = page.getByPlaceholder('Search settings')
+    for (const label of ['Light theme', 'Dark theme']) {
+      await search.fill(label)
+      await page.locator('.settingPicker .optionWrapper').getByText(label, { exact: true }).click()
+    }
+    await search.press('Escape')
+    await page.locator('.settingsCloseButton').click()
+    await page.locator('.profileTrigger').click()
+    const menu = page.getByRole('dialog', { name: 'Quick settings' })
+
+    for (const [scheme, label, choice, value] of [
+      ['light', 'Light theme', 'Solarized Light', 'solarizedLight'],
+      ['dark', 'Dark theme', 'Solarized Dark', 'solarizedDark'],
+    ]) {
+      await page.emulateMedia({ colorScheme: scheme })
+      await menu.getByRole('combobox', { name: label }).click()
+      await page.getByRole('option', { name: choice, exact: true }).click()
+      await expect(page.locator('body')).toHaveClass(new RegExp(value))
+      await expect(menu).toBeVisible()
+    }
+    await expect.poll(async () => {
+      const saved = latestSettings(await readFile(path.join(app.userDataDir, 'settings.db'), 'utf8'))
+      return [saved.quickSettings, saved.systemLightTheme, saved.systemDarkTheme]
+    }).toEqual([['baseTheme', 'systemLightTheme', 'systemDarkTheme'], 'solarizedLight', 'solarizedDark'])
+
+    ;({ page } = await app.relaunch())
+    await page.locator('.profileTrigger').click()
+    const reopened = page.getByRole('dialog', { name: 'Quick settings' })
+    await expect(reopened.getByRole('combobox', { name: 'Light theme' })).toHaveText('Solarized Light')
+    await expect(reopened.getByRole('combobox', { name: 'Dark theme' })).toHaveText('Solarized Dark')
+    await expect(reopened).not.toHaveClass(/quick-settings-menu-enter-active/)
+    // Electron capturePage includes the entire window at non-100% zoom.
+    const screenshot = await app.electronApp.evaluate(async ({ BrowserWindow }) => (
+      (await BrowserWindow.getAllWindows()[0].webContents.capturePage()).toDataURL()
+    ))
+    await testInfo.attach('light and dark quick theme selectors', {
+      body: Buffer.from(screenshot.split(',')[1], 'base64'), contentType: 'image/png',
+    })
+
+    await reopened.getByRole('combobox', { name: 'Base Theme' }).click()
+    await page.getByRole('option', { name: 'Light', exact: true }).click()
+    await expect(reopened.locator('[data-setting-id="systemLightTheme"]')).toHaveCount(0)
+    await expect(reopened.locator('[data-setting-id="systemDarkTheme"]')).toHaveCount(0)
+    await reopened.getByRole('combobox', { name: 'Base Theme' }).click()
+    await page.getByRole('option', { name: /System default/i }).click()
+    for (const [id, label] of [['systemLightTheme', 'Light'], ['systemDarkTheme', 'Dark']]) {
+      const control = reopened.locator(`[data-setting-id="${id}"]`)
+      await control.getByRole('button', { name: 'Reset this setting to its default' }).click()
+      await expect(control.getByRole('combobox')).toHaveText(label)
+    }
+  })
+
+  test('clamps the menu after hiding system theme selectors at the bottom', async ({ app, page }) => {
+    await app.electronApp.evaluate(({ BrowserWindow }) => {
+      BrowserWindow.getAllWindows()[0].setBounds({ x: 0, y: 0, width: 1000, height: 600 })
+    })
+    await page.evaluate(async ids => {
+      const store = document.querySelector('#app').__vue_app__.config.globalProperties.$store
+      await store.dispatch('updateQuickSettings', [...ids, 'systemLightTheme', 'systemDarkTheme'])
+    }, DEFAULT_QUICK_SETTINGS)
+    await page.locator('.profileTrigger').click()
+    const menu = page.getByRole('dialog', { name: 'Quick settings' })
+    const scroller = menu.locator('.quickSettingsScroll')
+    const scrollbar = scroller.locator('.os-scrollbar-vertical')
+    const thumb = scrollbar.locator('.os-scrollbar-handle')
+    await scroller.evaluate(element => element.scrollTo(0, element.scrollHeight))
+    await expect.poll(() => scroller.evaluate(element => element.scrollTop)).toBeGreaterThan(0)
+    await expectScrollAtRenderedEnd(scroller)
+    const originalThumbHeight = await thumb.evaluate(element => element.getBoundingClientRect().height)
+
+    await page.evaluate(async () => {
+      const store = document.querySelector('#app').__vue_app__.config.globalProperties.$store
+      await store.dispatch('updateBaseTheme', 'dark')
+    })
+    await expect(menu.locator('[data-setting-id="systemLightTheme"]')).toHaveCount(0)
+    await expect(menu.locator('[data-setting-id="systemDarkTheme"]')).toHaveCount(0)
+    await expectScrollAtRenderedEnd(scroller)
+    await expect(scrollbar).toHaveClass(/os-scrollbar-visible/)
+    await expect.poll(() => thumb.evaluate(element => element.getBoundingClientRect().height))
+      .toBeGreaterThan(originalThumbHeight)
+  })
+
+  test('offers only matching built-in and custom themes', async ({ page }) => {
+    await page.evaluate(async (defaultTheme) => {
+      const store = document.querySelector('#app').__vue_app__.config.globalProperties.$store
+      store.commit('setCustomThemes', [
+        { ...defaultTheme, id: 'paper', name: 'Paper', isDark: false },
+        { ...defaultTheme, id: 'midnight', name: 'Midnight', isDark: true },
+      ])
+      await store.dispatch('updateQuickSettings', ['systemLightTheme', 'systemDarkTheme'])
+    }, DEFAULT_CUSTOM_THEME)
+    await page.locator('.profileTrigger').click()
+    const menu = page.getByRole('dialog', { name: 'Quick settings' })
+    for (const [label, included, excluded] of [
+      ['Light theme', ['Light', 'Solarized Light', 'Paper'], ['Dark', 'Solarized Dark', 'Midnight']],
+      ['Dark theme', ['Dark', 'Solarized Dark', 'Midnight'], ['Light', 'Solarized Light', 'Paper']],
+    ]) {
+      const select = menu.getByRole('combobox', { name: label })
+      await select.click()
+      const options = page.locator(`#${await select.getAttribute('aria-controls')}`)
+      for (const name of included) await expect(options.getByRole('option', { name, exact: true })).toHaveCount(1)
+      for (const name of [...excluded, 'System default']) await expect(options.getByRole('option', { name, exact: true })).toHaveCount(0)
+      await options.getByRole('option', { name: included[2], exact: true }).click()
+      await expect(select).toHaveText(included[2])
+    }
+  })
+})
 
 test.describe('additional quick settings', () => {
   test.use({ seed: { settings: { quickSettings: [], uiScale: 125 } } })
