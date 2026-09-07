@@ -1289,6 +1289,8 @@ Change Format:
   yt-dlp Default Clients Fallback: Ensisijaiset yt-dlp-asiakasohjelmat eivät tarjonneet toistettavia mediavirtoja, joten yritetään yt-dlp:n oletusasiakasohjelmia
   Built-in Fallback Template: 'Sisäinen moottori ei voinut toistaa mediavirtaa, joten yritetään yt-dlp:tä: {error}'
 Share:
+  Share Link: "Jaa linkki"
+  Share failed: "Linkin jakaminen epäonnistui"
   Timestamp Link Copied: Aikaleiman sisältävä linkki kopioitiin leikepöydälle
 Context Menu:
   Context Menu: Pikavalikko

@@ -1325,6 +1325,8 @@ Change Format:
   yt-dlp Default Clients Fallback: کارخواه‌های ترجیحی yt-dlp نتوانستند جریان قابل پخش فراهم کنند، کارخواه‌های پیش‌فرض yt-dlp امتحان می‌شوند
   Built-in Fallback Template: 'موتور داخلی نتوانست جریان را پخش کند، به‌جای آن yt-dlp امتحان می‌شود: {error}'
 Share:
+  Share Link: "اشتراک‌گذاری پیوند"
+  Share failed: "اشتراک‌گذاری پیوند ممکن نشد"
   Share Post: هم‌رسانی پست
   Timestamp Link Copied: پیوند زمان‌دار در بریده‌دان کپی شد
 Context Menu:

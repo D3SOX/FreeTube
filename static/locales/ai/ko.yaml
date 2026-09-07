@@ -1612,6 +1612,8 @@ Change Format:
   yt-dlp Default Clients Fallback: 선호하는 yt-dlp 클라이언트에서 재생 가능한 스트림을 제공하지 못해 yt-dlp 기본 클라이언트로 시도합니다
   Built-in Fallback Template: '내장 엔진에서 스트림을 재생하지 못해 yt-dlp로 시도합니다: {error}'
 Share:
+  Share Link: "링크 공유"
+  Share failed: "링크를 공유할 수 없습니다"
   Share Post: 게시물 공유
   Timestamp Link Copied: 타임스탬프 링크를 클립보드에 복사했습니다
 Context Menu:

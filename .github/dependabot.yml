@@ -16,6 +16,7 @@ updates:
       - dependency-name: "@capacitor/cli"
       - dependency-name: "@capacitor/core"
       - dependency-name: "@capacitor/local-notifications"
+      - dependency-name: "@capacitor/share"
       - dependency-name: "@capawesome/capacitor-app-shortcuts"
       - dependency-name: "@hpke/core"
       - dependency-name: "@iconify-json/material-symbols"

@@ -1256,6 +1256,8 @@ Change Format:
   yt-dlp Default Clients Fallback: Les clients yt-dlp préférés n’ont pas pu fournir de flux lisibles, essai avec les clients par défaut de yt-dlp
   Built-in Fallback Template: 'Le moteur intégré n’a pas pu lire le flux, essai avec yt-dlp à la place : {error}'
 Share:
+  Share Link: "Partager le lien"
+  Share failed: "Impossible de partager le lien"
   Timestamp Link Copied: Lien horodaté copié dans le presse-papiers
 Context Menu:
   Context Menu: Menu contextuel

@@ -1281,6 +1281,8 @@ Change Format:
   yt-dlp Default Clients Fallback: Các máy khách yt-dlp ưu tiên không cung cấp được luồng có thể phát, đang thử máy khách mặc định của yt-dlp
   Built-in Fallback Template: 'Bộ máy tích hợp không thể phát luồng, đang thử yt-dlp: {error}'
 Share:
+  Share Link: "Chia sẻ liên kết"
+  Share failed: "Không thể chia sẻ liên kết"
   Timestamp Link Copied: Đã sao chép liên kết có mốc thời gian vào bảng nhớ tạm
 Context Menu:
   Context Menu: Menu ngữ cảnh

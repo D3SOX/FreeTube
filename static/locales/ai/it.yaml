@@ -1257,6 +1257,8 @@ Change Format:
   yt-dlp Default Clients Fallback: I client yt-dlp preferiti non hanno fornito flussi riproducibili, verranno provati i client predefiniti di yt-dlp
   Built-in Fallback Template: 'Il motore integrato non ha riprodotto il flusso, verrà provato yt-dlp: {error}'
 Share:
+  Share Link: "Condividi link"
+  Share failed: "Impossibile condividere il link"
   Timestamp Link Copied: Link con indicazione temporale copiato negli appunti
 Context Menu:
   Context Menu: Menu contestuale

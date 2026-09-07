@@ -1584,6 +1584,8 @@ Change Format:
   yt-dlp Default Clients Fallback: Dei føretrekte yt-dlp-klientane kunne ikkje levere spelbare straumar. Prøver standardklientane til yt-dlp i staden
   Built-in Fallback Template: 'Den innebygde motoren kunne ikkje spele av straumen. Prøver yt-dlp i staden: {error}'
 Share:
+  Share Link: "Del lenkje"
+  Share failed: "Klarte ikkje å dele lenkja"
   Share Post: Del innlegget
   Timestamp Link Copied: Lenkja med tidsstempel er kopiert til utklippstavla
 Context Menu:

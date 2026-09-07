@@ -1279,6 +1279,8 @@ Change Format:
   yt-dlp Default Clients Fallback: Los clientes preferidos de yt-dlp no pudieron proporcionar emisiones reproducibles; se probarán los clientes predeterminados de yt-dlp
   Built-in Fallback Template: 'El motor integrado no pudo reproducir la emisión; se probará yt-dlp: {error}'
 Share:
+  Share Link: "Compartir enlace"
+  Share failed: "No se pudo compartir el enlace"
   Timestamp Link Copied: Enlace con marca de tiempo copiado al portapapeles
 Context Menu:
   Context Menu: Menú contextual

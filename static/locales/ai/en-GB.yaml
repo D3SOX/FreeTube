@@ -1232,6 +1232,8 @@ Change Format:
   yt-dlp Default Clients Fallback: The preferred yt-dlp clients could not provide playable streams, trying yt-dlp's default clients instead
   Built-in Fallback Template: 'The built-in engine could not play the stream, trying yt-dlp instead: {error}'
 Share:
+  Share Link: "Share Link"
+  Share failed: "Could not share the link"
   Timestamp Link Copied: Timestamp link copied to clipboard
 Context Menu:
   Context Menu: Context menu

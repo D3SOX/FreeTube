@@ -1265,6 +1265,8 @@ Change Format:
   yt-dlp Default Clients Fallback: De föredragna yt-dlp-klienterna kunde inte tillhandahålla spelbara strömmar. Försöker med yt-dlp:s standardklienter i stället
   Built-in Fallback Template: 'Den inbyggda motorn kunde inte spela upp strömmen. Försöker med yt-dlp i stället: {error}'
 Share:
+  Share Link: "Dela länk"
+  Share failed: "Kunde inte dela länken"
   Timestamp Link Copied: Länken med tidsstämpeln har kopierats till urklipp
 Context Menu:
   Context Menu: Snabbmeny

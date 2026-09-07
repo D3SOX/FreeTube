@@ -1746,6 +1746,8 @@ Change Format:
   yt-dlp Default Clients Fallback: Els clients preferits de yt-dlp no han pogut proporcionar fluxos reproduïbles; es proven els clients predeterminats de yt-dlp
   Built-in Fallback Template: 'El motor integrat no ha pogut reproduir el flux; es prova yt-dlp: {error}'
 Share:
+  Share Link: "Comparteix l’enllaç"
+  Share failed: "No s’ha pogut compartir l’enllaç"
   Share Post: Comparteix la publicació
   Share Channel: Comparteix el canal
   YouTube Channel URL copied to clipboard: S'ha copiat al porta-retalls l'URL del canal de YouTube

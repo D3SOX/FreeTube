@@ -1647,6 +1647,8 @@ Change Format:
   yt-dlp Default Clients Fallback: Pageidaujami yt-dlp klientai nepateikė atkuriamų srautų, todėl bandomi numatytieji yt-dlp klientai
   Built-in Fallback Template: 'Integruotas modulis negalėjo paleisti srauto, todėl bandoma naudoti yt-dlp: {error}'
 Share:
+  Share Link: "Bendrinti nuorodą"
+  Share failed: "Nepavyko bendrinti nuorodos"
   Share Post: Bendrinti įrašą
   Timestamp Link Copied: Nuoroda su laiko žyma nukopijuota į iškarpinę
 Context Menu:

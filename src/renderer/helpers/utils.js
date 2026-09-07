@@ -1,4 +1,5 @@
 import { Browser } from '@capacitor/browser'
+import { Share } from '@capacitor/share'
 import { nextTick } from 'vue'
 import i18n from '../i18n/index'
 import router from '../router/index'
@@ -418,6 +419,20 @@ export async function openExternalLink(url) {
   }
 
   window.open(url, '_blank', 'noreferrer')
+}
+
+/**
+ * Opens Android's native share picker for a public link.
+ * @param {string} url the URL to share
+ */
+export async function shareLink(url) {
+  try {
+    await Share.share({ url })
+  } catch (error) {
+    // The Android plugin rejects when the user dismisses the picker.
+    if (error.message === 'Share canceled') return
+    showApiErrorToast(i18n.global.t('Share.Share failed'), error)
+  }
 }
 
 /**

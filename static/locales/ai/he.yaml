@@ -1291,6 +1291,8 @@ Change Format:
   yt-dlp Default Clients Fallback: לקוחות yt-dlp המועדפים לא הצליחו לספק סטרימים שניתנים להפעלה, ולכן נעשה ניסיון עם לקוחות ברירת המחדל של yt-dlp
   Built-in Fallback Template: 'המנוע המובנה לא הצליח להפעיל את הסטרים, ולכן נעשה ניסיון עם yt-dlp: {error}'
 Share:
+  Share Link: "שיתוף קישור"
+  Share failed: "לא ניתן לשתף את הקישור"
   Timestamp Link Copied: הקישור לנקודת הזמן הועתק ללוח
 Context Menu:
   Context Menu: תפריט ההקשר

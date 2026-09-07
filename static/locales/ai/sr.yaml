@@ -1314,6 +1314,8 @@ Change Format:
   yt-dlp Default Clients Fallback: Жељени yt-dlp клијенти нису могли да обезбеде стримове за репродукцију, па се покушава са подразумеваним yt-dlp клијентима
   Built-in Fallback Template: 'Уграђени механизам није могао да репродукује стрим, па се покушава помоћу yt-dlp-а: {error}'
 Share:
+  Share Link: "Подели везу"
+  Share failed: "Није могуће поделити везу"
   Share Post: Подели објаву
   Timestamp Link Copied: Веза до временске ознаке је копирана у привремену меморију
 Context Menu:

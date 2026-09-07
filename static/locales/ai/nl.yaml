@@ -1300,6 +1300,8 @@ Change Format:
   yt-dlp Default Clients Fallback: De voorkeursclients van yt-dlp konden geen afspeelbare streams leveren. De standaardclients van yt-dlp worden geprobeerd
   Built-in Fallback Template: 'De ingebouwde engine kon de stream niet afspelen. yt-dlp wordt geprobeerd: {error}'
 Share:
+  Share Link: "Link delen"
+  Share failed: "Kan de link niet delen"
   Timestamp Link Copied: Link met tijdsaanduiding naar klembord gekopieerd
 Context Menu:
   Context Menu: Contextmenu

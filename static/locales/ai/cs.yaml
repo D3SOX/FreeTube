@@ -1257,6 +1257,8 @@ Change Format:
   yt-dlp Default Clients Fallback: Upřednostňovaní klienti yt-dlp neposkytli přehratelné streamy, proto se zkusí výchozí klienti yt-dlp
   Built-in Fallback Template: 'Vestavěné jádro nedokázalo stream přehrát, proto se zkusí yt-dlp: {error}'
 Share:
+  Share Link: "Sdílet odkaz"
+  Share failed: "Odkaz se nepodařilo sdílet"
   Timestamp Link Copied: Odkaz s časovým údajem byl zkopírován do schránky
 Context Menu:
   Context Menu: Místní nabídka

@@ -1265,6 +1265,8 @@ Change Format:
   yt-dlp Default Clients Fallback: Предпочитаните клиенти на yt-dlp не можаха да предоставят потоци за възпроизвеждане, затова се прави опит с клиентите по подразбиране на yt-dlp
   Built-in Fallback Template: 'Вграденият модул не можа да възпроизведе потока, затова се прави опит с yt-dlp: {error}'
 Share:
+  Share Link: "Споделяне на връзката"
+  Share failed: "Връзката не можа да бъде споделена"
   Timestamp Link Copied: Връзката към времевия маркер е копирана в системния буфер
 Context Menu:
   Context Menu: Контекстно меню

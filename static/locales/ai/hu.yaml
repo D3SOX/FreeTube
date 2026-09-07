@@ -1261,6 +1261,8 @@ Change Format:
   yt-dlp Default Clients Fallback: Az előnyben részesített yt-dlp-kliensek nem biztosítottak lejátszható adatfolyamokat, ezért az yt-dlp alapértelmezett klienseivel folytatódik a próbálkozás
   Built-in Fallback Template: 'A beépített motor nem tudta lejátszani az adatfolyamot, ezért az yt-dlp veszi át a lejátszást: {error}'
 Share:
+  Share Link: "Hivatkozás megosztása"
+  Share failed: "Nem sikerült megosztani a hivatkozást"
   Timestamp Link Copied: Időbélyeges hivatkozás a vágólapra másolva
 Context Menu:
   Context Menu: Helyi menü
