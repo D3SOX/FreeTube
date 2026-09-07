@@ -98,6 +98,9 @@ test('Capacitor integrations do not register the Android back button on iOS', as
   const listeners = []
   const enable = vm.runInNewContext(`${integration}\nenableCapacitorIntegrations`, {
     Capacitor: { getPlatform: () => 'ios' },
+    AppShortcuts: { addListener: async () => ({ remove() {} }) },
+    watch: () => () => {},
+    locale: {},
     CapacitorApp: {
       addListener: async name => {
         listeners.push(name)

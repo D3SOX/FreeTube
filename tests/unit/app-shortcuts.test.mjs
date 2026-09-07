@@ -38,6 +38,8 @@ test('retained startup clicks and running-app clicks navigate and update localiz
   let stopped = false
   const locale = { value: 'en-US' }
   const enable = vm.runInNewContext(`${integration}\nenableCapacitorIntegrations`, {
+    Capacitor: { getPlatform: () => 'android' },
+    handleAndroidBack() {},
     CapacitorApp: {
       addListener: async (name, callback) => {
         listeners.set(name, callback)
