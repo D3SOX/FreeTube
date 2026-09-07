@@ -188,6 +188,7 @@
           <p>{{ recommendationDescription }}</p>
           <FtButton
             :label="t('Home Page.Enable recommendations')"
+            :icon="['fas', 'power-off']"
             @click="setRecommendationsEnabled(true)"
           />
         </div>
