@@ -152,14 +152,21 @@ test('SABR and preroll countdown rings cover native transport buttons', async ({
     const ring = document.createElement('div')
     ring.className = 'countdownProgress'
     ring.textContent = '1.2s'
+    const player = document.querySelector('.ftVideoPlayer')
+    for (const attribute of player.getAttributeNames().filter(name => name.startsWith('data-v-'))) {
+      overlay.setAttribute(attribute, '')
+      ring.setAttribute(attribute, '')
+    }
     overlay.append(ring)
-    document.querySelector('.ftVideoPlayer').append(overlay)
+    player.append(overlay)
   })
   const ring = page.locator('.countdownProgress')
   await expect(ring).toBeVisible()
   for (const fullscreen of [false, true]) {
     if (fullscreen) await page.evaluate(() => window.nativeScreenTest.show())
     const bounds = await ring.boundingBox()
+    expect(bounds.width).toBeGreaterThan(90)
+    expect(bounds.height).toBeGreaterThan(90)
     await expect.poll(() => page.evaluate(({ x, y, width, height }) => window.nativeLayoutTest.menus.some(menu =>
       menu.x <= x + 1 && menu.y <= y + 1 && menu.x + menu.width >= x + width - 1 && menu.y + menu.height >= y + height - 1
     ), bounds)).toBe(true)
@@ -1061,10 +1068,12 @@ for (const fullscreen of [false, true]) {
             await expect(feedback).toHaveCSS('opacity', '1')
             await expect(feedback.locator('span')).toHaveText(`${direction * 2}s`)
             await expect(page.locator('.valueChangePopup')).not.toBeVisible()
-            await page.waitForTimeout(650)
+            // Check the seek before normal playback consumes its backward jump.
             const delta = await video.evaluate(element => element.currentTime) - before
             expect(delta * direction).toBeGreaterThan(1)
             expect(delta * direction).toBeLessThan(3.5)
+            // Still wait past the single-tap timeout to catch delayed UI toggles.
+            await page.waitForTimeout(650)
             expect(await video.evaluate(element => element.paused)).toBe(paused)
             expect(await controls.evaluate(element => element.hasAttribute('shown'))).toBe(shown)
           }
@@ -1216,3 +1225,34 @@ test('native rotation returns to inline portrait and keeps the fullscreen button
     await page.evaluate(() => window.nativeScreenTest.destroy())
   }
 })
+
+for (const uiScale of [100, 125]) {
+  test.describe(`fullscreen page hiding at ${uiScale}%`, () => {
+    test.use({ seed: { settings: { videoPlaybackEngine: 'built-in', ytDlpPlaybackEngineDefaultMigration: true, uiScale } } })
+    test('hides transitioning page buttons on the first fullscreen frame', async ({ app, page }) => {
+      await mockPlayableWatchPage(app, page)
+      await openMockedVideo(page)
+      await openNativeScreen(page, false)
+      const subscribe = page.locator('.subscribeButton').first()
+      // The shared button's transition: all animates inherited visibility too.
+      const button = await subscribe.elementHandle()
+      expect(await button.evaluate(element => element.checkVisibility({ checkVisibilityCSS: true, checkOpacity: true }))).toBe(true)
+      const visible = await page.evaluate(async () => {
+        const info = document.querySelector('.subscribeButton').closest('.watchVideoInfo')
+        window.fullscreenPageBranch = info
+        window.fullscreenPageBranchHeight = info.getBoundingClientRect().height
+        window.nativeScreenTestController.show = () => new Promise(resolve => { window.finishFullscreenEntry = resolve })
+        window.fullscreenEntry = window.nativeScreenTest.show()
+        await new Promise(requestAnimationFrame)
+        return document.querySelector('.subscribeButton').checkVisibility({ checkVisibilityCSS: true, checkOpacity: true })
+      })
+      expect(visible, 'The first fullscreen frame must not contain Subscribe while its visibility transition runs').toBe(false)
+      await page.evaluate(async () => { window.finishFullscreenEntry(); await window.fullscreenEntry })
+      await expect(page.locator('[data-native-player-screen]')).toBeVisible()
+      expect(await page.evaluate(() => window.fullscreenPageBranch.getBoundingClientRect().height)).toBeCloseTo(await page.evaluate(() => window.fullscreenPageBranchHeight), 0)
+      await page.evaluate(() => window.nativeScreenTest.hide())
+      await expect(subscribe).toBeVisible()
+      await page.evaluate(() => window.nativeScreenTest.destroy())
+    })
+  })
+}

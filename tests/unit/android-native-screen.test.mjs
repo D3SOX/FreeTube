@@ -7,11 +7,13 @@ import { overrideShakaMethods } from '../../src/renderer/helpers/player/override
 const source = (await readFile(new URL('../../src/renderer/helpers/player/androidNativeScreen.js', import.meta.url), 'utf8'))
   .replace(/^import .*\n/gm, '').replace('export function ', 'function ')
 
-async function fixture({ fullscreen = true, chrome = [], deferTransitions = false } = {}) {
+async function fixture({ fullscreen = true, chrome = [], deferTransitions = false, deferFullscreen = false } = {}) {
   const frames = new Map()
   const layouts = []
   const presentations = []
   const completeTransitions = []
+  const completeFullscreen = []
+  const fullscreenEvents = []
   const observers = []
   let shown = true
   let menu = false
@@ -36,6 +38,7 @@ async function fixture({ fullscreen = true, chrome = [], deferTransitions = fals
     getBoundingClientRect: () => bounds, getAnimations: () => [],
   })
   const document = Object.assign(new EventTarget(), { body: { getBoundingClientRect: () => ({ height: 2000 }) }, elementFromPoint: () => null, querySelectorAll: selector => selector.includes('.topNav') ? chrome : [], documentElement: { classList: { toggle() {} }, style: { getPropertyValue() { return '' }, setProperty() {}, removeProperty() {} } } })
+  document.addEventListener('fullscreenchange', () => fullscreenEvents.push(presentations.length))
   class Observer {
     constructor(callback) { this.callback = callback; observers.push(this) }
     observe(target, options) { if (options) this.options = { attributeFilter: [...(this.options?.attributeFilter ?? []), ...options.attributeFilter] } }
@@ -49,7 +52,10 @@ async function fixture({ fullscreen = true, chrome = [], deferTransitions = fals
     cancelAnimationFrame(id) { frames.delete(id) },
   })
   const screen = create({ element, container, getController: () => ({
-    async show(value) { presentations.push(value) }, async hide() {}, async layout(value) {
+    async show(value) {
+      presentations.push(value)
+      if (deferFullscreen && value.fullscreen) await new Promise(resolve => completeFullscreen.push(resolve))
+    }, async hide() {}, async layout(value) {
       layouts.push(value)
       if (deferTransitions && value.transition) await new Promise(resolve => completeTransitions.push(resolve))
     },
@@ -61,7 +67,7 @@ async function fixture({ fullscreen = true, chrome = [], deferTransitions = fals
   if (fullscreen) await screen.show()
   else await screen.attach()
   await flush()
-  return { screen, container, layouts, presentations, completeTransitions, bounds, observers, flush, change({ visible = shown, menuOpen = menu, panelOpen = panel, containerAnimating = animating }) {
+  return { screen, container, layouts, presentations, completeTransitions, completeFullscreen, fullscreenEvents, bounds, observers, flush, change({ visible = shown, menuOpen = menu, panelOpen = panel, containerAnimating = animating }) {
     shown = visible; menu = menuOpen; panel = panelOpen
     animating = containerAnimating
     for (const observer of observers) observer.callback()
@@ -181,3 +187,31 @@ test('inline native controls follow the player bounds and shared visibility afte
   assert.equal(f.layouts.at(-1).controlsVisible, false)
   f.screen.destroy()
 })
+
+for (const cancel of [false, true]) {
+  test(`fullscreen rotation waits for the prepared native WebView frame${cancel ? ' and ignores a cancelled entry' : ''}`, async () => {
+    const f = await fixture({ fullscreen: false, deferFullscreen: true })
+    const entering = f.screen.show()
+    assert.equal(f.fullscreenEvents.length, 0, 'Do not rotate a snapshot of the inline page before fullscreen has drawn')
+    if (cancel) await f.screen.hide()
+    f.completeFullscreen[0]()
+    await entering
+    assert.equal(f.fullscreenEvents.length, 1)
+    assert.equal(f.screen.isOpen(), !cancel)
+    f.screen.destroy()
+  })
+}
+
+for (const teardown of ['reset', 'destroy']) {
+  test(`deferred fullscreen entry cannot restore a surface after ${teardown}`, async () => {
+    const f = await fixture({ fullscreen: false, deferFullscreen: true })
+    const entering = f.screen.show()
+    f.screen[teardown]()
+    f.completeFullscreen[0]()
+    await entering
+    assert.equal(f.screen.hasSurface(), false)
+    assert.equal(f.screen.isOpen(), false)
+    assert.equal(f.fullscreenEvents.length, 1)
+    f.screen.destroy()
+  })
+}

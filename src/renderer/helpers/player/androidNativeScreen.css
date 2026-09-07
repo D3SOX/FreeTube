@@ -44,6 +44,13 @@
   visibility: hidden;
 }
 
+/* Hide off-player branches immediately, including buttons whose inherited
+   visibility transitions. Retain page dimensions and body-level menu portals. */
+.nativePlaybackScreen :has([data-native-player-screen]):not(body) > :not([data-native-player-screen], :has([data-native-player-screen])) {
+  opacity: 0 !important;
+  transition: none !important;
+}
+
 /* Keep Watch's inherited styles and gesture event path. Container queries and
    tab transitions must not make fixed positioning relative to the tab. */
 .nativePlaybackScreen body :has([data-native-player-screen]) {

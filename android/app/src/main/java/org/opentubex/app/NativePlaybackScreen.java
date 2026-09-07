@@ -65,6 +65,8 @@ final class NativePlaybackScreen extends FrameLayout implements TextureView.Surf
     private final android.view.ViewTreeObserver.OnScrollChangedListener pageScrollListener = this::onPageScroll;
     private long transitionSequence;
     private long readyWebFrame = -1;
+    private final java.util.Set<Runnable> pendingWebFrames = new java.util.HashSet<>();
+    private final java.util.List<Runnable> afterWebDraw = new java.util.ArrayList<>();
     private final android.graphics.RectF transitionBounds = new android.graphics.RectF();
     private float transitionRadius;
     private final Player.Listener queueListener = new Player.Listener() {
@@ -223,6 +225,19 @@ final class NativePlaybackScreen extends FrameLayout implements TextureView.Surf
         invalidate();
     }
 
+    void afterWebFrame(Runnable action) {
+        if (webOverlay == null) { action.run(); return; }
+        pendingWebFrames.add(action);
+        webOverlay.postVisualStateCallback(0, new WebView.VisualStateCallback() {
+            @Override public void onComplete(long requestId) {
+                if (!pendingWebFrames.contains(action)) return;
+                afterWebDraw.add(() -> { if (pendingWebFrames.remove(action)) action.run(); });
+                webOverlay.invalidate();
+                invalidate();
+            }
+        });
+    }
+
     @Override protected boolean drawChild(android.graphics.Canvas canvas, View child, long drawingTime) {
         if (child == webOverlay && readyWebFrame == transitionSequence) {
             long sequence = readyWebFrame;
@@ -237,6 +252,15 @@ final class NativePlaybackScreen extends FrameLayout implements TextureView.Surf
                 refreshVideoLayout();
                 updatePresentation();
             });
+        }
+        if (child == webOverlay) {
+            boolean drawn = super.drawChild(canvas, child, drawingTime);
+            if (!afterWebDraw.isEmpty()) {
+                java.util.List<Runnable> callbacks = new java.util.ArrayList<>(afterWebDraw);
+                afterWebDraw.clear();
+                postOnAnimation(() -> { for (Runnable callback : callbacks) callback.run(); });
+            }
+            return drawn;
         }
         if (child == videoFrame && transitioning && !pictureInPicture) {
             int save = canvas.save();
@@ -627,6 +651,9 @@ final class NativePlaybackScreen extends FrameLayout implements TextureView.Surf
     }
 
     void close() {
+        for (Runnable callback : new java.util.ArrayList<>(pendingWebFrames)) callback.run();
+        pendingWebFrames.clear();
+        afterWebDraw.clear();
         transitionSequence++;
         removeCallbacks(pageScrollSettled);
         if (webOverlay != null) webOverlay.getViewTreeObserver().removeOnScrollChangedListener(pageScrollListener);

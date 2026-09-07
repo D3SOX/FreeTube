@@ -77,8 +77,9 @@ public class AndroidPlaybackPlugin extends Plugin {
                 screen.setPictureInPicture(pictureInPicture);
             }
             screen.setInlineVisible(true);
-            screen.setFullscreen(call.getBoolean("fullscreen", false));
-            call.resolve();
+            boolean fullscreen = call.getBoolean("fullscreen", false);
+            screen.setFullscreen(fullscreen);
+            if (fullscreen) screen.afterWebFrame(call::resolve); else call.resolve();
         });
     }
 

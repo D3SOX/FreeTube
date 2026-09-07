@@ -317,6 +317,37 @@ public class NativePlaybackScreenTest {
         });
     }
 
+    @Test public void closingDuringFullscreenPreparationSettlesThePendingEntry() {
+        for (boolean readyBeforeClose : new boolean[] { false, true }) withScreen((screen, controls, web, engine) -> {
+            int[] completions = new int[1];
+            web.holdVisualState = true;
+            screen.afterWebFrame(() -> completions[0]++);
+            if (readyBeforeClose) web.heldVisualState.onComplete(web.heldVisualStateId);
+            screen.close();
+            assertEquals("A dismissed screen cannot wait for another draw", 1, completions[0]);
+            if (!readyBeforeClose) web.heldVisualState.onComplete(web.heldVisualStateId);
+            assertEquals("Late visual readiness cannot complete the same entry twice", 1, completions[0]);
+        });
+    }
+
+    @Test public void fullscreenRotationWaitsUntilTheReadyWebFrameHasDrawn() {
+        boolean[] ready = new boolean[1];
+        withScreen((screen, controls, web, engine) -> {
+            screen.setFullscreen(false);
+            screen.setInlineVisible(true);
+            web.holdVisualState = true;
+            screen.setFullscreen(true);
+            screen.afterWebFrame(() -> ready[0] = true);
+            assertFalse("Do not rotate the old inline page snapshot", ready[0]);
+            web.heldVisualState.onComplete(web.heldVisualStateId);
+            assertFalse("A ready Chromium frame must still reach the Android window", ready[0]);
+            android.graphics.Bitmap image = android.graphics.Bitmap.createBitmap(screen.getWidth(), screen.getHeight(), android.graphics.Bitmap.Config.ARGB_8888);
+            screen.draw(new android.graphics.Canvas(image));
+            image.recycle();
+            assertFalse("The rotation must start after this frame is submitted", ready[0]);
+        }, (screen, controls, web, engine) -> assertTrue(ready[0]));
+    }
+
     @Test public void videoStaysAboveThePageUntilTheReadyWebFrameHasActuallyDrawn() {
         withScreen((screen, controls, web, engine) -> {
             screen.setFullscreen(false);

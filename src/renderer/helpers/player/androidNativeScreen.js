@@ -6,6 +6,7 @@ let inlineScreenOwner = null
 /** Shares the existing feature panels with the native video and basic controls. */
 export function createAndroidNativeScreen({ element, container, getController, getLocale, hasVideoCanvas, isFullscreenOnRotationEnabled = () => false, onError }) {
   let open = false
+  let presentationSequence = 0
   let fullscreenFromRotation = false
   let frame = null
   let lastLayout = ''
@@ -14,6 +15,7 @@ export function createAndroidNativeScreen({ element, container, getController, g
   let controls = null
   let restoreControls = null
   let attached = false
+  let attachmentSequence = 0
   let lastInlineClip = ''
   let clippedPage = null
   const inlineOwner = {}
@@ -254,6 +256,7 @@ export function createAndroidNativeScreen({ element, container, getController, g
     if (open === value) return
     endTransition()
     open = value
+    presentationSequence++
     if (!open) {
       fullscreenFromRotation = false
       clearAmbientClips()
@@ -262,12 +265,14 @@ export function createAndroidNativeScreen({ element, container, getController, g
     if (open) releaseInlineBackground()
     container.toggleAttribute('data-native-player-screen', open)
     lastLayout = ''
-    document.dispatchEvent(new Event('fullscreenchange'))
+    if (!open) document.dispatchEvent(new Event('fullscreenchange'))
     scheduleLayout()
   }
   async function attach() {
     if (!getController()) return
+    const sequence = ++attachmentSequence
     await getController().show({ webOverlay: true, locale: getLocale(), fullscreen: open })
+    if (attachmentSequence !== sequence) return
     attached = true
     container.toggleAttribute('data-native-player-controls', true)
     lastLayout = ''
@@ -277,10 +282,15 @@ export function createAndroidNativeScreen({ element, container, getController, g
     if (open || !getController()) return
     fullscreenFromRotation = fromRotation
     setOpen(true)
+    const sequence = presentationSequence
     try {
       await attach()
+      // Android rotation captures the current window. Wait until the native
+      // screen has drawn the fullscreen WebView, so that snapshot contains no
+      // inline page controls and needs only the final orientation resize.
+      if (open && presentationSequence === sequence) document.dispatchEvent(new Event('fullscreenchange'))
     } catch (error) {
-      setOpen(false)
+      if (presentationSequence === sequence) setOpen(false)
       throw error
     }
   }
@@ -358,6 +368,7 @@ export function createAndroidNativeScreen({ element, container, getController, g
       scheduleLayout()
     },
     reset() {
+      attachmentSequence++
       endTransition()
       attached = false
       pageScrolling = false
@@ -368,6 +379,7 @@ export function createAndroidNativeScreen({ element, container, getController, g
       setOpen(false)
     },
     destroy() {
+      attachmentSequence++
       endTransition()
       attached = false
       pageScrolling = false
