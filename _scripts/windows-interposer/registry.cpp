@@ -131,20 +131,29 @@ struct Redirect {
             if (end == std::wstring::npos) return;
             start = end + 1;
         }
-        std::wstring parentPath = host.substr(0, start - 1);
-        UNICODE_STRING parentName{};
-        parentName.Buffer = parentPath.data();
-        parentName.Length = static_cast<USHORT>(parentPath.size() * sizeof(wchar_t));
-        parentName.MaximumLength = parentName.Length;
-        OBJECT_ATTRIBUTES parentAttributes{};
-        InitializeObjectAttributes(&parentAttributes, &parentName, OBJ_CASE_INSENSITIVE, nullptr, nullptr);
-        HANDLE parent;
-        status = originalOpenEx(&parent, KEY_READ | (access & (KEY_WOW64_32KEY | KEY_WOW64_64KEY)), &parentAttributes, 0);
-        if (status < 0) return;
+        size_t parentEnd = start - 1;
+        HANDLE parent = nullptr;
+        while (true) {
+            std::wstring parentPath = host.substr(0, parentEnd);
+            UNICODE_STRING parentName{};
+            parentName.Buffer = parentPath.data();
+            parentName.Length = static_cast<USHORT>(parentPath.size() * sizeof(wchar_t));
+            parentName.MaximumLength = parentName.Length;
+            OBJECT_ATTRIBUTES parentAttributes{};
+            InitializeObjectAttributes(&parentAttributes, &parentName, OBJ_CASE_INSENSITIVE, nullptr, nullptr);
+            status = originalOpenEx(&parent, KEY_READ | (access & (KEY_WOW64_32KEY | KEY_WOW64_64KEY)), &parentAttributes, 0);
+            if (status >= 0) break;
+            // A portable hive can outlive its original host parent. Resolve the
+            // closest existing ancestor, without creating anything on the host.
+            if (status != static_cast<NTSTATUS>(0xC0000034L) &&
+                status != static_cast<NTSTATUS>(0xC000003AL)) return;
+            parentEnd = host.find_last_of(L'\\', parentEnd - 1);
+            if (parentEnd == std::wstring::npos || parentEnd == 0) return;
+        }
         auto canonicalParent = KeyPath(parent);
         RegCloseKey(static_cast<HKEY>(parent));
         if (canonicalParent.empty()) { status = Denied; return; }
-        path = ApplicationPath(canonicalParent + host.substr(start - 1));
+        path = ApplicationPath(canonicalParent + host.substr(parentEnd));
         if (path.empty() || path.size() * sizeof(wchar_t) > 0xffff) { status = Denied; return; }
         name.Buffer = path.data();
         name.Length = static_cast<USHORT>(path.size() * sizeof(wchar_t));
