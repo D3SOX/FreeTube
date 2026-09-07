@@ -71,6 +71,86 @@ test('subscription tabs expose feed-specific reload actions', async ({ page }) =
   await page.evaluate(() => window.__removeSubscriptionFeedReloadListener())
 })
 
+test('holding a subscription tab opens its mobile bottom menu without selecting it', async ({ page }) => {
+  await goTo(page, 'subscriptions')
+  const videos = page.locator('[data-subscription-feed-tab="videos"]')
+  const shorts = page.locator('[data-subscription-feed-tab="shorts"]')
+  await expect(videos).toHaveAttribute('aria-selected', 'true')
+  const session = await page.context().newCDPSession(page)
+  await session.send('Emulation.setTouchEmulationEnabled', { enabled: true })
+  const bounds = await shorts.boundingBox()
+  await session.send('Input.dispatchTouchEvent', {
+    type: 'touchStart',
+    touchPoints: [{ x: bounds.x + bounds.width / 2, y: bounds.y + bounds.height / 2 }]
+  })
+  const menu = page.locator('.mobileLinkActions')
+  await expect(menu).toBeVisible({ timeout: 3000 })
+  await session.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] })
+  await expect(menu.getByRole('menuitem', { name: 'Reload Shorts', exact: true })).toBeVisible()
+  await expect(videos).toHaveAttribute('aria-selected', 'true')
+  await expect(shorts).toHaveAttribute('aria-selected', 'false')
+  await page.keyboard.press('Escape')
+  await expect(menu).toHaveCount(0)
+  await shorts.evaluate(element => element.dispatchEvent(new PointerEvent('contextmenu', {
+    bubbles: true, cancelable: true, pointerType: 'touch'
+  })))
+  await page.evaluate(() => {
+    const store = document.querySelector('#app').__vue_app__.config.globalProperties.$store
+    window.__mobileFeedRefreshStarted = false
+    store.watch(state => state.subscriptionCache.subscriptionFeedRefreshInProgress, refreshing => {
+      if (refreshing) window.__mobileFeedRefreshStarted = true
+    })
+  })
+  await page.route(/^https?:\/\//, route => route.abort())
+  await menu.getByRole('menuitem', { name: 'Reload Shorts', exact: true }).click()
+  await expect(menu).toHaveCount(0)
+  await expect.poll(() => page.evaluate(() => window.__mobileFeedRefreshStarted)).toBe(true)
+  await session.detach()
+})
+
+test('a mobile Cancel Refresh action never reloads after the refresh finishes', async ({ app, page }) => {
+  await goTo(page, 'subscriptions')
+  await page.route(/^https?:\/\//, route => route.abort())
+  await page.evaluate(() => {
+    const store = document.querySelector('#app').__vue_app__.config.globalProperties.$store
+    store.commit('setSubscriptionFeedRefreshInProgress', true)
+  })
+  await app.electronApp.evaluate(({ ipcMain }) => {
+    globalThis.__mobileCancelRequested = false
+    ipcMain.on('subscription-auto-refresh-cancel', () => {
+      globalThis.__mobileCancelRequested = true
+    })
+  })
+  await page.locator('[data-subscription-feed-tab="shorts"]').evaluate(element => {
+    element.dispatchEvent(new PointerEvent('contextmenu', {
+      bubbles: true, cancelable: true, pointerType: 'touch'
+    }))
+  })
+  const cancel = page.locator('.mobileLinkActions').getByRole('menuitem', { name: 'Cancel Refresh', exact: true })
+  await expect(cancel).toBeVisible()
+  await page.evaluate(() => {
+    document.querySelector('#app').__vue_app__.config.globalProperties.$store
+      .commit('setSubscriptionFeedRefreshInProgress', false)
+  })
+  await cancel.click()
+  await expect.poll(() => app.electronApp.evaluate(() => globalThis.__mobileCancelRequested)).toBe(true)
+})
+
+test('moving or cancelling a touch on feed tabs does not open a menu', async ({ page }) => {
+  await goTo(page, 'subscriptions')
+  const shorts = page.locator('[data-subscription-feed-tab="shorts"]')
+  for (const event of ['pointermove', 'pointercancel', 'pointerup']) {
+    await shorts.dispatchEvent('pointerdown', {
+      pointerType: 'touch', isPrimary: true, clientX: 100, clientY: 100
+    })
+    await shorts.dispatchEvent(event, {
+      pointerType: 'touch', isPrimary: true, clientX: 120, clientY: 100
+    })
+    await page.waitForTimeout(600)
+    await expect(page.locator('.mobileLinkActions')).toHaveCount(0)
+  }
+})
+
 test('disabled context menu actions cannot execute through IPC', async ({ page }) => {
   const searchInput = page.locator('.searchInput input')
   await searchInput.fill('selection')

@@ -1188,6 +1188,11 @@
     :deep(.chaptersWrapper) {
       max-block-size: 480px;
 
+      @media (pointer: coarse) {
+        // Let swipes at the list's edges continue scrolling the watch page.
+        overscroll-behavior-y: auto;
+      }
+
       // In the sidebar the chapters sit on a card rather than above the video,
       // so drop the light handle and take the theme's colour again
       --scrollbar-color: inherit;

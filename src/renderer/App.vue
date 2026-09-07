@@ -178,7 +178,7 @@
     <FtContextMenu v-if="isElectron" />
     <Teleport to="body">
       <div
-        v-if="mobileContextLink"
+        v-if="mobileContextLink || mobileContextActions"
         class="mobileLinkActionsBackdrop"
         @pointerdown.self.stop
         @click.self.stop="closeMobileLinkActions"
@@ -194,6 +194,20 @@
         >
           <strong dir="auto">{{ mobileContextLinkLabel }}</strong>
           <button
+            v-for="action in mobileContextActions?.actions ?? []"
+            :key="action.label"
+            type="button"
+            role="menuitem"
+            @click="runMobileContextAction(action)"
+          >
+            <FtIcon
+              :icon="action.icon"
+              aria-hidden="true"
+            />
+            {{ action.label }}
+          </button>
+          <button
+            v-if="mobileContextLink"
             type="button"
             role="menuitem"
             @click="openMobileContextLink(false)"
@@ -733,10 +747,18 @@ const commandPaletteOpen = ref(false)
 const hardwareKeyboardAttached = ref(!isCapacitor)
 provide('hardwareKeyboardAttached', hardwareKeyboardAttached)
 const mobileContextLink = ref(null)
+const mobileContextActions = ref(null)
+provide('openMobileContextActions', async (menu) => {
+  mobileContextLink.value = null
+  mobileContextActions.value = menu
+  await nextTick()
+  mobileLinkActionsRef.value?.focus({ preventScroll: true })
+})
 const mobileLinkActionsPromptId = useId()
 const mobileLinkActionsRef = useTemplateRef('mobileLinkActionsRef')
 let mobileLinkActionsLocked = false
 const mobileContextLinkLabel = computed(() => {
+  if (mobileContextActions.value) return mobileContextActions.value.title
   const link = mobileContextLink.value
   if (!link) return ''
 
@@ -758,7 +780,7 @@ const mobileContextLinkCopyUrl = computed(() => {
     ? resolveMobileContextLinkCopyUrl(href, window.location.href.split('#')[0])
     : null
 })
-watch(() => mobileContextLink.value !== null, (isOpen) => {
+watch(() => mobileContextLink.value !== null || mobileContextActions.value !== null, (isOpen) => {
   if (isOpen && !mobileLinkActionsLocked) {
     lockBodyScroll()
     store.commit('addOpenPrompt', mobileLinkActionsPromptId)
@@ -2746,7 +2768,7 @@ async function handleAndroidExitPromptAnswer(option) {
 }
 
 async function handleAndroidBack() {
-  if (mobileContextLink.value !== null) {
+  if (mobileContextLink.value !== null || mobileContextActions.value !== null) {
     closeMobileLinkActions()
     return
   }
@@ -2883,6 +2905,12 @@ function handleGamepadBack() {
  */
 function handleKeyboardShortcuts(event) {
   if (showTutorial.value) return
+
+  if (event.key === 'Escape' && (mobileContextLink.value || mobileContextActions.value)) {
+    event.preventDefault()
+    closeMobileLinkActions()
+    return
+  }
 
   const shortcuts = KeyboardShortcuts.APP.GENERAL
 
@@ -3731,6 +3759,7 @@ async function handleMobileLinkContextMenu(event) {
 
   event.preventDefault()
   event.stopPropagation()
+  mobileContextActions.value = null
   mobileContextLink.value = link
   await nextTick()
   mobileLinkActionsRef.value?.focus({ preventScroll: true })
@@ -3738,6 +3767,12 @@ async function handleMobileLinkContextMenu(event) {
 
 function closeMobileLinkActions() {
   mobileContextLink.value = null
+  mobileContextActions.value = null
+}
+
+function runMobileContextAction(action) {
+  closeMobileLinkActions()
+  return action.run()
 }
 
 async function copyMobileContextLink() {
