@@ -117,6 +117,7 @@ Stats:
   Hours: '{hours} val.'
   Hours and minutes: '{hours} val. {minutes} min.'
 Home Page:
+  Keep disabled and hide this section: "Palikti išjungtą ir slėpti šią skiltį"
   Familiar description: "Teikti pirmenybę nežiūrėtiems vaizdo įrašams iš jau mėgstamų kanalų."
   Balanced description: "Derinti pažįstamus kanalus su naujais, atitinkančiais jūsų pomėgius."
   Explore description: "Skirti daugiau vietos naujiems kanalams, susijusiems su jūsų pomėgiais."

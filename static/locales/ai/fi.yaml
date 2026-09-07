@@ -95,6 +95,7 @@ Stats:
   Hours: '{hours} t'
   Hours and minutes: '{hours} t {minutes} min'
 Home Page:
+  Keep disabled and hide this section: "Pidä poissa käytöstä ja piilota tämä osio"
   Familiar description: "Suosi katsomattomia videoita kanavilta, joista jo pidät."
   Balanced description: "Yhdistä tuttuja kanavia uusiin, kiinnostuksenkohteitasi vastaaviin kanaviin."
   Explore description: "Anna enemmän tilaa uusille kanaville, jotka liittyvät kiinnostuksenkohteisiisi."

@@ -95,6 +95,7 @@ Stats:
   Hours: '{hours} h'
   Hours and minutes: '{hours} h {minutes} min'
 Home Page:
+  Keep disabled and hide this section: "Ponechat vypnuté a skrýt tuto sekci"
   Familiar description: "Upřednostnit nezhlédnutá videa z kanálů, které už máte rádi."
   Balanced description: "Kombinovat známé kanály s novými, které odpovídají vašim zájmům."
   Explore description: "Dát více prostoru novým kanálům souvisejícím s vašimi zájmy."

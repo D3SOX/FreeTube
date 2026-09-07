@@ -95,6 +95,7 @@ Stats:
   Hours: '{hours} giờ'
   Hours and minutes: '{hours} giờ {minutes} phút'
 Home Page:
+  Keep disabled and hide this section: "Giữ trạng thái tắt và ẩn mục này"
   Familiar description: "Ưu tiên video chưa xem từ các kênh bạn đã yêu thích."
   Balanced description: "Kết hợp các kênh quen thuộc với kênh mới phù hợp với sở thích của bạn."
   Explore description: "Dành thêm chỗ cho các kênh mới liên quan đến sở thích của bạn."

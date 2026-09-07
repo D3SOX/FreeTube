@@ -95,6 +95,7 @@ Stats:
   Hours: '{hours} h'
   Hours and minutes: '{hours} h {minutes} min'
 Home Page:
+  Keep disabled and hide this section: "Mantieni disattivati i consigli e nascondi questa sezione"
   Familiar description: "Preferisci video non ancora visti da canali che già ti piacciono."
   Balanced description: "Combina canali conosciuti con nuovi canali in linea con i tuoi interessi."
   Explore description: "Dai più spazio a nuovi canali legati ai tuoi interessi."

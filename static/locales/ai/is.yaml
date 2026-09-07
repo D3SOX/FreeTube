@@ -95,6 +95,7 @@ Stats:
   Hours: '{hours} klst.'
   Hours and minutes: '{hours} klst. {minutes} mín.'
 Home Page:
+  Keep disabled and hide this section: "Halda óvirku og fela þennan hluta"
   Familiar description: "Veldu frekar óséð myndskeið frá rásum sem þér líkar þegar við."
   Balanced description: "Blandaðu kunnuglegum rásum við nýjar sem passa við áhugamál þín."
   Explore description: "Gefðu nýjum rásum sem tengjast áhugamálum þínum meira vægi."

@@ -124,6 +124,7 @@ Stats:
   Hours: '{hours} h'
   Hours and minutes: '{hours} h {minutes} min'
 Home Page:
+  Keep disabled and hide this section: "Pusti onemogočeno in skrij ta razdelek"
   Familiar description: "Daj prednost neogledanim videoposnetkom s kanalov, ki so ti že všeč."
   Balanced description: "Združi znane kanale z novimi, ki ustrezajo tvojim zanimanjem."
   Explore description: "Nameni več prostora novim kanalom, povezanim s tvojimi zanimanji."

@@ -95,6 +95,7 @@ Stats:
   Hours: '{hours}時間'
   Hours and minutes: '{hours}時間{minutes}分'
 Home Page:
+  Keep disabled and hide this section: "無効のままこのセクションを非表示にする"
   Familiar description: "すでに気に入っているチャンネルの未視聴の動画を優先します。"
   Balanced description: "なじみのあるチャンネルと、興味に合う新しいチャンネルを組み合わせます。"
   Explore description: "興味に関連する新しいチャンネルをより多く表示します。"

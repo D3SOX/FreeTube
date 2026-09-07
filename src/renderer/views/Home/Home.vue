@@ -186,15 +186,25 @@
           class="recommendationIntroduction"
         >
           <p>{{ recommendationDescription }}</p>
-          <FtButton
-            :label="t('Home Page.Enable recommendations')"
-            :icon="['fas', 'power-off']"
-            @click="setRecommendationsEnabled(true)"
-          />
+          <div class="recommendationIntroductionActions">
+            <FtButton
+              :label="t('Home Page.Enable recommendations')"
+              :icon="['fas', 'power-off']"
+              @click="setRecommendationsEnabled(true)"
+            />
+            <FtButton
+              :label="t('Home Page.Keep disabled and hide this section')"
+              :icon="['fas', 'eye-slash']"
+              background-color="var(--secondary-card-bg-color)"
+              text-color="var(--primary-text-color)"
+              @click="setSectionVisibility('recommendations', false)"
+            />
+          </div>
         </div>
         <template v-if="recommendationsEnabled">
           <p
             v-if="!recommendationsHaveHistory"
+            class="recommendationStatus"
             role="status"
           >
             {{ t('Home Page.Recommendations need history') }}
@@ -202,6 +212,7 @@
           <FtLoader v-else-if="recommendationsLoading && recommendations.length === 0" />
           <p
             v-else-if="recommendations.length === 0"
+            class="recommendationStatus"
             role="status"
           >
             {{ recommendationsError ? t('Home Page.Recommendations unavailable') : t('Home Page.No recommendations') }}

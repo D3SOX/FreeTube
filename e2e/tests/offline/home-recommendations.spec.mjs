@@ -119,20 +119,26 @@ async function mockCandidates(page) {
     failures: new Set(),
     channelVideos: [channelCandidate, ...excludedCandidates],
     searchVideos: [searchCandidate, channelCandidate, ...excludedCandidates],
-    holdResponses() {
+    holdResponses(source = null) {
       let release
+      heldSource = source
       gate = new Promise(resolve => { release = resolve })
       return () => {
         gate = null
         release()
       }
     },
-    async settled() {
-      await expect.poll(() => requests.length > 0 && finished.size === requests.length).toBe(true)
+    async settled(source = null) {
+      await expect.poll(() => {
+        const started = source ? requests.filter(request => request.source === source).length : requests.length
+        const completed = source ? [...finished].filter(request => candidateSource(new URL(request.url())) === source).length : finished.size
+        return started > 0 && completed === started
+      }).toBe(true)
       await renderTurn(page)
     },
   }
   let gate = null
+  let heldSource = null
   const recordFinished = request => {
     if (candidateSource(new URL(request.url()))) finished.add(request)
   }
@@ -163,7 +169,7 @@ async function mockCandidates(page) {
         : source === 'channel'
           ? { videos: backend.channelVideos, continuation: null }
           : backend.searchVideos)
-    if (gate) await gate
+    if (gate && (heldSource === null || heldSource === source)) await gate
     const wasAborted = () => /abort|cancel/i.test(route.request().failure()?.errorText ?? '')
     if (wasAborted()) return
     try {
@@ -288,6 +294,221 @@ test('reuses recommendations when revisiting Home and bypasses the cache with Re
   await expect(recommendations(page).locator('.recommendationFeed .ft-list-video')).toHaveCount(1)
 })
 
+test('keeps the open recommendation feed unchanged when watch history updates until Refresh', async ({ page }) => {
+  const backend = await mockCandidates(page)
+  await goTo(page, 'home')
+  await setEnabled(page, true)
+  await backend.settled()
+  const titles = recommendations(page).locator('.ft-list-video .title')
+  const originalTitles = await titles.allTextContents()
+  expect(originalTitles.length).toBeGreaterThan(0)
+  const requestCount = backend.requests.length
+  backend.channelVideos = [video('recfresh001', 'Linux desktop fresh results')]
+  backend.searchVideos = []
+
+  for (let update = 1; update <= 3; update++) {
+    await page.evaluate(record => document.querySelector('#app').__vue_app__.config.globalProperties.$store
+      .dispatch('updateHistory', record), { ...historyEntry(), timeWatched: now + update * 1000 })
+    await renderTurn(page)
+    await expect(titles).toHaveText(originalTitles)
+    expect(backend.requests).toHaveLength(requestCount)
+  }
+
+  await recommendations(page).getByRole('button', { name: REFRESH, exact: true }).click()
+  await backend.settled()
+  await expect(titles).toHaveText(['Linux desktop fresh results'])
+  expect(backend.requests.length).toBeGreaterThan(requestCount)
+})
+
+test.describe('history clearing with saved recommendation seeds', () => {
+  test.use({ seed: { settings, history, playlists: [{ _id: 'favorites', playlistName: 'Favorites', protected: true, videos: [historyEntry('recfavorite')] }] } })
+
+  test('discards the loaded feed when history is cleared and waits for Refresh', async ({ page }) => {
+    const backend = await mockCandidates(page)
+    await goTo(page, 'home')
+    await setEnabled(page, true)
+    await backend.settled()
+    const section = recommendations(page)
+    await expect(section.locator('.recommendationEntry')).toHaveCount(2)
+    const requestCount = backend.requests.length
+    backend.channelVideos = [video('recfresh001', 'Linux desktop fresh results')]
+    backend.searchVideos = []
+
+    await clearHistory(page)
+    await expect(section.locator('.recommendationEntry')).toHaveCount(0)
+    await renderTurn(page)
+    expect(backend.requests).toHaveLength(requestCount)
+    await section.getByRole('button', { name: REFRESH, exact: true }).click()
+    await backend.settled()
+    await expect(section.getByRole('link', { name: /Linux desktop fresh results/ })).toBeVisible()
+  })
+})
+
+test('publishes recommendations once after all discovery sources settle', async ({ page }) => {
+  const backend = await mockCandidates(page)
+  const release = backend.holdResponses('search')
+  try {
+    await goTo(page, 'home')
+    await setEnabled(page, true)
+    await backend.settled('channel')
+    const section = recommendations(page)
+    await expect(section).toHaveAttribute('aria-busy', 'true')
+    await expect(section.locator('.recommendationEntry')).toHaveCount(0, { timeout: 1000 })
+    release()
+    await backend.settled()
+    await expect(section).toHaveAttribute('aria-busy', 'false')
+    await expect(section.locator('.recommendationEntry')).toHaveCount(2)
+  } finally {
+    release()
+  }
+})
+
+test('preserves the loaded Home tab across background learning updates and cache expiry', async ({ page }) => {
+  const backend = await mockCandidates(page)
+  await goTo(page, 'home')
+  await setEnabled(page, true)
+  await backend.settled()
+  const originalTitles = await recommendations(page).locator('.ft-list-video .title').allTextContents()
+  const requestCount = backend.requests.length
+  const homeTabId = await page.locator('.tab.active').getAttribute('data-tab-id')
+  const otherTab = await page.evaluate(() => window.ftElectron.tabs.create({ route: '/history', makeActive: true }))
+  await expect(page).toHaveURL(/#\/history$/)
+  backend.channelVideos = [video('recfresh001', 'Linux desktop fresh results')]
+  backend.searchVideos = []
+  await page.evaluate(record => document.querySelector('#app').__vue_app__.config.globalProperties.$store
+    .dispatch('updateHistory', record), historyEntry('rechist0002'))
+  // Cache expiry may affect a newly opened Home page, but not a tab's existing feed.
+  const restoreClock = await page.evaluateHandle(() => {
+    const original = Date.now
+    Date.now = () => original() + 16 * 60 * 1000
+    return () => { Date.now = original }
+  })
+  try {
+    await page.locator(`.tab[data-tab-id="${homeTabId}"]`).click()
+    await expect(page).toHaveURL(/#\/home$/)
+    await renderTurn(page)
+    await expect(recommendations(page).locator('.ft-list-video .title')).toHaveText(originalTitles)
+    expect(backend.requests).toHaveLength(requestCount)
+  } finally {
+    await restoreClock.evaluate(restore => restore())
+    await restoreClock.dispose()
+  }
+  await expect(page.locator(`.tab[data-tab-id="${otherTab.id}"]`)).toBeVisible()
+})
+
+test('keeps existing suggestions through new watches and learning updates', async ({ page }) => {
+  const backend = await mockCandidates(page)
+  await goTo(page, 'home')
+  await setEnabled(page, true)
+  await backend.settled()
+  const titles = recommendations(page).locator('.ft-list-video .title')
+  const originalTitles = await titles.allTextContents()
+  const requestCount = backend.requests.length
+  backend.channelVideos = [video('recfresh001', 'Linux desktop fresh results')]
+  backend.searchVideos = []
+  await page.evaluate(async record => {
+    const store = document.querySelector('#app').__vue_app__.config.globalProperties.$store
+    await store.dispatch('updateHistory', record)
+    await store.dispatch('recordRecommendationEvent', { type: 'positive', video: record })
+    await store.dispatch('removeFromHistory', 'recseen0001')
+  }, { ...historyEntry('recchan0001'), title: channelCandidate.title })
+  await renderTurn(page)
+  await expect(titles).toHaveText(originalTitles)
+  expect(backend.requests).toHaveLength(requestCount)
+  await recommendations(page).getByRole('button', { name: REFRESH, exact: true }).click()
+  await backend.settled()
+  await expect(titles).toHaveText(['Linux desktop fresh results'])
+})
+
+for (const change of ['backend setting', 'learning reset']) {
+  test(`restarts an interrupted initial feed but preserves a completed feed after ${change}`, async ({ page }) => {
+    const backend = await mockCandidates(page)
+    const changeContext = () => page.evaluate(async change => {
+      const store = document.querySelector('#app').__vue_app__.config.globalProperties.$store
+      if (change === 'learning reset') await store.dispatch('resetRecommendations')
+      else await store.dispatch('updateShowFamilyFriendlyOnly', !store.getters.getShowFamilyFriendlyOnly)
+    }, change)
+    let release = backend.holdResponses()
+    try {
+      await goTo(page, 'home')
+      await setEnabled(page, true)
+      await expectBothSources(backend)
+      const requestCount = backend.requests.length
+      backend.channelVideos = [video('recfresh001', 'Linux desktop fresh results')]
+      backend.searchVideos = []
+      await changeContext()
+      await expect.poll(() => backend.aborted.length).toBeGreaterThan(0)
+      await expectBothSources(backend, requestCount)
+      release()
+      await backend.settled()
+      const section = recommendations(page)
+      const titles = section.locator('.ft-list-video .title')
+      await expect(titles).toHaveText(['Linux desktop fresh results'])
+
+      backend.channelVideos = [video('recextra001', 'Linux desktop extra suggestions')]
+      release = backend.holdResponses()
+      const completedRequestCount = backend.requests.length
+      await section.getByRole('button', { name: 'Load more videos', exact: true }).click()
+      await expectBothSources(backend, completedRequestCount)
+      const pendingRequestCount = backend.requests.length
+      const abortedCount = backend.aborted.length
+      await changeContext()
+      await expect.poll(() => backend.aborted.length).toBeGreaterThan(abortedCount)
+      release()
+      await backend.settled()
+      await expect(titles).toHaveText(['Linux desktop fresh results'])
+      expect(backend.requests).toHaveLength(pendingRequestCount)
+
+      await section.getByRole('button', { name: REFRESH, exact: true }).click()
+      await backend.settled()
+      await expect(titles).toHaveText(['Linux desktop extra suggestions'])
+    } finally {
+      release()
+    }
+  })
+}
+
+test('keeps the loaded feed stable while loading more and when cancelling that load', async ({ page }) => {
+  const backend = await mockCandidates(page)
+  await goTo(page, 'home')
+  await setEnabled(page, true)
+  await backend.settled()
+  const section = recommendations(page)
+  const titles = section.locator('.ft-list-video .title')
+  const originalTitles = await titles.allTextContents()
+  const homeTabId = await page.locator('.tab.active').getAttribute('data-tab-id')
+  backend.searchVideos = [video('recextra001', 'Linux desktop extra suggestions', DISCOVERY_CHANNEL_ID)]
+  let release = backend.holdResponses('search')
+  try {
+    const requestCount = backend.requests.length
+    await section.getByRole('button', { name: 'Load more videos', exact: true }).click()
+    await expectBothSources(backend, requestCount)
+    await backend.settled('channel')
+    await expect(titles).toHaveText(originalTitles)
+    release()
+    await backend.settled()
+    await expect(section.getByRole('link', { name: /Linux desktop extra suggestions/ })).toBeVisible()
+    const loadedTitles = await titles.allTextContents()
+
+    release = backend.holdResponses()
+    const nextRequestCount = backend.requests.length
+    await section.getByRole('button', { name: 'Load more videos', exact: true }).click()
+    await expectBothSources(backend, nextRequestCount)
+    await page.evaluate(() => window.ftElectron.tabs.create({ route: '/history', makeActive: true }))
+    await expect(page).toHaveURL(/#\/history$/)
+    release()
+    await backend.settled()
+    const finalRequestCount = backend.requests.length
+    await page.locator(`.tab[data-tab-id="${homeTabId}"]`).click()
+    await expect(page).toHaveURL(/#\/home$/)
+    await renderTurn(page)
+    await expect(titles).toHaveText(loadedTitles)
+    expect(backend.requests).toHaveLength(finalRequestCount)
+  } finally {
+    release()
+  }
+})
+
 test('hiding through Customize invalidates pending results and stops requests until shown again', async ({ page }) => {
   const backend = await mockCandidates(page)
   const release = backend.holdResponses()
@@ -398,8 +619,88 @@ test.describe('watch-page recommendations hidden', () => {
   })
 })
 
+test('hides disabled recommendations persistently and restores them through Home customization', async ({ app, page }, testInfo) => {
+  const backend = await mockCandidates(page)
+  await goTo(page, 'home')
+  const hide = recommendations(page).getByRole('button', { name: 'Keep disabled and hide this section', exact: true })
+  const enable = recommendations(page).getByRole('button', { name: 'Enable recommendations', exact: true })
+  for (const size of [{ width: 1100, height: 800 }, { width: 375, height: 700 }]) {
+    await setWindowSize(app, page, size)
+    await expect.poll(async () => Math.abs(
+      await enable.evaluate(element => element.getBoundingClientRect().width) -
+      await hide.evaluate(element => element.getBoundingClientRect().width)
+    )).toBeLessThanOrEqual(1)
+  }
+  await expect(hide.locator('.ft-icon')).toBeVisible()
+  await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1)
+  await hide.evaluate(element => element.scrollIntoView({ block: 'center' }))
+  await page.screenshot({ path: testInfo.outputPath('hide-disabled-recommendations.png'), animations: 'disabled' })
+  await hide.click()
+  await expect(recommendations(page)).toHaveCount(0)
+  expect(backend.requests).toEqual([])
+
+  const relaunched = await app.relaunch()
+  page = relaunched.page
+  const restoredBackend = await mockCandidates(page)
+  await goTo(page, 'home')
+  await expect(recommendations(page)).toHaveCount(0)
+  await page.getByRole('button', { name: 'Customize Home', exact: true }).click()
+  const toggle = page.getByRole('checkbox', { name: 'Recommended for you', exact: true })
+  await expect(toggle).not.toBeChecked()
+  await page.getByRole('region', { name: 'Customize Home' }).getByText('Recommended for you', { exact: true }).click()
+  await expect(toggle).toBeChecked()
+  await expect(recommendations(page).getByRole('button', { name: 'Enable recommendations', exact: true })).toBeVisible()
+  expect(restoredBackend.requests).toEqual([])
+})
+
+for (const state of ['no history', 'empty', 'error']) {
+  test(`centers the ${state} recommendation message at 95% scale`, async ({ app, page }, testInfo) => {
+    const backend = await mockCandidates(page)
+    backend.channelVideos = []
+    backend.searchVideos = []
+    if (state === 'error') backend.failures = new Set(['channel', 'search', 'related'])
+    if (state === 'no history') await clearHistory(page)
+    await goTo(page, 'home')
+    const section = recommendations(page)
+    await expect(section.locator('.recommendationIntroduction p')).toHaveCSS('text-align', 'center')
+    await setEnabled(page, true)
+    const message = section.getByRole('status')
+    await expect(message).toHaveText(state === 'no history'
+      ? NO_HISTORY
+      : state === 'error' ? UNAVAILABLE : 'No recommendations found. Try refreshing after watching more videos.')
+
+    for (const size of [{ width: 1100, height: 800 }, { width: 375, height: 700 }]) {
+      await setWindowSize(app, page, size)
+      await expect(message).toHaveCSS('text-align', 'center')
+      await expect.poll(() => message.evaluate(element => {
+        const range = document.createRange()
+        range.selectNodeContents(element)
+        const text = range.getBoundingClientRect()
+        const section = element.closest('[data-home-section]').getBoundingClientRect()
+        return Math.abs(text.left + text.width / 2 - section.left - section.width / 2)
+      })).toBeLessThanOrEqual(1)
+      await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1)
+      await section.scrollIntoViewIfNeeded()
+      await page.screenshot({ path: testInfo.outputPath(`recommendation-${state}-${size.width}.png`), animations: 'disabled' })
+    }
+  })
+}
+
 test.describe('without watch history', () => {
   test.use({ seed: { settings, history: [] } })
+
+  test('loads saved positive feedback before checking for recommendation seeds after restart', async ({ app, page }) => {
+    await page.evaluate(async record => {
+      const store = document.querySelector('#app').__vue_app__.config.globalProperties.$store
+      await store.dispatch('updateEnableHomeRecommendations', true)
+      await store.dispatch('recordRecommendationEvent', { type: 'positive', video: record })
+    }, historyEntry())
+    const relaunched = await app.relaunch()
+    page = relaunched.page
+    await mockCandidates(page)
+    await goTo(page, 'home')
+    await expect(recommendations(page).getByRole('link', { name: /Linux desktop shortcuts/ })).toBeVisible()
+  })
 
   test('explains how to get recommendations without making candidate requests', async ({ page }) => {
     const backend = await mockCandidates(page)

@@ -94,6 +94,7 @@ Stats:
   Hours: "{hours} hr"
   Hours and minutes: "{hours} hr {minutes} min"
 Home Page:
+  Keep disabled and hide this section: "Keep disabled and hide this section"
   Familiar description: "Favour unwatched videos from channels you already enjoy."
   Balanced description: "Mix familiar channels with new ones that match your interests."
   Explore description: "Give more space to new channels related to your interests."

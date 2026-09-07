@@ -95,6 +95,7 @@ Stats:
   Hours: '{hours} t'
   Hours and minutes: '{hours} t {minutes} min'
 Home Page:
+  Keep disabled and hide this section: "Jäta keelatuks ja peida see jaotis"
   Familiar description: "Eelista vaatamata videoid kanalitelt, mis sulle juba meeldivad."
   Balanced description: "Sega tuttavaid kanaleid uutega, mis vastavad sinu huvidele."
   Explore description: "Anna rohkem ruumi uutele kanalitele, mis on seotud sinu huvidega."
