@@ -144,7 +144,7 @@ export function createCommandPaletteRegistry(context) {
   }))
 
   for (const [section, labelKey, , aliases] of SETTINGS_SECTIONS) {
-    const desktopOnly = section === 'download' && !isElectron
+    const desktopOnly = section === 'download' && !isElectron && !isCapacitor
     // eslint-disable-next-line @intlify/vue-i18n/no-dynamic-keys
     commands.push(command(`settings.${section}`, t(labelKey), groups.settings, {
       aliases,
@@ -160,6 +160,7 @@ export function createCommandPaletteRegistry(context) {
     groups,
     store,
     isElectron,
+    isCapacitor,
     openSettingsSearchResult,
     supportsLocalApi,
     isMac,
@@ -282,6 +283,7 @@ function addSettingsSearchCommands(commands, context) {
     groups,
     store,
     isElectron,
+    isCapacitor,
     openSettingsSearchResult,
     supportsLocalApi,
     isMac,
@@ -289,7 +291,7 @@ function addSettingsSearchCommands(commands, context) {
     systemUsesDarkTheme,
   } = context
   const sections = SETTINGS_SECTIONS
-    .filter(([section]) => section !== 'download' || isElectron)
+    .filter(([section]) => section !== 'download' || isElectron || isCapacitor)
     .map(([type, labelKey, descriptionKey]) => ({
       type,
       // eslint-disable-next-line @intlify/vue-i18n/no-dynamic-keys
@@ -302,6 +304,7 @@ function addSettingsSearchCommands(commands, context) {
     tm,
     store,
     usingElectron: isElectron,
+    isCapacitor,
     supportsLocalApi,
     isMac,
     isLinuxWayland,

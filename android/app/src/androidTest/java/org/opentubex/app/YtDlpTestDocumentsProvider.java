@@ -12,7 +12,6 @@ import java.io.IOException;
 
 /** An empty test-only document tree: instrumentation never writes to the user's folders. */
 public final class YtDlpTestDocumentsProvider extends DocumentsProvider {
-    static final String AUTHORITY = "org.opentubex.app.nightly.test.documents";
     private File root;
     private static final String[] COLUMNS = {"document_id", "_display_name", "mime_type", "flags", "_size", "last_modified"};
 
@@ -24,8 +23,8 @@ public final class YtDlpTestDocumentsProvider extends DocumentsProvider {
     public static final class GrantReceiver extends android.content.BroadcastReceiver {
         @Override public void onReceive(android.content.Context context, android.content.Intent intent) {
             android.net.Uri uri = android.net.Uri.parse(intent.getStringExtra("uri"));
-            if (!AUTHORITY.equals(uri.getAuthority())) return;
-            context.grantUriPermission("org.opentubex.app.nightly", uri,
+            if (!(context.getPackageName() + ".documents").equals(uri.getAuthority())) return;
+            context.grantUriPermission(intent.getStringExtra("targetPackage"), uri,
                 android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION | android.content.Intent.FLAG_GRANT_WRITE_URI_PERMISSION | android.content.Intent.FLAG_GRANT_PREFIX_URI_PERMISSION);
         }
     }

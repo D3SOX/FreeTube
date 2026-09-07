@@ -1,4 +1,8 @@
-import { buildYtDlpDownloadArguments } from '../ytDlpArguments'
+import {
+  buildYtDlpDownloadArguments, ID_REGEX, PLAYLIST_ID_REGEX, DOWNLOAD_TITLE_FILENAME_BYTE_LIMIT,
+  SUBTITLE_FORMATS, MAX_LOCAL_PLAYLIST_VIDEOS, DENIED_CUSTOM_ARGS, AUTOMATIC_NUMBER_LIMITS,
+  splitArguments, automaticNumber,
+} from '../ytDlpArguments'
 import { PLAYBACK_INFO_OUTPUT_TEMPLATE, toFiniteNumber, toNonEmptyString, mapPlaybackFormat, mapPlaybackCaptions } from '../ytDlpMetadata'
 import { execFile, spawn } from 'node:child_process'
 import { existsSync } from 'node:fs'
@@ -116,7 +120,6 @@ function takeGetInfoAbortSignal(key) {
  * @property {string | null} errorMessage
  */
 
-const ID_REGEX = /^[\w-]{11}$/
 const CHANNEL_ID_REGEX = /^UC[\w-]{22}$/
 const AUTOMATIC_DISCOVERY_CACHE_TTL_MS = 60_000
 const AUTOMATIC_DISCOVERY_TIMEOUT_MS = 15_000
@@ -126,13 +129,6 @@ const AUTOMATIC_DISCOVERY_E2E_FIXTURE = 'automatic-download-discovery.xml'
 const MANAGED_BINARY_UPDATE_CHECK_TIMEOUT_MS = 15_000
 const AUTOMATIC_TITLE_TERM_LIMIT = 20
 const AUTOMATIC_TITLE_TERM_LENGTH_LIMIT = 100
-const AUTOMATIC_NUMBER_LIMITS = Object.freeze({
-  minDurationSeconds: 31_536_000,
-  maxDurationSeconds: 31_536_000,
-  minFileSizeMb: 1_000_000,
-  maxFileSizeMb: 1_000_000,
-  maxAgeDays: 36_500
-})
 const BUILT_IN_AUTOMATIC_TEMPLATE_OPTIONS = new Map([
   ['video:best', { mode: 'video' }],
   ['video:best:mp4', { mode: 'video', videoFormat: 'mp4' }],
@@ -147,24 +143,6 @@ const BUILT_IN_AUTOMATIC_TEMPLATE_OPTIONS = new Map([
   ['subtitles:srt', { mode: 'subtitles', subtitleFormat: 'srt' }],
   ['subtitles:vtt', { mode: 'subtitles', subtitleFormat: 'vtt' }]
 ])
-const PLAYLIST_ID_REGEX = /^[\w-]{10,128}$/
-const SUBTITLE_FORMATS = ['srt', 'vtt', 'ass', 'lrc']
-// Keeps local-playlist URLs comfortably below Windows' process command-line limit.
-const MAX_LOCAL_PLAYLIST_VIDEOS = 500
-const DENIED_CUSTOM_ARGS = [
-  '--alias',
-  '--config-location',
-  '--config-locations',
-  '--downloader',
-  '--downloader-args',
-  '--exec',
-  '--exec-before-download',
-  '--external-downloader',
-  '--external-downloader-args',
-  '--ffmpeg-location',
-  '--plugin-dirs',
-  '--remote-components'
-]
 const YT_DLP_RELEASE_REPOSITORIES = {
   stable: 'yt-dlp/yt-dlp',
   nightly: 'yt-dlp/yt-dlp-nightly-builds',
@@ -177,9 +155,6 @@ const MERGER_REGEX = /^\[Merger\] Merging formats into "(.+)"$/
 const SUBTITLE_DESTINATION_REGEX = /^\[info\] Writing video subtitles to: (.+)$/
 const FINAL_PATH_PREFIX = '__OPENTUBEX_FILE__:'
 const FINAL_METADATA_PREFIX = '__OPENTUBEX_METADATA__:'
-// yt-dlp's B conversion limits UTF-8 bytes. Leave room for IDs, extensions,
-// format suffixes, and temporary-file suffixes within a 255-byte file name.
-const DOWNLOAD_TITLE_FILENAME_BYTE_LIMIT = 200
 
 let downloadCounter = 0
 let downloadQueuePositionCounter = 0
@@ -1744,30 +1719,6 @@ export async function handleYtDlpGetRecommendations(event, currentVideoId) {
 }
 
 /**
- * Splits a command line argument string into an array of arguments,
- * treating single and double quoted sections as a single argument
- * @param {string} argsString
- * @returns {string[]}
- */
-function splitArguments(argsString) {
-  const args = []
-  const tokenRegex = /"([^"]*)"|'([^']*)'|(\S+)/g
-
-  let match
-  while ((match = tokenRegex.exec(argsString)) !== null) {
-    args.push(match[1] ?? match[2] ?? match[3])
-  }
-
-  return args
-}
-
-function automaticNumber(value, maximum) {
-  return Number.isFinite(Number(value)) && Number(value) > 0 && Number(value) <= maximum
-    ? Number(value)
-    : null
-}
-
-/**
  * Loads recent video IDs for a channel from a main-process-owned source. This
  * prevents a renderer from turning a persisted channel rule into permission to
  * download an arbitrary video that was not present in the subscription feed.
@@ -2094,10 +2045,6 @@ async function startYtDlpDownload(
     '--print',
     `${subtitlesOnly ? 'video' : 'after_move'}:${FINAL_METADATA_PREFIX}%(id)j\t%(title)j\t%(thumbnail)j`
   ]
-
-  if (!isRemotePlaylist) {
-    args.push('--no-playlist')
-  }
 
   await pushProxyArgument(args)
   args.push(...globalCustomArgs)

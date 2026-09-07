@@ -228,6 +228,25 @@ final class YtDlpDownloads {
                     if (exported == null) { exported = new JSONObject(); exports.put(source, exported); }
                 }
                 if (exported.optBoolean("completed") && YtDlpFiles.exists(context, exported.optString("uri"))) continue;
+                synchronized (this) {
+                    if (exported.optBoolean("completed")) {
+                        String missing = exported.getString("uri");
+                        JSONArray destinations = record.getJSONArray("destinations");
+                        JSONArray files = record.getJSONArray("files");
+                        for (int i = destinations.length() - 1; i >= 0; i--) {
+                            if (missing.equals(destinations.getString(i))) destinations.remove(i);
+                        }
+                        for (int i = files.length() - 1; i >= 0; i--) {
+                            if (missing.equals(files.getJSONObject(i).optString("path"))) files.remove(i);
+                        }
+                        record.put("sizeBytes", record.optLong("sizeBytes") - exported.getLong("sizeBytes"));
+                        if (missing.equals(record.optString("destination"))) {
+                            record.put("destination", destinations.length() == 0 ? JSONObject.NULL : destinations.getString(destinations.length() - 1));
+                        }
+                        exported.put("completed", false);
+                        save();
+                    }
+                }
                 JSONObject destinationRecord = exported;
                 Uri destination = YtDlpFiles.export(context, root, completed, record.getString("folder"), exported.optString("uri"), uri -> {
                     synchronized (this) {
@@ -236,7 +255,7 @@ final class YtDlpDownloads {
                     }
                 });
                 synchronized (this) {
-                    exported.put("completed", true);
+                    exported.put("completed", true).put("sizeBytes", completed.length());
                     record.getJSONArray("destinations").put(destination.toString());
                     record.put("destination", destination.toString());
                     record.put("sizeBytes", record.optLong("sizeBytes") + completed.length());

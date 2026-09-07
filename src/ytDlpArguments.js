@@ -1,16 +1,16 @@
 /** Build the same yt-dlp options for desktop and Android. */
-const ID_REGEX = /^[\w-]{11}$/
-const PLAYLIST_ID_REGEX = /^[\w-]{10,128}$/
-const DOWNLOAD_TITLE_FILENAME_BYTE_LIMIT = 200
+export const ID_REGEX = /^[\w-]{11}$/
+export const PLAYLIST_ID_REGEX = /^[\w-]{10,128}$/
+export const DOWNLOAD_TITLE_FILENAME_BYTE_LIMIT = 200
 const QUALITY_REGEX = /^\d{3,4}$/
 const VIDEO_FORMATS = ['mp4', 'mkv', 'webm']
 const VIDEO_CODECS = ['h264', 'h265', 'vp9', 'av1']
 const AUDIO_FORMATS = ['mp3', 'm4a', 'opus', 'flac']
-const SUBTITLE_FORMATS = ['srt', 'vtt', 'ass', 'lrc']
+export const SUBTITLE_FORMATS = ['srt', 'vtt', 'ass', 'lrc']
 const SPONSORBLOCK_CATEGORIES = ['sponsor', 'intro', 'outro', 'selfpromo', 'interaction', 'music_offtopic', 'preview', 'filler']
 // Keeps local-playlist URLs comfortably below Windows' process command-line limit.
-const MAX_LOCAL_PLAYLIST_VIDEOS = 500
-const DENIED_CUSTOM_ARGS = [
+export const MAX_LOCAL_PLAYLIST_VIDEOS = 500
+export const DENIED_CUSTOM_ARGS = [
   '--alias',
   '--config-location',
   '--config-locations',
@@ -25,14 +25,14 @@ const DENIED_CUSTOM_ARGS = [
   '--remote-components'
 ]
 const TIME_REGEX = /^(?:\d+:)?[0-5]?\d:[0-5]\d(?:\.\d+)?$/
-const AUTOMATIC_NUMBER_LIMITS = Object.freeze({
+export const AUTOMATIC_NUMBER_LIMITS = Object.freeze({
   minDurationSeconds: 31_536_000,
   maxDurationSeconds: 31_536_000,
   minFileSizeMb: 1_000_000,
   maxFileSizeMb: 1_000_000,
   maxAgeDays: 36_500
 })
-function splitArguments(argsString) {
+export function splitArguments(argsString) {
   const args = []
   const tokenRegex = /"([^"]*)"|'([^']*)'|(\S+)/g
 
@@ -44,7 +44,7 @@ function splitArguments(argsString) {
   return args
 }
 
-function automaticNumber(value, maximum) {
+export function automaticNumber(value, maximum) {
   return Number.isFinite(Number(value)) && Number(value) > 0 && Number(value) <= maximum
     ? Number(value)
     : null

@@ -121,6 +121,7 @@ public final class YtDlpPlugin extends Plugin {
         run(call, () -> {
             if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null) return new JSONObject();
             Uri uri = result.getData().getData();
+            if (uri == null) return new JSONObject();
             File cookies = new File(getContext().getNoBackupFilesDir(), "yt-dlp-cookies.txt");
             try (InputStream input = getContext().getContentResolver().openInputStream(uri)) {
                 if (input == null) throw new IOException("Unable to read cookies");

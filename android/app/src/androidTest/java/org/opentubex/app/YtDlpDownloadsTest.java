@@ -29,7 +29,7 @@ public class YtDlpDownloadsTest {
         DocumentFile tree = tree(context);
         DocumentFile folder = tree.createDirectory(UUID.randomUUID().toString());
         assertNotNull(folder);
-        String folderUri = DocumentsContract.buildTreeDocumentUri(YtDlpTestDocumentsProvider.AUTHORITY, DocumentsContract.getDocumentId(folder.getUri())).toString();
+        String folderUri = DocumentsContract.buildTreeDocumentUri(InstrumentationRegistry.getInstrumentation().getContext().getPackageName() + ".documents", DocumentsContract.getDocumentId(folder.getUri())).toString();
         grant(context, Uri.parse(folderUri));
         YtDlpDownloads queue = new YtDlpDownloads(context, state, () -> {});
         Thread running = null;
@@ -86,7 +86,7 @@ public class YtDlpDownloadsTest {
         state.mkdirs();
         DocumentFile folder = tree(context).createDirectory(UUID.randomUUID().toString());
         assertNotNull(folder);
-        String folderUri = DocumentsContract.buildTreeDocumentUri(YtDlpTestDocumentsProvider.AUTHORITY, DocumentsContract.getDocumentId(folder.getUri())).toString();
+        String folderUri = DocumentsContract.buildTreeDocumentUri(InstrumentationRegistry.getInstrumentation().getContext().getPackageName() + ".documents", DocumentsContract.getDocumentId(folder.getUri())).toString();
         grant(context, Uri.parse(folderUri));
         YtDlpDownloads queue = new YtDlpDownloads(context, state, () -> {});
         try (FixtureServer server = new FixtureServer(InstrumentationRegistry.getInstrumentation().getContext())) {
@@ -106,6 +106,17 @@ public class YtDlpDownloadsTest {
             queue.run(id);
             assertEquals(1, queue.list().getJSONObject(0).getJSONArray("files").length());
             assertEquals("Retry must reuse exported entries", 1, folder.listFiles().length);
+            long size = queue.list().getJSONObject(0).getLong("sizeBytes");
+            assertTrue(folder.listFiles()[0].delete());
+            assertEquals(id, queue.add(payload, args, config, id).getLong("id"));
+            assertEquals(asList(id), queue.claim());
+            queue.run(id);
+            JSONObject replaced = queue.list().getJSONObject(0);
+            assertEquals("Retry must replace a deleted export", "available", replaced.getString("availability"));
+            assertEquals(1, replaced.getJSONArray("destinations").length());
+            assertEquals(1, replaced.getJSONArray("files").length());
+            assertEquals("Replacement must not double-count bytes", size, replaced.getLong("sizeBytes"));
+            assertNotNull(queue.firstFile(id));
             assertTrue(queue.remove(id));
             assertEquals(0, folder.listFiles().length);
         } finally { queue.cancelAll(); folder.delete(); YtDlpFiles.deleteTree(state); }
@@ -120,7 +131,7 @@ public class YtDlpDownloadsTest {
         YtDlpFiles.write(source, content);
         DocumentFile tree = tree(context);
         DocumentFile folder = tree.createDirectory(UUID.randomUUID().toString());
-        String folderUri = DocumentsContract.buildTreeDocumentUri(YtDlpTestDocumentsProvider.AUTHORITY, DocumentsContract.getDocumentId(folder.getUri())).toString();
+        String folderUri = DocumentsContract.buildTreeDocumentUri(InstrumentationRegistry.getInstrumentation().getContext().getPackageName() + ".documents", DocumentsContract.getDocumentId(folder.getUri())).toString();
         grant(context, Uri.parse(folderUri));
         try {
             Uri existing = folder.createFile("video/webm", source.getName()).getUri();
@@ -132,14 +143,14 @@ public class YtDlpDownloadsTest {
     }
 
     private static DocumentFile tree(Context context) throws Exception {
-        Uri uri = DocumentsContract.buildTreeDocumentUri(YtDlpTestDocumentsProvider.AUTHORITY, "root");
+        Uri uri = DocumentsContract.buildTreeDocumentUri(InstrumentationRegistry.getInstrumentation().getContext().getPackageName() + ".documents", "root");
         grant(context, uri);
         return DocumentFile.fromTreeUri(context, uri);
     }
 
     private static void grant(Context context, Uri uri) throws Exception {
-        context.sendBroadcast(new android.content.Intent().setComponent(new android.content.ComponentName("org.opentubex.app.nightly.test", YtDlpTestDocumentsProvider.GrantReceiver.class.getName()))
-            .addFlags(android.content.Intent.FLAG_INCLUDE_STOPPED_PACKAGES).putExtra("uri", uri.toString()));
+        context.sendBroadcast(new android.content.Intent().setComponent(new android.content.ComponentName(InstrumentationRegistry.getInstrumentation().getContext().getPackageName(), YtDlpTestDocumentsProvider.GrantReceiver.class.getName()))
+            .addFlags(android.content.Intent.FLAG_INCLUDE_STOPPED_PACKAGES).putExtra("uri", uri.toString()).putExtra("targetPackage", context.getPackageName()));
         long deadline = System.currentTimeMillis() + 5000;
         while (context.checkCallingOrSelfUriPermission(uri, android.content.Intent.FLAG_GRANT_WRITE_URI_PERMISSION) != android.content.pm.PackageManager.PERMISSION_GRANTED && System.currentTimeMillis() < deadline) Thread.sleep(20);
         assertEquals("Test folder grant", android.content.pm.PackageManager.PERMISSION_GRANTED,

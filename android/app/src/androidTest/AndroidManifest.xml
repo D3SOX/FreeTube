@@ -3,7 +3,7 @@
         <receiver android:name="org.opentubex.app.YtDlpTestDocumentsProvider$GrantReceiver" android:exported="true" />
         <provider
             android:name="org.opentubex.app.YtDlpTestDocumentsProvider"
-            android:authorities="org.opentubex.app.nightly.test.documents"
+            android:authorities="${applicationId}.documents"
             android:permission="android.permission.MANAGE_DOCUMENTS"
             android:exported="true"
             android:grantUriPermissions="true" />

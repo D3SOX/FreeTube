@@ -124,8 +124,19 @@ final class YtDlpRuntime {
     }
 
     static String extract(Context context, List<String> args) throws Exception {
-        Future<String> future = EXTRACTORS.submit(() -> execute(context, args, null, null));
-        try { return future.get(60, TimeUnit.SECONDS).trim(); }
+        return extract(() -> execute(context, args, null, null), 60, TimeUnit.SECONDS);
+    }
+
+    static String extract(Callable<String> operation, long timeout, TimeUnit unit) throws Exception {
+        CountDownLatch started = new CountDownLatch(1);
+        Future<String> future = EXTRACTORS.submit(() -> {
+            started.countDown();
+            return operation.call();
+        });
+        try {
+            started.await();
+            return future.get(timeout, unit).trim();
+        }
         finally { future.cancel(true); }
     }
 
