@@ -79,6 +79,12 @@ std::wstring ObjectPath(POBJECT_ATTRIBUTES attributes)
     return Upper(name);
 }
 
+bool ApplicationComponent(const std::wstring& component)
+{
+    return component == L"OPENTUBEX" || component == L"ELECTRON.APP.OPENTUBEX" ||
+        component == L"IO.OPENTUBEX.OPENTUBEX";
+}
+
 // Match entire application-name components, never e.g. OpenTubeXOther.
 // Current-user paths are stored without the machine-specific SID.
 std::wstring ApplicationPath(const std::wstring& path)
@@ -97,8 +103,7 @@ std::wstring ApplicationPath(const std::wstring& path)
     while (start < logical.size()) {
         size_t end = logical.find(L'\\', start);
         auto component = logical.substr(start, end - start);
-        if (component == L"OPENTUBEX" || component == L"ELECTRON.APP.OPENTUBEX" ||
-            component == L"IO.OPENTUBEX.OPENTUBEX") return logical;
+        if (ApplicationComponent(component)) return logical;
         if (end == std::wstring::npos) break;
         start = end + 1;
     }
@@ -111,20 +116,36 @@ struct Redirect {
     std::wstring path;
     UNICODE_STRING name{};
     OBJECT_ATTRIBUTES attributes{};
+    NTSTATUS status = 0;
     Redirect(POBJECT_ATTRIBUTES source, ACCESS_MASK access) : path(ApplicationPath(ObjectPath(source)))
     {
         if (path.empty()) return;
-        // Windows shares ordinary HKCU Software between views, but redirects
-        // HKLM Software and HKCU Software\Classes on 64-bit installations.
-        bool separateViews = Below(path, L"MACHINE\\SOFTWARE") || Below(path, L"USER\\SOFTWARE\\CLASSES");
-        bool view32 = (access & KEY_WOW64_32KEY) != 0;
-        const std::wstring wow = L"\\WOW6432NODE\\";
-        auto offset = path.find(wow);
-        if (separateViews && offset != std::wstring::npos) {
-            path.erase(offset, wow.size() - 1);
-            view32 = true;
+        // Resolve the host parent read-only through Windows, which knows which
+        // WOW64 keys are shared and which redirect to a different physical path.
+        // Never open the application key itself on the host.
+        auto host = ObjectPath(source);
+        size_t start = 0;
+        while (start < host.size()) {
+            size_t end = host.find(L'\', start);
+            if (ApplicationComponent(host.substr(start, end - start))) break;
+            if (end == std::wstring::npos) return;
+            start = end + 1;
         }
-        path = (separateViews && view32 ? L"View32\\" : L"View64\\") + path;
+        std::wstring parentPath = host.substr(0, start - 1);
+        UNICODE_STRING parentName{};
+        parentName.Buffer = parentPath.data();
+        parentName.Length = static_cast<USHORT>(parentPath.size() * sizeof(wchar_t));
+        parentName.MaximumLength = parentName.Length;
+        OBJECT_ATTRIBUTES parentAttributes{};
+        InitializeObjectAttributes(&parentAttributes, &parentName, OBJ_CASE_INSENSITIVE, nullptr, nullptr);
+        HANDLE parent;
+        status = originalOpenEx(&parent, KEY_READ | (access & (KEY_WOW64_32KEY | KEY_WOW64_64KEY)), &parentAttributes, 0);
+        if (status < 0) return;
+        auto canonicalParent = KeyPath(parent);
+        RegCloseKey(static_cast<HKEY>(parent));
+        if (canonicalParent.empty()) { status = Denied; return; }
+        path = ApplicationPath(canonicalParent + host.substr(start - 1));
+        if (path.empty() || path.size() * sizeof(wchar_t) > MAXUSHORT) { status = Denied; return; }
         name.Buffer = path.data();
         name.Length = static_cast<USHORT>(path.size() * sizeof(wchar_t));
         name.MaximumLength = name.Length;
@@ -139,17 +160,20 @@ struct Redirect {
 NTSTATUS NTAPI OpenKey(PHANDLE result, ACCESS_MASK access, POBJECT_ATTRIBUTES attributes)
 {
     Redirect local(attributes, access);
+    if (local.status < 0) return local.status;
     return originalOpen(result, access, local.path.empty() ? attributes : &local.attributes);
 }
 NTSTATUS NTAPI OpenKeyEx(PHANDLE result, ACCESS_MASK access, POBJECT_ATTRIBUTES attributes, ULONG options)
 {
     Redirect local(attributes, access);
+    if (local.status < 0) return local.status;
     return originalOpenEx(result, access, local.path.empty() ? attributes : &local.attributes, options);
 }
 NTSTATUS NTAPI CreateKey(PHANDLE result, ACCESS_MASK access, POBJECT_ATTRIBUTES attributes,
     ULONG title, PUNICODE_STRING className, ULONG options, PULONG disposition)
 {
     Redirect local(attributes, access);
+    if (local.status < 0) return local.status;
     if (local.path.empty()) return originalCreate(result, access, attributes, title, className, options, disposition);
     if (options & (REG_OPTION_CREATE_LINK | REG_OPTION_BACKUP_RESTORE)) return Unsupported;
     auto slash = local.path.find_last_of(L'\\');
