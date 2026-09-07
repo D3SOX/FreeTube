@@ -40,22 +40,6 @@ export function setAndroidAutoPictureInPicture(enabled, video) {
   }) ?? Promise.resolve()
 }
 
-export function shouldRotateFullscreenToLandscape(fullscreen, video, enabled = true) {
-  return Boolean(
-    enabled &&
-    fullscreen &&
-    video?.videoWidth > 0 &&
-    video?.videoHeight > 0 &&
-    video.videoWidth > video.videoHeight
-  )
-}
-
-export function setAndroidFullscreenOrientation(fullscreen, video, enabled = true) {
-  return AndroidUi?.setFullscreenOrientation({
-    landscape: shouldRotateFullscreenToLandscape(fullscreen, video, enabled),
-  }) ?? Promise.resolve()
-}
-
 /**
  * @param {{active: boolean, fullscreen: boolean, controlsShown: boolean}} state
  * @returns {boolean}
@@ -74,15 +58,6 @@ export function setAndroidStatusBarVisible(visible) {
     : SystemBars.hide({ bar: SystemBarType.StatusBar })
 }
 
-export function writeAndroidClipboard(text) {
-  return AndroidUi?.writeClipboard({ text }) ?? Promise.resolve()
-}
-
-export async function readAndroidClipboard() {
-  const result = await AndroidUi.readClipboard()
-  return result.text
-}
-
 export function exitAndroidApp() {
   return AndroidUi?.exitApp() ?? Promise.resolve()
 }
@@ -92,8 +67,8 @@ export async function getAndroidHardwareKeyboardState() {
   return result.attached === true
 }
 
-export function getAndroidDeviceInfo() {
-  return AndroidUi?.getDeviceInfo() ?? Promise.resolve()
+export function getAndroidDeviceArchitecture() {
+  return AndroidUi?.getDeviceArchitecture() ?? Promise.resolve({ architecture: '' })
 }
 
 export function setAndroidPictureInPictureDocumentState(active) {

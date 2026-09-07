@@ -26,7 +26,7 @@ test('creates random canonical device identifiers', () => {
 test('uses native Android identity for the current sync device', async () => {
   const deviceInfo = await getCurrentSyncServerDeviceInfo({
     isCapacitor: true,
-    getAndroidDeviceInfo: async () => ({
+    getCapacitorDeviceInfo: async () => ({
       name: 'Pixel 9',
       platform: 'android',
       architecture: 'arm64-v8a',

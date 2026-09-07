@@ -1,10 +1,8 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 
-import {
-  shouldRotateFullscreenToLandscape,
-  shouldShowAndroidStatusBar,
-} from '../../src/renderer/helpers/androidUi.js'
+import { shouldShowAndroidStatusBar } from '../../src/renderer/helpers/androidUi.js'
+import { shouldRotateFullscreenToLandscape } from '../../src/renderer/helpers/capacitorUi.js'
 
 test('fullscreen landscape videos request landscape display orientation', () => {
   assert.equal(shouldRotateFullscreenToLandscape(true, { videoWidth: 1920, videoHeight: 1080 }), true)

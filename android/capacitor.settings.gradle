@@ -11,6 +11,12 @@ project(':capacitor-barcode-scanner').projectDir = new File('../node_modules/.pn
 include ':capacitor-browser'
 project(':capacitor-browser').projectDir = new File('../node_modules/.pnpm/@capacitor+browser@8.0.4_@capacitor+core@8.5.0/node_modules/@capacitor/browser/android')
 
+include ':capacitor-clipboard'
+project(':capacitor-clipboard').projectDir = new File('../node_modules/.pnpm/@capacitor+clipboard@8.0.1_@capacitor+core@8.5.0/node_modules/@capacitor/clipboard/android')
+
+include ':capacitor-device'
+project(':capacitor-device').projectDir = new File('../node_modules/.pnpm/@capacitor+device@8.0.3_@capacitor+core@8.5.0/node_modules/@capacitor/device/android')
+
 include ':capacitor-local-notifications'
 project(':capacitor-local-notifications').projectDir = new File('../node_modules/.pnpm/@capacitor+local-notifications@8.3.1_@capacitor+core@8.5.0/node_modules/@capacitor/local-notifications/android')
 
@@ -19,3 +25,9 @@ project(':capacitor-share').projectDir = new File('../node_modules/.pnpm/@capaci
 
 include ':capawesome-capacitor-app-shortcuts'
 project(':capawesome-capacitor-app-shortcuts').projectDir = new File('../node_modules/.pnpm/@capawesome+capacitor-app-shortcuts@8.0.2_patch_hash=2581c86d60ce7892c0b3136523994591d2_1e428ce564819851b2c2d43fdfdf8bb6/node_modules/@capawesome/capacitor-app-shortcuts/android')
+
+include ':capawesome-capacitor-screen-orientation'
+project(':capawesome-capacitor-screen-orientation').projectDir = new File('../node_modules/.pnpm/@capawesome+capacitor-screen-orientation@8.0.3_@capacitor+core@8.5.0/node_modules/@capawesome/capacitor-screen-orientation/android')
+
+include ':capawesome-capacitor-settings-launcher'
+project(':capawesome-capacitor-settings-launcher').projectDir = new File('../node_modules/.pnpm/@capawesome+capacitor-settings-launcher@0.1.2_@capacitor+core@8.5.0/node_modules/@capawesome/capacitor-settings-launcher/android')

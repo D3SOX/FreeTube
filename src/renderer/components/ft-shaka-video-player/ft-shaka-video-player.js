@@ -70,10 +70,10 @@ import {
   toggleFullscreenDockCollapsed,
 } from '../../helpers/fullscreenDocks'
 import { addOverlayScrollbars, removeOverlayScrollbars } from '../../helpers/overlayScrollbars'
+import { setFullscreenOrientation } from '../../helpers/capacitorUi'
 import { isReducedMotionEnabled } from '../../helpers/reducedMotion'
 import {
   enterAndroidPictureInPicture,
-  setAndroidFullscreenOrientation,
   setAndroidStatusBarVisible,
   shouldShowAndroidStatusBar,
 } from '../../helpers/androidUi'
@@ -1545,7 +1545,7 @@ export default defineComponent({
 
     watch(rotateFullscreenToLandscape, (enabled) => {
       if (!isNativeFullscreenActive()) return
-      setAndroidFullscreenOrientation(true, video.value, enabled).catch(() => {})
+      setFullscreenOrientation(true, video.value, enabled).catch(() => {})
     })
 
     /** @type {import('vue').ComputedRef<number>} */
@@ -6062,7 +6062,7 @@ export default defineComponent({
       videoLayoutReady.value = true
 
       if (isActiveTab.value && isNativeFullscreenActive()) {
-        setAndroidFullscreenOrientation(
+        setFullscreenOrientation(
           true,
           video.value,
           rotateFullscreenToLandscape.value
@@ -9942,7 +9942,7 @@ export default defineComponent({
         return
       }
 
-      setAndroidFullscreenOrientation(
+      setFullscreenOrientation(
         fullscreen,
         video.value,
         rotateFullscreenToLandscape.value

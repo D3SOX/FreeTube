@@ -1,3 +1,5 @@
+import { Capacitor } from '@capacitor/core'
+
 import {
   SYNC_SERVER_DEVICE_ID_BYTES,
   base64UrlToBytes,
@@ -78,9 +80,9 @@ export function resolveSyncServerDeviceName(savedName, systemName, fallbackName)
   return isValidSyncServerDeviceName(name) ? name : fallbackName
 }
 
-async function loadAndroidDeviceInfo() {
-  const { getAndroidDeviceInfo } = await import('./androidUi.js')
-  return getAndroidDeviceInfo()
+async function loadCapacitorDeviceInfo() {
+  const { getCapacitorDeviceInfo } = await import('./capacitorDevice.js')
+  return getCapacitorDeviceInfo()
 }
 
 async function loadElectronDeviceInfo() {
@@ -93,19 +95,19 @@ async function loadElectronDeviceInfo() {
 
 export async function getCurrentSyncServerDeviceInfo({
   isCapacitor = Boolean(process.env.IS_CAPACITOR),
-  getAndroidDeviceInfo = loadAndroidDeviceInfo,
+  getCapacitorDeviceInfo = loadCapacitorDeviceInfo,
   getElectronDeviceInfo = loadElectronDeviceInfo,
 } = {}) {
   let deviceInfo
   try {
-    deviceInfo = await (isCapacitor ? getAndroidDeviceInfo() : getElectronDeviceInfo())
+    deviceInfo = await (isCapacitor ? getCapacitorDeviceInfo() : getElectronDeviceInfo())
   } catch {}
 
   const electronPlatform = typeof process !== 'undefined' && process.env?.IS_ELECTRON
     ? process.platform
     : 'web'
   const name = typeof deviceInfo?.name === 'string' ? deviceInfo.name.trim() : ''
-  const platform = deviceInfo?.platform || (isCapacitor ? 'android' : electronPlatform) || 'web'
+  const platform = deviceInfo?.platform || (isCapacitor ? Capacitor.getPlatform() : electronPlatform) || 'web'
   return {
     name: isValidSyncServerDeviceName(name) ? name : '',
     platform: validateSystemField(platform),

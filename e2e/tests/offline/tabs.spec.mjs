@@ -1233,7 +1233,7 @@ test.describe('tab bar', () => {
     const collapsedGroup = page.getByRole('button', { name: 'Expand Research, 2 tabs', exact: true })
     await expect(collapsedGroup).toHaveCount(1)
     await expect(collapsedGroup).toHaveClass(/active/)
-    await expect(collapsedGroup).toHaveAttribute('title', 'Expand Research, 2 tabs')
+    await expect(collapsedGroup).not.toHaveAttribute('title')
     await expect(collapsedGroup.locator('.collapsedTabGroupName')).toHaveText('Research')
     await expect(collapsedGroup.locator('[data-icon="layer-group"]')).toBeVisible()
     await expect.poll(() => page.evaluate(async (groupId) => {

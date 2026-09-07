@@ -4,8 +4,6 @@ import android.content.res.Configuration;
 import android.hardware.input.InputManager;
 import android.os.Bundle;
 
-import androidx.activity.OnBackPressedCallback;
-
 import com.getcapacitor.BridgeActivity;
 import com.getcapacitor.PluginHandle;
 
@@ -59,13 +57,6 @@ public class MainActivity extends BridgeActivity {
         OpenTubeXNotificationChannels.createAll(this);
         inputManager = (InputManager) getSystemService(INPUT_SERVICE);
         inputManager.registerInputDeviceListener(inputDeviceListener, null);
-
-        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
-            @Override
-            public void handleOnBackPressed() {
-                getBridge().triggerWindowJSEvent("opentubex:android-back");
-            }
-        });
     }
 
     @Override

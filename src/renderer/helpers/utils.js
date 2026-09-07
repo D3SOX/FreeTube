@@ -1,4 +1,5 @@
 import { Browser } from '@capacitor/browser'
+import { Clipboard } from '@capacitor/clipboard'
 import { Share } from '@capacitor/share'
 import { nextTick } from 'vue'
 import i18n from '../i18n/index'
@@ -9,7 +10,6 @@ import { UnsupportedPlayerActions } from '../../constants'
 import { getSearchHistoryEntryKey } from '../../search-history'
 import { getPreferredShortThumbnailUrl } from './player/shorts'
 import { isRoundedNumber } from './viewCounts'
-import { readAndroidClipboard, writeAndroidClipboard } from './androidUi'
 
 // allowed characters in channel handle: A-Z, a-z, 0-9, -, _, .
 // https://support.google.com/youtube/answer/11585688#change_handle
@@ -334,7 +334,15 @@ export function showToastOnAllTabs(message, time = null, icon = null) {
 /** @returns {Promise<string>} */
 export async function readClipboard() {
   if (process.env.IS_ELECTRON) return window.ftElectron.readClipboard()
-  if (process.env.IS_CAPACITOR) return readAndroidClipboard()
+  if (process.env.IS_CAPACITOR) {
+    try {
+      const { type, value } = await Clipboard.read()
+      return type === 'text/plain' ? value : ''
+    } catch (error) {
+      if (error.message === 'There is no data on the clipboard') return ''
+      throw error
+    }
+  }
   return navigator.clipboard.readText()
 }
 
@@ -348,11 +356,11 @@ export async function readClipboard() {
  * @param {null|string} options.messageOnError the message to be displayed as a toast when the copy fails (optional)
  */
 export async function copyToClipboard(content, { messageOnSuccess = null, messageOnError = null } = {}) {
-  const useAndroidClipboard = process.env.IS_CAPACITOR && typeof content === 'string'
-  if (useAndroidClipboard || (navigator.clipboard !== undefined && window.isSecureContext)) {
+  const useCapacitorClipboard = process.env.IS_CAPACITOR && typeof content === 'string'
+  if (useCapacitorClipboard || (navigator.clipboard !== undefined && window.isSecureContext)) {
     try {
-      if (useAndroidClipboard) {
-        await writeAndroidClipboard(content)
+      if (useCapacitorClipboard) {
+        await Clipboard.write({ string: content, label: 'OpenTubeX' })
       } else if (content instanceof Blob) {
         await navigator.clipboard.write([
           new ClipboardItem({
