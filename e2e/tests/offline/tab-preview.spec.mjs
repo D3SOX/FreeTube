@@ -273,3 +273,180 @@ test.describe('tab previews disabled', () => {
     }
   })
 })
+
+/**
+ * Groups the active tab with unloaded tabs so previews cover both captured pages
+ * and fallbacks without fetching remote content.
+ * @param {import('@playwright/test').Page} page
+ * @param {number} count total tabs in the collapsed group, including the active tab
+ * @returns {Promise<{groupId: string, tabIds: string[]}>}
+ */
+async function createCollapsedPreviewGroup(page, count = 4) {
+  return page.evaluate(async count => {
+    const state = await window.ftElectron.tabs.getState()
+    const ids = [state.tabs.find(tab => tab.isActive).id]
+    for (let index = 1; index < count; index++) {
+      const tab = await window.ftElectron.tabs.create({
+        route: `/watch/group-preview-${index}`,
+        title: `Group preview ${index}`,
+        makeActive: false,
+        lazyLoad: true
+      })
+      ids.push(tab.id)
+    }
+    const group = await window.ftElectron.tabs.createGroup({ name: 'Research', color: 'blue' })
+    await window.ftElectron.tabs.setGroup(ids, group.id)
+    await window.ftElectron.tabs.updateGroup(group.id, { isCollapsed: true })
+    return { groupId: group.id, tabIds: ids }
+  }, count)
+}
+
+test.describe('tab group previews', () => {
+  test('shows captured pages and unloaded fallbacks in a titled grid', async ({ page, attachScreenshot }) => {
+    const { tabIds } = await createCollapsedPreviewGroup(page)
+    const trigger = page.locator('.collapsedTabGroup')
+    await expect(trigger).not.toHaveAttribute('title')
+    await trigger.hover()
+
+    const tooltip = page.locator('.tabGroupTooltip')
+    await expect(tooltip).toBeVisible()
+    await expect(tooltip.locator('.tabTooltipTitle')).toHaveText('Research')
+    await expect(tooltip.locator('.tabTooltipCount')).toHaveText('4 tabs')
+    await expect(tooltip.locator('.tabTooltipGridItem')).toHaveCount(4)
+    await expect(tooltip.locator('.tabTooltipGridTitle')).toHaveText([
+      /.+/, 'Group preview 1', 'Group preview 2', 'Group preview 3'
+    ])
+    await expect(tooltip.locator('.tabTooltipPreview img').first()).toHaveAttribute('src', /^data:image\/jpeg/)
+    await expect(tooltip.locator('.tabTooltipPreviewFallback')).toHaveCount(3)
+    await expect(tooltip.locator('.tabTooltipGridTitleIcon[data-icon="rss"]')).toHaveCount(1)
+    await expect(tooltip.locator('.tabTooltipGridTitleIcon[data-icon="clapperboard"]')).toHaveCount(3)
+    await expect(trigger).toHaveAttribute('aria-describedby', await tooltip.getAttribute('id'))
+
+    const positions = await tooltip.locator('.tabTooltipGridItem').evaluateAll(items => ({
+      rows: new Set(items.map(item => Math.round(item.getBoundingClientRect().top))).size,
+      columns: new Set(items.map(item => Math.round(item.getBoundingClientRect().left))).size
+    }))
+    expect(positions).toEqual({ rows: 2, columns: 2 })
+    const state = await page.evaluate(() => window.ftElectron.tabs.getState())
+    expect(state.tabs.filter(tab => tabIds.slice(1).includes(tab.id)).every(tab => tab.isUnloaded)).toBe(true)
+    await attachScreenshot('collapsed tab group preview grid')
+
+    await page.keyboard.press('Escape')
+    await expect(tooltip).toBeHidden()
+    await trigger.focus()
+    await expect(tooltip).toBeVisible()
+    await page.locator(sel.newTabButton).focus()
+    await expect(tooltip).toBeHidden()
+    await page.locator(sel.newTabButton).hover()
+    await trigger.hover()
+    await expect(tooltip).toBeVisible()
+    await trigger.click()
+    await expect(tooltip).toBeHidden()
+    await expect(page.locator(sel.tabs)).toHaveCount(4)
+  })
+
+  for (const position of ['top', 'bottom', 'left', 'right']) {
+    test(`fits a large group beside ${position} tabs at fractional UI scale`, async ({ page, attachScreenshot }) => {
+      await page.setViewportSize({ width: 800, height: 450 })
+      await page.evaluate(async position => {
+        await window.ftElectron.setZoomFactor(0.95)
+        const store = document.querySelector('#app').__vue_app__.config.globalProperties.$store
+        store.commit('setTabBarPosition', position)
+      }, position)
+      await createCollapsedPreviewGroup(page, 8)
+      await page.locator('.collapsedTabGroup').hover()
+      const tooltip = page.locator('.tabGroupTooltip')
+      await expect(tooltip).toBeVisible()
+      await expect(tooltip.locator('.tabTooltipGridItem')).toHaveCount(6)
+      await expect(tooltip.locator('.tabTooltipRemaining')).toHaveText('+2')
+      await expect.poll(() => tooltip.evaluate((element, position) => {
+        const bounds = element.getBoundingClientRect()
+        const rail = document.querySelector('.tabBar').getBoundingClientRect()
+        const besideRail = {
+          top: bounds.top >= rail.bottom + 5,
+          bottom: bounds.bottom <= rail.top - 5,
+          left: bounds.left >= rail.right + 5,
+          right: bounds.right <= rail.left - 5
+        }[position]
+        const inside = bounds.left >= 7 && bounds.top >= 7 &&
+          bounds.right <= window.innerWidth - 7 && bounds.bottom <= window.innerHeight - 7
+        const childrenFit = [...element.querySelectorAll('.tabTooltipGridItem, .tabTooltipRemaining')]
+          .every(child => child.getBoundingClientRect().bottom <= bounds.bottom - 7)
+        return { besideRail, inside, childrenFit }
+      }, position)).toEqual({ besideRail: true, inside: true, childrenFit: true })
+      const titlesAligned = await tooltip.locator('.tabTooltipGridTitle').evaluateAll(titles => titles.every(title => {
+        const icon = title.querySelector('.tabTooltipGridTitleIcon').getBoundingClientRect()
+        const text = title.querySelector('.tabTooltipGridTitleText').getBoundingClientRect()
+        return icon.right < text.left && Math.abs(icon.top + icon.height / 2 - text.top - text.height / 2) <= 1
+      }))
+      expect(titlesAligned).toBe(true)
+      await attachScreenshot(`group previews ${position} fractional scale`)
+    })
+  }
+
+  test('uses channel avatars beside titles, handles failed images, and respects the icon setting', async ({ page }) => {
+    const { tabIds, groupId } = await createCollapsedPreviewGroup(page)
+    const avatarTabId = await page.evaluate(async groupId => {
+      const route = '/channel/UCgroupPreviewAvatar'
+      const tab = await window.ftElectron.tabs.create({ route, title: 'Channel avatar', makeActive: false, lazyLoad: true })
+      const image = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=='
+      const bytes = Uint8Array.from(atob(image), character => character.charCodeAt(0))
+      await window.ftElectron.tabs.updateAvatar(bytes.buffer, tab.id, route)
+      await window.ftElectron.tabs.setGroup([tab.id], groupId)
+      return tab.id
+    }, groupId)
+    await page.locator('.collapsedTabGroup').hover()
+    const item = page.locator('.tabTooltipGridItem').filter({ hasText: 'Channel avatar' })
+    const avatar = item.locator('.tabTooltipGridTitleAvatar')
+    await expect(avatar).toBeVisible()
+    await expect.poll(() => avatar.evaluate(image => image.complete && image.naturalWidth > 0)).toBe(true)
+    await avatar.dispatchEvent('error')
+    await expect(avatar).toHaveCount(0)
+    await expect(item.locator('.tabTooltipGridTitleIcon')).toHaveAttribute('data-icon', 'circle-user')
+
+    await page.evaluate(async () => {
+      const store = document.querySelector('#app').__vue_app__.config.globalProperties.$store
+      await store.dispatch('updateShowTabIcons', false)
+    })
+    await expect(page.locator('.tabTooltipGridTitleIcon, .tabTooltipGridTitleAvatar')).toHaveCount(0)
+    await expect(page.locator('.tabTooltipGridTitleText')).toHaveCount(5)
+    await page.evaluate(async () => {
+      const store = document.querySelector('#app').__vue_app__.config.globalProperties.$store
+      await store.dispatch('updateShowTabIcons', true)
+    })
+    await expect(page.locator('.tabTooltipGridTitleIcon')).toHaveCount(5)
+    const state = await page.evaluate(() => window.ftElectron.tabs.getState())
+    expect(state.activeTabId).toBe(tabIds[0])
+    expect(state.tabs.find(tab => tab.id === avatarTabId).isUnloaded).toBe(true)
+  })
+
+  test('keeps the custom title and count when previews are disabled', async ({ page, attachScreenshot }) => {
+    await page.evaluate(async () => {
+      const store = document.querySelector('#app').__vue_app__.config.globalProperties.$store
+      await store.dispatch('updateBaseTheme', 'dark')
+    })
+    await createCollapsedPreviewGroup(page)
+    const trigger = page.locator('.collapsedTabGroup')
+    await trigger.hover()
+    const tooltip = page.locator('.tabGroupTooltip')
+    await expect(tooltip.locator('.tabTooltipGridItem')).toHaveCount(4)
+    await page.evaluate(async () => {
+      const store = document.querySelector('#app').__vue_app__.config.globalProperties.$store
+      await store.dispatch('updateShowTabPreviews', false)
+    })
+    await expect(tooltip).toBeVisible()
+    await expect(tooltip.locator('.tabTooltipGrid')).toHaveCount(0)
+    await expect(tooltip.locator('.tabTooltipTitle')).toHaveText('Research')
+    await expect(tooltip.locator('.tabTooltipCount')).toHaveText('4 tabs')
+    expect((await tooltip.boundingBox()).width).toBeLessThan(200)
+    await attachScreenshot('group tooltip without previews in dark theme')
+    await page.evaluate(async () => {
+      const store = document.querySelector('#app').__vue_app__.config.globalProperties.$store
+      await store.dispatch('updateShowTabPreviews', true)
+    })
+    await expect(tooltip.locator('.tabTooltipGridItem')).toHaveCount(4)
+    await expect(tooltip.locator('.tabTooltipPreview img').first()).toHaveAttribute('src', /^data:image\/jpeg/)
+    await expect(tooltip).toHaveCSS('visibility', 'visible')
+    await attachScreenshot('group preview grid in dark theme')
+  })
+})

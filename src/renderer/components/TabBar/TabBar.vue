@@ -47,31 +47,44 @@
             @close="closeTab"
             @middle-click="handleMiddleClick"
           />
-          <button
+          <TabTooltip
             v-else
-            class="tabBarReorderItem collapsedTabGroup"
-            :class="{
-              active: item.isActive,
-              bottom: tabBarPosition === 'bottom',
-              noTransition: suppressTransitions,
-              vertical
-            }"
-            :data-reorder-id="item.id"
-            :data-group-id="item.group.id"
-            :style="collapsedGroupStyle(item)"
-            :aria-label="collapsedGroupLabel(item)"
-            :title="collapsedGroupLabel(item)"
-            :aria-expanded="false"
-            @click="expandTabGroup(item.group.id)"
+            :title="item.group.name"
+            :tabs="item.tabs"
+            :show-icon="showTabIcons"
+            is-group
+            :tab-bar-position="tabBarPosition"
+            :disable-tooltips="draggingTabIds.size > 0"
+            :close-tooltips-signal="closeTooltipsSignal"
+            :show-preview="showTabPreviews"
           >
-            <FtIcon
-              :icon="['fas', 'layer-group']"
-              aria-hidden="true"
-            />
-            <span class="collapsedTabGroupName">
-              {{ item.group.name }}
-            </span>
-          </button>
+            <template #anchor="{ bindings }">
+              <button
+                v-bind="bindings"
+                class="tabBarReorderItem collapsedTabGroup"
+                :class="{
+                  active: item.isActive,
+                  bottom: tabBarPosition === 'bottom',
+                  noTransition: suppressTransitions,
+                  vertical
+                }"
+                :data-reorder-id="item.id"
+                :data-group-id="item.group.id"
+                :style="collapsedGroupStyle(item)"
+                :aria-label="collapsedGroupLabel(item)"
+                :aria-expanded="false"
+                @click="expandTabGroup(item.group.id)"
+              >
+                <FtIcon
+                  :icon="['fas', 'layer-group']"
+                  aria-hidden="true"
+                />
+                <span class="collapsedTabGroupName">
+                  {{ item.group.name }}
+                </span>
+              </button>
+            </template>
+          </TabTooltip>
         </template>
       </div>
       <div
@@ -143,6 +156,7 @@ import { fetchTabAvatarBytes } from '../../helpers/tabAvatar'
 import { loadMissingTabAvatars } from '../../helpers/loadTabAvatars'
 import { clampOverlayScrollTop } from '../../helpers/overlayScrollbars'
 import SortableTab from './SortableTab.vue'
+import TabTooltip from './TabTooltip.vue'
 import {
   buildCurrentShiftedTabIds,
   buildShiftedTabIds,
@@ -203,6 +217,7 @@ function buildStripItems(currentTabs) {
       id: `group:${group.id}`,
       type: 'group',
       group,
+      tabs: groupTabs,
       tabIds: groupTabs.map(groupTab => groupTab.id),
       isPinned: tab.isPinned,
       isActive: groupTabs.some(groupTab => groupTab.isActive)
