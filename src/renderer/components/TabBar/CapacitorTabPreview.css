@@ -1,0 +1,37 @@
+.capacitorTabPreview {
+  position: relative;
+  display: grid;
+  place-items: center;
+  inline-size: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  color: var(--secondary-text-color);
+  background-color: var(--bg-color);
+  font-size: 40px;
+}
+
+.capacitorTabThumbnail {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+}
+
+.capacitorTabPreviewAvatar {
+  inline-size: 40%;
+  block-size: auto;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.capacitorTabPreviewPin {
+  position: absolute;
+  inset-inline-end: 8px;
+  inset-block-end: 8px;
+  padding: 6px;
+  color: var(--primary-text-color);
+  background-color: var(--card-bg-color);
+  border-radius: 50%;
+  font-size: 14px;
+}

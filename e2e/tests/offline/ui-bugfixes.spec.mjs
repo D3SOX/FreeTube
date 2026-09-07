@@ -58,7 +58,8 @@ async function phoneTabScrollState(page, contentSelector) {
     const viewport = content.closest('[data-overlayscrollbars-viewport]')
     const scrollbar = viewport.querySelector(':scope > .os-scrollbar-vertical')
     const paddingBottom = Number.parseFloat(getComputedStyle(viewport).paddingBottom) || 0
-    const maximum = Math.max(0, content.offsetTop + content.offsetHeight + paddingBottom - viewport.clientHeight)
+    const maximum = Math.max(0, content.getBoundingClientRect().bottom - viewport.getBoundingClientRect().top +
+      viewport.scrollTop + paddingBottom - viewport.clientHeight)
     return {
       scrollTop: viewport.scrollTop,
       maximum,
@@ -104,7 +105,7 @@ for (const theme of ['light', 'dark']) {
   })
 }
 
-test('phone organizer clamps its scroller when a taller viewport removes overflow', async ({ app, page }) => {
+test('phone organizer clamps its grid after column and viewport changes', async ({ app, page }) => {
   await setWindowSize(app, page, { width: 375, height: 400 })
   await page.evaluate(async () => {
     await window.ftElectron.setZoomFactor(0.95)
@@ -119,6 +120,21 @@ test('phone organizer clamps its scroller when a taller viewport removes overflo
   await panel.evaluate(element => { element.scrollTop = element.scrollHeight })
   await expect.poll(async () => (await phoneTabScrollState(page, '.capacitorPhoneOpenTabs')).scrollTop)
     .toBeGreaterThan(100)
+  const portrait = await phoneTabScrollState(page, '.capacitorPhoneOpenTabs')
+  await setWindowSize(app, page, { width: 760, height: 401 })
+  await expect.poll(async () => {
+    const state = await phoneTabScrollState(page, '.capacitorPhoneOpenTabs')
+    return state.maximum < portrait.maximum && state.scrollTop <= state.maximum + 1
+  }).toBe(true)
+  await expect.poll(() => panel.evaluate(viewport => {
+    const track = viewport.querySelector('.os-scrollbar-vertical .os-scrollbar-track')
+    const handle = track.querySelector('.os-scrollbar-handle')
+    const actual = handle.getBoundingClientRect().height / track.getBoundingClientRect().height
+    const expected = viewport.clientHeight / viewport.scrollHeight
+    return Math.abs(actual - expected)
+  })).toBeLessThan(0.02)
+  await setWindowSize(app, page, { width: 375, height: 400 })
+  await panel.evaluate(element => { element.scrollTop = element.scrollHeight })
   await setWindowSize(app, page, { width: 376, height: 950 })
   await expect.poll(() => phoneTabScrollState(page, '.capacitorPhoneOpenTabs')).toEqual({
     scrollTop: 0,
@@ -171,49 +187,194 @@ for (const zoom of [1, 0.95]) {
   })
 }
 
-test('centers phone tab close controls within their rows', async ({ page }) => {
-  await page.addStyleTag({
-    path: path.join(
-      repoRoot,
-      'src/renderer/components/TabBar/CapacitorPhoneTabSwitcher.css'
-    )
-  })
-  await page.evaluate(() => {
-    const overlay = document.createElement('div')
-    const row = document.createElement('div')
-    const target = document.createElement('button')
-    const close = document.createElement('button')
+for (const theme of ['light', 'dark']) {
+  test(`phone organizer shows a responsive thumbnail grid in ${theme} mode`, async ({ app, page }, testInfo) => {
+    await setWindowSize(app, page, { width: 375, height: 760 })
+    await page.emulateMedia({ reducedMotion: 'reduce' })
+    const thumbnail = '<svg xmlns="http://www.w3.org/2000/svg" width="320" height="180"><rect width="320" height="180" fill="#216a83"/><circle cx="220" cy="70" r="40" fill="#f7c76a"/></svg>'
+    await page.route('https://i.ytimg.com/vi/grid-video/*', route => route.fulfill({
+      contentType: 'image/svg+xml', body: thumbnail,
+    }))
+    await page.evaluate(async baseTheme => {
+      const store = document.querySelector('#app')._vnode.component.appContext.config.globalProperties.$store
+      await store.dispatch('updateBaseTheme', baseTheme)
+      for (const [route, title] of [
+        ['/watch/grid-video', 'A walk along the coast at sunset'],
+        ['/channel/grid-channel', 'Travel channel'],
+        ['/history', 'History'],
+        ['/playlists', 'Playlists'],
+      ]) {
+        await store.dispatch('createTab', { route, title, makeActive: false, lazyLoad: true })
+      }
+      store.commit('setChannelThumbnail', {
+        channelId: 'grid-channel',
+        thumbnail: 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80"><rect width="80" height="80" fill="#6b4596"/></svg>'),
+      })
+      await store.dispatch('setTabPinned', { tabId: store.getters.getActiveTabId, isPinned: true })
+    }, theme)
+    await enablePhoneTabSwitcher(page)
+    await page.locator('.capacitorPhoneTabSwitcherButton').click()
+    const grid = page.locator('.capacitorPhoneOpenTabs')
+    const cards = grid.locator('.capacitorPhoneTabRow')
+    await expect(cards).toHaveCount(5)
+    await expect(grid.locator('.capacitorPhoneTabDragHandle')).toHaveCount(0)
+    await expect(cards.nth(1).locator('.capacitorTabThumbnail')).toBeVisible()
+    await expect.poll(() => cards.nth(1).locator('img').evaluate(image => image.naturalWidth)).toBe(320)
+    await expect(cards.nth(2).locator('.capacitorTabPreviewAvatar')).toBeVisible()
+    await expect(cards.first().locator('.capacitorTabPreviewPin')).toBeVisible()
+    await expect(cards.nth(3).locator('.capacitorTabPreview [data-icon="clock-rotate-left"]')).toBeVisible()
+    await expect(cards.first().locator('[role="tab"]')).toHaveAttribute('aria-selected', 'true')
 
-    overlay.className = 'capacitorPhoneTabOverlay'
-    row.className = 'capacitorPhoneTabRow'
-    target.className = 'capacitorPhoneTabTarget'
-    target.textContent = 'Home'
-    close.className = 'capacitorPhoneTabClose'
-    close.setAttribute('aria-label', 'Close Home tab')
-    close.textContent = '×'
-    row.append(target, close)
-    overlay.append(row)
-    document.body.append(overlay)
+    for (const scenario of [
+      { width: 375, height: 760, scale: 1, direction: 'ltr', columns: 2 },
+      { width: 760, height: 375, scale: 0.95, direction: 'rtl', columns: 5 },
+      { width: 375, height: 760, scale: 1.1, direction: 'ltr', columns: 2 },
+    ]) {
+      if (scenario.scale !== 1) await setWindowSize(app, page, scenario)
+      await page.evaluate(({ scale, direction }) => {
+        window.ftElectron.setZoomFactor(scale)
+        document.body.dir = direction
+      }, scenario)
+      await expect.poll(() => grid.evaluate(element => getComputedStyle(element).gridTemplateColumns.split(' ').length))
+        .toBe(scenario.columns)
+      const geometry = await cards.evaluateAll(elements => elements.map(element => {
+        const card = element.getBoundingClientRect()
+        const preview = element.querySelector('.capacitorTabPreview').getBoundingClientRect()
+        const close = element.querySelector('.capacitorPhoneTabClose').getBoundingClientRect()
+        return {
+          inside: card.left >= 0 && card.right <= innerWidth,
+          ratio: preview.width / preview.height,
+          closeInside: close.left >= card.left && close.right <= card.right && close.bottom <= card.bottom,
+          targets: [close.width, close.height],
+        }
+      }))
+      for (const card of geometry) {
+        expect(card.inside).toBe(true)
+        expect(card.ratio).toBeCloseTo(16 / 9, 1)
+        expect(card.closeInside).toBe(true)
+        expect(Math.min(...card.targets)).toBeGreaterThanOrEqual(47.9)
+      }
+      if (scenario.scale === 1) {
+        const screenshot = testInfo.outputPath(`phone-tab-grid-${theme}.png`)
+        await page.locator('.capacitorPhoneTabDialog').screenshot({ path: screenshot })
+        await testInfo.attach('Phone tab thumbnail grid', { path: screenshot, contentType: 'image/png' })
+      }
+    }
+    await page.evaluate(() => {
+      const store = document.querySelector('#app')._vnode.component.appContext.config.globalProperties.$store
+      store.commit('setThumbnailPreference', 'hidden')
+    })
+    await expect(cards.nth(1).locator('.capacitorTabThumbnail')).toHaveCount(0)
+    await expect(cards.nth(1).locator('[data-icon="clapperboard"]')).toBeVisible()
   })
+}
 
-  const metrics = await page.locator('.capacitorPhoneTabRow').evaluate((row) => {
-    const rowBounds = row.getBoundingClientRect()
-    const closeBounds = row.querySelector('.capacitorPhoneTabClose').getBoundingClientRect()
-    return {
-      centerOffset: Math.abs(
-        closeBounds.top + closeBounds.height / 2 -
-        (rowBounds.top + rowBounds.height / 2)
-      ),
-      closeHeight: closeBounds.height,
-      closeWidth: closeBounds.width,
-      userSelect: getComputedStyle(row).userSelect,
+test('phone cards open actions while held and dismiss them when dragging', async ({ app, page }) => {
+  await setWindowSize(app, page, { width: 375, height: 760 })
+  await enablePhoneTabSwitcher(page)
+  await page.locator('.capacitorPhoneTabSwitcherButton').click()
+  const card = page.locator('.capacitorPhoneTabRow').first()
+  const target = card.locator('.capacitorPhoneTabTarget')
+  const bounds = await target.boundingBox()
+  const x = bounds.x + bounds.width / 2
+  const y = bounds.y + 24
+
+  await page.mouse.move(x, y)
+  await page.mouse.down()
+  await expect(card).toHaveClass(/holding/)
+  const actions = page.locator('.capacitorTabActions')
+  await expect(actions).toBeVisible()
+  await page.mouse.up()
+  await expect(actions.getByRole('menuitem', { name: 'Pin Tab', exact: true })).toBeVisible()
+  await page.locator('.capacitorTabActionsBackdrop').click({ position: { x: 5, y: 5 } })
+  await expect(actions).toBeHidden()
+
+  await page.mouse.move(x, y)
+  await page.mouse.down()
+  await expect(card).toHaveClass(/holding/)
+  await page.mouse.move(x + 24, y + 24, { steps: 4 })
+  await expect(card).toHaveClass(/dragging/)
+  await page.mouse.up()
+  await expect(actions).toBeHidden()
+  await expect(card).not.toHaveClass(/holding|dragging/)
+  await expect(page.locator('.capacitorPhoneTabDialog')).toBeVisible()
+
+  await target.click({ button: 'right' })
+  await expect(actions).toBeVisible()
+})
+
+test('phone dragged cards follow the pointer and slide neighbors into their new slots', async ({ app, page }) => {
+  await setWindowSize(app, page, { width: 375, height: 760 })
+  await page.evaluate(async () => {
+    const store = document.querySelector('#app')._vnode.component.appContext.config.globalProperties.$store
+    for (let index = 0; index < 3; index++) {
+      await store.dispatch('createTab', { route: '/subscriptions', makeActive: false })
     }
   })
+  await enablePhoneTabSwitcher(page)
+  await page.locator('.capacitorPhoneTabSwitcherButton').click()
+  const cards = page.locator('.capacitorPhoneTabRow')
+  const source = cards.first()
+  const neighbor = cards.nth(1)
+  const initial = await source.boundingBox()
+  const adjacent = await neighbor.boundingBox()
+  const x = initial.x + initial.width / 2
+  const y = initial.y + 30
+  await page.mouse.move(x, y)
+  await page.mouse.down()
+  await expect(source).toHaveClass(/holding/)
+  await page.mouse.move(x + 24, y + 18, { steps: 3 })
+  await expect.poll(async () => {
+    const rect = await source.boundingBox()
+    return { x: Math.round(rect.x - initial.x), y: Math.round(rect.y - initial.y) }
+  }).toEqual({ x: 24, y: 18 })
+  await page.mouse.move(adjacent.x + adjacent.width / 2, y + 18, { steps: 6 })
+  await expect.poll(async () => (await neighbor.boundingBox()).x).toBeCloseTo(initial.x, 0)
+  await expect(source).toHaveCSS('transition-duration', '0s')
+  await expect(neighbor).not.toHaveCSS('transition-duration', '0s')
+  await expect(page.locator('.capacitorTabActions')).toBeHidden()
+  // Cancelling returns to the committed order without activating a tab.
+  await source.dispatchEvent('pointercancel')
+  await page.mouse.up()
+  await expect.poll(async () => (await source.boundingBox()).x).toBeCloseTo(initial.x, 0)
+  await expect.poll(async () => (await neighbor.boundingBox()).x).toBeCloseTo(adjacent.x, 0)
+})
 
-  expect(metrics.centerOffset).toBeLessThanOrEqual(1)
-  expect(metrics.closeHeight).toBeGreaterThanOrEqual(48)
-  expect(metrics.closeWidth).toBeGreaterThanOrEqual(48)
-  expect(metrics.userSelect).toBe('none')
+test('phone card dragging keeps its finger offset while scrolling and stops at the content end', async ({ app, page }) => {
+  await setWindowSize(app, page, { width: 375, height: 450 })
+  await page.evaluate(async () => {
+    window.ftElectron.setZoomFactor(0.95)
+    const store = document.querySelector('#app')._vnode.component.appContext.config.globalProperties.$store
+    for (let index = 0; index < 7; index++) {
+      await store.dispatch('createTab', { route: '/subscriptions', makeActive: false })
+    }
+  })
+  await enablePhoneTabSwitcher(page)
+  await page.locator('.capacitorPhoneTabSwitcherButton').click()
+  const card = page.locator('.capacitorPhoneTabRow').first()
+  const panel = page.locator('.capacitorPhoneTabList')
+  const bounds = await card.boundingBox()
+  const viewport = await panel.boundingBox()
+  const x = bounds.x + bounds.width / 2
+  const edgeY = viewport.y + viewport.height - 12
+  await page.mouse.move(x, bounds.y + 30)
+  await page.mouse.down()
+  await expect(card).toHaveClass(/holding/)
+  await page.mouse.move(x, edgeY, { steps: 5 })
+  await expect.poll(() => panel.evaluate(element => element.scrollTop)).toBeGreaterThan(100)
+  await expect.poll(async () => (await card.boundingBox()).y).toBeCloseTo(edgeY - 30, 0)
+  await expect.poll(async () => {
+    const state = await phoneTabScrollState(page, '.capacitorPhoneOpenTabs')
+    return Math.abs(state.scrollTop - state.maximum)
+  }).toBeLessThan(2)
+  // Keep holding at the edge after reaching the end; the translated card
+  // must not continually extend the scroll range beneath itself.
+  await page.waitForTimeout(300)
+  const state = await phoneTabScrollState(page, '.capacitorPhoneOpenTabs')
+  expect(state.scrollTop).toBeLessThanOrEqual(state.maximum + 1)
+  await card.dispatchEvent('pointercancel')
+  await page.mouse.up()
+  await expect(card).not.toHaveClass(/holding|dragging/)
 })
 
 test('fits synced-device tabs in the phone tab organizer', async ({ app, page }) => {
@@ -311,6 +472,7 @@ for (const iconPack of ['material', 'remix']) {
     await page.evaluate(async ({ pack, avatarUrl }) => {
       const store = document.querySelector('#app')._vnode.component.appContext.config.globalProperties.$store
       await store.dispatch('updateIconPack', pack)
+      store.commit('setThumbnailPreference', 'hidden')
       store.commit('setSyncServerEnabled', true)
       store.commit('setSyncServerToken', 'e2e-token')
       store.commit('setSyncServerPrivacyMode', 'enhanced')
