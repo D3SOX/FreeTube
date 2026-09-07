@@ -97,6 +97,21 @@ static void CheckRegistrySemantics(const std::wstring& fixture)
     Check(RegDeleteTreeW(HKEY_CURRENT_USER, (fixture + L"\\DeletedTree").c_str()), "cleanup recreated key");
 }
 
+static void CheckRegistryViews()
+{
+    const wchar_t* path = L"Software\\Classes\\AppUserModelId\\electron.app.OpenTubeX\\RegistryRegression";
+    HKEY key;
+    Check(RegCreateKeyExW(HKEY_CURRENT_USER, path, 0, nullptr, 0,
+        KEY_ALL_ACCESS | KEY_WOW64_32KEY, nullptr, &key, nullptr), "create shared Classes key in 32-bit view");
+    const wchar_t value[] = L"shared";
+    Check(RegSetValueExW(key, L"Value", 0, REG_SZ, reinterpret_cast<const BYTE*>(value), sizeof(value)), "write shared Classes value");
+    RegCloseKey(key);
+    Check(RegOpenKeyExW(HKEY_CURRENT_USER, path, 0, KEY_READ | KEY_WOW64_64KEY, &key), "open shared Classes key in 64-bit view");
+    Require(Read(key, L"", L"Value") == L"shared", "Windows shared Classes value split between registry views");
+    RegCloseKey(key);
+    Check(RegDeleteTreeW(HKEY_CURRENT_USER, path), "cleanup shared Classes fixture");
+}
+
 static void CheckHttps()
 {
     HINTERNET session = WinHttpOpen(L"OpenTubeX registry regression", WINHTTP_ACCESS_TYPE_AUTOMATIC_PROXY,
@@ -170,6 +185,7 @@ extern "C" int wmain(int argc, wchar_t** argv)
             Check(RegDeleteValueW(key, L"Deleted"), "delete overlay value");
             RegCloseKey(key);
             CheckRegistrySemantics(fixture);
+            CheckRegistryViews();
             wchar_t executable[32768];
             Require(GetModuleFileNameW(nullptr, executable, 32768) != 0, "get test executable");
             Child(executable, L"--host", dll, fixture);
