@@ -24,6 +24,9 @@ importers:
       '@capacitor/app':
         specifier: ^8.1.1
         version: 8.1.1(@capacitor/core@8.5.0)
+      '@capacitor/barcode-scanner':
+        specifier: ^3.1.2
+        version: 3.1.2(@capacitor/core@8.5.0)
       '@capacitor/browser':
         specifier: ^8.0.4
         version: 8.0.4(@capacitor/core@8.5.0)
@@ -801,6 +804,11 @@ packages:
 
   '@capacitor/app@8.1.1':
     resolution: {integrity: sha512-xM2ZTX5jK60tFtmjsmJv+Cdj1Qsb6NcavkqmdEnCPQBeya9oKhamZJxYOnQNj1ZvcJM7sWfG6BEtSLx42pisbA==}
+    peerDependencies:
+      '@capacitor/core': '>=8.0.0'
+
+  '@capacitor/barcode-scanner@3.1.2':
+    resolution: {integrity: sha512-8OdOFfHgxo22TQAGghk+BuSu66RROWPxkHChQpbIttzdomvgKkwJUi8tfNUYqlG2RT9HEy40yyAzxFhxN22lLg==}
     peerDependencies:
       '@capacitor/core': '>=8.0.0'
 
@@ -3309,6 +3317,9 @@ packages:
         optional: true
       webpack:
         optional: true
+
+  html5-qrcode@2.3.8:
+    resolution: {integrity: sha512-jsr4vafJhwoLVEDW3n1KvPnCCXWaQfRng0/EEYk1vNcQGcG/htAdhJX0be8YyqMoSz7+hZvOZSTAepsabiuhiQ==}
 
   htmlparser2@6.1.0:
     resolution: {integrity: sha512-gyyPk6rgonLFEDGoeRgQNaEUvdJ4ktTmmUh/h2t7s+M8oPpIPxgNACWa+6ESR57kXstwqPiCut0V8NRpcwgU7A==}
@@ -6259,6 +6270,11 @@ snapshots:
     dependencies:
       '@capacitor/core': 8.5.0
 
+  '@capacitor/barcode-scanner@3.1.2(@capacitor/core@8.5.0)':
+    dependencies:
+      '@capacitor/core': 8.5.0
+      html5-qrcode: 2.3.8
+
   '@capacitor/browser@8.0.4(@capacitor/core@8.5.0)':
     dependencies:
       '@capacitor/core': 8.5.0
@@ -9142,6 +9158,8 @@ snapshots:
       tapable: 2.3.3
     optionalDependencies:
       webpack: 5.110.3(postcss@8.5.26)(webpack-cli@7.2.3)
+
+  html5-qrcode@2.3.8: {}
 
   htmlparser2@6.1.0:
     dependencies:

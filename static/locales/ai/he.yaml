@@ -816,6 +816,8 @@ Settings:
     Import playlists formats: 'תבניות נתמכות: OpenTubeX / FreeTube (.db)'
     Import search history formats: 'תבניות נתמכות: OpenTubeX / FreeTube (.db), YouTube Takeout (.json)'
   Sync Settings:
+    Turn Flashlight On: הפעלת הפנס
+    Turn Flashlight Off: כיבוי הפנס
     Devices: "מכשירים"
     Devices Hint: "בדקו אילו מכשירים יכולים לגשת לחשבון הסנכרון הזה."
     Change Password: "שינוי סיסמה"

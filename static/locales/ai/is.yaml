@@ -811,6 +811,8 @@ Settings:
     Import playlists formats: 'Studd snið: OpenTubeX / FreeTube (.db)'
     Import search history formats: 'Studd snið: OpenTubeX / FreeTube (.db), YouTube Takeout (.json)'
   Sync Settings:
+    Turn Flashlight On: Kveikja á vasaljósi
+    Turn Flashlight Off: Slökkva á vasaljósi
     Devices: "Tæki"
     Devices Hint: "Farðu yfir tækin sem hafa aðgang að þessum samstillingarreikningi."
     Change Password: "Breyta lykilorði"

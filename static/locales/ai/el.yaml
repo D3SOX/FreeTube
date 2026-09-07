@@ -816,6 +816,8 @@ Settings:
     Import playlists formats: 'Υποστηριζόμενες μορφές: OpenTubeX / FreeTube (.db)'
     Import search history formats: 'Υποστηριζόμενες μορφές: OpenTubeX / FreeTube (.db), YouTube Takeout (.json)'
   Sync Settings:
+    Turn Flashlight On: Ενεργοποίηση φακού
+    Turn Flashlight Off: Απενεργοποίηση φακού
     Devices: "Συσκευές"
     Devices Hint: "Ελέγξτε τις συσκευές που έχουν πρόσβαση σε αυτόν τον λογαριασμό συγχρονισμού."
     Change Password: "Αλλαγή κωδικού πρόσβασης"

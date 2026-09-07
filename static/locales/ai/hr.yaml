@@ -796,6 +796,8 @@ Settings:
     Import playlists formats: 'Podržani formati: OpenTubeX / FreeTube (.db)'
     Import search history formats: 'Podržani formati: OpenTubeX / FreeTube (.db), YouTube Takeout (.json)'
   Sync Settings:
+    Turn Flashlight On: Uključi svjetiljku
+    Turn Flashlight Off: Isključi svjetiljku
     Devices: "Uređaji"
     Devices Hint: "Pregledajte uređaje koji mogu pristupiti ovom računu za sinkronizaciju."
     Change Password: "Promijeni lozinku"

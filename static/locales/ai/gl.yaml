@@ -811,6 +811,8 @@ Settings:
     Import playlists formats: 'Formatos compatibles: OpenTubeX / FreeTube (.db)'
     Import search history formats: 'Formatos compatibles: OpenTubeX / FreeTube (.db), YouTube Takeout (.json)'
   Sync Settings:
+    Turn Flashlight On: Acender a lanterna
+    Turn Flashlight Off: Apagar a lanterna
     Devices: "Dispositivos"
     Devices Hint: "Revisa os dispositivos que poden acceder a esta conta de sincronización."
     Change Password: "Cambiar o contrasinal"

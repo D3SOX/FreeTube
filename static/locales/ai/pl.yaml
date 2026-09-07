@@ -338,6 +338,8 @@ Settings:
     Open Profile Directory: Otwórz katalog profilu
     Invalid JSON row, skipping item: Nieprawidłowy JSON w wierszu {row}. Element zostanie pominięty
   Sync Settings:
+    Turn Flashlight On: Włącz latarkę
+    Turn Flashlight Off: Wyłącz latarkę
     Devices: "Urządzenia"
     Devices Hint: "Sprawdź urządzenia, które mają dostęp do tego konta synchronizacji."
     Change Password: "Zmień hasło"

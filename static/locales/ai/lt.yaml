@@ -1045,6 +1045,8 @@ Settings:
     Import playlists formats: 'Palaikomi formatai: OpenTubeX / FreeTube (.db)'
     Import search history formats: 'Palaikomi formatai: OpenTubeX / FreeTube (.db), YouTube Takeout (.json)'
   Sync Settings:
+    Turn Flashlight On: Įjungti žibintuvėlį
+    Turn Flashlight Off: Išjungti žibintuvėlį
     Devices: "Įrenginiai"
     Devices Hint: "Peržiūrėkite įrenginius, galinčius pasiekti šią sinchronizavimo paskyrą."
     Change Password: "Keisti slaptažodį"

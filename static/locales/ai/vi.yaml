@@ -811,6 +811,8 @@ Settings:
     Import playlists formats: 'Định dạng được hỗ trợ: OpenTubeX / FreeTube (.db)'
     Import search history formats: 'Định dạng được hỗ trợ: OpenTubeX / FreeTube (.db), YouTube Takeout (.json)'
   Sync Settings:
+    Turn Flashlight On: Bật đèn pin
+    Turn Flashlight Off: Tắt đèn pin
     Devices: "Thiết bị"
     Devices Hint: "Xem lại các thiết bị có thể truy cập tài khoản đồng bộ này."
     Change Password: "Đổi mật khẩu"

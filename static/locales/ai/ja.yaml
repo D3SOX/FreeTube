@@ -792,6 +792,8 @@ Settings:
     Import playlists formats: '対応形式: OpenTubeX / FreeTube（.db）'
     Import search history formats: '対応形式: OpenTubeX / FreeTube（.db）、YouTube Takeout（.json）'
   Sync Settings:
+    Turn Flashlight On: ライトをオンにする
+    Turn Flashlight Off: ライトをオフにする
     Devices: "デバイス"
     Devices Hint: "この同期アカウントにアクセスできるデバイスを確認します。"
     Change Password: "パスワードを変更"

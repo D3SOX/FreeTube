@@ -796,6 +796,8 @@ Settings:
     Import playlists formats: 'Поддържани формати: OpenTubeX / FreeTube (.db)'
     Import search history formats: 'Поддържани формати: OpenTubeX / FreeTube (.db), YouTube Takeout (.json)'
   Sync Settings:
+    Turn Flashlight On: Включване на фенерчето
+    Turn Flashlight Off: Изключване на фенерчето
     Devices: "Устройства"
     Devices Hint: "Прегледайте устройствата, които имат достъп до този акаунт за синхронизиране."
     Change Password: "Промяна на паролата"

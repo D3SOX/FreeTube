@@ -839,6 +839,8 @@ Settings:
     Import playlists formats: 'قالب‌های پشتیبانی‌شده: OpenTubeX / FreeTube (.db)'
     Import search history formats: 'قالب‌های پشتیبانی‌شده: OpenTubeX / FreeTube (.db)، YouTube Takeout (.json)'
   Sync Settings:
+    Turn Flashlight On: روشن کردن چراغ‌قوه
+    Turn Flashlight Off: خاموش کردن چراغ‌قوه
     Devices: "دستگاه‌ها"
     Devices Hint: "دستگاه‌هایی را که می‌توانند به این حساب همگام‌سازی دسترسی داشته باشند بررسی کنید."
     Change Password: "تغییر گذرواژه"

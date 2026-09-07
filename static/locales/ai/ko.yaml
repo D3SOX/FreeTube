@@ -1028,6 +1028,8 @@ Settings:
     Import playlists formats: '지원 형식: OpenTubeX / FreeTube (.db)'
     Import search history formats: '지원 형식: OpenTubeX / FreeTube (.db), YouTube Takeout (.json)'
   Sync Settings:
+    Turn Flashlight On: 손전등 켜기
+    Turn Flashlight Off: 손전등 끄기
     Devices: "기기"
     Devices Hint: "이 동기화 계정에 접근할 수 있는 기기를 확인합니다."
     Change Password: "비밀번호 변경"

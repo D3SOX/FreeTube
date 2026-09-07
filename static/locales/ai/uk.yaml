@@ -811,6 +811,8 @@ Settings:
     Import playlists formats: 'Підтримувані формати: OpenTubeX / FreeTube (.db)'
     Import search history formats: 'Підтримувані формати: OpenTubeX / FreeTube (.db), YouTube Takeout (.json)'
   Sync Settings:
+    Turn Flashlight On: Увімкнути ліхтарик
+    Turn Flashlight Off: Вимкнути ліхтарик
     Devices: "Пристрої"
     Devices Hint: "Перегляньте пристрої, які мають доступ до цього облікового запису синхронізації."
     Change Password: "Змінити пароль"

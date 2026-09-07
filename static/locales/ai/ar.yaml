@@ -811,6 +811,8 @@ Settings:
     Import playlists formats: 'التنسيقات المدعومة: OpenTubeX / FreeTube (.db)'
     Import search history formats: 'التنسيقات المدعومة: OpenTubeX / FreeTube (.db)، YouTube Takeout (.json)'
   Sync Settings:
+    Turn Flashlight On: تشغيل المصباح
+    Turn Flashlight Off: إيقاف المصباح
     Devices: "الأجهزة"
     Devices Hint: "راجع الأجهزة التي يمكنها الوصول إلى حساب المزامنة هذا."
     Change Password: "تغيير كلمة المرور"

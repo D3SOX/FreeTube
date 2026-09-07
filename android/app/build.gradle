@@ -76,6 +76,11 @@ android {
     }
 }
 
+// Pairing uses ZXing; exclude the plugin's unused proprietary ML Kit dependency.
+configurations.configureEach {
+    exclude group: 'com.google.mlkit', module: 'barcode-scanning'
+}
+
 repositories {
     flatDir{
         dirs '../capacitor-cordova-android-plugins/src/main/libs', 'libs'

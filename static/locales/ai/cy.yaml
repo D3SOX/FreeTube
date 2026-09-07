@@ -796,6 +796,8 @@ Settings:
     Import playlists formats: 'Fformatau a gynhelir: OpenTubeX / FreeTube (.db)'
     Import search history formats: 'Fformatau a gynhelir: OpenTubeX / FreeTube (.db), YouTube Takeout (.json)'
   Sync Settings:
+    Turn Flashlight On: Troi’r fflachlamp ymlaen
+    Turn Flashlight Off: Diffodd y fflachlamp
     Devices: "Dyfeisiau"
     Devices Hint: "Adolygwch y dyfeisiau sy’n gallu cyrchu’r cyfrif cysoni hwn."
     Change Password: "Newid cyfrinair"

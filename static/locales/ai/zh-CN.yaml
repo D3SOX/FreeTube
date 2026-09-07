@@ -792,6 +792,8 @@ Settings:
     Import playlists formats: '支持的格式：OpenTubeX / FreeTube (.db)'
     Import search history formats: '支持的格式：OpenTubeX / FreeTube (.db)、YouTube Takeout (.json)'
   Sync Settings:
+    Turn Flashlight On: 打开手电筒
+    Turn Flashlight Off: 关闭手电筒
     Devices: "设备"
     Devices Hint: "查看可访问此同步账户的设备。"
     Change Password: "更改密码"
