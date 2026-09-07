@@ -2,7 +2,7 @@ import { Capacitor } from '@capacitor/core'
 import { Filesystem } from '@capacitor/filesystem'
 import { Screenshot } from '@capawesome/capacitor-screenshot'
 import { shallowReactive, watch } from 'vue'
-import { canCaptureCapacitorTab, createCapacitorPreviewCache } from './capacitorPreviewCache'
+import { canCaptureCapacitorTab, createCapacitorPreviewCache } from './capacitorPreviewCache.js'
 
 const cache = createCapacitorPreviewCache(capturePage, shallowReactive(new Map()))
 let captureCurrent = async () => {}
@@ -33,7 +33,7 @@ export function initializeCapacitorTabPreviews(store) {
   const schedule = () => {
     cache.invalidate()
     clearTimeout(timer)
-    if (canCapture()) timer = setTimeout(captureCurrent, 600)
+    timer = setTimeout(captureCurrent, 600)
   }
   const stop = watch(() => [
     store.getters.getShowTabPreviews,
@@ -113,6 +113,10 @@ async function capturePage() {
     }
     return canvas.toDataURL('image/jpeg', 0.7)
   } finally {
-    await Filesystem.deleteFile({ path: uri })
+    try {
+      await Filesystem.deleteFile({ path: uri })
+    } catch (error) {
+      console.warn('Failed to delete temporary tab screenshot', error)
+    }
   }
 }
