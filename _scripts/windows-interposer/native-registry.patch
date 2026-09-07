@@ -1,8 +1,8 @@
 diff --git a/LANCommander.Interposer/dll/src/dllmain.cpp b/LANCommander.Interposer/dll/src/dllmain.cpp
-index 7989945..b05107e 100644
+index 7989945..9f33edb 100644
 --- a/LANCommander.Interposer/dll/src/dllmain.cpp
 +++ b/LANCommander.Interposer/dll/src/dllmain.cpp
-@@ -1,55 +1,23 @@
+@@ -1,55 +1,32 @@
 -#define WIN32_LEAN_AND_MEAN
 -#define NOMINMAX
  #include <windows.h>
@@ -51,6 +51,15 @@ index 7989945..b05107e 100644
 +            const char* message = error.what();
 +            WriteFile(GetStdHandle(STD_ERROR_HANDLE), message, static_cast<DWORD>(std::strlen(message)), &written, nullptr);
 +            WriteFile(GetStdHandle(STD_ERROR_HANDLE), "\n", 1, &written, nullptr);
++            // [DEBUG-1163] Child stderr may be closed by the sandbox. Encode the
++            // failing stage in its process exit code for the diagnostic run.
++            UINT diagnostic = 0x11630009;
++            if (std::strstr(message, "Cannot resolve current user")) diagnostic = 0x11630001;
++            if (std::strstr(message, "Cannot load portable registry hive")) diagnostic = 0x11630002;
++            if (std::strstr(message, "Registry hook installation")) diagnostic = 0x11630003;
++            if (std::strstr(message, "Cannot enable portable hooks")) diagnostic = 0x11630004;
++            if (std::strstr(message, "Cannot create portable registry directory")) diagnostic = 0x11630005;
++            TerminateProcess(GetCurrentProcess(), diagnostic);
 +            return FALSE;
          }
 -        __except (EXCEPTION_EXECUTE_HANDLER)
@@ -62,7 +71,7 @@ index 7989945..b05107e 100644
 -        break;
 -
 -    case DLL_PROCESS_DETACH:
-+        catch (...) { return FALSE; }
++        catch (...) { TerminateProcess(GetCurrentProcess(), 0x1163000A); return FALSE; }
 +    } else if (reason == DLL_PROCESS_DETACH && !reserved) {
          RemoveHooks();
 -        break;

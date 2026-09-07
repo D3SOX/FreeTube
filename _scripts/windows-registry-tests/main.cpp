@@ -110,6 +110,22 @@ static void CheckRegistryViews()
     Require(Read(key, L"", L"Value") == L"shared", "Windows shared Classes value split between registry views");
     RegCloseKey(key);
     Check(RegDeleteTreeW(HKEY_CURRENT_USER, path), "cleanup shared Classes fixture");
+
+    const wchar_t* machinePath = L"Software\\OpenTubeX\\RegistryRegression";
+    for (REGSAM view : { KEY_WOW64_32KEY, KEY_WOW64_64KEY }) {
+        Check(RegCreateKeyExW(HKEY_LOCAL_MACHINE, machinePath, 0, nullptr, 0,
+            KEY_ALL_ACCESS | view, nullptr, &key, nullptr), "create machine key in selected view");
+        const wchar_t* expected = view == KEY_WOW64_32KEY ? L"32" : L"64";
+        Check(RegSetValueExW(key, L"Value", 0, REG_SZ, reinterpret_cast<const BYTE*>(expected),
+            static_cast<DWORD>((wcslen(expected) + 1) * sizeof(wchar_t))), "write separate machine view");
+        RegCloseKey(key);
+    }
+    for (REGSAM view : { KEY_WOW64_32KEY, KEY_WOW64_64KEY }) {
+        Check(RegOpenKeyExW(HKEY_LOCAL_MACHINE, machinePath, 0, KEY_READ | view, &key), "open machine view");
+        Require(Read(key, L"", L"Value") == (view == KEY_WOW64_32KEY ? L"32" : L"64"),
+            "Windows separate machine views were merged");
+        RegCloseKey(key);
+    }
 }
 
 static void CheckHttps()
@@ -147,6 +163,12 @@ extern "C" int wmain(int argc, wchar_t** argv)
             LSTATUS status = RegOpenKeyExW(HKEY_CURRENT_USER, (fixture + L"\\LocalChild").c_str(), 0, KEY_READ, &key);
             if (key) RegCloseKey(key);
             Require(status == ERROR_FILE_NOT_FOUND, "overlay created a host key");
+            for (REGSAM view : { KEY_WOW64_32KEY, KEY_WOW64_64KEY }) {
+                key = nullptr;
+                status = RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"Software\\OpenTubeX\\RegistryRegression", 0, KEY_READ | view, &key);
+                if (key) RegCloseKey(key);
+                Require(status == ERROR_FILE_NOT_FOUND, "portable machine view wrote to the host");
+            }
             return 0;
         }
         if (mode == L"--remove-parent")
