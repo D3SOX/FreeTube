@@ -299,6 +299,36 @@ test.describe('new subscriptions feed', () => {
     await expect(menu.getByRole('menuitem', { name: 'Mark all as seen' })).toHaveCount(0)
   })
 
+  test('the mobile feed menu marks an inactive new category as seen', async ({ page }) => {
+    await goTo(page, 'subscriptions')
+    await page.locator('[data-subscription-feed-tab="all"]').click()
+    await page.getByRole('button', { name: 'Show tabbed view' }).click()
+    const videos = page.locator('[data-new-feed-tab="videos"]')
+    const shorts = page.locator('[data-new-feed-tab="shorts"]')
+    const session = await page.context().newCDPSession(page)
+    await session.send('Emulation.setTouchEmulationEnabled', { enabled: true })
+    const bounds = await shorts.boundingBox()
+    await session.send('Input.dispatchTouchEvent', {
+      type: 'touchStart',
+      touchPoints: [{ x: bounds.x + bounds.width / 2, y: bounds.y + bounds.height / 2 }]
+    })
+    const menu = page.locator('.mobileLinkActions')
+    await expect(menu).toBeVisible()
+    await session.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] })
+    await expect(menu.getByRole('menuitem', { name: 'Reload Shorts', exact: true })).toBeVisible()
+    await menu.getByRole('menuitem', { name: 'Mark all as seen', exact: true }).click()
+    await expect(menu).toHaveCount(0)
+    await expect(videos).toHaveAttribute('aria-selected', 'true')
+    await expect(videos.locator('.newContentDot')).toBeVisible()
+    await expect(shorts.locator('.newContentDot')).toHaveCount(0)
+    await shorts.evaluate(element => element.dispatchEvent(new PointerEvent('contextmenu', {
+      bubbles: true, cancelable: true, pointerType: 'touch'
+    })))
+    await expect(menu).toBeVisible()
+    await expect(menu.getByRole('menuitem', { name: 'Mark all as seen', exact: true })).toHaveCount(0)
+    await session.detach()
+  })
+
   test('shows Shorts as portrait cards with their duration and upload time', async ({ page }) => {
     await goTo(page, 'subscriptions')
     await page.locator('[data-subscription-feed-tab="shorts"]').click()

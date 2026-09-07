@@ -2,6 +2,11 @@
   <div
     class="subscriptionsPage"
     :class="{ hasTabBar: hasHorizontalTabBar }"
+    @contextmenu="handleFeedContextMenu"
+    @pointerdown="startFeedTabHold"
+    @pointermove="moveFeedTabHold"
+    @pointerup="cancelFeedTabHold"
+    @pointercancel="cancelFeedTabHold"
   >
     <FtCard class="card">
       <div
@@ -345,7 +350,7 @@
 
 <script setup>
 import { FtIcon } from '@opentubex/icons'
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, useTemplateRef, watch } from 'vue'
+import { computed, inject, nextTick, onBeforeUnmount, onMounted, ref, useTemplateRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 
@@ -381,6 +386,92 @@ import { getSubscriptionsForFeed } from '../../helpers/subscription-channels'
 
 const isElectron = process.env.IS_ELECTRON
 const usesLogicalTabs = process.env.IS_ELECTRON || process.env.IS_CAPACITOR
+const openMobileContextActions = inject('openMobileContextActions')
+let feedTabHold = null
+
+function cancelFeedTabHold() {
+  clearTimeout(feedTabHold?.timer)
+  feedTabHold = null
+}
+
+function startFeedTabHold(event) {
+  resetFeedTabHold()
+  if (event.pointerType !== 'touch' || !event.isPrimary) return
+  const tab = event.target.closest('[data-subscription-feed-tab], [data-new-feed-tab]')
+  if (!tab) return
+
+  feedTabHold = {
+    x: event.clientX,
+    y: event.clientY,
+    timer: setTimeout(() => {
+      cancelFeedTabHold()
+      tab.dispatchEvent(new PointerEvent('contextmenu', {
+        bubbles: true,
+        cancelable: true,
+        pointerType: 'touch'
+      }))
+    }, 500)
+  }
+}
+
+function moveFeedTabHold(event) {
+  if (feedTabHold && Math.hypot(event.clientX - feedTabHold.x, event.clientY - feedTabHold.y) > 10) {
+    cancelFeedTabHold()
+  }
+}
+
+function resetFeedTabHold() {
+  cancelFeedTabHold()
+  document.removeEventListener('click', suppressFeedTabHoldClick, true)
+  document.removeEventListener('pointerdown', resetFeedTabHold, true)
+  document.removeEventListener('keydown', resetFeedTabHold, true)
+}
+
+function suppressFeedTabHoldClick(event) {
+  event.preventDefault()
+  event.stopImmediatePropagation()
+  resetFeedTabHold()
+}
+
+function handleFeedContextMenu(event) {
+  if (!process.env.IS_CAPACITOR && event.pointerType !== 'touch') return
+  const tab = event.target.closest('[data-subscription-feed-tab], [data-new-feed-tab]')
+  if (!tab) return
+
+  event.preventDefault()
+  event.stopPropagation()
+  cancelFeedTabHold()
+  if (event.pointerType === 'touch') {
+    // The sheet can become the release target. Suppress the opening touch's
+    // click globally, but let the next pointer or keyboard interaction through.
+    document.addEventListener('click', suppressFeedTabHoldClick, true)
+    document.addEventListener('pointerdown', resetFeedTabHold, true)
+    document.addEventListener('keydown', resetFeedTabHold, true)
+  }
+  const feedTab = tab.dataset.subscriptionFeedTab ?? tab.dataset.newFeedTab
+  const reloadLabels = {
+    videos: t('Context Menu.Reload Videos'),
+    shorts: t('Context Menu.Reload Shorts'),
+    live: t('Context Menu.Reload Live'),
+    posts: t('Context Menu.Reload Posts'),
+    all: t('Context Menu.Reload All Feeds')
+  }
+  const actions = [{
+    label: subscriptionFeedRefreshInProgress.value ? t('Context Menu.Cancel Refresh') : reloadLabels[feedTab],
+    icon: subscriptionFeedRefreshInProgress.value ? ['fas', 'xmark'] : ['fas', 'sync'],
+    run: subscriptionFeedRefreshInProgress.value
+      ? cancelRefresh
+      : () => handleFeedReloadRequest({ tabId, feedTab })
+  }]
+  if (tab.dataset.newFeedTab && newFeedTabHasNewContent(feedTab)) {
+    actions.push({
+      label: t('Subscriptions.Mark All as Seen'),
+      icon: ['fas', 'check'],
+      run: () => markAllAsSeen('new', feedTab)
+    })
+  }
+  openMobileContextActions({ title: tab.textContent.trim(), actions })
+}
 
 /** @type {import('vue').ComputedRef<boolean>} */
 const hasHorizontalTabBar = computed(() => isElectron && store.getters.getTabBarPosition === 'top')
@@ -501,6 +592,7 @@ let scrollPositionOwnerTab = currentTab.value
 let restoreScrollOnActivate = false
 
 useTabLifecycle({
+  deactivate: resetFeedTabHold,
   activate: () => {
     if (!restoreScrollOnActivate) {
       return
@@ -583,6 +675,7 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   isMounted = false
+  resetFeedTabHold()
   tabChangeSequence++
   document.removeEventListener('keydown', handlePanelTabNavigation)
   removeFeedReloadRequestListener?.()

@@ -85,6 +85,80 @@ async function expectSponsorBlockContentClamp(content, previousScrollTop) {
 
 test.use({ seed: { settings: WATCH_PAGE_SEED } })
 
+async function swipeVertically(session, bounds, distance) {
+  const x = bounds.x + bounds.width / 2
+  const y = bounds.y + bounds.height / 2
+  await session.send('Input.dispatchTouchEvent', {
+    type: 'touchStart', touchPoints: [{ x, y }]
+  })
+  for (let step = 1; step <= 10; step++) {
+    await session.send('Input.dispatchTouchEvent', {
+      type: 'touchMove', touchPoints: [{ x, y: y + distance * step / 10 }]
+    })
+  }
+  // Hold before releasing so momentum cannot race the next boundary check.
+  await new Promise(resolve => setTimeout(resolve, 200))
+  await session.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] })
+}
+
+for (const zoom of [1, 1.25]) {
+  for (const chapterCount of [1, 30]) {
+    test(`touch scrolling chains from sidebar chapters to the page (${chapterCount} chapters, ${zoom} scale)`, async ({ app, page }) => {
+      await mockPlayableWatchPage(app, page)
+      await openMockedVideo(page)
+      await page.locator(`${activeTab} .ftVideoPlayer video`).evaluate(video => video.pause())
+      await setWindowSize(app, page, { width: 500, height: 850 })
+      await page.evaluate(zoom => window.ftElectron.setZoomFactor(zoom), zoom)
+      const session = await page.context().newCDPSession(page)
+      const view = await watchViewHandle(page)
+      await view.evaluate(async (view, count) => {
+        view.videoChapters = Array.from({ length: count }, (_, index) => ({
+          title: `Test chapter ${index + 1}`,
+          timestamp: `${index}:00`,
+          startSeconds: index * 60
+        }))
+        view.videoCurrentChapterIndex = count - 1
+        view.showSidebarChapters = true
+        await view.$nextTick()
+      }, chapterCount)
+      const panel = page.locator(`${activeTab} .watchVideoChaptersPanel`)
+      const chapters = panel.locator('.chaptersWrapper')
+      await expect(panel).toBeVisible()
+      await expect(panel).not.toHaveClass(/chapters-panel-enter-active/)
+      await expect(chapters).toHaveCSS('overscroll-behavior-y', 'contain')
+      await session.send('Emulation.setTouchEmulationEnabled', { enabled: true })
+      await expect.poll(() => page.evaluate(() => matchMedia('(pointer: coarse)').matches)).toBe(true)
+      await expect(chapters).toHaveCSS('overscroll-behavior-y', 'auto')
+      await chapters.evaluate(element => {
+        element.scrollIntoView({ block: 'center' })
+        element.scrollTop = element.scrollHeight
+      })
+      await expect.poll(() => chapters.evaluate(element =>
+        Math.abs(element.scrollHeight - element.clientHeight - element.scrollTop)
+      )).toBeLessThanOrEqual(1)
+      const initialPageScroll = await page.evaluate(() => window.scrollY)
+      expect(await page.evaluate(() =>
+        document.scrollingElement.scrollHeight - innerHeight - scrollY
+      )).toBeGreaterThan(100)
+      const bounds = await chapters.boundingBox()
+      await swipeVertically(session, bounds, -150)
+      await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(initialPageScroll + 50)
+
+      await chapters.evaluate(element => {
+        element.scrollIntoView({ block: 'center' })
+        element.scrollTop = 0
+      })
+      const pageScrollAtTop = await page.evaluate(() => window.scrollY)
+      expect(pageScrollAtTop).toBeGreaterThan(100)
+      const topBounds = await chapters.boundingBox()
+      await swipeVertically(session, topBounds, 150)
+      await expect.poll(() => page.evaluate(() => window.scrollY)).toBeLessThan(pageScrollAtTop - 50)
+      await session.detach()
+      await view.dispose()
+    })
+  }
+}
+
 test('reserves the player height when Shaka loads before video metadata', async ({ app, page }) => {
   await mockPlayableWatchPage(app, page)
   await page.evaluate(() => window.ftElectron.setZoomFactor(1.25))
