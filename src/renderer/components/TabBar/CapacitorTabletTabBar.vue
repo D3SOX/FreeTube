@@ -1,8 +1,10 @@
 <template>
   <div
+    v-bind="$attrs"
     class="capacitorTabletTabBar"
     data-tutorial="tabs"
     :style="fixedTabWidthStyle"
+    :inert="$attrs.inert && !holding"
   >
     <div
       ref="tabsViewportRef"
@@ -20,8 +22,21 @@
           v-for="tab in tabs"
           :key="tab.id"
           class="capacitorTabletTab"
-          :class="{ active: tab.id === activeTabId, unloaded: tab.isUnloaded }"
-          @contextmenu.prevent.stop="openTabActions(tab.id)"
+          :class="{
+            active: tab.id === activeTabId,
+            unloaded: tab.isUnloaded,
+            holding: heldTabId === tab.id,
+            dragging: heldTabId === tab.id && dragging,
+            settling: heldTabId === tab.id && settling,
+            noTransition: suppressTransitions,
+          }"
+          :style="dragStyle(tab.id)"
+          @pointerdown="startDrag($event, tab.id)"
+          @pointermove="moveDrag"
+          @pointerup="finishDrag"
+          @pointercancel="cancelDrag"
+          @touchmove="preventHoldScroll"
+          @contextmenu.prevent.stop="handleContextMenu($event, tab.id)"
         >
           <button
             type="button"
@@ -32,7 +47,7 @@
             :aria-label="tabAriaLabel(tab)"
             :tabindex="tab.id === activeTabId ? 0 : -1"
             :title="tabTitle(tab)"
-            @click="activateTab(tab.id)"
+            @click="!suppressClick && activateTab(tab.id)"
             @keydown="handleTabTargetKeydown($event, tab.id)"
           >
             <span
@@ -116,6 +131,10 @@ import FtRetryImage from '../FtRetryImage.vue'
 import { lockBodyScroll, unlockBodyScroll } from '../FtPrompt/scrollLock'
 import CapacitorTabActionsMenu from './CapacitorTabActionsMenu.vue'
 import { useCapacitorTabActions } from './useCapacitorTabActions'
+import { useTabletTabReorder } from './useTabletTabReorder'
+
+// Keep the captured gesture alive while its own actions menu is open.
+defineOptions({ inheritAttrs: false })
 
 const { t } = useI18n()
 const emit = defineEmits(['request-exit'])
@@ -149,6 +168,18 @@ const {
   tabs,
   requestExit: () => emit('request-exit'),
   stopContextMenuPropagation: true,
+})
+
+const {
+  heldTabId, holding, dragging, settling, suppressTransitions, suppressClick,
+  start: startDrag, move: moveDrag, finish: finishDrag, cancel: cancelDrag,
+  preventHoldScroll, contextMenu: handleContextMenu, style: dragStyle,
+} = useTabletTabReorder({
+  tabs,
+  viewport: tabsViewportRef,
+  openActions: openTabActions,
+  closeActions: closeTabActions,
+  clampScroll: clampTabsScroll,
 })
 
 function handleTabListKeydown(event) {
@@ -206,8 +237,12 @@ onMounted(() => {
   const content = tabsViewportRef.value?.querySelector('.capacitorTabletTabs')
   if (!content || typeof ResizeObserver !== 'function') return
 
-  tabsResizeObserver = new ResizeObserver(clampTabsScroll)
+  tabsResizeObserver = new ResizeObserver(() => {
+    cancelDrag()
+    clampTabsScroll()
+  })
   tabsResizeObserver.observe(content)
+  tabsResizeObserver.observe(tabsViewportRef.value)
 })
 
 onBeforeUnmount(() => {
