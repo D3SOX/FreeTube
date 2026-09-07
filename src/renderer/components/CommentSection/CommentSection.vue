@@ -204,6 +204,17 @@
             highlightedComment: comment.id === highlightedCommentId
           }"
         >
+          <button
+            v-if="index !== null && !hasActiveCommentFilters && (shouldShowCommentReplies(comment, replyNodes) || shouldShowCommentReplyToggle(comment, replyNodes))"
+            type="button"
+            class="commentThreadLineToggle"
+            :aria-label="commentReplyAccessibleLabel(comment)"
+            :aria-expanded="!!comment.showReplies"
+            :disabled="isReplyLoading(comment.id)"
+            @click="toggleCommentReplies(index)"
+            @keydown.space.stop
+            @keyup.space.stop
+          />
           <p
             v-if="comment.id === highlightedCommentId"
             class="highlightedCommentBadge"
@@ -436,6 +447,10 @@
               :personal-pinned-comment-ids="personalPinnedCommentIds"
               :filtering="hasActiveCommentFilters"
               :shorten-view-counts="shortenViewCounts"
+              :parent-toggle-label="commentReplyAccessibleLabel(comment)"
+              :can-toggle-parent="index !== null && !hasActiveCommentFilters && !isReplyLoading(comment.id)"
+              @toggle-parent="toggleCommentReplies(index)"
+              @replies-toggled="clampCommentsScrollAfterRender"
               @copy-youtube-link="copyCommentYoutubeLink"
               @get-more-replies="getCommentReplies(index, $event)"
               @toggle-personal-pin="togglePersonalCommentPin($event, comment)"
@@ -1576,6 +1591,7 @@ function commentReplyAccessibleLabel(comment) {
 function toggleCommentReplies(index) {
   if (commentData.value[index].showReplies || commentData.value[index].replies.length > 0) {
     commentData.value[index].showReplies = !commentData.value[index].showReplies
+    clampCommentsScrollAfterRender()
   } else {
     getCommentReplies(index)
   }

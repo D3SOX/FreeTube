@@ -7,7 +7,7 @@
   position: absolute;
   inset-block: 0;
   inset-inline-start: 0;
-  border-inline-start: 1px solid var(--comment-thread-line-color);
+  border-inline-start: 1px solid var(--comment-parent-thread-line-color, var(--comment-thread-line-color));
   pointer-events: none;
 }
 
@@ -26,7 +26,7 @@
   inset-block-start: 0;
   inset-inline-start: 0;
   block-size: calc(30px + var(--highlighted-comment-offset));
-  border-inline-start: 1px solid var(--comment-thread-line-color);
+  border-inline-start: 1px solid var(--comment-parent-thread-line-color, var(--comment-thread-line-color));
   pointer-events: none;
 }
 
@@ -37,10 +37,41 @@
   inset-inline-start: 0;
   inline-size: 15px;
   block-size: 15px;
-  border-block-end: 1px solid var(--comment-thread-line-color);
-  border-inline-start: 1px solid var(--comment-thread-line-color);
+  border-block-end: 1px solid var(--comment-parent-thread-line-color, var(--comment-thread-line-color));
+  border-inline-start: 1px solid var(--comment-parent-thread-line-color, var(--comment-thread-line-color));
   border-end-start-radius: calc(12px * var(--ui-roundness));
   pointer-events: none;
+}
+
+.commentReplyConnectorToggle {
+  z-index: 2;
+  box-sizing: content-box;
+  padding: 0;
+  border-block-start: 0;
+  border-inline-end: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.commentReplyConnectorToggle::after {
+  content: '';
+  position: absolute;
+  inset: -6px;
+}
+
+.commentReplyConnectorToggle:hover,
+.commentReplyConnectorToggle:focus-visible {
+  border-color: currentcolor;
+}
+
+.commentReplyLineToggle {
+  inset-block-end: 30px;
+}
+
+.highlightedCommentBranch > .commentReplyLineToggle {
+  inset-block-start: calc(75px + var(--highlighted-comment-offset));
 }
 
 .highlightedCommentBranch > .commentReplyConnector {
@@ -70,5 +101,15 @@
 }
 
 .commentReplyChildren {
+  --comment-parent-thread-line-color: var(--comment-thread-line-color);
+
   margin-inline-start: 45px;
+}
+
+.commentReplyLineToggle:is(:hover, :focus-visible) ~ .commentReplyContent > .commentReplyChildStem {
+  border-color: currentcolor;
+}
+
+.commentReplyLineToggle:is(:hover, :focus-visible) ~ .commentReplyChildren {
+  --comment-parent-thread-line-color: currentcolor;
 }
