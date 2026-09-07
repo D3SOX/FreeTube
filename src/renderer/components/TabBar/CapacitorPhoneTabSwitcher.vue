@@ -340,6 +340,7 @@ import { showToast } from '../../helpers/utils'
 import { getCapacitorTabService } from '../../tabs/CapacitorTabService'
 import { getSyncedTabPreview } from '../../tabs/tabPreview'
 import FtPrompt from '../FtPrompt/FtPrompt.vue'
+import { captureBeforeTabOrganizer } from '../../tabs/capacitorTabPreviews'
 import CapacitorTabPreview from './CapacitorTabPreview.vue'
 import { lockBodyScroll, unlockBodyScroll } from '../FtPrompt/scrollLock'
 import CapacitorTabActionsMenu from './CapacitorTabActionsMenu.vue'
@@ -482,7 +483,14 @@ const {
   },
 })
 
-function openSwitcher() {
+let openingSwitcher = false
+let disposed = false
+async function openSwitcher() {
+  if (openingSwitcher || open.value) return
+  openingSwitcher = true
+  await captureBeforeTabOrganizer()
+  openingSwitcher = false
+  if (disposed || !props.enabled) return
   activeView.value = 'open'
   open.value = true
   if (showSyncedTabsView.value) {
@@ -948,6 +956,7 @@ watch(
 )
 
 onBeforeUnmount(() => {
+  disposed = true
   resetTabSwipe()
   resetTabDrag()
   stopObservingContent()

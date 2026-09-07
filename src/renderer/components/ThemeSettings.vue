@@ -234,7 +234,7 @@
           @change="updateShowTabIcons"
         />
         <FtToggleSwitch
-          v-if="usingElectron"
+          v-if="usingElectron || IS_CAPACITOR"
           :label="$t('Settings.Theme Settings.Show Tab Previews')"
           compact
           :default-value="showTabPreviews"

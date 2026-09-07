@@ -515,6 +515,7 @@ import {
 } from './helpers/tutorialState'
 import { invalidateAllYtDlpPlaybackSources } from './helpers/player/ytDlpPlayback'
 import { getTabNavigationService } from './tabs/TabNavigationService'
+import { initializeCapacitorTabPreviews } from './tabs/capacitorTabPreviews'
 import { initializeCapacitorTabService } from './tabs/CapacitorTabService'
 import { tabMediaCoordinator } from './tabs/TabMediaCoordinator'
 import { tabRuntimeRegistry } from './tabs/TabRuntimeRegistry'
@@ -807,6 +808,7 @@ let removeReloadRequestListener = null
 let removeConfirmMultipleTabsActionListener = null
 let removeOpenUrlListener = null
 let removeCapacitorIntegrationListeners = null
+let removeCapacitorTabPreviews = null
 let removeYtDlpBinaryUpdatedListener = null
 let removeAndroidYtDlpSettingsListener = null
 let removeOpenTabOrganizerListener = null
@@ -1186,6 +1188,7 @@ onMounted(async () => {
     })
   } else if (isCapacitor) {
     tabsReady = capacitorTabService.initialize(route)
+    removeCapacitorTabPreviews = initializeCapacitorTabPreviews(store)
   }
 
   const settingsReady = store.dispatch('grabUserSettings').then(tutorialState => {
@@ -1375,6 +1378,7 @@ onBeforeUnmount(() => {
   }
   tabletTabStripQuery.removeEventListener('change', handleTabletTabStripChange)
   capacitorTabService?.dispose()
+  removeCapacitorTabPreviews?.()
   document.documentElement.classList.remove('hideOutlines')
   removeGamepadNavigation()
   removeCustomThemeListener()

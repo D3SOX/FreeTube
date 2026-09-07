@@ -17,6 +17,9 @@ project(':capacitor-clipboard').projectDir = new File('../node_modules/.pnpm/@ca
 include ':capacitor-device'
 project(':capacitor-device').projectDir = new File('../node_modules/.pnpm/@capacitor+device@8.0.3_@capacitor+core@8.5.0/node_modules/@capacitor/device/android')
 
+include ':capacitor-filesystem'
+project(':capacitor-filesystem').projectDir = new File('../node_modules/.pnpm/@capacitor+filesystem@8.1.3_@capacitor+core@8.5.0/node_modules/@capacitor/filesystem/android')
+
 include ':capacitor-local-notifications'
 project(':capacitor-local-notifications').projectDir = new File('../node_modules/.pnpm/@capacitor+local-notifications@8.3.1_@capacitor+core@8.5.0/node_modules/@capacitor/local-notifications/android')
 
@@ -28,6 +31,9 @@ project(':capawesome-capacitor-app-shortcuts').projectDir = new File('../node_mo
 
 include ':capawesome-capacitor-screen-orientation'
 project(':capawesome-capacitor-screen-orientation').projectDir = new File('../node_modules/.pnpm/@capawesome+capacitor-screen-orientation@8.0.3_@capacitor+core@8.5.0/node_modules/@capawesome/capacitor-screen-orientation/android')
+
+include ':capawesome-capacitor-screenshot'
+project(':capawesome-capacitor-screenshot').projectDir = new File('../node_modules/.pnpm/@capawesome+capacitor-screenshot@8.0.2_@capacitor+core@8.5.0_html2canvas@1.4.1/node_modules/@capawesome/capacitor-screenshot/android')
 
 include ':capawesome-capacitor-settings-launcher'
 project(':capawesome-capacitor-settings-launcher').projectDir = new File('../node_modules/.pnpm/@capawesome+capacitor-settings-launcher@0.1.2_@capacitor+core@8.5.0/node_modules/@capawesome/capacitor-settings-launcher/android')
