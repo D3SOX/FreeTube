@@ -29,6 +29,10 @@
   text-align: center;
 }
 
+.recommendationIntroduction :deep(.ft-icon) {
+  font-size: 1.25rem;
+}
+
 .recommendationEntry {
   display: flex;
   min-inline-size: 0;
