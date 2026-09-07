@@ -1526,8 +1526,6 @@ CommandPalette:
     Download Finished: Ovo preuzimanje više nije u tijeku
     Video: Najprije otvorite videozapis
 Downloads:
-  Export Failed: "Preuzetu datoteku nije moguće spremiti. Odaberite mapu za preuzimanja s dozvolom pisanja i pokušajte ponovno."
-  Remove File Permanently Warning: "Time ćete trajno izbrisati „{title}“."
   Download: Preuzmi
   Download Video: Preuzmi videozapis
   Download Playlist: Preuzmi popis za reprodukciju

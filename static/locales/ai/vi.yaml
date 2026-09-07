@@ -1538,8 +1538,6 @@ CommandPalette:
     Download Finished: Lượt tải này không còn chạy
     Video: Hãy mở một video trước
 Downloads:
-  Export Failed: "Không thể lưu tệp đã tải xuống. Hãy chọn thư mục tải xuống có quyền ghi và thử lại."
-  Remove File Permanently Warning: "Thao tác này sẽ xóa vĩnh viễn \"{title}\"."
   Download: Tải xuống
   Download Video: Tải video
   Download Playlist: Tải danh sách phát

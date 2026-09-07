@@ -1518,8 +1518,6 @@ CommandPalette:
     Download Finished: Ez a letöltés már nem fut
     Video: Előbb nyisson meg egy videót
 Downloads:
-  Export Failed: "A letöltött fájlt nem sikerült menteni. Válasszon írható letöltési mappát, és próbálja újra."
-  Remove File Permanently Warning: "Ez véglegesen törli a következőt: „{title}”."
   Download: Letöltés
   Download Video: Videó letöltése
   Download Playlist: Lejátszási lista letöltése

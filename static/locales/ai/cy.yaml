@@ -1531,8 +1531,6 @@ CommandPalette:
     Download Finished: Nid yw'r lawrlwythiad hwn yn rhedeg mwyach
     Video: Agorwch fideo yn gyntaf
 Downloads:
-  Export Failed: "Methu cadw’r ffeil a lawrlwythwyd. Dewiswch ffolder lawrlwytho y gellir ysgrifennu ynddi a rhowch gynnig arall arni."
-  Remove File Permanently Warning: "Bydd hyn yn dileu \"{title}\" yn barhaol."
   Download: Lawrlwytho
   Download Video: Lawrlwytho fideo
   Download Playlist: Lawrlwytho rhestr chwarae

@@ -2727,8 +2727,6 @@ CommandPalette:
     Download Finished: This download is no longer running
     Video: Open a video first
 Downloads:
-  Export Failed: "Could not save the downloaded file. Choose a writable download folder and retry."
-  Remove File Permanently Warning: "This will permanently delete \"{title}\"."
   Download: Download
   Download Video: Download Video
   Download Playlist: Download Playlist

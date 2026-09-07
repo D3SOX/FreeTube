@@ -2103,8 +2103,6 @@ CommandPalette:
     Download Finished: Ta prenos se ne izvaja več
     Video: Najprej odprite videoposnetek
 Downloads:
-  Export Failed: "Prenesene datoteke ni bilo mogoče shraniti. Izberite mapo za prenose z dovoljenjem za pisanje in poskusite znova."
-  Remove File Permanently Warning: "S tem boste trajno izbrisali »{title}«."
   Download: Prenesi
   Download Video: Prenesi videoposnetek
   Download Playlist: Prenesi seznam predvajanja

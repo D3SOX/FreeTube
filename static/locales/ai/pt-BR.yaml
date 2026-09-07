@@ -1518,8 +1518,6 @@ CommandPalette:
     Download Finished: Este download não está mais em andamento
     Video: Abra primeiro um vídeo
 Downloads:
-  Export Failed: "Não foi possível salvar o arquivo baixado. Escolha uma pasta de downloads com permissão de escrita e tente novamente."
-  Remove File Permanently Warning: "Isso excluirá \"{title}\" permanentemente."
   Download: Baixar
   Download Video: Baixar vídeo
   Download Playlist: Baixar lista de reprodução

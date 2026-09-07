@@ -2155,8 +2155,6 @@ CommandPalette:
     Download Finished: Aquesta baixada ja no s'està executant
     Video: Obriu primer un vídeo
 Downloads:
-  Export Failed: "No s’ha pogut desar el fitxer baixat. Trieu una carpeta de baixades amb permís d’escriptura i torneu-ho a provar."
-  Remove File Permanently Warning: "Això suprimirà permanentment \"{title}\"."
   Download: Baixa
   Download Video: Baixa el vídeo
   Download Playlist: Baixa la llista de reproducció

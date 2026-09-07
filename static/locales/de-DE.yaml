@@ -2634,8 +2634,6 @@ CommandPalette:
     Download Finished: Dieser Download läuft nicht mehr
     Video: Öffne zuerst ein Video
 Downloads:
-  Export Failed: "Die heruntergeladene Datei konnte nicht gespeichert werden. Wähle einen beschreibbaren Downloadordner und versuche es erneut."
-  Remove File Permanently Warning: "„{title}“ wird dauerhaft gelöscht."
   Download: Herunterladen
   Download Video: Video herunterladen
   Download Type: Download-Typ

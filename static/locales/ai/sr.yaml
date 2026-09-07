@@ -1577,8 +1577,6 @@ CommandPalette:
     Download Finished: Ово преузимање више није у току
     Video: Прво отворите видео-снимак
 Downloads:
-  Export Failed: "Није могуће сачувати преузету датотеку. Изаберите фасциклу за преузимања са дозволом за писање и покушајте поново."
-  Remove File Permanently Warning: "Ово ће трајно избрисати „{title}“."
   Download: Преузми
   Download Video: Преузми видео-снимак
   Download Playlist: Преузми листу за репродукцију

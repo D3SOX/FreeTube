@@ -1541,8 +1541,6 @@ CommandPalette:
     Download Finished: Це завантаження вже не виконується
     Video: Спочатку відкрийте відео
 Downloads:
-  Export Failed: "Не вдалося зберегти завантажений файл. Виберіть папку завантажень із дозволом на запис і спробуйте ще раз."
-  Remove File Permanently Warning: "«{title}» буде видалено назавжди."
   Download: Завантажити
   Download Video: Завантажити відео
   Download Playlist: Завантажити список відтворення

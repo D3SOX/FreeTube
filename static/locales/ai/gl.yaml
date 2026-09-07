@@ -1550,8 +1550,6 @@ CommandPalette:
     Download Finished: Esta descarga xa non está en curso
     Video: Abre primeiro un vídeo
 Downloads:
-  Export Failed: "Non se puido gardar o ficheiro descargado. Escolle un cartafol de descargas con permiso de escritura e téntao de novo."
-  Remove File Permanently Warning: "Isto eliminará \"{title}\" permanentemente."
   Download: Descargar
   Download Video: Descargar o vídeo
   Download Playlist: Descargar a lista de reprodución

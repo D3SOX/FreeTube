@@ -739,8 +739,6 @@ CommandPalette:
     Download Finished: To pobieranie nie jest już uruchomione
     Video: Najpierw otwórz film
 Downloads:
-  Export Failed: "Nie udało się zapisać pobranego pliku. Wybierz folder pobierania z uprawnieniami do zapisu i spróbuj ponownie."
-  Remove File Permanently Warning: "Spowoduje to trwałe usunięcie „{title}”."
   Download Playlist: Pobierz playlistę
   Downloading: Pobieranie
   Queue: Kolejka
