@@ -513,6 +513,18 @@
   inline-size: 100%;
 }
 
+.capacitorPhoneSyncedTabIcon {
+  display: grid;
+  place-items: center;
+  inline-size: 24px;
+  block-size: 24px;
+}
+
+.capacitorPhoneSyncedTabIcon .capacitorPhoneTabAvatar {
+  inline-size: 24px;
+  block-size: 24px;
+}
+
 .capacitorPhoneSyncedTabList span {
   min-inline-size: 0;
   overflow: hidden;

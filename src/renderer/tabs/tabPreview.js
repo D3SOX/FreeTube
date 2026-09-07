@@ -1,6 +1,16 @@
 import store from '../store/index'
+import { getSyncTabRoute } from '../helpers/sync-sessions'
 
 export { getTabPageIcon } from './tabPageIcon'
+
+export function getSyncedTabPreview(tab) {
+  try {
+    const url = new URL(getSyncTabRoute(tab.url), window.location.origin)
+    return { ...tab, route: { path: url.pathname } }
+  } catch {
+    return tab
+  }
+}
 
 /**
  * Resolve the fallback preview image for a tab when no screenshot has been

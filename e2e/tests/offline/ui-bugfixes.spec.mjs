@@ -297,6 +297,70 @@ test('fits synced-device tabs in the phone tab organizer', async ({ app, page })
   ))).toBe(true)
 })
 
+for (const iconPack of ['material', 'remix']) {
+  test(`shows synced tab avatars and page icons in the phone organizer with ${iconPack}`, async ({ app, page }, testInfo) => {
+    await setWindowSize(app, page, { width: 375, height: 760 })
+    await enablePhoneTabSwitcher(page)
+    const avatar = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"><rect width="24" height="24" fill="green"/></svg>')
+    await page.route('https://example.com/retry-avatar.svg*', route => route.fulfill({
+      contentType: 'image/svg+xml',
+      body: route.request().url().includes('opentubex_retry=')
+        ? decodeURIComponent(avatar.split(',')[1])
+        : 'invalid image',
+    }))
+    await page.evaluate(async ({ pack, avatarUrl }) => {
+      const store = document.querySelector('#app')._vnode.component.appContext.config.globalProperties.$store
+      await store.dispatch('updateIconPack', pack)
+      store.commit('setSyncServerEnabled', true)
+      store.commit('setSyncServerToken', 'e2e-token')
+      store.commit('setSyncServerPrivacyMode', 'enhanced')
+      store.commit('setSyncServerSyncSessions', true)
+      store.commit('setChannelThumbnail', { channelId: 'cached-channel', thumbnail: avatarUrl })
+      store.commit('setVideoAvatar', { videoId: 'cached-video', avatar: avatarUrl })
+      store.commit('setSyncServerOtherDeviceSessions', [{
+        syncDeviceId: 'desktop-e2e',
+        syncPlatform: 'desktop',
+        sessionId: 'desktop-session',
+        tabs: [
+          { id: 'history', title: 'History', url: 'app://bundle/index.html#/history?search=test' },
+          { id: 'subscriptions', title: 'Subscriptions', url: 'https://localhost/subscriptions' },
+          { id: 'channel', title: 'Cached channel', url: 'app://bundle/index.html#/channel/cached-channel' },
+          { id: 'video', title: 'Cached video', url: '/watch/cached-video?t=30' },
+          { id: 'avatar', title: 'Saved avatar', url: '/watch/saved-avatar', avatarUrl },
+          { id: 'broken', title: 'Broken avatar', url: '/watch/broken', avatarUrl: 'data:image/png;base64,invalid' },
+          { id: 'retry', title: 'Retry avatar', url: '/watch/retry', avatarUrl: 'https://example.com/retry-avatar.svg' },
+          { id: 'unknown', title: 'Unknown page', url: '/unknown' },
+        ],
+      }])
+    }, { pack: iconPack, avatarUrl: avatar })
+
+    await page.locator('.capacitorPhoneTabSwitcherButton').click()
+    const organizer = page.locator('.capacitorPhoneTabDialog')
+    await organizer.getByRole('tab', { name: 'Tabs from other devices' }).click()
+    const row = title => organizer.getByRole('button', { name: title, exact: true })
+    for (const [title, icon] of [['History', 'clock-rotate-left'], ['Subscriptions', 'rss'], ['Broken avatar', 'clapperboard'], ['Unknown page', 'display']]) {
+      const glyph = row(title).locator(`[data-icon="${icon}"]`)
+      await expect(glyph).toBeVisible()
+      await expect(glyph).toHaveAttribute('data-icon-pack', iconPack)
+    }
+    for (const title of ['Cached channel', 'Cached video', 'Saved avatar']) {
+      await expect(row(title).locator('img')).toHaveAttribute('src', avatar)
+      await expect.poll(() => row(title).locator('img').evaluate(image => image.naturalWidth)).toBe(24)
+    }
+    await expect(row('Broken avatar').locator('img')).toBeHidden()
+    await expect(row('Retry avatar').locator('[data-icon="clapperboard"]')).toBeVisible()
+    await expect(row('Retry avatar').locator('img')).toBeVisible()
+    await expect.poll(() => row('Retry avatar').locator('img').evaluate(image => image.naturalWidth)).toBe(24)
+    await expect(row('Retry avatar').locator('[data-icon="clapperboard"]')).toHaveCount(0)
+
+    const screenshot = testInfo.outputPath(`phone-synced-tab-icons-${iconPack}.png`)
+    await organizer.screenshot({ path: screenshot })
+    await testInfo.attach('Phone synced tab icons', { path: screenshot, contentType: 'image/png' })
+    await setWindowSize(app, page, { width: 760, height: 375 })
+    await expect.poll(() => organizer.evaluate(element => element.scrollWidth <= element.clientWidth + 1)).toBe(true)
+  })
+}
+
 test('shows remote tab sets as tabs and confirms deletion in the phone organizer', async ({ app, page }) => {
   await setWindowSize(app, page, { width: 375, height: 760 })
   await page.evaluate(() => window.ftElectron.setZoomFactor(0.95))
