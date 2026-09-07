@@ -245,8 +245,9 @@ NTSTATUS NTAPI CreateKeyTransacted(PHANDLE result, ACCESS_MASK access, POBJECT_A
 
 template<typename T> void Hook(const char* name, T replacement, T& original)
 {
-    if (MH_CreateHookApi(L"ntdll", name, reinterpret_cast<LPVOID>(replacement),
-        reinterpret_cast<LPVOID*>(&original)) != MH_OK) throw std::runtime_error("Registry hook installation failed");
+    auto status = MH_CreateHookApi(L"ntdll", name, reinterpret_cast<LPVOID>(replacement),
+        reinterpret_cast<LPVOID*>(&original));
+    if (status != MH_OK) throw std::runtime_error(std::string("Registry hook installation failed: ") + name + ": " + std::to_string(status));
 }
 } // namespace
 
@@ -271,8 +272,9 @@ void InstallRegistryHooks()
     if (!CreateDirectoryW(directory.c_str(), nullptr) && GetLastError() != ERROR_ALREADY_EXISTS)
         throw std::runtime_error("Cannot create portable registry directory");
     // Options=0 permits other OpenTubeX processes to load the same private hive.
-    if (RegLoadAppKeyW((directory + L"\\Registry.hiv").c_str(), &hive, KEY_ALL_ACCESS, 0, 0) != ERROR_SUCCESS)
-        throw std::runtime_error("Cannot load portable registry hive");
+    auto loadStatus = RegLoadAppKeyW((directory + L"\\Registry.hiv").c_str(), &hive, KEY_ALL_ACCESS, 0, 0);
+    if (loadStatus != ERROR_SUCCESS)
+        throw std::runtime_error("Cannot load portable registry hive: " + std::to_string(loadStatus));
     hivePath = KeyPath(hive);
     if (hivePath.empty()) throw std::runtime_error("Cannot resolve portable hive");
     Hook("NtOpenKey", OpenKey, originalOpen);

@@ -1,12 +1,14 @@
 diff --git a/LANCommander.Interposer/dll/src/dllmain.cpp b/LANCommander.Interposer/dll/src/dllmain.cpp
-index 7989945..aa43b15 100644
+index 7989945..b05107e 100644
 --- a/LANCommander.Interposer/dll/src/dllmain.cpp
 +++ b/LANCommander.Interposer/dll/src/dllmain.cpp
-@@ -1,55 +1,14 @@
+@@ -1,55 +1,23 @@
 -#define WIN32_LEAN_AND_MEAN
 -#define NOMINMAX
  #include <windows.h>
  #include "hooks.h"
++#include <exception>
++#include <cstring>
  
 -static void WriteLog(const wchar_t* message)
 +BOOL APIENTRY DllMain(HMODULE instance, DWORD reason, LPVOID reserved)
@@ -41,7 +43,16 @@ index 7989945..aa43b15 100644
 -        {
 -            InstallHooks();
 -            WriteLog(L"InstallHooks returned OK");
--        }
++    if (reason == DLL_PROCESS_ATTACH) {
++        DisableThreadLibraryCalls(instance);
++        try { InstallHooks(); }
++        catch (const std::exception& error) {
++            DWORD written;
++            const char* message = error.what();
++            WriteFile(GetStdHandle(STD_ERROR_HANDLE), message, static_cast<DWORD>(std::strlen(message)), &written, nullptr);
++            WriteFile(GetStdHandle(STD_ERROR_HANDLE), "\n", 1, &written, nullptr);
++            return FALSE;
+         }
 -        __except (EXCEPTION_EXECUTE_HANDLER)
 -        {
 -            wchar_t buf[64];
@@ -51,9 +62,6 @@ index 7989945..aa43b15 100644
 -        break;
 -
 -    case DLL_PROCESS_DETACH:
-+    if (reason == DLL_PROCESS_ATTACH) {
-+        DisableThreadLibraryCalls(instance);
-+        try { InstallHooks(); }
 +        catch (...) { return FALSE; }
 +    } else if (reason == DLL_PROCESS_DETACH && !reserved) {
          RemoveHooks();
