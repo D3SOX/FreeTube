@@ -209,7 +209,7 @@ export function useHomeRecommendations(visible) {
     cachedCandidates = null
     if (isLoading.value) {
       cancelRequest()
-      initialized = true
+      if (!initialized) refresh(true)
     }
   })
   watch([() => history.value.length === 0, () => store.getters.getRecommendationEpoch],

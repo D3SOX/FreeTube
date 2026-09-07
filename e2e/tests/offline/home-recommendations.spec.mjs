@@ -420,6 +420,54 @@ test('keeps existing suggestions through new watches and learning updates', asyn
   await expect(titles).toHaveText(['Linux desktop fresh results'])
 })
 
+for (const change of ['backend setting', 'learning reset']) {
+  test(`restarts an interrupted initial feed but preserves a completed feed after ${change}`, async ({ page }) => {
+    const backend = await mockCandidates(page)
+    const changeContext = () => page.evaluate(async change => {
+      const store = document.querySelector('#app').__vue_app__.config.globalProperties.$store
+      if (change === 'learning reset') await store.dispatch('resetRecommendations')
+      else await store.dispatch('updateShowFamilyFriendlyOnly', !store.getters.getShowFamilyFriendlyOnly)
+    }, change)
+    let release = backend.holdResponses()
+    try {
+      await goTo(page, 'home')
+      await setEnabled(page, true)
+      await expectBothSources(backend)
+      const requestCount = backend.requests.length
+      backend.channelVideos = [video('recfresh001', 'Linux desktop fresh results')]
+      backend.searchVideos = []
+      await changeContext()
+      await expect.poll(() => backend.aborted.length).toBeGreaterThan(0)
+      await expectBothSources(backend, requestCount)
+      release()
+      await backend.settled()
+      const section = recommendations(page)
+      const titles = section.locator('.ft-list-video .title')
+      await expect(titles).toHaveText(['Linux desktop fresh results'])
+
+      backend.channelVideos = [video('recextra001', 'Linux desktop extra suggestions')]
+      release = backend.holdResponses()
+      const completedRequestCount = backend.requests.length
+      await section.getByRole('button', { name: 'Load more videos', exact: true }).click()
+      await expectBothSources(backend, completedRequestCount)
+      const pendingRequestCount = backend.requests.length
+      const abortedCount = backend.aborted.length
+      await changeContext()
+      await expect.poll(() => backend.aborted.length).toBeGreaterThan(abortedCount)
+      release()
+      await backend.settled()
+      await expect(titles).toHaveText(['Linux desktop fresh results'])
+      expect(backend.requests).toHaveLength(pendingRequestCount)
+
+      await section.getByRole('button', { name: REFRESH, exact: true }).click()
+      await backend.settled()
+      await expect(titles).toHaveText(['Linux desktop extra suggestions'])
+    } finally {
+      release()
+    }
+  })
+}
+
 test('keeps the loaded feed stable while loading more and when cancelling that load', async ({ page }) => {
   const backend = await mockCandidates(page)
   await goTo(page, 'home')
