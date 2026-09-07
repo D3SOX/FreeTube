@@ -77,6 +77,8 @@
     "@capacitor/local-notifications": "^8.3.1",
     "@capacitor/share": "^8.0.1",
     "@capawesome/capacitor-app-shortcuts": "^8.0.2",
+    "@capawesome/capacitor-screen-orientation": "^8.0.3",
+    "@capawesome/capacitor-settings-launcher": "^0.1.2",
     "@hpke/core": "^1.9.0",
     "@iconify/vue": "^5.0.1",
     "@seald-io/nedb": "^4.1.2",

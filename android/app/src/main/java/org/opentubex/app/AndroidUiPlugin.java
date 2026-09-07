@@ -3,7 +3,6 @@ package org.opentubex.app;
 import android.app.Activity;
 import android.app.PictureInPictureParams;
 import android.content.Context;
-import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.hardware.input.InputManager;
 import android.os.Build;
@@ -74,19 +73,6 @@ public class AndroidUiPlugin extends Plugin {
         getActivity().runOnUiThread(() -> {
             call.resolve();
             getActivity().finishAndRemoveTask();
-        });
-    }
-
-    @PluginMethod
-    public void setFullscreenOrientation(PluginCall call) {
-        boolean landscape = Boolean.TRUE.equals(call.getBoolean("landscape", false));
-        getActivity().runOnUiThread(() -> {
-            getActivity().setRequestedOrientation(
-                landscape
-                    ? ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
-                    : ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
-            );
-            call.resolve();
         });
     }
 

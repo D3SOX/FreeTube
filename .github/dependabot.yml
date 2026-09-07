@@ -20,6 +20,8 @@ updates:
       - dependency-name: "@capacitor/local-notifications"
       - dependency-name: "@capacitor/share"
       - dependency-name: "@capawesome/capacitor-app-shortcuts"
+      - dependency-name: "@capawesome/capacitor-screen-orientation"
+      - dependency-name: "@capawesome/capacitor-settings-launcher"
       - dependency-name: "@hpke/core"
       - dependency-name: "@iconify-json/material-symbols"
       - dependency-name: "@iconify-json/ri"

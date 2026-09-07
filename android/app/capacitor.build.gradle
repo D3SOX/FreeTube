@@ -17,6 +17,8 @@ dependencies {
     implementation project(':capacitor-local-notifications')
     implementation project(':capacitor-share')
     implementation project(':capawesome-capacitor-app-shortcuts')
+    implementation project(':capawesome-capacitor-screen-orientation')
+    implementation project(':capawesome-capacitor-settings-launcher')
 
 }
 

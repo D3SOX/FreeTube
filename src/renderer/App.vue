@@ -454,6 +454,7 @@ import {
   getAndroidHardwareKeyboardState,
   setAndroidPictureInPictureDocumentState
 } from './helpers/androidUi'
+import { openNotificationSettings } from './helpers/capacitorUi'
 import { initializeCapacitorLiveReminderActions } from './helpers/liveReminders'
 import {
   addAndroidMediaSessionActionListener,
@@ -465,7 +466,6 @@ import {
   configureAndroidSubscriptionRefresh,
   finishAndroidSubscriptionRefresh,
   getNextAndroidSubscriptionRefreshResult,
-  openAndroidNotificationSettings,
   requestAndroidSubscriptionRefreshNotificationPermission,
   startAndroidSubscriptionRefresh,
   updateAndroidSubscriptionRefresh
@@ -2093,7 +2093,7 @@ function showAndroidSubscriptionRefreshNotificationWarning() {
     buttons: [{
       label: t('Settings.Settings'),
       primary: true,
-      action: () => openAndroidNotificationSettings()
+      action: () => openNotificationSettings()
     }]
   })
 }

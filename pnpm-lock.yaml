@@ -48,6 +48,12 @@ importers:
       '@capawesome/capacitor-app-shortcuts':
         specifier: ^8.0.2
         version: 8.0.2(patch_hash=2581c86d60ce7892c0b3136523994591d24ee7313bbc5fc9b4ad1c710719c70a)(@capacitor/core@8.5.0)
+      '@capawesome/capacitor-screen-orientation':
+        specifier: ^8.0.3
+        version: 8.0.3(@capacitor/core@8.5.0)
+      '@capawesome/capacitor-settings-launcher':
+        specifier: ^0.1.2
+        version: 0.1.2(@capacitor/core@8.5.0)
       '@hpke/core':
         specifier: ^1.9.0
         version: 1.9.0
@@ -856,6 +862,16 @@ packages:
 
   '@capawesome/capacitor-app-shortcuts@8.0.2':
     resolution: {integrity: sha512-gvwF+oc+dvBDN88TI/MNUYEUpWoTdHP2ZRyZ5P1/nHOgw4vzU2LMflZg+Pi85I78Vx7tt+EX1JpsOYYJnX+v5w==}
+    peerDependencies:
+      '@capacitor/core': '>=8.0.0'
+
+  '@capawesome/capacitor-screen-orientation@8.0.3':
+    resolution: {integrity: sha512-JTSpg/9FI5MC0EvjEc99BkcsPwuBO+9rjn5G7D5e9avkq6uM5tIT5lUuap/Sfd9b6exUvXpRwkktErtpuM7T/Q==}
+    peerDependencies:
+      '@capacitor/core': '>=8.0.0'
+
+  '@capawesome/capacitor-settings-launcher@0.1.2':
+    resolution: {integrity: sha512-5Jv7p+N3l+QWbDF2BA4rvRTtQDMu9NaZaagdM9akh8M6fdgAa1EAXbbUkbxNAT3fCufjeReWafWSvZvpOvJ+Dg==}
     peerDependencies:
       '@capacitor/core': '>=8.0.0'
 
@@ -6347,6 +6363,14 @@ snapshots:
       '@capacitor/core': 8.5.0
 
   '@capawesome/capacitor-app-shortcuts@8.0.2(patch_hash=2581c86d60ce7892c0b3136523994591d24ee7313bbc5fc9b4ad1c710719c70a)(@capacitor/core@8.5.0)':
+    dependencies:
+      '@capacitor/core': 8.5.0
+
+  '@capawesome/capacitor-screen-orientation@8.0.3(@capacitor/core@8.5.0)':
+    dependencies:
+      '@capacitor/core': 8.5.0
+
+  '@capawesome/capacitor-settings-launcher@0.1.2(@capacitor/core@8.5.0)':
     dependencies:
       '@capacitor/core': 8.5.0
 

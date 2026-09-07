@@ -40,22 +40,6 @@ export function setAndroidAutoPictureInPicture(enabled, video) {
   }) ?? Promise.resolve()
 }
 
-export function shouldRotateFullscreenToLandscape(fullscreen, video, enabled = true) {
-  return Boolean(
-    enabled &&
-    fullscreen &&
-    video?.videoWidth > 0 &&
-    video?.videoHeight > 0 &&
-    video.videoWidth > video.videoHeight
-  )
-}
-
-export function setAndroidFullscreenOrientation(fullscreen, video, enabled = true) {
-  return AndroidUi?.setFullscreenOrientation({
-    landscape: shouldRotateFullscreenToLandscape(fullscreen, video, enabled),
-  }) ?? Promise.resolve()
-}
-
 /**
  * @param {{active: boolean, fullscreen: boolean, controlsShown: boolean}} state
  * @returns {boolean}

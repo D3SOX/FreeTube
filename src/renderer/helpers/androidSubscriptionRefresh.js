@@ -87,11 +87,6 @@ export async function acknowledgeAndroidSubscriptionRefreshResult(id) {
   if (!removed) throw new Error('Unable to acknowledge pending subscription refresh data')
 }
 
-export function openAndroidNotificationSettings() {
-  if (!SubscriptionRefresh) return Promise.resolve()
-  return SubscriptionRefresh.openNotificationSettings()
-}
-
 export async function addAndroidSubscriptionRefreshCancelledListener(listener) {
   if (!SubscriptionRefresh) return () => {}
   const handle = await SubscriptionRefresh.addListener('cancelled', listener)
