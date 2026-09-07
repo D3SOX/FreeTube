@@ -77,6 +77,7 @@
       <FtButton
         :label="t('KeyboardShortcutPrompt.Reset to Defaults')"
         :icon="['fas', 'undo']"
+        :disabled="isDefaultNavigation"
         theme="secondary"
         @click="resetItems"
       />
@@ -105,6 +106,11 @@
           aria-hidden="true"
           @dragstart="startDragging($event, item.id)"
           @dragend="stopDragging"
+          @pointerdown="startPointerDrag($event, item.id)"
+          @pointermove="movePointerDrag"
+          @pointerup="endPointerDrag"
+          @pointercancel="cancelPointerDrag"
+          @lostpointercapture="cancelPointerDrag"
         >
           <FtIcon :icon="['fas', 'grip']" />
         </span>
@@ -213,6 +219,10 @@ const catalog = computed(() => NAVIGATION_ITEM_DEFINITIONS
   })))
 const catalogById = computed(() => new Map(catalog.value.map(item => [item.id, item])))
 const navigationItems = computed(() => store.getters.getNavigationItems)
+const isDefaultNavigation = computed(() => (
+  navigationItems.value.length === DEFAULT_NAVIGATION_ITEMS.length &&
+  navigationItems.value.every((id, index) => id === DEFAULT_NAVIGATION_ITEMS[index])
+))
 const selectedItems = computed(() => navigationItems.value
   .map(id => catalogById.value.get(id))
   .filter(item => item != null))
@@ -347,9 +357,14 @@ const {
   handleDragOver,
   startDragging,
   stopDragging,
+  startPointerDrag,
+  movePointerDrag,
+  endPointerDrag,
+  cancelPointerDrag,
 } = useOrderedItemDrag({
   items: navigationItems,
   rowSelector: '.selectedItem',
+  itemIdAttribute: 'data-navigation-item-id',
   updateItems,
   announceMoved: announceItemMoved,
 })
@@ -480,6 +495,7 @@ function resetItems() {
 }
 
 .dragHandle {
+  touch-action: none;
   align-items: center;
   align-self: stretch;
   color: var(--secondary-text-color);
