@@ -781,7 +781,10 @@ for (const scale of [1, 1.25]) {
         const bounds = await button.boundingBox()
         const point = { x: bounds.x + bounds.width / 2, y: bounds.y + bounds.height / 2 }
         await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [point] })
+        // Model a 200ms swipe. Back-to-back CDP moves at fractional zoom can
+        // leave Chromium suppressing the next stationary tap's generated click.
         for (let distance = 12; distance <= 96; distance += 12) {
+          await page.waitForTimeout(25)
           await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ ...point, y: point.y - distance }] })
         }
         await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] })
