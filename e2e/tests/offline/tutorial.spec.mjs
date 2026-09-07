@@ -2,6 +2,46 @@ import { test, expect, setWindowSize } from '../../helpers/app.mjs'
 
 test.use({ showTutorial: true })
 
+for (const zoom of [1, 0.95]) {
+  test(`neutral tutorial buttons have the same visible height as colored buttons at ${zoom} scale`, async ({ page }, testInfo) => {
+    await page.evaluate(() => localStorage.setItem('opentubex.tutorial.audience', 'new'))
+    await page.reload()
+    await page.evaluate(factor => window.ftElectron.setZoomFactor(factor), zoom)
+
+    const tutorial = page.locator('.tutorialCard')
+    await expect(tutorial).toHaveAccessibleName('Welcome to OpenTubeX')
+
+    for (const theme of ['light', 'dark']) {
+      await page.evaluate(async baseTheme => {
+        const store = document.querySelector('#app')._vnode.component.appContext.config.globalProperties.$store
+        await store.dispatch('updateBaseTheme', baseTheme)
+      }, theme)
+
+      // A contrasting border shrinks the visible fill even when the outer
+      // bounds match. Compare both the bounds and the painted background.
+      const buttons = tutorial.locator('.tutorialActions .btn')
+      await expect(buttons).toHaveCount(2)
+      const metrics = await buttons.evaluateAll(elements => elements.map(element => {
+        const style = getComputedStyle(element)
+        const bounds = element.getBoundingClientRect()
+        const borderBlends = style.borderTopColor === style.backgroundColor ||
+          (style.borderTopColor === 'rgba(0, 0, 0, 0)' && style.backgroundClip === 'border-box')
+        const borderHeight = Number.parseFloat(style.borderTopWidth) + Number.parseFloat(style.borderBottomWidth)
+        return {
+          height: bounds.height,
+          visibleHeight: bounds.height - (borderBlends ? 0 : borderHeight)
+        }
+      }))
+      expect(metrics[0].height).toBeCloseTo(metrics[1].height, 1)
+      expect(metrics[0].visibleHeight).toBeCloseTo(metrics[1].visibleHeight, 1)
+      await testInfo.attach(`Tutorial buttons in ${theme} theme at ${zoom} scale`, {
+        body: await tutorial.screenshot({ animations: 'disabled' }),
+        contentType: 'image/png'
+      })
+    }
+  })
+}
+
 async function expectHighlightCenteredOn(page, targetSelector) {
   await expect.poll(async () => {
     const [highlight, target] = await Promise.all([
