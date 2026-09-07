@@ -1320,6 +1320,8 @@ Change Format:
   yt-dlp Default Clients Fallback: De foretrukne yt-dlp-klienter kunne ikke levere streams, der kunne afspilles. Prøver yt-dlp's standardklienter i stedet
   Built-in Fallback Template: 'Den indbyggede motor kunne ikke afspille streamen. Prøver yt-dlp i stedet: {error}'
 Share:
+  Share Link: "Del link"
+  Share failed: "Linket kunne ikke deles"
   Share Post: Del opslag
   Timestamp Link Copied: Linket med tidsstempel er kopieret til udklipsholderen
 Context Menu:

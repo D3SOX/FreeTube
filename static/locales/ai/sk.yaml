@@ -1261,6 +1261,8 @@ Change Format:
   yt-dlp Default Clients Fallback: Uprednostnení klienti yt-dlp neposkytli prehrateľné streamy, preto sa skúšajú predvolení klienti yt-dlp
   Built-in Fallback Template: 'Vstavaný modul nedokázal prehrať stream, preto sa skúša yt-dlp: {error}'
 Share:
+  Share Link: "Zdieľať odkaz"
+  Share failed: "Odkaz sa nepodarilo zdieľať"
   Timestamp Link Copied: Odkaz s časovým údajom bol skopírovaný do schránky
 Context Menu:
   Context Menu: Kontextová ponuka

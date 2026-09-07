@@ -2246,6 +2246,8 @@ Change Format:
   Built-in Fallback Template: 'The built-in engine could not play the stream, trying
     yt-dlp instead: {error}'
 Share:
+  Share Link: "Share Link"
+  Share failed: "Could not share the link"
   Share Video: Share Video
   Share Post: Share Post
   Share Channel: Share Channel

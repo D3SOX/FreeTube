@@ -28,6 +28,10 @@
   white-space: initial;
 }
 
+.nativeShare {
+  min-block-size: 48px;
+}
+
 .divider {
   background: var(--border-color);
   grid-row: span 3;

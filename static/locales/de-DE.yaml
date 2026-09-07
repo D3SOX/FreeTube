@@ -2032,6 +2032,8 @@ Change Format:
     Standardclients von yt-dlp versucht
   Built-in Fallback Template: 'Die integrierte Engine konnte den Stream nicht wiedergeben. Stattdessen wird yt-dlp versucht: {error}'
 Share:
+  Share Link: "Link teilen"
+  Share failed: "Link konnte nicht geteilt werden"
   Share Video: Video teilen
   Share Playlist: Playlist teilen
   Copy Link: Link kopieren

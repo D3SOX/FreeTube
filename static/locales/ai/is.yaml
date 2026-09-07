@@ -1290,6 +1290,8 @@ Change Format:
   yt-dlp Default Clients Fallback: Valdir yt-dlp-biðlarar gátu ekki útvegað spilanlegt streymi, reyni sjálfgefna yt-dlp-biðlara í staðinn
   Built-in Fallback Template: 'Innbyggða vélin gat ekki spilað streymið, reyni yt-dlp í staðinn: {error}'
 Share:
+  Share Link: "Deila tengli"
+  Share failed: "Ekki tókst að deila tenglinum"
   Timestamp Link Copied: Tengill með tímamerki afritaður á klippispjald
 Context Menu:
   Context Menu: Samhengisvalmynd

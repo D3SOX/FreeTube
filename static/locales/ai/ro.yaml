@@ -1287,6 +1287,8 @@ Change Format:
   yt-dlp Default Clients Fallback: Clienții yt-dlp preferați nu au putut furniza fluxuri redabile; se încearcă în schimb clienții impliciți ai yt-dlp
   Built-in Fallback Template: 'Motorul încorporat nu a putut reda fluxul; se încearcă în schimb yt-dlp: {error}'
 Share:
+  Share Link: "Distribuie linkul"
+  Share failed: "Linkul nu a putut fi distribuit"
   Share Post: Distribuie postarea
   Timestamp Link Copied: Linkul cu marcaj temporal a fost copiat în clipboard
 Context Menu:

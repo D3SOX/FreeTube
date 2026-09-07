@@ -1257,6 +1257,8 @@ Change Format:
   yt-dlp Default Clients Fallback: Tercih edilen yt-dlp istemcileri oynatılabilir akış sağlayamadı, bunun yerine yt-dlp'nin varsayılan istemcileri deneniyor
   Built-in Fallback Template: 'Yerleşik motor akışı oynatamadı, bunun yerine yt-dlp deneniyor: {error}'
 Share:
+  Share Link: "Bağlantıyı paylaş"
+  Share failed: "Bağlantı paylaşılamadı"
   Timestamp Link Copied: Zaman damgası bağlantısı panoya kopyalandı
 Context Menu:
   Context Menu: Bağlam menüsü

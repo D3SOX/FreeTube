@@ -1263,6 +1263,8 @@ Change Format:
   yt-dlp Default Clients Fallback: Eelistatud yt-dlp kliendid ei saanud esitatavaid vooge hankida, proovitakse yt-dlp vaikekliente
   Built-in Fallback Template: 'Sisseehitatud mootor ei saanud voogu esitada, selle asemel proovitakse yt-dlp-d: {error}'
 Share:
+  Share Link: "Jaga linki"
+  Share failed: "Linki ei õnnestunud jagada"
   Timestamp Link Copied: Ajatempliga link kopeeriti lõikelauale
 Context Menu:
   Context Menu: Kontekstimenüü

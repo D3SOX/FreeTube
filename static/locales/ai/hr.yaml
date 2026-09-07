@@ -1269,6 +1269,8 @@ Change Format:
   yt-dlp Default Clients Fallback: Preferirani klijenti yt-dlp-a nisu mogli dohvatiti tokove koji se mogu reproducirati pa se pokušava sa zadanim klijentima yt-dlp-a
   Built-in Fallback Template: 'Ugrađeni modul nije mogao reproducirati tok pa se pokušava putem yt-dlp-a: {error}'
 Share:
+  Share Link: "Podijeli poveznicu"
+  Share failed: "Poveznicu nije moguće podijeliti"
   Timestamp Link Copied: Poveznica s vremenskom oznakom kopirana je u međuspremnik
 Context Menu:
   Context Menu: Kontekstni izbornik

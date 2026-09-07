@@ -1294,6 +1294,8 @@ Change Format:
   yt-dlp Default Clients Fallback: விரும்பிய yt-dlp கிளையன்ட்களால் இயக்கக்கூடிய ஸ்ட்ரீம்களை வழங்க முடியவில்லை; பதிலாக yt-dlp-இன் இயல்புநிலைக் கிளையன்ட்கள் முயற்சிக்கப்படுகின்றன
   Built-in Fallback Template: 'உள்ளமைந்த பொறியால் ஸ்ட்ரீமை இயக்க முடியவில்லை; பதிலாக yt-dlp முயற்சிக்கப்படுகிறது: {error}'
 Share:
+  Share Link: "இணைப்பைப் பகிர்"
+  Share failed: "இணைப்பைப் பகிர முடியவில்லை"
   Timestamp Link Copied: நேரக் குறிப்பு இணைப்பு இடைநிலைப் பலகைக்கு நகலெடுக்கப்பட்டது
 Context Menu:
   Context Menu: சூழல் மெனு

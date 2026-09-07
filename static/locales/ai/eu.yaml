@@ -1274,6 +1274,8 @@ Change Format:
   yt-dlp Default Clients Fallback: Hobetsitako yt-dlp bezeroek ezin izan dituzte korronte erreproduzigarriak eman; yt-dlp-ren bezero lehenetsiekin saiatzen
   Built-in Fallback Template: 'Motor integratuak ezin izan du korrontea erreproduzitu; yt-dlp-rekin saiatzen: {error}'
 Share:
+  Share Link: "Partekatu esteka"
+  Share failed: "Ezin izan da esteka partekatu"
   Timestamp Link Copied: Denbora-markaren esteka arbelean kopiatu da
 Context Menu:
   Context Menu: Laster-menua

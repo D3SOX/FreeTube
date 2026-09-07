@@ -1723,6 +1723,8 @@ Change Format:
   yt-dlp Default Clients Fallback: Prednostni odjemalci yt-dlp niso mogli zagotoviti predvajljivih pretokov, zato se poskuša s privzetimi odjemalci yt-dlp
   Built-in Fallback Template: 'Vgrajeni pogon ni mogel predvajati pretoka, zato se poskuša z yt-dlp: {error}'
 Share:
+  Share Link: "Deli povezavo"
+  Share failed: "Povezave ni bilo mogoče deliti"
   Share Post: Deli objavo
   Timestamp Link Copied: Povezava s časovnim žigom je kopirana v odložišče
 Clipboard:

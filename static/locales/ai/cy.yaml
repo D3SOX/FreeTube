@@ -1274,6 +1274,8 @@ Change Format:
   yt-dlp Default Clients Fallback: Nid oedd y cleientiaid yt-dlp dewisol yn gallu darparu ffrydiau y gellir eu chwarae; wrthi'n rhoi cynnig ar gleientiaid rhagosodedig yt-dlp yn eu lle
   Built-in Fallback Template: 'Nid oedd y peiriant mewnol yn gallu chwarae''r ffrwd; wrthi''n rhoi cynnig ar yt-dlp yn ei le: {error}'
 Share:
+  Share Link: "Rhannu dolen"
+  Share failed: "Methu rhannu’r ddolen"
   Timestamp Link Copied: Wedi copïo dolen y stamp amser i'r clipfwrdd
 Context Menu:
   Context Menu: Dewislen cyd-destun

@@ -1261,6 +1261,8 @@ Change Format:
   yt-dlp Default Clients Fallback: Предпочтительные клиенты yt-dlp не смогли получить потоки для воспроизведения, выполняется попытка с клиентами yt-dlp по умолчанию
   Built-in Fallback Template: 'Встроенный движок не смог воспроизвести поток, выполняется попытка через yt-dlp: {error}'
 Share:
+  Share Link: "Поделиться ссылкой"
+  Share failed: "Не удалось поделиться ссылкой"
   Timestamp Link Copied: Ссылка на момент времени скопирована в буфер обмена
 Context Menu:
   Context Menu: Контекстное меню

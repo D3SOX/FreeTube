@@ -1331,6 +1331,8 @@ Change Format:
   yt-dlp Default Clients Fallback: Выбраныя кліенты yt-dlp не змаглі атрымаць патокі для прайгравання, таму выкарыстоўваюцца прадвызначаныя кліенты yt-dlp
   Built-in Fallback Template: 'Убудаваны рухавік не змог прайграць паток, таму выкарыстоўваецца yt-dlp: {error}'
 Share:
+  Share Link: "Падзяліцца спасылкай"
+  Share failed: "Не ўдалося падзяліцца спасылкай"
   Share Post: Абагуліць допіс
   Timestamp Link Copied: Спасылка на гэты момант скапіявана ў буфер абмену
 Context Menu:

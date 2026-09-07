@@ -34,6 +34,14 @@
 
       <div class="buttons">
         <FtButton
+          v-if="isCapacitor"
+          class="action nativeShare"
+          aria-describedby="youtubeShareImage"
+          :icon="['fas', 'share-alt']"
+          :label="t('Share.Share Link')"
+          @click="shareYoutube"
+        />
+        <FtButton
           class="action"
           aria-describedby="youtubeShareImage"
           :icon="['fas', 'copy']"
@@ -79,6 +87,14 @@
 
         <div class="buttons">
           <FtButton
+            v-if="isCapacitor"
+            class="action nativeShare"
+            aria-describedby="invidiousShare"
+            :icon="['fas', 'share-alt']"
+            :label="t('Share.Share Link')"
+            @click="shareInvidious"
+          />
+          <FtButton
             aria-describedby="invidiousShare"
             class="action"
             :icon="['fas', 'copy']"
@@ -118,7 +134,7 @@
 
 <script setup>
 import { computed, ref, useTemplateRef } from 'vue'
-import { copyToClipboard, openExternalLink } from '../../helpers/utils'
+import { copyToClipboard, openExternalLink, shareLink } from '../../helpers/utils'
 import { appendTimestamp, getInvidiousVideoUrl, getYoutubeVideoShareUrl } from '../../helpers/share'
 import { useI18n } from 'vue-i18n'
 
@@ -129,6 +145,7 @@ import FtToggleSwitch from '../FtToggleSwitch/FtToggleSwitch.vue'
 import store from '../../store/index'
 
 const { t } = useI18n()
+const isCapacitor = process.env.IS_CAPACITOR
 
 const props = defineProps({
   shareTargetType: {
@@ -286,6 +303,18 @@ const youtubeEmbedURL = computed(() => {
 
 if (isVideo.value && !props.getTimestamp) {
   console.error('Error in props validation: A Video FtShareButton requires a valid get-timestamp function.')
+}
+
+function shareYoutube() {
+  const url = getFinalUrl(youtubeShareURL.value)
+  iconButton.value.hideDropdown()
+  return shareLink(url)
+}
+
+function shareInvidious() {
+  const url = getFinalUrl(invidiousURL.value)
+  iconButton.value.hideDropdown()
+  return shareLink(url)
 }
 
 function openInvidious() {

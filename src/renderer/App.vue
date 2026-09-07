@@ -219,6 +219,18 @@
             <FtIcon :icon="['fas', 'copy']" />
             {{ t('Share.Copy Link') }}
           </button>
+          <button
+            v-if="mobileContextLinkCopyUrl"
+            type="button"
+            role="menuitem"
+            @click="shareMobileContextLink"
+          >
+            <FtIcon
+              :icon="['fas', 'share-alt']"
+              aria-hidden="true"
+            />
+            {{ t('Share.Share Link') }}
+          </button>
         </section>
       </div>
     </Teleport>
@@ -436,7 +448,7 @@ import {
   shouldUseProgressToast,
 } from './helpers/progressPresentation'
 import { fetchReleasePages, findUpdateReleases, formatReleaseChangelog } from './helpers/releaseUpdates'
-import { copyToClipboard, openExternalLink, openInternalPath, showApiErrorToast, showToast } from './helpers/utils'
+import { copyToClipboard, openExternalLink, openInternalPath, shareLink, showApiErrorToast, showToast } from './helpers/utils'
 import {
   exitAndroidApp,
   getAndroidHardwareKeyboardState,
@@ -3746,6 +3758,14 @@ async function copyMobileContextLink() {
 
   closeMobileLinkActions()
   await copyToClipboard(url)
+}
+
+async function shareMobileContextLink() {
+  const url = mobileContextLinkCopyUrl.value
+  if (!url) return
+
+  closeMobileLinkActions()
+  await shareLink(url)
 }
 
 async function openMobileContextLink(newTab) {

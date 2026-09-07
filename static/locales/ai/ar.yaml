@@ -1284,6 +1284,8 @@ Change Format:
   yt-dlp Default Clients Fallback: لم يتمكن عملاء yt-dlp المفضلين من توفير تدفقات قابلة للتشغيل، وجربوا عملاء yt-dlp الافتراضيين بدلاً من ذلك
   Built-in Fallback Template: 'لم يتمكن المحرك المدمج من تشغيل البث، جرب yt-dlp بدلاً من ذلك: {error}'
 Share:
+  Share Link: "مشاركة الرابط"
+  Share failed: "تعذرت مشاركة الرابط"
   Timestamp Link Copied: تم نسخ رابط الطابع الزمني إلى الحافظة
 Context Menu:
   Context Menu: قائمة السياق
