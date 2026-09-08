@@ -233,7 +233,7 @@
                       :default-value="thumbnailSize"
                       setting-key="thumbnailSize"
                       :min-value="MIN_THUMBNAIL_SIZE"
-                      :max-value="MAX_THUMBNAIL_SIZE"
+                      :max-value="maxThumbnailSize"
                       :step="THUMBNAIL_SIZE_STEP"
                       value-extension="%"
                       @input="previewThumbnailSize"
@@ -407,8 +407,8 @@ import { localeTranslationPercentages } from '../../i18n/index'
 import { colors } from '../../helpers/colors'
 import { OPEN_COMMAND_PALETTE_EVENT } from '../../helpers/commandPalette'
 import { useColorTranslations } from '../../composables/colors'
+import { useThumbnailSizeSlider } from '../../composables/useThumbnailSizeSlider'
 import {
-  MAX_THUMBNAIL_SIZE,
   MIN_THUMBNAIL_SIZE,
   THUMBNAIL_SIZE_STEP
 } from '../../constants/thumbnailSize'
@@ -533,7 +533,7 @@ const mainColorAvailable = computed(() => (
   !usesFixedThemePalette.value
 ))
 const uiScale = computed(() => store.getters.getUiScale)
-const thumbnailSize = computed(() => store.getters.getThumbnailSize)
+const { thumbnailSize, maxThumbnailSize } = useThumbnailSizeSlider()
 const playNextVideo = computed(() => store.getters.getPlayNextVideo)
 const enableSubtitlesByDefault = computed(() => store.getters.getEnableSubtitlesByDefault)
 const listType = computed(() => store.getters.getListType)

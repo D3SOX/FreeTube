@@ -21,6 +21,13 @@
   justify-content: start;
 }
 
+@media (width <= 680px) {
+  .grid.youtubeStyleShorts.thumbnailSizeReady {
+    grid-template-columns: repeat(auto-fill, min(var(--thumbnail-grid-size), 100%));
+    justify-content: space-evenly;
+  }
+}
+
 .list {
   display: grid;
   gap: 4px;

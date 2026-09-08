@@ -309,7 +309,7 @@
         :default-value="thumbnailSize"
         setting-key="thumbnailSize"
         :min-value="MIN_THUMBNAIL_SIZE"
-        :max-value="MAX_THUMBNAIL_SIZE"
+        :max-value="maxThumbnailSize"
         :step="THUMBNAIL_SIZE_STEP"
         value-extension="%"
         @input="previewThumbnailSize"
@@ -394,8 +394,8 @@ import { customThemeIdFromValue, customThemeValue } from '../../customTheme'
 
 import { colors } from '../helpers/colors'
 import { useColorTranslations } from '../composables/colors'
+import { useThumbnailSizeSlider } from '../composables/useThumbnailSizeSlider'
 import {
-  MAX_THUMBNAIL_SIZE,
   MIN_THUMBNAIL_SIZE,
   THUMBNAIL_SIZE_STEP
 } from '../constants/thumbnailSize'
@@ -895,8 +895,7 @@ function updateUiScale(value) {
   store.dispatch('updateUiScale', value)
 }
 
-/** @type {import('vue').ComputedRef<number>} */
-const thumbnailSize = computed(() => store.getters.getThumbnailSize)
+const { thumbnailSize, maxThumbnailSize } = useThumbnailSizeSlider()
 const uiRoundness = computed(() => store.getters.getUiRoundness)
 const scrollbarThumbWidth = computed(
   () => normalizeScrollbarThumbWidth(store.getters.getScrollbarThumbWidth)

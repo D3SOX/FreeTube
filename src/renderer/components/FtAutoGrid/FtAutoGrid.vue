@@ -20,11 +20,12 @@
 </template>
 
 <script setup>
-import { computed, onBeforeUnmount, onMounted, ref, useTemplateRef, watch } from 'vue'
+import { computed, onActivated, onBeforeUnmount, onDeactivated, onMounted, ref, useTemplateRef, watch } from 'vue'
 
 import store from '../../store/index'
 
-import { getThumbnailGridStyles } from '../../constants/thumbnailSize'
+import { getThumbnailGridStyles, PHONE_THUMBNAIL_VIEWPORT_WIDTH } from '../../constants/thumbnailSize'
+import { setThumbnailGridVisible } from '../../composables/useThumbnailSizeSlider'
 import { getAnimationSpeedMultiplier } from '../../helpers/animationSpeed'
 import { measureStableGridWidth } from './gridWidth'
 
@@ -65,6 +66,22 @@ const feedTransitionDuration = computed(() => {
 // costs a layout pass over the whole feed. Dragging the thumbnail size slider
 // emits an event per step, which turned that into hundreds of forced layouts.
 let gridWidth = 0
+let active = true
+
+function updateGridSliderLimit() {
+  const element = gridElement.value?.$el
+  if (element) setThumbnailGridVisible(element, active && props.grid && gridWidth > 0)
+}
+
+watch(() => props.grid, updateGridSliderLimit)
+onActivated(() => {
+  active = true
+  updateGridSliderLimit()
+})
+onDeactivated(() => {
+  active = false
+  updateGridSliderLimit()
+})
 
 // Only whether the width is known needs to reach the template, and that flips
 // just once, right after mount.
@@ -104,7 +121,7 @@ function applyThumbnailSizeStyles() {
     return
   }
 
-  const styles = getThumbnailGridStyles(store.getters.getThumbnailSize, gridWidth)
+  const styles = getThumbnailGridStyles(store.getters.getThumbnailSize, gridWidth, window.innerWidth)
 
   for (const [property, value] of Object.entries(styles)) {
     element.style.setProperty(property, value)
@@ -131,10 +148,13 @@ function captureLeavingItemLayout(element) {
 }
 
 let resizeObserver = null
+let phoneWidthQuery = null
 let observedScrollbarWidth = 0
 let observedViewportWidth = null
 
 onMounted(() => {
+  phoneWidthQuery = window.matchMedia(`(width <= ${PHONE_THUMBNAIL_VIEWPORT_WIDTH}px)`)
+  phoneWidthQuery.addEventListener('change', applyThumbnailSizeStyles)
   reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
   prefersReducedMotion.value = reducedMotionQuery.matches
   reducedMotionQuery.addEventListener('change', handleReducedMotionChange)
@@ -161,6 +181,7 @@ onMounted(() => {
       }, 100)
 
       gridWidth = measurement.gridWidth
+      updateGridSliderLimit()
       applyThumbnailSizeStyles()
       thumbnailSizeReady.value = gridWidth > 0
     }
@@ -170,7 +191,10 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
+  active = false
+  updateGridSliderLimit()
   resizeObserver?.disconnect()
+  phoneWidthQuery?.removeEventListener('change', applyThumbnailSizeStyles)
   reducedMotionQuery?.removeEventListener('change', handleReducedMotionChange)
   clearTimeout(suppressResetTimeout)
 })

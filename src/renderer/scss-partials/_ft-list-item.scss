@@ -489,6 +489,7 @@ $watched-transition-duration: 0.5s;
     block-size: 100%;
 
     .info {
+      grid-template-columns: minmax(0, 1fr) auto;
       min-inline-size: 0;
     }
 
