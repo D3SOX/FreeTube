@@ -460,6 +460,15 @@ Settings:
         Destructive pressed: Action destructive à l’appui
         Text and icons on destructive actions: Texte et icônes des actions destructives
   Player Settings:
+    Swipe Gestures:
+      Fullscreen Brightness: Luminosité maximale en plein écran
+      Left: Balayage à gauche
+      Right: Balayage à droite
+      Disabled: Désactivé
+      Brightness: Luminosité
+      Volume: Volume
+      Hint: Balayez vers le haut ou le bas sur un côté de la vidéo.
+      Unavailable: Impossible de régler les commandes de lecture.
     yt-dlp Streaming: "Streaming yt-dlp"
     Continue Playback When Screen Is Locked: 'Continuer la lecture lorsque l’écran est verrouillé'
     Music Visualizer: Visualiseur de musique

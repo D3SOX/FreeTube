@@ -464,6 +464,15 @@ Settings:
         Destructive pressed: Tindakan destruktif saat ditekan
         Text and icons on destructive actions: Teks dan ikon pada tindakan destruktif
   Player Settings:
+    Swipe Gestures:
+      Fullscreen Brightness: Kecerahan penuh dalam layar penuh
+      Left: Usap sisi kiri
+      Right: Usap sisi kanan
+      Disabled: Dinonaktifkan
+      Brightness: Kecerahan
+      Volume: Volume
+      Hint: Usap ke atas atau bawah di salah satu sisi video.
+      Unavailable: Tidak dapat menyesuaikan kontrol pemutaran.
     yt-dlp Streaming: "Streaming yt-dlp"
     Continue Playback When Screen Is Locked: 'Lanjutkan pemutaran saat layar terkunci'
     Music Visualizer: Visualisator musik

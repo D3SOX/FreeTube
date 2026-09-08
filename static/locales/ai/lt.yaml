@@ -645,6 +645,15 @@ Settings:
       Everforest Light Blue: Everforest Light Blue
       Everforest Light Purple: Everforest Light Purple
   Player Settings:
+    Swipe Gestures:
+      Fullscreen Brightness: Didžiausias ryškumas visame ekrane
+      Left: Braukimas kairėje
+      Right: Braukimas dešinėje
+      Disabled: Išjungta
+      Brightness: Ryškumas
+      Volume: Garsumas
+      Hint: Braukite aukštyn arba žemyn vaizdo įrašo šone.
+      Unavailable: Nepavyko sureguliuoti atkūrimo valdiklių.
     yt-dlp Streaming: "yt-dlp srautinis perdavimas"
     Continue Playback When Screen Is Locked: 'Tęsti atkūrimą, kai ekranas užrakintas'
     Music Visualizer: Muzikos vizualizacija

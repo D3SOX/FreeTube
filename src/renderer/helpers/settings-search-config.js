@@ -219,6 +219,7 @@ export const SETTINGS_SEARCH_SELECT_GROUP_LABELS = {
     'Caption Appearance': [],
     'Default Viewing Mode': ['Default Viewing Mode', 'Tooltip'],
     'Auto Picture in Picture': ['Auto Picture in Picture'],
+    'Swipe Gestures': ['Left', 'Right', 'Fullscreen Brightness'],
     'Default Video Format': ['Default Video Format'],
     'Default Quality': ['Default Quality'],
     'Screenshot.Modes': []

@@ -460,6 +460,15 @@ Settings:
         Destructive pressed: 危險操作的按下狀態
         Text and icons on destructive actions: 危險操作上的文字與圖示
   Player Settings:
+    Swipe Gestures:
+      Fullscreen Brightness: 全螢幕時使用最高亮度
+      Left: 左側滑動
+      Right: 右側滑動
+      Disabled: 已停用
+      Brightness: 亮度
+      Volume: 音量
+      Hint: 在影片任一側上下滑動。
+      Unavailable: 無法調整播放控制項。
     yt-dlp Streaming: "yt-dlp 串流"
     Continue Playback When Screen Is Locked: '螢幕鎖定時繼續播放'
     Music Visualizer: 音樂視覺化工具

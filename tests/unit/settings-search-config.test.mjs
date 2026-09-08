@@ -177,6 +177,10 @@ test('mobile playback search excludes settings that have no Capacitor behavior',
   assert.ok(labels.has('Automatically enter Picture-in-Picture'))
   assert.ok(labels.has('Rotate wide videos to landscape in fullscreen'))
   assert.ok(labels.has('Swipe up or down to enter or exit fullscreen'))
+  for (const label of ['Left-side swipe', 'Right-side swipe', 'Full brightness in fullscreen']) {
+    assert.ok(labels.has(label))
+    assert.ok(!desktopLabels.has(label))
+  }
   assert.ok(!labels.has('Scroll Volume Over Video Player'))
   assert.ok(!labels.has('Remember Volume'))
   assert.ok(!labels.has('Default Volume'))

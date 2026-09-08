@@ -462,6 +462,15 @@ Settings:
         Destructive pressed: Ekintza suntsitzailea sakatzean
         Text and icons on destructive actions: Ekintza suntsitzaileetako testua eta ikonoak
   Player Settings:
+    Swipe Gestures:
+      Fullscreen Brightness: Distira maximoa pantaila osoan
+      Left: Irristatu ezkerreko aldean
+      Right: Irristatu eskuineko aldean
+      Disabled: Desgaituta
+      Brightness: Distira
+      Volume: Bolumena
+      Hint: Irristatu gora edo behera bideoaren albo batean.
+      Unavailable: Ezin izan dira erreprodukzio-kontrolak doitu.
     yt-dlp Streaming: "yt-dlp transmisioa"
     Continue Playback When Screen Is Locked: 'Jarraitu erreproduzitzen pantaila blokeatuta dagoenean'
     Music Visualizer: Musika-bistaratzailea

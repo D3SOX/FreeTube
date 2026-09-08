@@ -460,6 +460,15 @@ Settings:
         Destructive pressed: Pöördumatu toiming vajutamisel
         Text and icons on destructive actions: Pöördumatute toimingute tekst ja ikoonid
   Player Settings:
+    Swipe Gestures:
+      Fullscreen Brightness: Täisheledus täisekraanil
+      Left: Vasakul küljel pühkimine
+      Right: Paremal küljel pühkimine
+      Disabled: Keelatud
+      Brightness: Heledus
+      Volume: Helitugevus
+      Hint: Pühi video küljel üles või alla.
+      Unavailable: Taasesituse juhtelementide kohandamine ebaõnnestus.
     yt-dlp Streaming: "yt-dlp voogedastus"
     Continue Playback When Screen Is Locked: 'Jätka esitamist lukustatud ekraaniga'
     Music Visualizer: Muusika visualiseerija

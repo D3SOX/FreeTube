@@ -10,6 +10,7 @@ android {
 apply from: "../capacitor-cordova-android-plugins/cordova.variables.gradle"
 dependencies {
     implementation project(':capacitor-community-keep-awake')
+    implementation project(':capacitor-community-screen-brightness')
     implementation project(':capacitor-app')
     implementation project(':capacitor-barcode-scanner')
     implementation project(':capacitor-browser')
@@ -22,6 +23,7 @@ dependencies {
     implementation project(':capawesome-capacitor-screen-orientation')
     implementation project(':capawesome-capacitor-screenshot')
     implementation project(':capawesome-capacitor-settings-launcher')
+    implementation project(':capawesome-capacitor-volume')
 
 }
 

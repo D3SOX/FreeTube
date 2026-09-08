@@ -460,6 +460,15 @@ Settings:
         Destructive pressed: "Ober distrujus pouezet"
         Text and icons on destructive actions: "Testenn hag arlunioù war an oberoù distrujus"
   Player Settings:
+    Swipe Gestures:
+      Fullscreen Brightness: Sklerijenn uhelañ e skramm leun
+      Left: Riklañ a-gleiz
+      Right: Riklañ a-zehoù
+      Disabled: Diweredekaet
+      Brightness: Sklerijenn
+      Volume: Ampled
+      Hint: Riklit war-zu al laez pe an traoñ war gostez ar video.
+      Unavailable: N'eus ket bet gallet reizhañ ar reolerezhioù lenn.
     yt-dlp Streaming: "Skignañ yt-dlp"
     Continue Playback When Screen Is Locked: 'Kenderc’hel da lenn pa vez prennet ar skramm'
     Music Visualizer: Gweladur sonerezh

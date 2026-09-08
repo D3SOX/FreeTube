@@ -476,6 +476,15 @@ Settings:
       Catppuccin Latte Mauve: Catppuccin Latte Mauve
       Catppuccin Latte Red: Catppuccin Latte Red
   Player Settings:
+    Swipe Gestures:
+      Fullscreen Brightness: Fuld lysstyrke i fuld skærm
+      Left: Stryg i venstre side
+      Right: Stryg i højre side
+      Disabled: Deaktiveret
+      Brightness: Lysstyrke
+      Volume: Lydstyrke
+      Hint: Stryg op eller ned i en af videoens sider.
+      Unavailable: Kunne ikke justere afspilningskontrollerne.
     yt-dlp Streaming: "yt-dlp-streaming"
     Continue Playback When Screen Is Locked: 'Fortsæt afspilning, når skærmen er låst'
     Music Visualizer: Musikvisualisering

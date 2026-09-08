@@ -9,7 +9,9 @@ const bindingStart = source.indexOf('      if (player.nativePlayback) {\n       
 const binding = source.slice(bindingStart, source.indexOf('      wrapTextTrackSelection()', bindingStart))
 // Exercise the actual subscription setup and lifecycle cleanup, without loading
 // Shaka or the unrelated DOM teardown that follows these lifecycle prefixes.
-const unmount = source.split('    onBeforeUnmount(() => {')[1].split('      clearTimeout(paidPromotionTimer)')[0]
+const unmount = source.split('    onBeforeUnmount(() => {')
+  .find(body => body.trimStart().startsWith('screenWakeBinding?.destroy()'))
+  .split('      clearTimeout(paidPromotionTimer)')[0]
 const destroy = source.split('    async function destroyPlayer() {')[1].split('      ignoreErrors = true')[0]
 
 function fixture(native = true) {

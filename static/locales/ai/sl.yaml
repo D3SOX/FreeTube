@@ -654,6 +654,15 @@ Settings:
       Everforest Light Blue: Everforest Light Blue
       Everforest Light Purple: Everforest Light Purple
   Player Settings:
+    Swipe Gestures:
+      Fullscreen Brightness: Največja svetlost v celozaslonskem načinu
+      Left: Podrsaj na levi strani
+      Right: Podrsaj na desni strani
+      Disabled: Onemogočeno
+      Brightness: Svetlost
+      Volume: Glasnost
+      Hint: Podrsajte navzgor ali navzdol ob strani videoposnetka.
+      Unavailable: Kontrolnikov predvajanja ni bilo mogoče prilagoditi.
     yt-dlp Streaming: "Pretakanje z yt-dlp"
     Continue Playback When Screen Is Locked: 'Nadaljuj predvajanje, ko je zaslon zaklenjen'
     Music Visualizer: Glasbeni vizualizator

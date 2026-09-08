@@ -460,6 +460,15 @@ Settings:
         Destructive pressed: Törlő művelet lenyomáskor
         Text and icons on destructive actions: Törlő műveletek szövege és ikonjai
   Player Settings:
+    Swipe Gestures:
+      Fullscreen Brightness: Maximális fényerő teljes képernyőn
+      Left: Bal oldali húzás
+      Right: Jobb oldali húzás
+      Disabled: Kikapcsolva
+      Brightness: Fényerő
+      Volume: Hangerő
+      Hint: Húzza felfelé vagy lefelé a videó egyik oldalán.
+      Unavailable: Nem sikerült módosítani a lejátszás vezérlőit.
     yt-dlp Streaming: "yt-dlp streamelés"
     Continue Playback When Screen Is Locked: 'Lejátszás folytatása zárolt képernyőnél'
     Music Visualizer: Zenevizualizáció

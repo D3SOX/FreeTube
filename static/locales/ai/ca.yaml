@@ -678,6 +678,15 @@ Settings:
       Everforest Light Blue: Everforest Light Blue
       Everforest Light Purple: Everforest Light Purple
   Player Settings:
+    Swipe Gestures:
+      Fullscreen Brightness: Brillantor màxima a pantalla completa
+      Left: Lliscar al costat esquerre
+      Right: Lliscar al costat dret
+      Disabled: Desactivat
+      Brightness: Brillantor
+      Volume: Volum
+      Hint: Llisca amunt o avall a un costat del vídeo.
+      Unavailable: No s’han pogut ajustar els controls de reproducció.
     yt-dlp Streaming: "Reproducció en continu amb yt-dlp"
     Continue Playback When Screen Is Locked: 'Continua la reproducció amb la pantalla bloquejada'
     Music Visualizer: Visualitzador de música

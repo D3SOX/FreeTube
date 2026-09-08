@@ -587,6 +587,15 @@ Settings:
       Everforest Light Blue: Everforest Light Blue
       Everforest Light Purple: Everforest Light Purple
   Player Settings:
+    Swipe Gestures:
+      Fullscreen Brightness: Full lysstyrke i fullskjerm
+      Left: Sveip på venstre side
+      Right: Sveip på høgre side
+      Disabled: Deaktivert
+      Brightness: Lysstyrke
+      Volume: Lydstyrke
+      Hint: Sveip opp eller ned på ei av sidene av videoen.
+      Unavailable: Klarte ikkje å justera avspelingskontrollane.
     yt-dlp Streaming: "yt-dlp-strauming"
     Continue Playback When Screen Is Locked: 'Hald fram med avspeling når skjermen er låst'
     Music Visualizer: Musikkvisualisering

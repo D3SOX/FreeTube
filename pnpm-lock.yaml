@@ -18,6 +18,12 @@ importers:
 
   .:
     dependencies:
+      '@capawesome/capacitor-volume':
+        specifier: ^0.1.3
+        version: 0.1.3(@capacitor/core@8.5.0)
+      '@capacitor-community/screen-brightness':
+        specifier: ^8.0.0
+        version: 8.0.0(@capacitor/core@8.5.0)
       '@capacitor-community/keep-awake':
         specifier: ^8.0.1
         version: 8.0.1(@capacitor/core@8.5.0)
@@ -294,6 +300,16 @@ importers:
         version: 2.9.0
 
 packages:
+
+  '@capawesome/capacitor-volume@0.1.3':
+    resolution: {integrity: sha512-gS+NZkTp59kdte+c6vr1816mEwGdFrUAnq29ZVQrXoK8M7CMDg0i4r7Y5F2Bali0eWob3jQpWhzwEr6BDZTuYw==}
+    peerDependencies:
+      '@capacitor/core': '>=8.0.0'
+
+  '@capacitor-community/screen-brightness@8.0.0':
+    resolution: {integrity: sha512-gR0GPofqSSzaFhOYcv89RfTOldDUH+7A77+iIpZXxBe5tW60H0BEvl5H6S3dtfbljCGgsddXoIBtJ3GXp+aUJA==}
+    peerDependencies:
+      '@capacitor/core': '>=8.0.0'
 
   '@antfu/install-pkg@1.1.0':
     resolution: {integrity: sha512-MGQsmw10ZyI+EJo45CdSER4zEb+p31LpDAFp2Z3gkSd1yqVZGi0Ebx++YTEMonJy4oChEMLsxZ64j8FH6sSqtQ==}
@@ -5734,6 +5750,14 @@ packages:
     resolution: {integrity: sha512-7Tztl5QzNL4nIhiAxa4P/0C8cDDsUe0j4iaUeNiaA+ZfSe/l+HkHxXyoWlQXNW7IPi2n6AW23ysVMJLDh+AwWQ==}
 
 snapshots:
+
+  '@capawesome/capacitor-volume@0.1.3(@capacitor/core@8.5.0)':
+    dependencies:
+      '@capacitor/core': 8.5.0
+
+  '@capacitor-community/screen-brightness@8.0.0(@capacitor/core@8.5.0)':
+    dependencies:
+      '@capacitor/core': 8.5.0
 
   '@antfu/install-pkg@1.1.0':
     dependencies:

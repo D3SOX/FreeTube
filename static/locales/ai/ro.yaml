@@ -462,6 +462,15 @@ Settings:
         Destructive pressed: Acțiune distructivă la apăsare
         Text and icons on destructive actions: Text și pictograme pentru acțiunile distructive
   Player Settings:
+    Swipe Gestures:
+      Fullscreen Brightness: Luminozitate maximă pe ecran complet
+      Left: Glisare pe partea stângă
+      Right: Glisare pe partea dreaptă
+      Disabled: Dezactivat
+      Brightness: Luminozitate
+      Volume: Volum
+      Hint: Glisează în sus sau în jos pe o parte a videoclipului.
+      Unavailable: Nu s-au putut ajusta comenzile de redare.
     yt-dlp Streaming: "Streaming yt-dlp"
     Continue Playback When Screen Is Locked: 'Continuă redarea când ecranul este blocat'
     Music Visualizer: Vizualizator muzical

@@ -620,6 +620,15 @@ Settings:
       Everforest Light Blue: Everforest Light Blue
       Everforest Light Purple: Everforest Light Purple
   Player Settings:
+    Swipe Gestures:
+      Fullscreen Brightness: 전체 화면에서 최대 밝기 사용
+      Left: 왼쪽 스와이프
+      Right: 오른쪽 스와이프
+      Disabled: 사용 안 함
+      Brightness: 밝기
+      Volume: 음량
+      Hint: 동영상의 양쪽 가장자리에서 위아래로 스와이프하세요.
+      Unavailable: 재생 컨트롤을 조정할 수 없습니다.
     yt-dlp Streaming: "yt-dlp 스트리밍"
     Continue Playback When Screen Is Locked: '화면이 잠겨 있을 때도 재생 계속'
     Music Visualizer: 음악 시각화

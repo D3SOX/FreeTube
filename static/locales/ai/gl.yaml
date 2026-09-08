@@ -464,6 +464,15 @@ Settings:
         Destructive pressed: Acción destrutiva premida
         Text and icons on destructive actions: Texto e iconas das accións destrutivas
   Player Settings:
+    Swipe Gestures:
+      Fullscreen Brightness: Brillo máximo en pantalla completa
+      Left: Deslizar no lado esquerdo
+      Right: Deslizar no lado dereito
+      Disabled: Desactivado
+      Brightness: Brillo
+      Volume: Volume
+      Hint: Desliza cara arriba ou abaixo nun lado do vídeo.
+      Unavailable: Non se puideron axustar os controis de reprodución.
     yt-dlp Streaming: "Transmisión con yt-dlp"
     Continue Playback When Screen Is Locked: 'Continuar a reprodución coa pantalla bloqueada'
     Music Visualizer: Visualizador de música

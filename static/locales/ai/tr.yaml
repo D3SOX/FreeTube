@@ -460,6 +460,15 @@ Settings:
         Destructive pressed: Basılı yıkıcı işlem
         Text and icons on destructive actions: Yıkıcı işlemlerdeki metin ve simgeler
   Player Settings:
+    Swipe Gestures:
+      Fullscreen Brightness: Tam ekranda en yüksek parlaklık
+      Left: Sol tarafta kaydırma
+      Right: Sağ tarafta kaydırma
+      Disabled: Devre dışı
+      Brightness: Parlaklık
+      Volume: Ses düzeyi
+      Hint: Videonun bir yanında yukarı veya aşağı kaydırın.
+      Unavailable: Oynatma kontrolleri ayarlanamadı.
     yt-dlp Streaming: "yt-dlp Akışı"
     Continue Playback When Screen Is Locked: 'Ekran kilitliyken oynatmaya devam et'
     Music Visualizer: Müzik görselleştirici

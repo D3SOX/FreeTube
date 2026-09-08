@@ -464,6 +464,15 @@ Settings:
         Destructive pressed: Eyðandi aðgerð þegar ýtt er
         Text and icons on destructive actions: Texti og tákn á eyðandi aðgerðum
   Player Settings:
+    Swipe Gestures:
+      Fullscreen Brightness: Hámarksbirta í skjáfylli
+      Left: Strjúka vinstra megin
+      Right: Strjúka hægra megin
+      Disabled: Óvirkt
+      Brightness: Birtustig
+      Volume: Hljóðstyrkur
+      Hint: Strjúktu upp eða niður við hlið myndskeiðsins.
+      Unavailable: Ekki tókst að stilla spilunarstýringar.
     yt-dlp Streaming: "yt-dlp-streymi"
     Continue Playback When Screen Is Locked: 'Halda spilun áfram þegar skjárinn er læstur'
     Music Visualizer: Tónlistarmyndgerð
