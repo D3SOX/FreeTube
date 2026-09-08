@@ -142,6 +142,7 @@ Home Page:
   All sections hidden: Усі розділи приховано
   All sections hidden description: Налаштуйте головну, щоб знову показати розділ.
 Subscriptions:
+  Never show {type} from this channel in feeds again: Більше ніколи не показувати {type} із цього каналу в стрічках
   Refreshing Subscription Videos: Оновлення відео з підписок
   Refreshing Subscription Shorts: Оновлення коротких відео з підписок
   Refreshing Subscription Live Streams: Оновлення прямих трансляцій з підписок

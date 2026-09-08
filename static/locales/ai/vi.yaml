@@ -142,6 +142,7 @@ Home Page:
   All sections hidden: Tất cả các mục đều bị ẩn
   All sections hidden description: Tùy chỉnh Trang chủ để hiển thị lại một mục.
 Subscriptions:
+  Never show {type} from this channel in feeds again: Không bao giờ hiển thị {type} từ kênh này trong bảng tin nữa
   Refreshing Subscription Videos: Đang làm mới video từ kênh đăng ký
   Refreshing Subscription Shorts: Đang làm mới video ngắn từ kênh đăng ký
   Refreshing Subscription Live Streams: Đang làm mới luồng trực tiếp từ kênh đăng ký

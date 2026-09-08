@@ -55,6 +55,7 @@ Home Page:
   All sections hidden: Wszystkie sekcje są ukryte
   All sections hidden description: Dostosuj stronę główną, aby ponownie wyświetlić sekcję.
 Subscriptions:
+  Never show {type} from this channel in feeds again: Nigdy więcej nie pokazuj treści typu {type} z tego kanału w strumieniach
   New Content Tabs: Karty nowych treści
   Show Tabbed View: Pokaż widok kart
   Show Combined View: Pokaż widok łączny

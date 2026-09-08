@@ -283,4 +283,9 @@
     justify-content: center;
     min-inline-size: 1em;
   }
+
+  .listItem > .wrapLabel {
+    overflow-wrap: anywhere;
+    white-space: normal;
+  }
 }

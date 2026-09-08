@@ -437,6 +437,7 @@ import {
 } from '../../helpers/viewTransitions.js'
 import { setCollaboratorsLoading } from './collaboratorsLoading.js'
 import { useRelativeTimeClock } from '../../composables/useRelativeTimeClock.js'
+import { useHideSubscriptionFeedType } from '../../composables/useHideSubscriptionFeedType'
 import { useResultChannelAvatar } from '../../composables/useResultChannelAvatar.js'
 import { formatDate, formatDateTime } from '../../helpers/dateFormat.js'
 import thumbnailPlaceholder from '../../assets/img/thumbnail_placeholder.svg'
@@ -900,6 +901,8 @@ const hideSharingActions = computed(() => store.getters.getHideSharingActions)
 /** @type {import('vue').ComputedRef<boolean>} */
 const showInvidiousShareOptions = computed(() => backendPreference.value === 'invidious' || store.getters.getBackendFallback)
 
+const { hideSubscriptionFeedType, hideSubscriptionFeedTypeOption } = useHideSubscriptionFeedType(() => channelId.value)
+
 const dropdownOptions = computed(() => {
   const options = [
     {
@@ -946,6 +949,9 @@ const dropdownOptions = computed(() => {
         }]
       : [])
   ]
+  if (hideSubscriptionFeedTypeOption.value) {
+    options.push(hideSubscriptionFeedTypeOption.value)
+  }
   if (inUserPlaylist.value) {
     if (props.canMoveVideoUp || props.canMoveVideoDown) {
       options.push({ type: 'divider' })
@@ -1191,6 +1197,9 @@ function getInvidiousChannelUrl() {
  */
 function handleOptionsClick(option) {
   switch (option) {
+    case 'hideSubscriptionFeedType':
+      hideSubscriptionFeedType()
+      break
     case 'playNext':
       addToWatchQueue(true)
       break

@@ -142,6 +142,7 @@ Home Page:
   All sections hidden: Allir hlutar eru faldir
   All sections hidden description: Sérsníddu heimasíðuna til að sýna hluta aftur.
 Subscriptions:
+  Never show {type} from this channel in feeds again: Aldrei sýna aftur efni af gerðinni {type} frá þessari rás í straumum
   Refreshing Subscription Videos: Endurnýja myndbönd úr áskriftum
   Refreshing Subscription Shorts: Endurnýja Shorts-myndbönd úr áskriftum
   Refreshing Subscription Live Streams: Endurnýja beinar útsendingar úr áskriftum

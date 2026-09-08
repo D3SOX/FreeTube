@@ -160,6 +160,17 @@
         class="shareButton"
         :size="18"
       />
+      <FtIconButton
+        v-if="hideSubscriptionFeedTypeOption"
+        :icon="['fas', 'ellipsis-v']"
+        :title="$t('Video.More Options')"
+        theme="base-no-default"
+        :size="18"
+        :use-shadow="false"
+        dropdown-position-x="left"
+        :dropdown-options="[hideSubscriptionFeedTypeOption]"
+        @click="hideSubscriptionFeedType"
+      />
     </div>
   </div>
 </template>
@@ -174,6 +185,8 @@ import FtListPlaylist from '../FtListPlaylist/FtListPlaylist.vue'
 import FtCommunityPoll from '../FtCommunityPoll/FtCommunityPoll.vue'
 import FtNewContentDot from '../FtNewContentDot/FtNewContentDot.vue'
 import FtShareButton from '../FtShareButton/FtShareButton.vue'
+import FtIconButton from '../FtIconButton/FtIconButton.vue'
+import { useHideSubscriptionFeedType } from '../../composables/useHideSubscriptionFeedType'
 import { vSaferHtml } from '../../directives/vSaferHtml.js'
 
 import store from '../../store/index'
@@ -207,6 +220,7 @@ const props = defineProps({
 })
 
 const relativeTimeNow = useRelativeTimeClock()
+const { hideSubscriptionFeedType, hideSubscriptionFeedTypeOption } = useHideSubscriptionFeedType(() => props.data.authorId, true)
 
 /** @type {import('vue').ComputedRef<'grid' | 'list'>} */
 const listType = computed(() => {

@@ -55,6 +55,7 @@
     />
     <FtElementList
       :data="activeVideoList"
+      :subscription-feed-type="subscriptionFeedType ?? refreshTab"
       :use-channels-hidden-preference="false"
       :display="isCommunity ? 'list' : ''"
       :stable-item-keys="stableItemKeys"
@@ -120,6 +121,10 @@ const root = useTemplateRef('root')
 useKeepAliveEffectScope()
 
 const props = defineProps({
+  subscriptionFeedType: {
+    type: String,
+    default: null
+  },
   isLoading: {
     type: Boolean,
     default: false

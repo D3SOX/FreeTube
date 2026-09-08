@@ -152,6 +152,7 @@ Home Page:
   All sections hidden: همهٔ بخش‌ها پنهان هستند
   All sections hidden description: صفحهٔ اصلی را سفارشی کنید تا بخشی دوباره نمایش داده شود.
 Subscriptions:
+  Never show {type} from this channel in feeds again: دیگر هرگز {type} این کانال را در خوراک‌ها نشان نده
   Refreshing Subscription Videos: در حال تازه‌سازی ویدیوهای اشتراک‌ها
   Refreshing Subscription Shorts: در حال تازه‌سازی ویدیوهای کوتاه اشتراک‌ها
   Refreshing Subscription Live Streams: در حال تازه‌سازی پخش‌های زنده اشتراک‌ها

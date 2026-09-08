@@ -141,6 +141,7 @@ Home Page:
   All sections hidden description: Passe die Startseite an, um wieder einen Bereich anzuzeigen.
 
 Subscriptions:
+  Never show {type} from this channel in feeds again: Nie wieder {type} von diesem Kanal in Feeds anzeigen
     # On Subscriptions Page
   Subscriptions: Abos
   'Your Subscription list is currently empty. Start adding subscriptions to see them here.': Deine Aboliste ist derzeit leer. Wenn du deine Abos importieren möchtest, wähle in den Einstellungen unter dem Bereich „Daten“ „Abos importieren“. Alternativ kannst du nach einem Kanal suchen und diesen abonnieren.

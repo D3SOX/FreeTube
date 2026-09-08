@@ -144,6 +144,7 @@ Home Page:
   All sections hidden: Alle sektioner er skjult
   All sections hidden description: Tilpas startsiden for at vise en sektion igen.
 Subscriptions:
+  Never show {type} from this channel in feeds again: Vis aldrig {type} fra denne kanal i feeds igen
   Refreshing Subscription Videos: Opdaterer videoer fra abonnementer
   Refreshing Subscription Shorts: Opdaterer Shorts fra abonnementer
   Refreshing Subscription Live Streams: Opdaterer livestreams fra abonnementer

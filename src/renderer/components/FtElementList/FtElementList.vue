@@ -43,7 +43,8 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, provide } from 'vue'
+import { subscriptionFeedTypeKey } from '../../composables/useHideSubscriptionFeedType'
 
 import FtAutoGrid from '../FtAutoGrid/FtAutoGrid.vue'
 import FtListLazyWrapper from '../FtListLazyWrapper/FtListLazyWrapper.vue'
@@ -51,6 +52,10 @@ import FtListLazyWrapper from '../FtListLazyWrapper/FtListLazyWrapper.vue'
 import store from '../../store/index'
 
 const props = defineProps({
+  subscriptionFeedType: {
+    type: String,
+    default: null
+  },
   appear: {
     type: Boolean,
     default: false
@@ -150,6 +155,8 @@ const props = defineProps({
     default: false,
   },
 })
+
+provide(subscriptionFeedTypeKey, computed(() => props.subscriptionFeedType))
 
 const emit = defineEmits([
   'move-dragged-video',

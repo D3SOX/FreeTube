@@ -142,6 +142,7 @@ Home Page:
   All sections hidden: Todas as seccións están ocultas
   All sections hidden description: Personaliza o inicio para volver amosar unha sección.
 Subscriptions:
+  Never show {type} from this channel in feeds again: Non volver mostrar {type} desta canle nos fluxos
   Refreshing Subscription Videos: Actualizando os vídeos das subscricións
   Refreshing Subscription Shorts: Actualizando os vídeos curtos das subscricións
   Refreshing Subscription Live Streams: Actualizando as emisións en directo das subscricións

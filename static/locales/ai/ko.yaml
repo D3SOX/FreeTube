@@ -149,6 +149,7 @@ Home Page:
   All sections hidden: 모든 섹션이 숨겨져 있습니다
   All sections hidden description: 홈을 맞춤 설정하여 섹션을 다시 표시하세요.
 Subscriptions:
+  Never show {type} from this channel in feeds again: 이 채널의 {type} 콘텐츠를 피드에 다시 표시하지 않기
   Refreshing Subscription Videos: 구독 동영상 새로 고치는 중
   Refreshing Subscription Shorts: 구독 Shorts 새로 고치는 중
   Refreshing Subscription Live Streams: 구독 실시간 스트림 새로 고치는 중

@@ -142,6 +142,7 @@ Home Page:
   All sections hidden: Alle deler er skjult
   All sections hidden description: Tilpass startsiden for å vise en del igjen.
 Subscriptions:
+  Never show {type} from this channel in feeds again: Vis aldri {type} fra denne kanalen i strømmer igjen
   Refreshing Subscription Videos: Oppdaterer abonnementsvideoer
   Refreshing Subscription Shorts: Oppdaterer Shorts fra abonnementer
   Refreshing Subscription Live Streams: Oppdaterer direktesendinger fra abonnementer
