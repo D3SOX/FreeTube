@@ -36,7 +36,10 @@ test('embeds the generated nightly version in the Android web bundle', async () 
 
   assert.notEqual(packageVersionUpdate, -1)
   assert.ok(packageVersionUpdate < capacitorBuild)
-  assert.match(build, /gradlew --project-dir android :app:assembleNightly -PsplitApks/)
+  assert.match(
+    build,
+    /gradlew --project-dir android :app:assembleNightly -PsplitApks\s+\\\s+-I \.\.\/tests\/android\/build-identity\.init\.gradle\s+verifyBuildIdentity/
+  )
 })
 
 test('publishes all architecture APKs alongside the existing desktop artifacts', async (t) => {
@@ -108,7 +111,10 @@ for (const [channel, resourceDir, badge] of [['nightly', 'debug', 'wrench'], ['d
           `android/app/src/${resourceDir}/res/mipmap-${density}/${name}`
         )
 
-        assert.equal(png.subarray(1, 4).toString(), 'PNG')
+        assert.deepEqual(
+          png.subarray(0, 8),
+          Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])
+        )
         assert.equal(png.readUInt32BE(16), size)
         assert.equal(png.readUInt32BE(20), size)
       }
