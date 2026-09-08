@@ -1694,3 +1694,16 @@ Channels:
 Search Bar:
   Open Search Container: Buka kolom pencarian
   Search: Cari
+Theme Discovery:
+  Discover Themes: "Jelajahi tema"
+  Refresh: "Muat ulang"
+  View on GitHub: "Lihat di GitHub"
+  Load Error: "Tidak dapat memuat tema. Coba muat ulang."
+  Loading: "Memuat…"
+  No Themes: "Tidak ditemukan tema yang dapat dipasang."
+  No Preview: "Tangkapan layar tidak tersedia"
+  Load More: "Muat lebih banyak"
+  Applied: "Diterapkan"
+  Apply Theme: "Terapkan tema"
+  Install and Apply: "Pasang dan terapkan"
+  Update and Apply: "Perbarui dan terapkan"

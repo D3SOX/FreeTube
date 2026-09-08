@@ -1702,3 +1702,16 @@ Channels:
 Search Bar:
   Open Search Container: Άνοιγμα πεδίου αναζήτησης
   Search: Αναζήτηση
+Theme Discovery:
+  Discover Themes: "Ανακάλυψη θεμάτων"
+  Refresh: "Ανανέωση"
+  View on GitHub: "Προβολή στο GitHub"
+  Load Error: "Δεν ήταν δυνατή η φόρτωση θεμάτων. Δοκιμάστε ανανέωση."
+  Loading: "Φόρτωση…"
+  No Themes: "Δεν βρέθηκαν θέματα για εγκατάσταση."
+  No Preview: "Το στιγμιότυπο οθόνης δεν είναι διαθέσιμο"
+  Load More: "Φόρτωση περισσότερων"
+  Applied: "Εφαρμόστηκε"
+  Apply Theme: "Εφαρμογή θέματος"
+  Install and Apply: "Εγκατάσταση και εφαρμογή"
+  Update and Apply: "Ενημέρωση και εφαρμογή"

@@ -1656,3 +1656,16 @@ Downloads:
     Subtitles Format: Sous-titres - {format}
 Channels:
   Load More Channels: "Charger plus de chaînes"
+Theme Discovery:
+  Discover Themes: "Découvrir des thèmes"
+  Refresh: "Actualiser"
+  View on GitHub: "Voir sur GitHub"
+  Load Error: "Impossible de charger les thèmes. Essayez d'actualiser."
+  Loading: "Chargement…"
+  No Themes: "Aucun thème installable trouvé."
+  No Preview: "Capture d'écran indisponible"
+  Load More: "Charger plus"
+  Applied: "Appliqué"
+  Apply Theme: "Appliquer le thème"
+  Install and Apply: "Installer et appliquer"
+  Update and Apply: "Mettre à jour et appliquer"

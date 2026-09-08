@@ -1731,3 +1731,16 @@ Channels:
 Search Bar:
   Open Search Container: Отвори поље за претрагу
   Search: Претрага
+Theme Discovery:
+  Discover Themes: "Откриј теме"
+  Refresh: "Освежи"
+  View on GitHub: "Погледај на GitHub-у"
+  Load Error: "Није могуће учитати теме. Покушајте да освежите."
+  Loading: "Учитавање…"
+  No Themes: "Нису пронађене теме за инсталацију."
+  No Preview: "Снимак екрана није доступан"
+  Load More: "Учитај још"
+  Applied: "Примењено"
+  Apply Theme: "Примени тему"
+  Install and Apply: "Инсталирај и примени"
+  Update and Apply: "Ажурирај и примени"

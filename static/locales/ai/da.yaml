@@ -1740,3 +1740,16 @@ Channels:
 Search Bar:
   Open Search Container: Åbn søgefelt
   Search: Søg
+Theme Discovery:
+  Discover Themes: "Find temaer"
+  Refresh: "Opdater"
+  View on GitHub: "Vis på GitHub"
+  Load Error: "Kunne ikke indlæse temaer. Prøv at opdatere."
+  Loading: "Indlæser…"
+  No Themes: "Ingen temaer til installation fundet."
+  No Preview: "Skærmbillede ikke tilgængeligt"
+  Load More: "Indlæs flere"
+  Applied: "Anvendt"
+  Apply Theme: "Anvend tema"
+  Install and Apply: "Installer og anvend"
+  Update and Apply: "Opdater og anvend"

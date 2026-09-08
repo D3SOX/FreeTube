@@ -1658,3 +1658,16 @@ Downloads:
     Subtitles Format: 字幕 - {format}
 Channels:
   Load More Channels: "加载更多频道"
+Theme Discovery:
+  Discover Themes: "发现主题"
+  Refresh: "刷新"
+  View on GitHub: "在 GitHub 上查看"
+  Load Error: "无法加载主题。请尝试刷新。"
+  Loading: "加载中…"
+  No Themes: "未找到可安装的主题。"
+  No Preview: "截图不可用"
+  Load More: "加载更多"
+  Applied: "已应用"
+  Apply Theme: "应用主题"
+  Install and Apply: "安装并应用"
+  Update and Apply: "更新并应用"

@@ -1707,3 +1707,16 @@ Channels:
 Search Bar:
   Open Search Container: தேடல் பெட்டியைத் திற
   Search: தேடு
+Theme Discovery:
+  Discover Themes: "தீம்களைக் கண்டறி"
+  Refresh: "புதுப்பி"
+  View on GitHub: "GitHub இல் காண்க"
+  Load Error: "தீம்களை ஏற்ற முடியவில்லை. புதுப்பித்து முயற்சிக்கவும்."
+  Loading: "ஏற்றுகிறது…"
+  No Themes: "நிறுவக்கூடிய தீம்கள் எதுவும் இல்லை."
+  No Preview: "திரைப்பிடிப்பு கிடைக்கவில்லை"
+  Load More: "மேலும் ஏற்று"
+  Applied: "பயன்படுத்தப்பட்டது"
+  Apply Theme: "தீமைப் பயன்படுத்து"
+  Install and Apply: "நிறுவிப் பயன்படுத்து"
+  Update and Apply: "புதுப்பித்துப் பயன்படுத்து"

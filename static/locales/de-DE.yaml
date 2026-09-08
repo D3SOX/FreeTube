@@ -2852,3 +2852,16 @@ Tutorial:
       zur Profilauswahl. Das Zahnrad in diesem Menü öffnet alle Einstellungen. Auch „Über“ und „Downloads“ wurden in
       dieses Menü verschoben.
 The playlist is at the beginning. Enable loop to continue playing: Die Wiedergabeliste ist am Anfang. Aktiviere die Wiederholung, um die Wiedergabe fortzusetzen
+Theme Discovery:
+  Discover Themes: "Themes entdecken"
+  Refresh: "Aktualisieren"
+  View on GitHub: "Auf GitHub ansehen"
+  Load Error: "Themes konnten nicht geladen werden. Versuche, die Ansicht zu aktualisieren."
+  Loading: "Wird geladen…"
+  No Themes: "Keine installierbaren Themes gefunden."
+  No Preview: "Screenshot nicht verfügbar"
+  Load More: "Mehr laden"
+  Applied: "Angewendet"
+  Apply Theme: "Theme anwenden"
+  Install and Apply: "Installieren und anwenden"
+  Update and Apply: "Aktualisieren und anwenden"

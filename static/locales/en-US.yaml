@@ -2874,3 +2874,16 @@ Downloads:
     Audio Best: Audio - Best Quality
     Audio Format: Audio - {format}
     Subtitles Format: Subtitles - {format}
+Theme Discovery:
+  Discover Themes: "Discover themes"
+  Refresh: "Refresh"
+  View on GitHub: "View on GitHub"
+  Load Error: "Could not load themes. Try refreshing."
+  Loading: "Loading…"
+  No Themes: "No installable themes found."
+  No Preview: "Screenshot unavailable"
+  Load More: "Load more"
+  Applied: "Applied"
+  Apply Theme: "Apply theme"
+  Install and Apply: "Install and apply"
+  Update and Apply: "Update and apply"

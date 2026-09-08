@@ -873,3 +873,16 @@ Channels:
 Share:
   Share Link: "Udostępnij link"
   Share failed: "Nie udało się udostępnić linku"
+Theme Discovery:
+  Discover Themes: "Odkryj motywy"
+  Refresh: "Odśwież"
+  View on GitHub: "Zobacz na GitHubie"
+  Load Error: "Nie udało się wczytać motywów. Spróbuj odświeżyć."
+  Loading: "Wczytywanie…"
+  No Themes: "Nie znaleziono motywów do zainstalowania."
+  No Preview: "Zrzut ekranu niedostępny"
+  Load More: "Wczytaj więcej"
+  Applied: "Zastosowano"
+  Apply Theme: "Zastosuj motyw"
+  Install and Apply: "Zainstaluj i zastosuj"
+  Update and Apply: "Zaktualizuj i zastosuj"

@@ -1701,3 +1701,16 @@ Channels:
 Search Bar:
   Open Search Container: Opna leitarreit
   Search: Leita
+Theme Discovery:
+  Discover Themes: "Finna þemu"
+  Refresh: "Endurhlaða"
+  View on GitHub: "Skoða á GitHub"
+  Load Error: "Ekki tókst að hlaða þemum. Prófaðu að endurhlaða."
+  Loading: "Hleð…"
+  No Themes: "Engin þemu fundust til uppsetningar."
+  No Preview: "Skjámynd ekki tiltæk"
+  Load More: "Hlaða fleiri"
+  Applied: "Virkt"
+  Apply Theme: "Virkja þema"
+  Install and Apply: "Setja upp og virkja"
+  Update and Apply: "Uppfæra og virkja"

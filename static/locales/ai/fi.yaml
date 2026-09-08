@@ -1702,3 +1702,16 @@ Channels:
 Search Bar:
   Open Search Container: Avaa hakukenttä
   Search: Hae
+Theme Discovery:
+  Discover Themes: "Löydä teemoja"
+  Refresh: "Päivitä"
+  View on GitHub: "Näytä GitHubissa"
+  Load Error: "Teemoja ei voitu ladata. Kokeile päivittää."
+  Loading: "Ladataan…"
+  No Themes: "Asennettavia teemoja ei löytynyt."
+  No Preview: "Kuvakaappaus ei ole saatavilla"
+  Load More: "Lataa lisää"
+  Applied: "Käytössä"
+  Apply Theme: "Ota teema käyttöön"
+  Install and Apply: "Asenna ja ota käyttöön"
+  Update and Apply: "Päivitä ja ota käyttöön"

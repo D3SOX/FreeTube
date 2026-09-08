@@ -1674,3 +1674,16 @@ Channels:
 Search Bar:
   Open Search Container: Ava otsinguväli
   Search: Otsi
+Theme Discovery:
+  Discover Themes: "Avasta teemasid"
+  Refresh: "Värskenda"
+  View on GitHub: "Vaata GitHubis"
+  Load Error: "Teemade laadimine ebaõnnestus. Proovi värskendada."
+  Loading: "Laadimine…"
+  No Themes: "Paigaldatavaid teemasid ei leitud."
+  No Preview: "Kuvatõmmis pole saadaval"
+  Load More: "Laadi rohkem"
+  Applied: "Rakendatud"
+  Apply Theme: "Rakenda teema"
+  Install and Apply: "Paigalda ja rakenda"
+  Update and Apply: "Uuenda ja rakenda"

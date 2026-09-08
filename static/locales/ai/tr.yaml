@@ -1658,3 +1658,16 @@ Downloads:
     Subtitles Format: Alt Yazılar - {format}
 Channels:
   Load More Channels: "Daha fazla kanal yükle"
+Theme Discovery:
+  Discover Themes: "Temaları keşfet"
+  Refresh: "Yenile"
+  View on GitHub: "GitHub'da görüntüle"
+  Load Error: "Temalar yüklenemedi. Yenilemeyi deneyin."
+  Loading: "Yükleniyor…"
+  No Themes: "Yüklenebilir tema bulunamadı."
+  No Preview: "Ekran görüntüsü kullanılamıyor"
+  Load More: "Daha fazla yükle"
+  Applied: "Uygulandı"
+  Apply Theme: "Temayı uygula"
+  Install and Apply: "Yükle ve uygula"
+  Update and Apply: "Güncelle ve uygula"

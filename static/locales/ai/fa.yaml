@@ -1742,3 +1742,16 @@ Channels:
 Search Bar:
   Open Search Container: باز کردن کادر جستجو
   Search: جستجو
+Theme Discovery:
+  Discover Themes: "کشف پوسته‌ها"
+  Refresh: "تازه‌سازی"
+  View on GitHub: "مشاهده در GitHub"
+  Load Error: "بارگیری پوسته‌ها ممکن نشد. دوباره تازه‌سازی کنید."
+  Loading: "در حال بارگیری…"
+  No Themes: "پوسته‌ای برای نصب یافت نشد."
+  No Preview: "تصویر صفحه در دسترس نیست"
+  Load More: "بارگیری بیشتر"
+  Applied: "اعمال‌شده"
+  Apply Theme: "اعمال پوسته"
+  Install and Apply: "نصب و اعمال"
+  Update and Apply: "به‌روزرسانی و اعمال"

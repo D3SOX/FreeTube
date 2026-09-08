@@ -196,6 +196,11 @@ export function normalizeCustomTheme(value) {
 
   return {
     version: 2,
+    ...(/^discussion-[1-9]\d*$/.test(value.id) &&
+      typeof value.discussionThemeHash === 'string' &&
+      /^[\da-f]{64}$/.test(value.discussionThemeHash)
+      ? { discussionThemeHash: value.discussionThemeHash }
+      : {}),
     id: typeof value.id === 'string' && /^[\w-]{1,80}$/.test(value.id)
       ? value.id
       : 'custom-theme',
@@ -215,6 +220,16 @@ export function normalizeCustomTheme(value) {
     blurs,
     colors
   }
+}
+
+/** Hash the theme's normalized content, excluding local identity and source tracking. */
+export async function customThemeContentHash(value) {
+  const theme = normalizeCustomTheme(value)
+  delete theme.id
+  delete theme.discussionThemeHash
+  const content = new TextEncoder().encode(JSON.stringify(theme))
+  const hash = await globalThis.crypto.subtle.digest('SHA-256', content)
+  return Array.from(new Uint8Array(hash), byte => byte.toString(16).padStart(2, '0')).join('')
 }
 
 function deriveScrollbarActiveColor(hoverColor) {

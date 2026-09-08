@@ -3,6 +3,7 @@ import { test } from 'node:test'
 
 import {
   customThemeBackdropBlur,
+  customThemeContentHash,
   DEFAULT_CUSTOM_THEME,
   normalizeCustomTheme,
 } from '../../src/customTheme.js'
@@ -68,4 +69,45 @@ test('normalizes transparent colors and bounded backdrop blur strengths', () => 
   assert.equal(customThemeBackdropBlur(normalized.colors.cardBackground, 12), 'blur(12px)')
   assert.equal(customThemeBackdropBlur('#123456', 12), 'none')
   assert.equal(customThemeBackdropBlur('#12345680', 0), 'none')
+})
+
+test('preserves source fingerprints through save and sync, but drops them from copies', () => {
+  const theme = {
+    ...DEFAULT_CUSTOM_THEME,
+    id: 'discussion-1197',
+    discussionThemeHash: 'a'.repeat(64),
+  }
+  const normalized = normalizeCustomTheme(theme)
+  assert.equal(normalized.discussionThemeHash, 'a'.repeat(64))
+  assert.deepEqual(normalizeCustomTheme(JSON.parse(JSON.stringify(normalized))), normalized)
+  assert.equal(normalizeCustomTheme({ ...theme, id: 'my-copy' }).discussionThemeHash, undefined)
+  assert.equal(normalizeCustomTheme({ ...theme, discussionThemeHash: 'invalid' }).discussionThemeHash, undefined)
+})
+
+
+test('theme fingerprints ignore formatting, key order, local IDs and source fingerprints', async () => {
+  const theme = normalizeCustomTheme(DEFAULT_CUSTOM_THEME)
+  const expected = await customThemeContentHash(theme)
+  assert.match(expected, /^[\da-f]{64}$/)
+  const reordered = Object.fromEntries(Object.entries(theme).reverse())
+  reordered.colors = Object.fromEntries(Object.entries(theme.colors).reverse())
+  reordered.blurs = Object.fromEntries(Object.entries(theme.blurs).reverse())
+  assert.equal(await customThemeContentHash(JSON.parse(JSON.stringify(reordered, null, 4))), expected)
+  assert.equal(await customThemeContentHash({ ...theme, id: 'discussion-1197', discussionThemeHash: 'b'.repeat(64) }), expected)
+  assert.equal(await customThemeContentHash({ ...theme, colors: { ...theme.colors, background: '#ABCDEF' } }),
+    await customThemeContentHash({ ...theme, colors: { ...theme.colors, background: '#abcdef' } }))
+})
+
+test('theme fingerprints detect changes to colors, blur, name and theme settings', async () => {
+  const theme = normalizeCustomTheme(DEFAULT_CUSTOM_THEME)
+  const original = await customThemeContentHash(theme)
+  for (const patch of [
+    { colors: { ...theme.colors, background: '#112233' } },
+    { blurs: { ...theme.blurs, cardBackground: 10 } },
+    { name: 'New theme name' },
+    { isDark: !theme.isDark },
+    { basedOn: 'light' },
+    { mainColor: 'Purple' },
+    { secondaryColor: 'Green' },
+  ]) assert.notEqual(await customThemeContentHash({ ...theme, ...patch }), original)
 })

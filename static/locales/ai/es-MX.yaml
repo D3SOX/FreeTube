@@ -2092,3 +2092,16 @@ Channels:
 Search Bar:
   Open Search Container: Abrir el campo de búsqueda
   Search: Buscar
+Theme Discovery:
+  Discover Themes: "Descubrir temas"
+  Refresh: "Actualizar"
+  View on GitHub: "Ver en GitHub"
+  Load Error: "No se pudieron cargar los temas. Prueba a actualizar."
+  Loading: "Cargando…"
+  No Themes: "No se encontraron temas instalables."
+  No Preview: "Captura de pantalla no disponible"
+  Load More: "Cargar más"
+  Applied: "Aplicado"
+  Apply Theme: "Aplicar tema"
+  Install and Apply: "Instalar y aplicar"
+  Update and Apply: "Actualizar y aplicar"

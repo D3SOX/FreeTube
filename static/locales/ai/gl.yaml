@@ -1704,3 +1704,16 @@ Channels:
 Search Bar:
   Open Search Container: Abrir o campo de busca
   Search: Buscar
+Theme Discovery:
+  Discover Themes: "Descubrir temas"
+  Refresh: "Actualizar"
+  View on GitHub: "Ver en GitHub"
+  Load Error: "Non se puideron cargar os temas. Proba a actualizar."
+  Loading: "Cargando…"
+  No Themes: "Non se atoparon temas instalables."
+  No Preview: "Captura de pantalla non dispoñible"
+  Load More: "Cargar máis"
+  Applied: "Aplicado"
+  Apply Theme: "Aplicar tema"
+  Install and Apply: "Instalar e aplicar"
+  Update and Apply: "Actualizar e aplicar"

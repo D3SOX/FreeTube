@@ -1670,3 +1670,16 @@ Channels:
 Search Bar:
   Open Search Container: Открыть поле поиска
   Search: Поиск
+Theme Discovery:
+  Discover Themes: "Найти темы"
+  Refresh: "Обновить"
+  View on GitHub: "Посмотреть на GitHub"
+  Load Error: "Не удалось загрузить темы. Попробуйте обновить список."
+  Loading: "Загрузка…"
+  No Themes: "Темы для установки не найдены."
+  No Preview: "Снимок экрана недоступен"
+  Load More: "Загрузить ещё"
+  Applied: "Применено"
+  Apply Theme: "Применить тему"
+  Install and Apply: "Установить и применить"
+  Update and Apply: "Обновить и применить"

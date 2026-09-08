@@ -1676,3 +1676,16 @@ Channels:
 Search Bar:
   Open Search Container: Åpne søkefeltet
   Search: Søk
+Theme Discovery:
+  Discover Themes: "Finn temaer"
+  Refresh: "Last inn på nytt"
+  View on GitHub: "Vis på GitHub"
+  Load Error: "Kunne ikke laste inn temaer. Prøv å laste inn på nytt."
+  Loading: "Laster…"
+  No Themes: "Fant ingen temaer som kan installeres."
+  No Preview: "Skjermbilde utilgjengelig"
+  Load More: "Last inn flere"
+  Applied: "Tatt i bruk"
+  Apply Theme: "Bruk tema"
+  Install and Apply: "Installer og bruk"
+  Update and Apply: "Oppdater og bruk"

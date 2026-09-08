@@ -1658,3 +1658,16 @@ Downloads:
     Subtitles Format: Feliratok - {format}
 Channels:
   Load More Channels: "További csatornák betöltése"
+Theme Discovery:
+  Discover Themes: "Témák felfedezése"
+  Refresh: "Frissítés"
+  View on GitHub: "Megtekintés a GitHubon"
+  Load Error: "Nem sikerült betölteni a témákat. Próbálja frissíteni a listát."
+  Loading: "Betöltés…"
+  No Themes: "Nem találhatók telepíthető témák."
+  No Preview: "A képernyőkép nem érhető el"
+  Load More: "Továbbiak betöltése"
+  Applied: "Alkalmazva"
+  Apply Theme: "Téma alkalmazása"
+  Install and Apply: "Telepítés és alkalmazás"
+  Update and Apply: "Frissítés és alkalmazás"

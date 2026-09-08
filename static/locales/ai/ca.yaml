@@ -2302,3 +2302,16 @@ Downloads:
     Audio Best: Àudio - Millor qualitat
     Audio Format: Àudio - {format}
     Subtitles Format: Subtítols - {format}
+Theme Discovery:
+  Discover Themes: "Descobreix temes"
+  Refresh: "Actualitza"
+  View on GitHub: "Mostra al GitHub"
+  Load Error: "No s'han pogut carregar els temes. Prova d'actualitzar."
+  Loading: "S'està carregant…"
+  No Themes: "No s'han trobat temes instal·lables."
+  No Preview: "Captura de pantalla no disponible"
+  Load More: "Carrega'n més"
+  Applied: "Aplicat"
+  Apply Theme: "Aplica el tema"
+  Install and Apply: "Instal·la i aplica"
+  Update and Apply: "Actualitza i aplica"

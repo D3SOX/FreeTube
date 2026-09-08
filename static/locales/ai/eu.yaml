@@ -1685,3 +1685,16 @@ Channels:
 Search Bar:
   Open Search Container: Ireki bilaketa-eremua
   Search: Bilatu
+Theme Discovery:
+  Discover Themes: "Aurkitu gaiak"
+  Refresh: "Freskatu"
+  View on GitHub: "Ikusi GitHub-en"
+  Load Error: "Ezin izan dira gaiak kargatu. Saiatu freskatzen."
+  Loading: "Kargatzen…"
+  No Themes: "Ez da instalatzeko gairik aurkitu."
+  No Preview: "Pantaila-argazkia ez dago erabilgarri"
+  Load More: "Kargatu gehiago"
+  Applied: "Aplikatuta"
+  Apply Theme: "Aplikatu gaia"
+  Install and Apply: "Instalatu eta aplikatu"
+  Update and Apply: "Eguneratu eta aplikatu"

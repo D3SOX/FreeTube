@@ -1674,3 +1674,16 @@ Channels:
 Search Bar:
   Open Search Container: 開啟搜尋欄
   Search: 搜尋
+Theme Discovery:
+  Discover Themes: "探索佈景主題"
+  Refresh: "重新整理"
+  View on GitHub: "在 GitHub 上檢視"
+  Load Error: "無法載入佈景主題。請嘗試重新整理。"
+  Loading: "載入中…"
+  No Themes: "找不到可安裝的佈景主題。"
+  No Preview: "螢幕截圖無法使用"
+  Load More: "載入更多"
+  Applied: "已套用"
+  Apply Theme: "套用佈景主題"
+  Install and Apply: "安裝並套用"
+  Update and Apply: "更新並套用"

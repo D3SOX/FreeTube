@@ -309,6 +309,7 @@ watch(() => store.getters.getIsKeyboardShortcutPromptShown, (open) => {
 }, { flush: 'sync' })
 
 function setDraft(theme) {
+  draft.discussionThemeHash = theme.discussionThemeHash
   draft.version = theme.version
   draft.id = theme.id
   draft.name = theme.name
