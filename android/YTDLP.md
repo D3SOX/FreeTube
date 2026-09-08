@@ -56,7 +56,7 @@ After building the app and instrumentation APKs above, run these commands from t
 ```sh
 playback_test_device=DEVICE_SERIAL
 playback_test_class='org.opentubex.app.YtDlpPlaybackCacheTest#playbackSurvivesAppReplacement'
-playback_test_runner=org.opentubex.app.nightly.test/androidx.test.runner.AndroidJUnitRunner
+playback_test_runner=org.opentubex.app.dev.test/androidx.test.runner.AndroidJUnitRunner
 
 adb -s "$playback_test_device" install --user 0 -r android/app/build/outputs/apk/debug/app-debug.apk
 adb -s "$playback_test_device" install --user 0 -r android/app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk

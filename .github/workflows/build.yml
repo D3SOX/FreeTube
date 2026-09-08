@@ -474,7 +474,8 @@ jobs:
         export ANDROID_VERSION_CODE ANDROID_VERSION_NAME
 
         pnpm run capacitor:sync:android
-        ./android/gradlew --project-dir android :app:assembleNightly -PsplitApks
+        ./android/gradlew --project-dir android :app:assembleNightly -PsplitApks \
+          -I ../tests/android/build-identity.init.gradle verifyBuildIdentity
         python3 _scripts/android_apks.py android/app/build/outputs/apk/nightly android-apks \
           | tee -a "$GITHUB_STEP_SUMMARY"
         printf 'version=%s\n' "$version" >> "$GITHUB_OUTPUT"

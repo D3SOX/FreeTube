@@ -64,7 +64,11 @@ android {
             }
         }
     }
-    sourceSets { androidTest.assets.srcDirs += ['../../e2e/fixtures/media'] }
+    sourceSets {
+        debug.res.srcDirs = ['src/dev/res']
+        nightly.res.srcDirs = ['src/debug/res']
+        androidTest.assets.srcDirs += ['../../e2e/fixtures/media']
+    }
     if (project.findProperty('testBuildType') == 'nightly') {
         sourceSets.androidTest {
             java.srcDirs = ['src/optimizedAndroidTest/java']
@@ -79,10 +83,12 @@ android {
     }
     buildTypes {
         debug {
-            // The public nightly key must never be trusted for the production
-            // package identity. Keep preview builds isolated and installable
-            // alongside official releases.
-            applicationIdSuffix ".nightly"
+            // Local test builds must not receive published nightly updates.
+            // Both preview identities stay separate from production because
+            // the preview signing key is public.
+            applicationIdSuffix ".dev"
+            resValue "string", "app_name", "OpenTubeX Dev"
+            resValue "string", "title_activity_main", "OpenTubeX Dev"
             signingConfig signingConfigs.nightly
         }
         release {
@@ -96,11 +102,12 @@ android {
         nightly {
             initWith release
             applicationIdSuffix ".nightly"
+            resValue "string", "app_name", "OpenTubeX Nightly"
+            resValue "string", "title_activity_main", "OpenTubeX Nightly"
             signingConfig signingConfigs.nightly
             matchingFallbacks = ['release']
         }
     }
-    sourceSets { nightly.res.srcDirs = ['src/debug/res'] }
 }
 
 apply from: '../trim-runtime.gradle'
