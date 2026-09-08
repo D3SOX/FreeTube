@@ -471,6 +471,7 @@ test.describe('new subscriptions feed', () => {
     }, { channelId: CHANNEL_ID, videos: [video('fetched-later', 'Fetched after sync', now, { isNewInSubscriptionFeed: true })] })
     await expect(page.getByText('Fetched after sync', { exact: true })).toHaveCount(0)
     expect(uploads).toContain('history')
+    expect(uploads).toContain('seenVideos')
     expect((await decryptSyncDocument(remote.seenVideos, key)).map(entry => entry.videoId).sort())
       .toEqual(marks.map(entry => entry.videoId).sort())
 
