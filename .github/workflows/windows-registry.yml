@@ -2,7 +2,12 @@ name: Windows portable registry
 
 on:
   push:
-    branches: [restore-portable-registry-isolation]
+    branches: [development, master]
+    paths:
+      - '_scripts/windows-interposer/**'
+      - '_scripts/windows-registry-tests/**'
+      - '_scripts/windowsInterposer.mjs'
+      - '.github/workflows/windows-registry.yml'
   pull_request:
     paths:
       - '_scripts/windows-interposer/**'
@@ -36,4 +41,13 @@ jobs:
           & .cache/registry-tests/Release/registry-tests.exe --test $dll.FullName 'Software\OpenTubeX\RegistryRegression'
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           & .cache/registry-tests/Release/registry-tests.exe --overlay $dll.FullName 'Software\OpenTubeX\RegistryRegression'
+          exit $LASTEXITCODE
+      - name: Check unavailable hive stays isolated
+        run: |
+          $directory = New-Item .cache/unavailable-hive -ItemType Directory -Force
+          $dll = Get-ChildItem .cache/windows-interposer/*/version.dll | Select-Object -First 1
+          Copy-Item $dll.FullName (Join-Path $directory.FullName 'version.dll')
+          New-Item (Join-Path $directory.FullName '.interposer/Registry.hiv') -ItemType Directory -Force
+          Copy-Item _scripts/windows-interposer/Config.yml (Join-Path $directory.FullName '.interposer/Config.yml')
+          & .cache/registry-tests/Release/registry-tests.exe --unavailable (Join-Path $directory.FullName 'version.dll') 'Software\OpenTubeX\RegistryRegression'
           exit $LASTEXITCODE

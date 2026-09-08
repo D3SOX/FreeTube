@@ -120,7 +120,9 @@ HKEY PrivateHive()
     std::call_once(hiveInitialization, [] {
         if (!CreateDirectoryW(hiveDirectory.c_str(), nullptr) && GetLastError() != ERROR_ALREADY_EXISTS) return;
         // Options=0 shares the loaded hive between OpenTubeX processes.
-        RegLoadAppKeyW((hiveDirectory + L"\\Registry.hiv").c_str(), &hive, KEY_ALL_ACCESS, 0, 0);
+        HKEY loaded = nullptr;
+        if (RegLoadAppKeyW((hiveDirectory + L"\\Registry.hiv").c_str(), &loaded, KEY_ALL_ACCESS, 0, 0) == ERROR_SUCCESS)
+            hive = loaded;
     });
     return hive;
 }

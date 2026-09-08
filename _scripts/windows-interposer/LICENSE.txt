@@ -1,11 +1,10 @@
 LANCommander Interposer 1.1.0
 https://github.com/LANCommander/LANCommander.Interposer
 
-OpenTubeX builds the pinned upstream source with a local patch. The patch
-removes the unconditional %TEMP%\Interposer.log diagnostic and extends registry
-virtualization to native NT registry mutations used by Windows components in
-Electron processes. The patch is distributed beside this notice in the
-OpenTubeX source tree.
+OpenTubeX builds the pinned upstream source with a local patch and a replacement
+registry backend. Application registry keys use a private portable hive, while
+Windows system keys retain their normal behavior. These changes are distributed
+in the OpenTubeX source tree.
 
 MIT License
 

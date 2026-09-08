@@ -181,7 +181,8 @@ extern "C" int wmain(int argc, wchar_t** argv)
             Check(RegDeleteTreeW(HKEY_CURRENT_USER, fixture.c_str()), "cleanup host fixture");
             return 0;
         }
-        const bool primary = mode == L"--test";
+        const bool unavailable = mode == L"--unavailable";
+        const bool primary = mode == L"--test" || unavailable;
         std::wstring productName;
         HKEY preexisting = nullptr;
         if (primary)
@@ -198,6 +199,23 @@ extern "C" int wmain(int argc, wchar_t** argv)
         {
             Require(Read(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion", L"ProductName") == productName,
                 "system registry reads changed after loading Interposer");
+            if (unavailable) {
+                HKEY blocked = nullptr;
+                Require(RegOpenKeyExW(HKEY_CURRENT_USER, fixture.c_str(), 0, KEY_READ, &blocked) == ERROR_ACCESS_DENIED,
+                    "unavailable hive exposed host application data");
+                Require(RegCreateKeyExW(HKEY_CURRENT_USER, (fixture + L"\\LocalChild").c_str(), 0, nullptr, 0,
+                    KEY_ALL_ACCESS, nullptr, &blocked, nullptr) == ERROR_ACCESS_DENIED,
+                    "unavailable hive allowed host application writes");
+                wchar_t executable[32768];
+                Require(GetModuleFileNameW(nullptr, executable, 32768) != 0, "get test executable");
+                Child(executable, L"--host", dll, fixture);
+                CheckHttps();
+                Child(executable, L"--cleanup", dll, fixture);
+                Child(executable, L"--remove-parent", dll, fixture);
+                RegCloseKey(preexisting);
+                std::cout << "Unavailable hive kept application state isolated and HTTPS working\n";
+                return 0;
+            }
             Require(RegSetValueExW(preexisting, L"Original", 0, REG_SZ, nullptr, 0) == ERROR_ACCESS_DENIED,
                 "pre-injection handle changed host application data");
             RegCloseKey(preexisting);
