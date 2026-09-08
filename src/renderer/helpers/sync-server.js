@@ -1013,7 +1013,7 @@ export async function syncProfiles(client, store, previous = {}, options = {}) {
     const oldMetadata = previous[id]?.metadata
     const localMetadata = local ? profileMetadata(local, oldMetadata) : null
     const remoteMetadata = remote
-      ? remoteProfileMetadata(remote.group, oldMetadata ?? localMetadata)
+      ? remoteProfileMetadata(remote.group, oldMetadata ?? localMetadata ?? {})
       : null
     const localChanged = localMetadata && !metadataEquals(localMetadata, oldMetadata)
     const remoteChanged = remoteMetadata && !metadataEquals(remoteMetadata, oldMetadata)
