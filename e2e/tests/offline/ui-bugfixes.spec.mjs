@@ -523,57 +523,91 @@ for (const iconPack of ['material', 'remix']) {
   })
 }
 
-test('confirms opening all synced tabs in the phone organizer', async ({ app, page }, testInfo) => {
-  await setWindowSize(app, page, { width: 375, height: 760 })
-  await enablePhoneTabSwitcher(page)
-  await page.evaluate(() => {
-    const store = document.querySelector('#app').__vue_app__.config.globalProperties.$store
-    store.commit('setSyncServerEnabled', true)
-    store.commit('setSyncServerToken', 'e2e-token')
-    store.commit('setSyncServerPrivacyMode', 'enhanced')
-    store.commit('setSyncServerSyncSessions', true)
-    store.commit('setSyncServerSharedTabs', false)
-    store.commit('setSyncServerOtherDeviceSessions', [{
-      syncDeviceId: 'desktop-e2e',
-      syncPlatform: 'desktop',
-      sessionId: 'desktop-session',
-      tabs: [
-        { id: 'history', title: 'History', url: '/history' },
-        { id: 'playlists', title: 'Playlists', url: '/playlists' },
-      ],
-    }])
+for (const layout of ['phone', 'desktop']) {
+  test(`confirms opening all synced tabs in the ${layout} organizer`, async ({ app, page }) => {
+    if (layout === 'phone') {
+      await setWindowSize(app, page, { width: 375, height: 760 })
+      await enablePhoneTabSwitcher(page)
+    }
+    await page.evaluate(() => {
+      const store = document.querySelector('#app').__vue_app__.config.globalProperties.$store
+      const openSession = store._actions.openSyncServerSession[0]
+      window.__syncOpen = { calls: 0 }
+      store._actions.openSyncServerSession[0] = async session => {
+        window.__syncOpen.calls += 1
+        await new Promise((resolve, reject) => {
+          window.__syncOpen.release = fail => fail ? reject(new Error('Test opening failure')) : resolve()
+        })
+        return openSession(session)
+      }
+      store.commit('setSyncServerEnabled', true)
+      store.commit('setSyncServerToken', 'e2e-token')
+      store.commit('setSyncServerPrivacyMode', 'enhanced')
+      store.commit('setSyncServerSyncSessions', true)
+      store.commit('setSyncServerSharedTabs', false)
+      store.commit('setSyncServerOtherDeviceSessions', [{
+        syncDeviceId: 'desktop-e2e',
+        syncPlatform: 'desktop',
+        sessionId: 'desktop-session',
+        tabs: [
+          { id: 'history', title: 'History', url: '/history' },
+          { id: 'playlists', title: 'Playlists', url: '/playlists' },
+        ],
+      }])
+    })
+    const tabIdsBefore = await page.evaluate(() => window.ftElectron.tabs.getState().then(state => state.tabs.map(tab => tab.id)))
+    await page.locator(layout === 'phone' ? '.capacitorPhoneTabSwitcherButton' : '.tabBar .tabOrganizerButton').click()
+    const organizer = page.getByRole('dialog', { name: 'Tab Organizer', exact: true })
+    if (layout === 'phone') await organizer.getByRole('tab', { name: 'Tabs from other devices' }).click()
+    const openAll = organizer.getByRole('button', { name: 'Open all tabs' })
+    const confirmation = page.getByRole('dialog', { name: 'Open all tabs?', exact: true })
+    for (const dismiss of ['cancel', 'escape', 'backdrop']) {
+      await openAll.click()
+      await expect(confirmation).toContainText('Desktop · 2 tabs')
+      await expect(organizer).toHaveAttribute('inert', '')
+      if (layout === 'phone') {
+        expect(await confirmation.evaluate(element => getComputedStyle(element.closest('.prompt')).zIndex)).toBe('1200')
+      }
+      if (dismiss === 'cancel') await confirmation.getByRole('button', { name: 'Cancel' }).click()
+      else if (dismiss === 'escape') await page.keyboard.press('Escape')
+      else await page.locator('.prompt').click({ position: { x: 5, y: 5 } })
+      await expect(confirmation).toHaveCount(0)
+      await expect(organizer).not.toHaveAttribute('inert')
+      await expect(openAll).toBeFocused()
+      expect(await page.evaluate(() => window.ftElectron.tabs.getState().then(state => state.tabs.map(tab => tab.id))))
+        .toEqual(tabIdsBefore)
+    }
+    for (const [index, fail] of [true, false].entries()) {
+      await openAll.click()
+      await confirmation.getByRole('button', { name: 'Open all tabs', exact: true }).click()
+      await expect.poll(() => page.evaluate(() => window.__syncOpen.calls)).toBe(index + 1)
+      await expect(confirmation).toBeVisible()
+      await expect(organizer).toHaveAttribute('inert', '')
+      expect(await confirmation.evaluate(element => element.closest('.prompt').inert)).toBe(true)
+      // Synthetic clicks exercise the handler guard even when native inert filtering is bypassed.
+      await confirmation.getByRole('button', { name: 'Open all tabs', exact: true }).dispatchEvent('click')
+      await confirmation.getByRole('button', { name: 'Cancel', exact: true }).dispatchEvent('click')
+      await page.keyboard.press('Escape')
+      await expect(confirmation).toBeVisible()
+      expect(await page.evaluate(() => window.__syncOpen.calls)).toBe(index + 1)
+      await page.evaluate(fail => window.__syncOpen.release(fail), fail)
+      await expect(confirmation).toHaveCount(0)
+      if (fail) {
+        await expect(organizer).not.toHaveAttribute('inert')
+        await expect(openAll).toBeFocused()
+        expect(await page.evaluate(() => window.ftElectron.tabs.getState().then(state => state.tabs.map(tab => tab.id))))
+          .toEqual(tabIdsBefore)
+      }
+    }
+    if (layout === 'phone') await expect(organizer).toHaveCount(0)
+    else await expect(organizer).not.toHaveAttribute('inert')
+    await expect.poll(() => page.evaluate(() => window.ftElectron.tabs.getState().then(state => (
+      state.tabs.slice(-2).map(tab => tab.route.fullPath)
+    )))).toEqual(['/history', '/playlists'])
+    expect(await page.evaluate(() => window.ftElectron.tabs.getState().then(state => state.tabs.length)))
+      .toBe(tabIdsBefore.length + 2)
   })
-  const tabIdsBefore = await page.evaluate(() => window.ftElectron.tabs.getState().then(state => state.tabs.map(tab => tab.id)))
-  await page.locator('.capacitorPhoneTabSwitcherButton').click()
-  const organizer = page.locator('.capacitorPhoneTabDialog')
-  await organizer.getByRole('tab', { name: 'Tabs from other devices' }).click()
-  const openAll = organizer.getByRole('button', { name: 'Open all tabs' })
-  const confirmation = page.getByRole('dialog', { name: 'Open all tabs?', exact: true })
-  for (const dismiss of ['cancel', 'escape', 'backdrop']) {
-    await openAll.click()
-    await expect(confirmation).toContainText('Desktop · 2 tabs')
-    await expect(organizer).toHaveAttribute('inert', '')
-    expect(await confirmation.evaluate(element => getComputedStyle(element.closest('.prompt')).zIndex)).toBe('1200')
-    if (dismiss === 'cancel') await confirmation.getByRole('button', { name: 'Cancel' }).click()
-    else if (dismiss === 'escape') await page.keyboard.press('Escape')
-    else await page.locator('.prompt').click({ position: { x: 5, y: 5 } })
-    await expect(confirmation).toHaveCount(0)
-    await expect(organizer).not.toHaveAttribute('inert')
-    await expect(openAll).toBeFocused()
-    expect(await page.evaluate(() => window.ftElectron.tabs.getState().then(state => state.tabs.map(tab => tab.id))))
-      .toEqual(tabIdsBefore)
-  }
-  await openAll.click()
-  await confirmation.screenshot({ path: testInfo.outputPath('open-tabs-confirmation-mobile.png') })
-  await confirmation.getByRole('button', { name: 'Open all tabs', exact: true }).click()
-  await expect(confirmation).toHaveCount(0)
-  await expect(organizer).toHaveCount(0)
-  await expect.poll(() => page.evaluate(() => window.ftElectron.tabs.getState().then(state => (
-    state.tabs.slice(-2).map(tab => tab.route.fullPath)
-  )))).toEqual(['/history', '/playlists'])
-  expect(await page.evaluate(() => window.ftElectron.tabs.getState().then(state => state.tabs.length)))
-    .toBe(tabIdsBefore.length + 2)
-})
+}
 
 test('shows remote tab sets as tabs and confirms deletion in the phone organizer', async ({ app, page }) => {
   await setWindowSize(app, page, { width: 375, height: 760 })

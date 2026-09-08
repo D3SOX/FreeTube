@@ -606,6 +606,7 @@
   </Teleport>
   <FtPrompt
     v-if="sessionToOpen"
+    :inert="isOpeningSession"
     :label="t('Settings.Sync Settings.Open All Tabs Confirmation')"
     :extra-labels="[formatDeviceSessionLabel(sessionToOpen, t)]"
     :option-names="[t('Settings.Sync Settings.Open All Tabs'), t('Cancel')]"
@@ -664,6 +665,7 @@ const editingColorGroupId = ref(null)
 const failedTabAvatarUrls = ref({})
 const sessionToDelete = ref(null)
 const sessionToOpen = ref(null)
+const isOpeningSession = ref(false)
 const selectedOtherDeviceSessionKey = ref(null)
 const dialogRef = useTemplateRef('dialogRef')
 const searchRef = useTemplateRef('searchRef')
@@ -876,11 +878,25 @@ function selectOtherDeviceSessionAt(index, focus = false) {
 }
 
 async function handleOpenSessionPrompt(option) {
+  if (isOpeningSession.value) return
   const session = sessionToOpen.value
-  sessionToOpen.value = null
-  if (option !== 'open' || !session) return
+  if (option !== 'open' || !session) {
+    sessionToOpen.value = null
+    return
+  }
 
-  await store.dispatch('openSyncServerSession', session)
+  isOpeningSession.value = true
+  try {
+    await store.dispatch('openSyncServerSession', session)
+  } catch (error) {
+    showToast({
+      message: t('Settings.Sync Settings.Sync failed', { error: error.message }),
+      icon: ['fas', 'circle-exclamation'],
+    })
+  } finally {
+    sessionToOpen.value = null
+    isOpeningSession.value = false
+  }
 }
 
 async function handleDeleteSessionPrompt(option) {
