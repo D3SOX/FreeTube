@@ -36,6 +36,7 @@ import java.util.concurrent.Executors;
 public class AndroidMediaSessionService extends Service {
     private static java.lang.ref.WeakReference<AndroidMediaSessionService> activeService = new java.lang.ref.WeakReference<>(null);
     static final String ACTION_UPDATE = "org.opentubex.app.media.UPDATE";
+    static final String ACTION_STOP = "org.opentubex.app.media.STOP";
     static final String EXTRA_STATE = "state";
 
     private static final String ACTION_CONTROL_PREFIX = "org.opentubex.app.media.CONTROL.";
@@ -139,6 +140,11 @@ public class AndroidMediaSessionService extends Service {
         String action = intent == null ? null : intent.getAction();
         if (action != null && action.startsWith(ACTION_CONTROL_PREFIX)) {
             dispatchNotificationAction(action.substring(ACTION_CONTROL_PREFIX.length()));
+            return START_NOT_STICKY;
+        }
+
+        if (ACTION_STOP.equals(action)) {
+            stopPlaybackService();
             return START_NOT_STICKY;
         }
 

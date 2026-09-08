@@ -22,6 +22,47 @@ import java.util.Arrays;
 
 @RunWith(AndroidJUnit4.class)
 public class AndroidMediaSessionLifecycleTest {
+    @Test public void activityTeardownAfterUpdateDoesNotCrashTheProcess() throws Exception {
+        assertActivityTeardown(false);
+    }
+
+    @Test public void queuedUpdateCannotRestartPlaybackAfterActivityTeardown() throws Exception {
+        assertActivityTeardown(true);
+    }
+
+    private void assertActivityTeardown(boolean beforeStartup) throws Exception {
+        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        java.util.concurrent.CountDownLatch destroyed = new java.util.concurrent.CountDownLatch(1);
+        try (ActivityScenario<MainActivity> scenario = ActivityScenario.launch(MainActivity.class)) {
+            scenario.onActivity(activity -> {
+                activity.getBridge().getWebView().loadUrl("about:blank");
+                AndroidMediaSessionPlugin plugin = (AndroidMediaSessionPlugin)
+                    activity.getBridge().getPlugin("AndroidMediaSession").getInstance();
+                com.getcapacitor.JSObject data = new com.getcapacitor.JSObject();
+                data.put("state", new com.getcapacitor.JSObject()
+                    .put("title", "Activity teardown regression")
+                    .put("playbackState", "paused"));
+                Runnable destroy = () -> {
+                    // Replay activity cleanup before Android delivers onStartCommand.
+                    // Finishing alone leaves that ordering up to the system scheduler.
+                    plugin.handleOnDestroy();
+                    activity.finish();
+                    destroyed.countDown();
+                };
+                plugin.update(new com.getcapacitor.PluginCall(null, "AndroidMediaSession", "test", "update", data) {
+                    @Override public void resolve() {
+                        if (!beforeStartup) destroy.run();
+                    }
+                });
+                if (beforeStartup) destroy.run();
+            });
+            assertTrue(destroyed.await(3, java.util.concurrent.TimeUnit.SECONDS));
+            scenario.moveToState(androidx.lifecycle.Lifecycle.State.DESTROYED);
+            SystemClock.sleep(1500);
+            assertFalse("activity teardown removes media controls", hasForegroundNotification(context));
+        }
+    }
+
     @Test public void obsoleteOwnerStillAcknowledgesForegroundStartup() {
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         try (ActivityScenario<MainActivity> scenario = ActivityScenario.launch(MainActivity.class)) {

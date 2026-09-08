@@ -28,7 +28,13 @@ public class AndroidMediaSessionPlugin extends Plugin {
     protected void handleOnDestroy() {
         if (activePlugin.get() == this) {
             activePlugin.clear();
-            getContext().stopService(new Intent(getContext(), AndroidMediaSessionService.class));
+            try {
+                // Let pending foreground starts run and acknowledge before teardown.
+                getContext().startService(new Intent(getContext(), AndroidMediaSessionService.class)
+                    .setAction(AndroidMediaSessionService.ACTION_STOP));
+            } catch (IllegalStateException | SecurityException error) {
+                com.getcapacitor.Logger.error("Could not queue playback service shutdown", error);
+            }
         }
         super.handleOnDestroy();
     }
@@ -42,7 +48,7 @@ public class AndroidMediaSessionPlugin extends Plugin {
         }
 
         mainHandler.post(() -> {
-            if (!AndroidPlaybackPlugin.acceptsMediaOwner(state.optString("nativeOwner", ""))) {
+            if (activePlugin.get() != this || !AndroidPlaybackPlugin.acceptsMediaOwner(state.optString("nativeOwner", ""))) {
                 call.resolve();
                 return;
             }
