@@ -386,11 +386,8 @@ Settings:
       Import Theme: 导入主题
       Export Theme: 导出主题
       Share Theme: 分享主题
-      Share Description Heading: 说明
       Share Description Prompt: 请说明此主题以及使用前需要了解的事项。
-      Share Screenshots Heading: 屏幕截图
       Share Screenshots Prompt: "将一张或多张屏幕截图拖放到此处。 将此部分留空，机器人会使用示例内容添加三张预览图，不会使用你的个人数据。"
-      Share Code Summary: 主题 JSON
       Delete Theme: 删除主题
       Delete Theme Confirmation: 要删除“{name}”吗？此操作无法撤销。
       Save and Apply: 保存并应用

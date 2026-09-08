@@ -390,11 +390,8 @@ Settings:
       Import Theme: Flytja inn þema
       Export Theme: Flytja út þema
       Share Theme: Deila þema
-      Share Description Heading: Lýsing
       Share Description Prompt: Lýstu þemanu og því sem fólk þarf að vita áður en það notar það.
-      Share Screenshots Heading: Skjámyndir
       Share Screenshots Prompt: "Dragðu eina eða fleiri skjámyndir hingað og slepptu þeim. Skildu þennan hluta eftir auðan svo botninn bæti við þremur forsýningum með sýniefni, án persónuupplýsinga þinna."
-      Share Code Summary: JSON-gögn þema
       Delete Theme: Eyða þema
       Delete Theme Confirmation: Eyða „{name}“? Ekki er hægt að afturkalla þetta.
       Save and Apply: Vista og nota

@@ -522,11 +522,8 @@ Settings:
       Import Theme: Importuoti temą
       Export Theme: Eksportuoti temą
       Share Theme: Bendrinti temą
-      Share Description Heading: Aprašas
       Share Description Prompt: Aprašykite temą ir ką reikėtų žinoti prieš ją naudojant.
-      Share Screenshots Heading: Ekrano kopijos
       Share Screenshots Prompt: "Nuvilkite čia vieną ar daugiau ekrano kopijų. Palikite šį skyrių tuščią, kad robotas pridėtų tris peržiūras su pavyzdiniu turiniu, be jūsų asmens duomenų."
-      Share Code Summary: Temos JSON
       Delete Theme: Ištrinti temą
       Delete Theme Confirmation: Ištrinti „{name}“? Šio veiksmo anuliuoti negalima.
       Save and Apply: Išsaugoti ir pritaikyti

@@ -390,11 +390,8 @@ Settings:
       Import Theme: Importar un tema
       Export Theme: Exportar o tema
       Share Theme: Compartir o tema
-      Share Description Heading: Descrición
       Share Description Prompt: Describe o tema e o que cumpra saber antes de usalo.
-      Share Screenshots Heading: Capturas de pantalla
       Share Screenshots Prompt: "Arrastra e solta aquí unha ou varias capturas de pantalla. Deixa esta sección baleira para que o bot engada tres vistas previas con contido de exemplo, sen os teus datos persoais."
-      Share Code Summary: JSON do tema
       Delete Theme: Eliminar o tema
       Delete Theme Confirmation: Queres eliminar «{name}»? Esta acción non se pode desfacer.
       Save and Apply: Gardar e aplicar

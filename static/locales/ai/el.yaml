@@ -390,11 +390,8 @@ Settings:
       Import Theme: Εισαγωγή θέματος
       Export Theme: Εξαγωγή θέματος
       Share Theme: Κοινοποίηση θέματος
-      Share Description Heading: Περιγραφή
       Share Description Prompt: Περιγράψτε το θέμα και ό,τι πρέπει να γνωρίζουν οι χρήστες πριν το χρησιμοποιήσουν.
-      Share Screenshots Heading: Στιγμιότυπα οθόνης
       Share Screenshots Prompt: "Σύρετε και αποθέστε εδώ ένα ή περισσότερα στιγμιότυπα οθόνης. Αφήστε αυτή την ενότητα κενή για να προσθέσει το bot τρεις προεπισκοπήσεις με ενδεικτικό περιεχόμενο, χωρίς τα προσωπικά σας δεδομένα."
-      Share Code Summary: JSON θέματος
       Delete Theme: Διαγραφή θέματος
       Delete Theme Confirmation: Διαγραφή του «{name}»; Αυτή η ενέργεια δεν μπορεί να αναιρεθεί.
       Save and Apply: Αποθήκευση και εφαρμογή

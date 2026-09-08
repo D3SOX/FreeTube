@@ -391,11 +391,8 @@ Settings:
       Import Theme: அலங்காரத்தை இறக்குமதி செய்
       Export Theme: அலங்காரத்தை ஏற்றுமதி செய்
       Share Theme: அலங்காரத்தைப் பகிர்
-      Share Description Heading: விளக்கம்
       Share Description Prompt: அலங்காரத்தையும் அதைப் பயன்படுத்துவதற்கு முன் மற்றவர்கள் அறிய வேண்டியவற்றையும் விவரிக்கவும்.
-      Share Screenshots Heading: திரைப்பிடிப்புகள்
       Share Screenshots Prompt: "ஒன்று அல்லது பல திரைப்பிடிப்புகளை இங்கே இழுத்துப் போடவும். உங்கள் தனிப்பட்ட தரவு இல்லாமல் மாதிரி உள்ளடக்கத்துடன் மூன்று முன்னோட்டங்களை பாட் சேர்க்க இந்தப் பகுதியை காலியாக விடவும்."
-      Share Code Summary: அலங்கார JSON
       Delete Theme: அலங்காரத்தை நீக்கு
       Delete Theme Confirmation: “{name}” அலங்காரத்தை நீக்கவா? இதைச் செயல்தவிர்க்க முடியாது.
       Save and Apply: சேமித்துப் பயன்படுத்து

@@ -388,11 +388,8 @@ Settings:
       Import Theme: Импортиране на тема
       Export Theme: Експортиране на тема
       Share Theme: Споделяне на тема
-      Share Description Heading: Описание
       Share Description Prompt: Опишете темата и всичко, което хората трябва да знаят, преди да я използват.
-      Share Screenshots Heading: Екранни снимки
       Share Screenshots Prompt: "Плъзнете и пуснете тук една или повече екранни снимки. Оставете този раздел празен, за да добави ботът три изображения с примерно съдържание, без личните ви данни."
-      Share Code Summary: JSON на темата
       Delete Theme: Изтриване на тема
       Delete Theme Confirmation: Да се изтрие ли „{name}“? Това действие не може да бъде отменено.
       Save and Apply: Запазване и прилагане

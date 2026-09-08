@@ -390,11 +390,8 @@ Settings:
       Import Theme: Nhập chủ đề
       Export Theme: Xuất chủ đề
       Share Theme: Chia sẻ chủ đề
-      Share Description Heading: Mô tả
       Share Description Prompt: Mô tả chủ đề và những điều người khác cần biết trước khi dùng.
-      Share Screenshots Heading: Ảnh chụp màn hình
       Share Screenshots Prompt: "Kéo và thả một hoặc nhiều ảnh chụp màn hình vào đây. Để trống phần này để bot thêm ba ảnh xem trước bằng nội dung mẫu, không dùng dữ liệu cá nhân của bạn."
-      Share Code Summary: JSON của chủ đề
       Delete Theme: Xóa chủ đề
       Delete Theme Confirmation: Xóa “{name}”? Không thể hoàn tác thao tác này.
       Save and Apply: Lưu và áp dụng

@@ -388,11 +388,8 @@ Settings:
       Import Theme: Inportatu gaia
       Export Theme: Esportatu gaia
       Share Theme: Partekatu gaia
-      Share Description Heading: Deskribapena
       Share Description Prompt: Deskribatu gaia eta erabiltzen hasi aurretik jakin beharrekoak.
-      Share Screenshots Heading: Pantaila-argazkiak
       Share Screenshots Prompt: "Arrastatu eta jaregin pantaila-argazki bat edo gehiago hemen. Utzi atal hau hutsik botak adibidezko edukia duten hiru aurrebista gehitzeko, zure datu pertsonalik gabe."
-      Share Code Summary: Gaiaren JSONa
       Delete Theme: Ezabatu gaia
       Delete Theme Confirmation: “{name}” ezabatu? Ekintza hau ezin da desegin.
       Save and Apply: Gorde eta aplikatu

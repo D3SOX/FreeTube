@@ -464,11 +464,8 @@ Settings:
       Import Theme: Importer tema
       Export Theme: Eksporter tema
       Share Theme: Del tema
-      Share Description Heading: Skildring
       Share Description Prompt: Skildra temaet og det folk bør vite før dei tek det i bruk.
-      Share Screenshots Heading: Skjermbilete
       Share Screenshots Prompt: "Dra og slepp eitt eller fleire skjermbilete her. La denne delen stå tom, så legg boten til tre førehandsvisingar med dømeinnhald utan dine personlege data."
-      Share Code Summary: Tema-JSON
       Delete Theme: Slett tema
       Delete Theme Confirmation: Slett “{name}”? Dette kan ikkje angrast.
       Save and Apply: Lagre og bruk

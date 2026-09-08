@@ -390,11 +390,8 @@ Settings:
       Import Theme: استيراد الموضوع
       Export Theme: تصدير السمة
       Share Theme: مشاركة الموضوع
-      Share Description Heading: وصف
       Share Description Prompt: قم بوصف الموضوع وأي شيء يجب أن يعرفه الأشخاص قبل استخدامه.
-      Share Screenshots Heading: لقطات الشاشة
       Share Screenshots Prompt: "قم بسحب وإسقاط لقطة شاشة واحدة أو أكثر هنا. اترك هذا القسم فارغًا ليضيف البوت ثلاث معاينات باستخدام محتوى تجريبي، دون بياناتك الشخصية."
-      Share Code Summary: رمز JSON للسمة
       Delete Theme: حذف الموضوع
       Delete Theme Confirmation: هل تريد حذف "{name}"؟ لا يمكن التراجع عن هذا.
       Save and Apply: حفظ وتطبيق

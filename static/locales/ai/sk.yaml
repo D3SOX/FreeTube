@@ -386,11 +386,8 @@ Settings:
       Import Theme: Importovať motív
       Export Theme: Exportovať motív
       Share Theme: Zdieľať motív
-      Share Description Heading: Opis
       Share Description Prompt: Opíšte motív a uveďte všetko, čo by používatelia mali vedieť pred jeho použitím.
-      Share Screenshots Heading: Snímky obrazovky
       Share Screenshots Prompt: "Presuňte sem jednu alebo viac snímok obrazovky. Nechajte túto sekciu prázdnu a bot pridá tri náhľady s ukážkovým obsahom bez vašich osobných údajov."
-      Share Code Summary: JSON motívu
       Delete Theme: Odstrániť motív
       Delete Theme Confirmation: Odstrániť motív „{name}“? Túto akciu nemožno vrátiť späť.
       Save and Apply: Uložiť a použiť

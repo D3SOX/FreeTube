@@ -390,11 +390,8 @@ Settings:
       Import Theme: ייבוא ערכת נושא
       Export Theme: ייצוא ערכת נושא
       Share Theme: שיתוף ערכת נושא
-      Share Description Heading: תיאור
       Share Description Prompt: תארו את ערכת הנושא וכל מה שכדאי לדעת לפני השימוש בה.
-      Share Screenshots Heading: צילומי מסך
       Share Screenshots Prompt: "גררו לכאן צילום מסך אחד או יותר. השאירו את החלק הזה ריק כדי שהבוט יוסיף שלוש תצוגות מקדימות עם תוכן לדוגמה, ללא הנתונים האישיים שלכם."
-      Share Code Summary: JSON של ערכת הנושא
       Delete Theme: מחיקת ערכת נושא
       Delete Theme Confirmation: למחוק את “{name}”? לא ניתן לבטל פעולה זו.
       Save and Apply: שמירה והחלה

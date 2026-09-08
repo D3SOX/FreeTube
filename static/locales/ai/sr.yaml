@@ -397,11 +397,8 @@ Settings:
       Import Theme: Увези тему
       Export Theme: Извези тему
       Share Theme: Подели тему
-      Share Description Heading: Опис
       Share Description Prompt: Опиши тему и све што би требало знати пре њеног коришћења.
-      Share Screenshots Heading: Снимци екрана
       Share Screenshots Prompt: "Превуци и отпусти овде један или више снимака екрана. Оставите овај одељак празан да би бот додао три прегледа са примером садржаја, без ваших личних података."
-      Share Code Summary: JSON теме
       Delete Theme: Обриши тему
       Delete Theme Confirmation: Обриши „{name}“? Ово се не може опозвати.
       Save and Apply: Сачувај и примени

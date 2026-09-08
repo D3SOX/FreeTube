@@ -390,11 +390,8 @@ Settings:
       Import Theme: Імпортувати тему
       Export Theme: Експортувати тему
       Share Theme: Поділитися темою
-      Share Description Heading: Опис
       Share Description Prompt: Опишіть тему й усе, що варто знати перед її використанням.
-      Share Screenshots Heading: Знімки екрана
       Share Screenshots Prompt: "Перетягніть сюди один або кілька знімків екрана. Залиште цей розділ порожнім, щоб бот додав три зображення попереднього перегляду зі зразком вмісту, без ваших особистих даних."
-      Share Code Summary: JSON теми
       Delete Theme: Видалити тему
       Delete Theme Confirmation: Видалити «{name}»? Цю дію неможливо скасувати.
       Save and Apply: Зберегти й застосувати

@@ -134,11 +134,8 @@ Settings:
       Import from Clipboard: "Importuj ze schowka"
       Invalid Clipboard Theme: "Schowek nie zawiera prawidłowego motywu. Skopiuj JSON motywu i spróbuj ponownie."
       Share Theme: Udostępnij motyw
-      Share Description Heading: Opis
       Share Description Prompt: Opisz motyw i wszystko, co warto wiedzieć przed jego użyciem.
-      Share Screenshots Heading: Zrzuty ekranu
       Share Screenshots Prompt: "Przeciągnij tutaj co najmniej jeden zrzut ekranu. Pozostaw tę sekcję pustą, a bot doda trzy podglądy z przykładową zawartością, bez Twoich danych osobowych."
-      Share Code Summary: Kod JSON motywu
       Unable to Share: Nie udało się udostępnić własnego motywu
       Colors:
         Logo hover: Logo po najechaniu

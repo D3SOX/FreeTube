@@ -388,11 +388,8 @@ Settings:
       Import Theme: Importera tema
       Export Theme: Exportera tema
       Share Theme: Dela tema
-      Share Description Heading: Beskrivning
       Share Description Prompt: Beskriv temat och vad användare bör känna till innan de använder det.
-      Share Screenshots Heading: Skärmbilder
       Share Screenshots Prompt: "Dra och släpp en eller flera skärmbilder här. Lämna det här avsnittet tomt så lägger boten till tre förhandsvisningar med exempelinnehåll, utan dina personuppgifter."
-      Share Code Summary: Tema-JSON
       Delete Theme: Ta bort tema
       Delete Theme Confirmation: Ta bort "{name}"? Det går inte att ångra.
       Save and Apply: Spara och tillämpa
