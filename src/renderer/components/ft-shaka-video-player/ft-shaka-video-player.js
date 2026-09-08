@@ -10845,6 +10845,8 @@ export default defineComponent({
     onBeforeUnmount(() => {
       screenWakeBinding?.destroy()
       screenWakeBinding = null
+      nativePlaybackCleanup?.()
+      nativePlaybackCleanup = null
       clearTimeout(paidPromotionTimer)
       if (fullscreenDockLayoutFrame !== null) {
         cancelAnimationFrame(fullscreenDockLayoutFrame)
