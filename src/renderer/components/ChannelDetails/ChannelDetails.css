@@ -17,6 +17,8 @@
 .infoContainer {
   position: relative;
   background-color: var(--card-bg-color);
+  background-image: var(--card-bg-image);
+  background-attachment: fixed;
   backdrop-filter: var(--card-bg-blur, none);
   border-radius: 0 0 calc(8px * var(--ui-roundness)) calc(8px * var(--ui-roundness));
   margin-block-start: 10px;

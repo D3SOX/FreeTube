@@ -71,13 +71,20 @@
   cursor: pointer;
 }
 
+.descriptionStatus,
+.descriptionStatus::before {
+  /* Match the card at the same viewport position, including its theme gradient. */
+  background-color: var(--card-bg-color);
+  background-image: var(--card-bg-image);
+  background-attachment: fixed;
+}
+
 .videoDescription.short .descriptionStatus {
   position: absolute;
   z-index: 1;
   inset-block-end: calc(1lh + 12px);
   padding-block: 2px;
   inset-inline-end: 16px;
-  background-color: var(--card-bg-color);
   backdrop-filter: var(--card-bg-blur, none);
   text-decoration: none;
 }
@@ -91,7 +98,7 @@
   inset-block: 0;
   inset-inline-end: 100%;
   inline-size: 40px;
-  background: linear-gradient(90deg, transparent, var(--card-bg-color));
+  mask-image: linear-gradient(90deg, transparent, #000);
   content: '';
 }
 
@@ -101,7 +108,6 @@
   z-index: 1;
   inset-block-end: 0;
   margin-block-start: 1.5em;
-  background-color: var(--card-bg-color);
   backdrop-filter: var(--card-bg-blur, none);
 }
 
@@ -110,13 +116,13 @@
   inset-block-end: 100%;
   inset-inline: 0;
   block-size: 1.5em;
-  background: linear-gradient(transparent, var(--card-bg-color));
+  mask-image: linear-gradient(transparent, #000);
   pointer-events: none;
   content: '';
 }
 
 .videoDescription.short .descriptionStatus:dir(rtl)::before {
-  background: linear-gradient(270deg, transparent, var(--card-bg-color));
+  mask-image: linear-gradient(270deg, transparent, #000);
 }
 
 .videoDescription.short .description {

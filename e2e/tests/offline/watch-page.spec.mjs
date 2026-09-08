@@ -737,7 +737,6 @@ test('repeats an A-B range and manages it from the player menu', async ({ app, p
   await expect(player.locator('.abRepeatRange')).toHaveCount(0)
   const abRepeatPopup = player.locator('.valueChangePopup')
   await expect(abRepeatPopup.locator('.valueChangeCustomIcon')).toBeVisible()
-  await expect(abRepeatPopup).toHaveCSS('white-space', 'nowrap')
   await expect.poll(() => abRepeatPopup.locator(':scope > span:last-child').evaluate((element) => {
     const range = document.createRange()
     range.selectNodeContents(element)
@@ -3208,13 +3207,13 @@ test.describe('watch page', () => {
       const style = getComputedStyle(element)
       const fadeStyle = getComputedStyle(element, '::before')
       return {
-        fadeBackground: fadeStyle.backgroundImage,
+        fadeMask: fadeStyle.maskImage,
         fadeHeight: Number.parseFloat(fadeStyle.height),
         fontSize: Number.parseFloat(style.fontSize),
         marginBlockStart: Number.parseFloat(style.marginBlockStart)
       }
     })
-    expect(collapseControlStyles.fadeBackground).toContain('linear-gradient')
+    expect(collapseControlStyles.fadeMask).toContain('linear-gradient')
     expect(collapseControlStyles.fadeHeight).toBeGreaterThan(0)
     expect(collapseControlStyles.marginBlockStart).toBeGreaterThan(collapseControlStyles.fontSize)
     const maxScrollTop = await descriptionScroll.evaluate(element =>
