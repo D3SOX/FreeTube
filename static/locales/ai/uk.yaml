@@ -466,8 +466,8 @@ Settings:
   Player Settings:
     Swipe Gestures:
       Fullscreen Brightness: Максимальна яскравість у повноекранному режимі
-      Left: Проведення ліворуч
-      Right: Проведення праворуч
+      Left: Жест на лівій стороні
+      Right: Жест на правій стороні
       Disabled: Вимкнено
       Brightness: Яскравість
       Volume: Гучність

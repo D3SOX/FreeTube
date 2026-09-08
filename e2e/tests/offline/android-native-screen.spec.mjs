@@ -99,14 +99,16 @@ for (const uiScale of [100, 125]) {
           instance.refs.player.$.setupState.valueChangeMessage = message
           instance.refs.player.$.setupState.valueChangeIcons = ['sun']
         }, message)
+        await expect(osd.locator('.valueChangeText')).toHaveText(message)
         const geometry = await osd.evaluate(element => {
           const box = element.getBoundingClientRect()
           const message = element.lastElementChild
           const range = document.createRange()
           range.selectNodeContents(message)
           const text = range.getBoundingClientRect()
-          return { left: text.left - box.left, right: box.right - text.right, bottom: box.bottom - text.bottom }
+          return { text: message.textContent, left: text.left - box.left, right: box.right - text.right, bottom: box.bottom - text.bottom }
         })
+        expect(geometry.text).toBe(message)
         expect(geometry.left).toBeGreaterThanOrEqual(0)
         expect(geometry.right).toBeGreaterThanOrEqual(0)
         expect(geometry.bottom).toBeGreaterThanOrEqual(0)
