@@ -1,5 +1,6 @@
 import { MAIN_PROFILE_ID } from '../../constants'
 import packageDetails from '../../../package.json'
+import { applySyncServerUserAgent } from '../../syncServerUserAgent'
 import {
   CUSTOM_THEMES_SYNC_KEY,
   customThemeIdFromValue,
@@ -44,7 +45,10 @@ const YOUTUBE_VIDEO_THUMBNAIL_REGEX = /^https?:\/\/i\.ytimg\.com\/vi(?:_webp)?\/
 
 function syncServerFetch(input, init) {
   return process.env.IS_CAPACITOR
-    ? capacitorHttpFetch(input, init)
+    ? capacitorHttpFetch(input, {
+        ...init,
+        headers: applySyncServerUserAgent(Object.fromEntries(new Headers(init.headers))),
+      })
     : fetch(input, init)
 }
 
@@ -104,7 +108,7 @@ export class SyncServerClient {
       hasBody: options.body != null,
       headers: options.headers,
       token: this.token,
-      version: process.env.IS_ELECTRON ? packageDetails.version : '',
+      version: process.env.IS_ELECTRON || process.env.IS_CAPACITOR ? packageDetails.version : '',
     })
 
     try {
