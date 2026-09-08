@@ -22,6 +22,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.io.InputStream;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -30,6 +31,48 @@ import java.util.concurrent.atomic.AtomicReference;
 
 @RunWith(AndroidJUnit4.class)
 public class AndroidClipboardTest {
+    @Test
+    public void repeatedCopiesBoundTheCacheAndKeepTheActiveImage() throws Exception {
+        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        ClipboardManager clipboard = context.getSystemService(ClipboardManager.class);
+        File unrelated = File.createTempFile("other-cache-", ".png", context.getCacheDir());
+        try (ActivityScenario<MainActivity> scenario = ActivityScenario.launch(MainActivity.class)) {
+            awaitValue(scenario, "typeof window.Capacitor === 'object' && document.readyState === 'complete'", "true");
+            ClipData original = clipboard.getPrimaryClip();
+            try {
+                for (int i = 0; i < 15; i++) {
+                    copyCanvas(scenario, "red");
+                    assertTrue("Repeated copies retain at most ten image files", clipboardFiles(context).length <= 10);
+                    Uri active = clipboard.getPrimaryClip().getItemAt(0).getUri();
+                    assertImage(context, active, Color.RED);
+                }
+                Uri active = clipboard.getPrimaryClip().getItemAt(0).getUri();
+                File activeFile = new File(context.getCacheDir(), active.getLastPathSegment());
+                assertTrue(activeFile.setLastModified(1));
+                for (int i = 0; i < 12; i++) File.createTempFile("capawesome-clipboard-", ".png", context.getCacheDir());
+                // Re-copy an old URI: the active image must survive even when it is the oldest file.
+                evaluate(scenario,
+                    "window.clipboardTestResult = 'pending';" +
+                    "window.Capacitor.nativePromise('Clipboard', 'write', {url:'" + active + "'})" +
+                    ".then(function(){window.clipboardTestResult='copied';});");
+                awaitValue(scenario, "window.clipboardTestResult", "\"copied\"");
+                assertTrue(clipboardFiles(context).length <= 10);
+                assertImage(context, active, Color.RED);
+                assertTrue("Other cache files are untouched", unrelated.exists());
+            } finally {
+                clipboard.setPrimaryClip(original != null ? original : ClipData.newPlainText("", ""));
+                for (File image : clipboardFiles(context)) image.delete();
+                unrelated.delete();
+            }
+        }
+    }
+
+    private static File[] clipboardFiles(Context context) {
+        File[] files = context.getCacheDir().listFiles(file -> file.getName().startsWith("capawesome-clipboard-") && file.getName().endsWith(".png"));
+        assertNotNull(files);
+        return files;
+    }
+
     @Test
     public void canvasScreenshotsBecomeReadablePngClipboardImages() throws Exception {
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
@@ -42,18 +85,7 @@ public class AndroidClipboardTest {
                 for (String color : new String[]{"red", "blue"}) {
                     // Exercise canvas -> PNG Blob -> FileReader -> Capacitor bridge,
                     // with no dependency on WebView clipboard support or a network video.
-                    evaluate(scenario,
-                        "window.clipboardTestResult = 'pending';" +
-                        "var canvas = document.createElement('canvas'); canvas.width = 2; canvas.height = 2;" +
-                        "var ctx = canvas.getContext('2d'); ctx.fillStyle = '" + color + "'; ctx.fillRect(0, 0, 2, 2);" +
-                        "canvas.toBlob(function(blob) { var reader = new FileReader();" +
-                        "reader.onload = function() {" +
-                        "window.Capacitor.nativePromise('Clipboard', 'write', {image: reader.result})" +
-                        ".then(function() { window.clipboardTestResult = 'copied'; }," +
-                        "function(error) { window.clipboardTestResult = error.code; });" +
-                        "}; reader.readAsDataURL(blob); }, 'image/png');"
-                    );
-                    awaitValue(scenario, "window.clipboardTestResult", "\"copied\"");
+                    copyCanvas(scenario, color);
                     ClipData clip = clipboard.getPrimaryClip();
                     assertNotNull(clip);
                     assertTrue(clip.getDescription().hasMimeType("image/png"));
@@ -83,6 +115,21 @@ public class AndroidClipboardTest {
                 for (Uri uri : images) context.getContentResolver().delete(uri, null, null);
             }
         }
+    }
+
+    private static void copyCanvas(ActivityScenario<MainActivity> scenario, String color) throws Exception {
+        evaluate(scenario,
+            "window.clipboardTestResult = 'pending';" +
+            "var canvas = document.createElement('canvas'); canvas.width = 2; canvas.height = 2;" +
+            "var ctx = canvas.getContext('2d'); ctx.fillStyle = '" + color + "'; ctx.fillRect(0, 0, 2, 2);" +
+            "canvas.toBlob(function(blob) { var reader = new FileReader();" +
+            "reader.onload = function() {" +
+            "window.Capacitor.nativePromise('Clipboard', 'write', {image: reader.result})" +
+            ".then(function() { window.clipboardTestResult = 'copied'; }," +
+            "function(error) { window.clipboardTestResult = error.code; });" +
+            "}; reader.readAsDataURL(blob); }, 'image/png');"
+        );
+        awaitValue(scenario, "window.clipboardTestResult", "\"copied\"");
     }
 
     private static void assertImage(Context context, Uri uri, int color) throws Exception {

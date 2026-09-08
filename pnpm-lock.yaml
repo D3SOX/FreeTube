@@ -10,7 +10,7 @@ overrides:
 
 patchedDependencies:
   '@capawesome/capacitor-app-shortcuts@8.0.2': 2581c86d60ce7892c0b3136523994591d24ee7313bbc5fc9b4ad1c710719c70a
-  '@capawesome/capacitor-clipboard@0.1.2': 171ea691dbaf16b234c1a7b85d37ab309d11564c5d50ce86ab6d0aabd18dbd43
+  '@capawesome/capacitor-clipboard@0.1.2': 729c6071cbf0e196e2212b015677cdd162c287dca48137c24250c0d056c9fd5b
   shaka-player@5.1.12: 17d85e267c8958999207ce9d6c29a2ddf18734d0499fb30870ac8a55d90303fa
   vue-sonner@2.0.9: ae94d00b3ff46bede626a25ac5a36a6cd35987f33d73c14ffc73afbd5767f95c
   youtubei.js@18.0.0: 5939f9d50ce37ef8075961245288956568c781818db04171892485bdf96278e9
@@ -60,7 +60,7 @@ importers:
         version: 8.0.2(patch_hash=2581c86d60ce7892c0b3136523994591d24ee7313bbc5fc9b4ad1c710719c70a)(@capacitor/core@8.5.0)
       '@capawesome/capacitor-clipboard':
         specifier: ^0.1.2
-        version: 0.1.2(patch_hash=171ea691dbaf16b234c1a7b85d37ab309d11564c5d50ce86ab6d0aabd18dbd43)(@capacitor/core@8.5.0)
+        version: 0.1.2(patch_hash=729c6071cbf0e196e2212b015677cdd162c287dca48137c24250c0d056c9fd5b)(@capacitor/core@8.5.0)
       '@capawesome/capacitor-screen-orientation':
         specifier: ^8.0.3
         version: 8.0.3(@capacitor/core@8.5.0)
@@ -6443,7 +6443,7 @@ snapshots:
     dependencies:
       '@capacitor/core': 8.5.0
 
-  '@capawesome/capacitor-clipboard@0.1.2(patch_hash=171ea691dbaf16b234c1a7b85d37ab309d11564c5d50ce86ab6d0aabd18dbd43)(@capacitor/core@8.5.0)':
+  '@capawesome/capacitor-clipboard@0.1.2(patch_hash=729c6071cbf0e196e2212b015677cdd162c287dca48137c24250c0d056c9fd5b)(@capacitor/core@8.5.0)':
     dependencies:
       '@capacitor/core': 8.5.0
 

@@ -33,7 +33,7 @@ include ':capawesome-capacitor-app-shortcuts'
 project(':capawesome-capacitor-app-shortcuts').projectDir = new File('../node_modules/.pnpm/@capawesome+capacitor-app-shortcuts@8.0.2_patch_hash=2581c86d60ce7892c0b3136523994591d2_1e428ce564819851b2c2d43fdfdf8bb6/node_modules/@capawesome/capacitor-app-shortcuts/android')
 
 include ':capawesome-capacitor-clipboard'
-project(':capawesome-capacitor-clipboard').projectDir = new File('../node_modules/.pnpm/@capawesome+capacitor-clipboard@0.1.2_patch_hash=171ea691dbaf16b234c1a7b85d37ab309d1156_52b5e60a2f64a3ae48f87e10852fd34b/node_modules/@capawesome/capacitor-clipboard/android')
+project(':capawesome-capacitor-clipboard').projectDir = new File('../node_modules/.pnpm/@capawesome+capacitor-clipboard@0.1.2_patch_hash=729c6071cbf0e196e2212b015677cdd162c287_49b9fc2c88004a8ee92cc1c08410a37a/node_modules/@capawesome/capacitor-clipboard/android')
 
 include ':capawesome-capacitor-screen-orientation'
 project(':capawesome-capacitor-screen-orientation').projectDir = new File('../node_modules/.pnpm/@capawesome+capacitor-screen-orientation@8.0.3_@capacitor+core@8.5.0/node_modules/@capawesome/capacitor-screen-orientation/android')

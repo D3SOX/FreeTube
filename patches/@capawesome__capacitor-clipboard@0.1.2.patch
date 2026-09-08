@@ -1,16 +1,31 @@
 diff --git a/android/src/main/java/io/capawesome/capacitorjs/plugins/clipboard/Clipboard.java b/android/src/main/java/io/capawesome/capacitorjs/plugins/clipboard/Clipboard.java
-index 08ca3b8a4caa85286158bdd91da477d1ece60ba7..dcdbbb9fc28cd93443aadcd1b65ee2046acf1a0b 100644
+index 08ca3b8a4caa85286158bdd91da477d1ece60ba7..815ae6258aeb43ab4ec8a66cf61d4fe1c3fdf38f 100644
 --- a/android/src/main/java/io/capawesome/capacitorjs/plugins/clipboard/Clipboard.java
 +++ b/android/src/main/java/io/capawesome/capacitorjs/plugins/clipboard/Clipboard.java
-@@ -24,7 +24,6 @@ import java.io.InputStream;
+@@ -20,11 +20,13 @@ import java.io.ByteArrayOutputStream;
+ import java.io.File;
+ import java.io.FileOutputStream;
+ import java.io.InputStream;
++import java.util.Arrays;
++import java.util.Comparator;
+ 
  public class Clipboard {
  
      private static final String DEFAULT_LABEL = "";
 -    private static final String IMAGE_FILE_NAME = "capawesome_capacitor_clipboard_image.png";
++    private static final int MAX_CACHED_IMAGES = 10;
  
      @NonNull
      private final ClipboardPlugin plugin;
-@@ -77,7 +76,7 @@ public class Clipboard {
+@@ -68,6 +70,7 @@ public class Clipboard {
+                 clipData = ClipData.newPlainText(label, options.getText());
+             }
+             getClipboardManager().setPrimaryClip(clipData);
++            pruneImageFiles(clipData.getItemAt(0).getUri());
+             callback.success();
+         } catch (Exception exception) {
+             callback.error(CustomExceptions.WRITE_FAILED);
+@@ -77,7 +80,7 @@ public class Clipboard {
      @NonNull
      private ClipData createImageClipData(@NonNull String label, @NonNull String image) throws Exception {
          byte[] bytes = decodeDataUrl(image);
@@ -19,3 +34,33 @@ index 08ca3b8a4caa85286158bdd91da477d1ece60ba7..dcdbbb9fc28cd93443aadcd1b65ee204
          try (FileOutputStream outputStream = new FileOutputStream(file)) {
              outputStream.write(bytes);
          }
+@@ -86,6 +89,29 @@ public class Clipboard {
+         return ClipData.newUri(getContext().getContentResolver(), label, uri);
+     }
+ 
++    private void pruneImageFiles(@Nullable Uri activeUri) {
++        try {
++            File[] images = getContext().getCacheDir().listFiles(file ->
++                file.isFile() && file.getName().startsWith("capawesome-clipboard-") && file.getName().endsWith(".png")
++            );
++            if (images == null || images.length <= MAX_CACHED_IMAGES) return;
++            Arrays.sort(images, Comparator.comparingLong(File::lastModified).reversed());
++            String authority = getContext().getPackageName() + ".fileprovider";
++            // Reserve one slot for the active image, regardless of its age.
++            int remaining = MAX_CACHED_IMAGES - 1;
++            for (File image : images) {
++                if (FileProvider.getUriForFile(getContext(), authority, image).equals(activeUri)) continue;
++                if (remaining > 0) {
++                    remaining--;
++                } else {
++                    image.delete();
++                }
++            }
++        } catch (Exception ignored) {
++            // Cache cleanup must not turn a successful clipboard write into an error.
++        }
++    }
++
+     @Nullable
+     private ReadResult createReadResult(@NonNull ClipData.Item item) throws Exception {
+         Uri uri = item.getUri();
