@@ -226,6 +226,31 @@ test.describe('community post images', () => {
     }
   })
 
+  test('separates post images from the like and comment row at different UI scales', async ({ page, attachScreenshot }) => {
+    await stubPostImages(page)
+    await goTo(page, 'subscriptions')
+    await page.locator('[data-subscription-feed-tab="posts"]').click()
+
+    for (const scale of [1, 0.95, 1.25]) {
+      await page.evaluate((factor) => window.ftElectron.setZoomFactor(factor), scale)
+
+      for (const title of ['Single image community post', 'Multi image community post']) {
+        const post = page.locator('.ft-list-post').filter({ hasText: title })
+        const image = post.locator('img.communityImage').first()
+        await expect.poll(() => image.evaluate((element) => element.naturalWidth)).toBeGreaterThan(0)
+        await post.locator('.bottomSection').scrollIntoViewIfNeeded()
+
+        await expect.poll(() => post.evaluate((element) => {
+          const imageBottom = element.querySelector('img.communityImage').getBoundingClientRect().bottom
+          const actionsTop = element.querySelector('.bottomSection').getBoundingClientRect().top
+          return actionsTop - imageBottom
+        }), { message: `${title} needs space above its actions at ${scale * 100}% UI scale` }).toBeGreaterThanOrEqual(8)
+      }
+
+      await attachScreenshot(`post image spacing at ${scale * 100}% UI scale`)
+    }
+  })
+
   test('restores carousel navigation after returning to the Posts tab', async ({ page }) => {
     await stubPostImages(page)
 
