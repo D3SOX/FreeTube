@@ -167,7 +167,7 @@
         theme="base-no-default"
         :size="18"
         :use-shadow="false"
-        dropdown-position-x="left"
+        dropdown-position-x="right"
         :dropdown-options="[hideSubscriptionFeedTypeOption]"
         @click="hideSubscriptionFeedType"
       />

@@ -199,9 +199,10 @@ for (const locale of ['en-US', 'de-DE']) {
           }, width)
           for (const category of ['videos', 'posts']) {
             await page.locator(`[data-subscription-feed-tab="${category}"]`).click()
-            await card(page, category).getByRole('button', {
+            const menuButton = card(page, category).getByRole('button', {
               name: locale === 'en-US' ? 'More Options' : 'Weitere Optionen', exact: true
-            }).click()
+            })
+            await menuButton.click()
             const type = locale === 'de-DE' && category === 'posts' ? 'Beiträge' : labels[category]
             const label = page.getByRole('option', {
               name: locale === 'en-US'
@@ -225,6 +226,12 @@ for (const locale of ['en-US', 'de-DE']) {
               }).map(match => match[0])
             })
             expect(splitWords).toEqual([])
+            if (category === 'posts' && width === 1600) {
+              const buttonBounds = await menuButton.boundingBox()
+              const menuBounds = await page.locator('.iconDropdown').boundingBox()
+              expect(menuBounds.x).toBeGreaterThanOrEqual(buttonBounds.x - 1)
+              expect(menuBounds.x).toBeLessThanOrEqual(buttonBounds.x + buttonBounds.width + 1)
+            }
             await page.keyboard.press('Escape')
           }
         }
