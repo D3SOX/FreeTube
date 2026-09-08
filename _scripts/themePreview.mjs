@@ -7,6 +7,7 @@ import { pathToFileURL } from 'node:url'
 import { marked } from 'marked'
 
 import { normalizeCustomTheme } from '../src/customTheme.js'
+import { removeExternalDiscussionLinks } from './themeDiscussionLinks.mjs'
 
 export const PREVIEW_MARKER = '<!-- theme-preview -->'
 const PREVIEW_END = '<!-- theme-preview:end -->'
@@ -69,10 +70,35 @@ export function loadDiscussion(repository, number, query = graphql) {
   if (!owner || !name || !Number.isSafeInteger(number) || number < 1) throw new Error('Invalid discussion')
   const { repository: repo } = query(`query($owner:String!, $name:String!, $number:Int!) {
     repository(owner:$owner, name:$name) {
-      discussion(number:$number) { id body closed locked category { slug } }
+      discussion(number:$number) { id body closed locked author { login } category { slug } }
     }
   }`, { owner, name, number })
   return repo.discussion
+}
+
+export function moderateDiscussion(repository, number, query = graphql) {
+  const discussion = loadDiscussion(repository, number, query)
+  if (discussion?.category?.slug !== 'themes' || discussion.closed || discussion.locked) return null
+  const body = removeExternalDiscussionLinks(discussion.body)
+  if (body === discussion.body) return null
+  // A queued edit will be checked by its own run. Do not overwrite newer text.
+  const latest = loadDiscussion(repository, number, query)
+  if (latest?.body !== discussion.body || latest.category?.slug !== 'themes' || latest.closed || latest.locked) return null
+  query(`mutation($id:ID!, $body:String!) {
+    updateDiscussion(input:{discussionId:$id, body:$body}) { discussion { id } }
+  }`, { id: discussion.id, body })
+  const mention = discussion.author?.login ? `@${discussion.author.login} ` : ''
+  return {
+    query: `mutation($id:ID!, $body:String!) {
+      addDiscussionComment(input:{discussionId:$id, body:$body}) { comment { id } }
+    }`,
+    variables: {
+      id: discussion.id,
+      body: `${mention}I removed external images and links from this theme discussion. ` +
+        'Please upload screenshots directly to GitHub and use GitHub-hosted links. ' +
+        'The remaining text and theme JSON were preserved.',
+    },
+  }
 }
 
 export function renderPreviewImages(hash, urls) {
@@ -136,10 +162,18 @@ export function uploadPreviewImage(repositoryId, file, runGh = gh) {
 
 async function main() {
   const [command, directory] = process.argv.slice(2)
-  if (!directory) throw new Error('Usage: themePreview.mjs prepare|upload|publish DIRECTORY')
+  if (!directory) throw new Error('Usage: themePreview.mjs moderate|prepare|upload|publish DIRECTORY')
   const requestPath = path.join(directory, 'request.json')
   const urlsPath = path.join(directory, 'urls.json')
-  if (command === 'prepare') {
+  if (command === 'moderate') {
+    const notification = moderateDiscussion(process.env.GITHUB_REPOSITORY, Number(process.env.DISCUSSION_NUMBER))
+    if (notification) {
+      await mkdir(directory, { recursive: true })
+      await writeFile(path.join(directory, 'moderation-comment.json'), JSON.stringify(notification))
+    }
+    if (process.env.GITHUB_OUTPUT) await appendFile(process.env.GITHUB_OUTPUT, `changed=${!!notification}\n`)
+    console.log(notification ? 'Removed external images and links.' : 'No external links removed.')
+  } else if (command === 'prepare') {
     const repository = process.env.GITHUB_REPOSITORY
     const number = Number(process.env.DISCUSSION_NUMBER)
     const discussion = loadDiscussion(repository, number)

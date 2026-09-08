@@ -176,6 +176,12 @@ importers:
       '@intlify/eslint-plugin-vue-i18n':
         specifier: ^4.5.1
         version: 4.5.1(eslint@10.9.1(jiti@2.7.0))(jsonc-eslint-parser@3.3.0)(vue-eslint-parser@10.4.1(eslint@10.9.1(jiti@2.7.0)))(yaml-eslint-parser@2.1.0)
+      '@lezer/html':
+        specifier: ^1.3.13
+        version: 1.3.13
+      '@lezer/markdown':
+        specifier: ^1.7.2
+        version: 1.7.2
       '@magda/tree-kill':
         specifier: 1.2.3
         version: 1.2.3
@@ -203,6 +209,9 @@ importers:
       electron-builder:
         specifier: ^26.15.7
         version: 26.15.7(electron-builder-squirrel-windows@26.15.7)
+      entities:
+        specifier: ^8.0.0
+        version: 8.0.0
       eslint:
         specifier: ^10.9.1
         version: 10.9.1(jiti@2.7.0)
@@ -1380,6 +1389,21 @@ packages:
 
   '@leichtgewicht/ip-codec@2.0.5':
     resolution: {integrity: sha512-Vo+PSpZG2/fmgmiNzYK9qWRh8h/CHrwD0mo1h1DzL4yzHNSfWYujGTYsWGreD000gcgmZ7K4Ys6Tx9TxtsKdDw==}
+
+  '@lezer/common@1.5.2':
+    resolution: {integrity: sha512-sxQE460fPZyU3sdc8lafxiPwJHBzZRy/udNFynGQky1SePYBdhkBl1kOagA9uT3pxR8K09bOrmTUqA9wb/PjSQ==}
+
+  '@lezer/highlight@1.2.3':
+    resolution: {integrity: sha512-qXdH7UqTvGfdVBINrgKhDsVTJTxactNNxLk7+UMwZhU13lMHaOBlJe9Vqp907ya56Y3+ed2tlqzys7jDkTmW0g==}
+
+  '@lezer/html@1.3.13':
+    resolution: {integrity: sha512-oI7n6NJml729m7pjm9lvLvmXbdoMoi2f+1pwSDJkl9d68zGr7a9Btz8NdHTGQZtW2DA25ybeuv/SyDb9D5tseg==}
+
+  '@lezer/lr@1.4.10':
+    resolution: {integrity: sha512-rnCpTIBafOx4mRp43xOxDJbFipJm/c0cia/V5TiGlhmMa+wsSdoGmUN3w5Bqrks/09Q/D4tNAmWaT8p6NRi77A==}
+
+  '@lezer/markdown@1.7.2':
+    resolution: {integrity: sha512-iTkYvoVcKt3WkeL7qUDyXHONZEwLio4wj8KTNi2dnjQEXBZKMV63BpQrPqfsM+OkvuRbiSTAcycYAsQzLhRNoQ==}
 
   '@magda/tree-kill@1.2.3':
     resolution: {integrity: sha512-QZ9pAuU1yDWx8z4dVAtR4w5wVMb++hmBCYi9Rj864TobnuG29gqVHmRuwcPAvFL8qjMfn5Z0Mcu4eCI5dmD1Sg==}
@@ -7022,6 +7046,27 @@ snapshots:
   '@keyv/serialize@1.1.1': {}
 
   '@leichtgewicht/ip-codec@2.0.5': {}
+
+  '@lezer/common@1.5.2': {}
+
+  '@lezer/highlight@1.2.3':
+    dependencies:
+      '@lezer/common': 1.5.2
+
+  '@lezer/html@1.3.13':
+    dependencies:
+      '@lezer/common': 1.5.2
+      '@lezer/highlight': 1.2.3
+      '@lezer/lr': 1.4.10
+
+  '@lezer/lr@1.4.10':
+    dependencies:
+      '@lezer/common': 1.5.2
+
+  '@lezer/markdown@1.7.2':
+    dependencies:
+      '@lezer/common': 1.5.2
+      '@lezer/highlight': 1.2.3
 
   '@magda/tree-kill@1.2.3': {}
 

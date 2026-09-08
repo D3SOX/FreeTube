@@ -4,6 +4,7 @@ import { test } from 'node:test'
 import { DEFAULT_CUSTOM_THEME } from '../../src/customTheme.js'
 import {
   PREVIEW_MARKER,
+  moderateDiscussion,
   previewRequest,
   publishPreview,
   renderPreviewImages,
@@ -98,6 +99,47 @@ function fakeApi(post) {
     },
   }
 }
+
+test('removes external discussion links and prepares an author notification for the Actions bot', () => {
+  const post = { ...discussion({ screenshots: '![Screenshot](https://example.com/a.png)' }), author: { login: 'theme-author' } }
+  post.body = post.body.replace('A theme to share.', 'A [theme](https://example.com) to share.')
+  const api = fakeApi(post)
+  const notification = moderateDiscussion('OpenTubeX/OpenTubeX', 123, api.query)
+  assert.equal(api.mutations.length, 1)
+  assert.equal(api.mutations[0].variables.body, post.body
+    .replace('![Screenshot](https://example.com/a.png)', '')
+    .replace('[theme](https://example.com)', 'theme'))
+  assert.equal(notification.variables.id, post.id)
+  assert.match(notification.query, /addDiscussionComment/)
+  assert.match(notification.variables.body, /@theme-author/)
+  assert.match(notification.variables.body, /GitHub-hosted links/)
+})
+
+test('moderation leaves allowed discussions alone without notifying the author', () => {
+  for (const post of [
+    discussion({ screenshots: `![Image](${urls.watch})` }),
+    { ...discussion({ screenshots: 'https://example.com' }), category: { slug: 'general' } },
+    { ...discussion({ screenshots: 'https://example.com' }), closed: true },
+    { ...discussion({ screenshots: 'https://example.com' }), locked: true },
+    null,
+  ]) {
+    const api = fakeApi(post)
+    assert.equal(moderateDiscussion('OpenTubeX/OpenTubeX', 123, api.query), null)
+    assert.equal(api.mutations.length, 0)
+  }
+})
+
+test('moderation does not overwrite an author edit made during the check', () => {
+  const post = discussion({ screenshots: 'https://example.com' })
+  let reads = 0
+  const query = (query) => {
+    assert.ok(!query.startsWith('mutation'))
+    reads++
+    return { repository: { discussion: reads === 1 ? post : { ...post, body: post.body + '\nNew text.' } } }
+  }
+  assert.equal(moderateDiscussion('OpenTubeX/OpenTubeX', 123, query), null)
+  assert.equal(reads, 2)
+})
 
 test('fills the original screenshot section and preserves surrounding text and theme JSON', () => {
   for (const markers of [false, true]) {

@@ -24,7 +24,7 @@ jobs:
     timeout-minutes: 20
     permissions:
       contents: read
-      discussions: read
+      discussions: write
     env:
       THEME_PREVIEW_DIR: .tmp/theme-preview
       DISCUSSION_NUMBER: ${{ github.event.discussion.number || inputs.discussion }}
@@ -46,6 +46,19 @@ jobs:
         cache: false
 
     - run: pnpm run ci
+
+    - name: Remove external images and links
+      id: moderation
+      env:
+        # Editing another author's discussion requires the user token.
+        GH_TOKEN: ${{ secrets.PUSH_TOKEN }}
+      run: node _scripts/themePreview.mjs moderate "$THEME_PREVIEW_DIR"
+
+    - name: Notify the author as github-actions[bot]
+      if: steps.moderation.outputs.changed == 'true'
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: gh api graphql --input "$THEME_PREVIEW_DIR/moderation-comment.json"
 
     - name: Check whether previews are needed
       id: request
