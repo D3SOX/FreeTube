@@ -36,6 +36,10 @@ test('embeds the generated nightly version in the Android web bundle', async () 
 
   assert.notEqual(packageVersionUpdate, -1)
   assert.ok(packageVersionUpdate < capacitorBuild)
+  assert.match(
+    build,
+    /gradlew --project-dir android :app:assembleNightly -PsplitApks\s+\\\s+-I \.\.\/tests\/android\/build-identity\.init\.gradle\s+verifyBuildIdentity/
+  )
 })
 
 test('publishes all architecture APKs alongside the existing desktop artifacts', async (t) => {
@@ -72,51 +76,48 @@ test('publishes all architecture APKs alongside the existing desktop artifacts',
   assert.match(incomplete.stderr, /Expected five Android APKs/)
 })
 
-test('gives the Android debug package nightly launcher branding', async () => {
-  const strings = await readFile(
-    'android/app/src/debug/res/values/strings.xml',
-    'utf8'
-  )
+for (const [channel, resourceDir, badge] of [['nightly', 'debug', 'wrench'], ['dev', 'dev', 'flask']]) {
+  test(`gives Android ${channel} builds their ${badge} launcher icon`, async () => {
+    const icon = await readFile(
+      `android/app/src/${resourceDir}/res/drawable/ic_launcher_${channel}_foreground.xml`,
+      'utf8'
+    )
 
-  assert.match(strings, /<string name="app_name">OpenTubeX Nightly<\/string>/)
-  assert.match(strings, /<string name="title_activity_main">OpenTubeX Nightly<\/string>/)
+    assert.ok(icon.includes(badge))
 
-  const icon = await readFile(
-    'android/app/src/debug/res/drawable/ic_launcher_nightly_foreground.xml',
-    'utf8'
-  )
+    for (const api of [26, 33]) {
+      for (const name of ['ic_launcher.xml', 'ic_launcher_round.xml']) {
+        const adaptiveIcon = await readFile(
+          `android/app/src/${resourceDir}/res/mipmap-anydpi-v${api}/${name}`,
+          'utf8'
+        )
 
-  assert.match(icon, /nightly wrench/i)
-
-  for (const api of [26, 33]) {
-    for (const name of ['ic_launcher.xml', 'ic_launcher_round.xml']) {
-      const adaptiveIcon = await readFile(
-        `android/app/src/debug/res/mipmap-anydpi-v${api}/${name}`,
-        'utf8'
-      )
-
-      assert.match(adaptiveIcon, /@drawable\/ic_launcher_nightly_foreground/)
-      if (api === 33) {
-        assert.match(adaptiveIcon, /@drawable\/ic_launcher_nightly_monochrome/)
+        assert.ok(adaptiveIcon.includes(`@drawable/ic_launcher_${channel}_foreground`))
+        if (api === 33) {
+          assert.ok(adaptiveIcon.includes(`@drawable/ic_launcher_${channel}_monochrome`))
+        }
       }
     }
-  }
 
-  for (const [density, size] of Object.entries({
-    mdpi: 48,
-    hdpi: 72,
-    xhdpi: 96,
-    xxhdpi: 144,
-    xxxhdpi: 192
-  })) {
-    for (const name of ['ic_launcher.png', 'ic_launcher_round.png']) {
-      const png = await readFile(
-        `android/app/src/debug/res/mipmap-${density}/${name}`
-      )
+    for (const [density, size] of Object.entries({
+      mdpi: 48,
+      hdpi: 72,
+      xhdpi: 96,
+      xxhdpi: 144,
+      xxxhdpi: 192
+    })) {
+      for (const name of ['ic_launcher.png', 'ic_launcher_round.png']) {
+        const png = await readFile(
+          `android/app/src/${resourceDir}/res/mipmap-${density}/${name}`
+        )
 
-      assert.equal(png.subarray(1, 4).toString(), 'PNG')
-      assert.equal(png.readUInt32BE(16), size)
-      assert.equal(png.readUInt32BE(20), size)
+        assert.deepEqual(
+          png.subarray(0, 8),
+          Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])
+        )
+        assert.equal(png.readUInt32BE(16), size)
+        assert.equal(png.readUInt32BE(20), size)
+      }
     }
-  }
-})
+  })
+}

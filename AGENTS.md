@@ -6,6 +6,7 @@
 
 ## Testing
 
+- Local Android debug builds install as `org.opentubex.app.dev` (OpenTubeX Dev). Launch `org.opentubex.app.dev/org.opentubex.app.MainActivity`; instrumentation uses `org.opentubex.app.dev.test`. Reserve `assembleNightly` for intentionally building the published nightly identity. See `android/SIGNING.md`.
 - For bugfixes, reproduce the failure with a regression test before applying the fix, then verify that it passes afterward. Verify new features with checks appropriate to the affected code. If automated reproduction or verification is impractical, explain why and report the evidence used, unless the user explicitly waived verification.
 - Run the relevant checks: `pnpm run test:unit` for unit tests, `pnpm run lint` for JavaScript/Vue and styles, `pnpm run lint-json` for static JSON, and `pnpm run lint-yml` for YAML. Use the filtered E2E command below for affected Electron flows.
 - When running Electron/Playwright E2E tests on a user's graphical desktop, use a private X server so test windows do not appear in their session. For example: `xvfb-run -a -s "-screen 0 1920x1080x24"`. The exact command may vary, and this is not required in CI or other isolated/headless environments.
