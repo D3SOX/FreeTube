@@ -6,7 +6,7 @@ export default defineConfig({
   outputDir: '../results/theme-previews',
   workers: 1,
   retries: 0,
-  timeout: 120_000,
+  timeout: 300_000,
   expect: { timeout: 30_000 },
   reporter: 'list',
 })

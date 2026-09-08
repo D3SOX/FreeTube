@@ -70,6 +70,15 @@ jobs:
       if: steps.request.outputs.enabled == 'true'
       run: pnpm exec install-electron
 
+    - name: Install live screenshot playback dependencies
+      if: steps.request.outputs.enabled == 'true'
+      run: |
+        sudo apt-get update
+        sudo apt-get install --yes --no-install-recommends ffmpeg
+        pipx install 'yt-dlp[default]'
+        mkdir -p "$HOME/.config/yt-dlp"
+        printf '%s\n' '--js-runtimes node' > "$HOME/.config/yt-dlp/config"
+
     - name: Pack the capture app
       if: steps.request.outputs.enabled == 'true'
       run: pnpm run test:e2e:pack
