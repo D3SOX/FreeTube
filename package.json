@@ -113,7 +113,7 @@
   "devDependencies": {
     "@babel/core": "^8.0.1",
     "@babel/preset-env": "^8.0.2",
-    "@capacitor/cli": "^8.5.0",
+    "@capacitor/cli": "^8.5.1",
     "@double-great/stylelint-a11y": "^3.5.2",
     "@eslint/js": "^10.0.1",
     "@iconify-json/material-symbols": "^1.2.90",
