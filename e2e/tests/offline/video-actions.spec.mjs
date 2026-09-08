@@ -160,18 +160,21 @@ for (const [iconPack, uiScale] of [['material', 100], ['remix', 125]]) {
       await page.locator('.ft-list-video .optionsButton .iconButton').first().click()
       const menu = page.locator('.listVideoOptionsDropdown')
       const scrollbar = menu.locator('.os-scrollbar-vertical')
-      await menu.getByRole('option').last().scrollIntoViewIfNeeded()
-      await expect.poll(() => menu.evaluate(element => element.scrollTop)).toBeGreaterThan(0)
-      await expect(scrollbar).not.toHaveClass(/os-scrollbar-unusable/)
+      for (let resize = 0; resize < 10; resize++) {
+        await page.setViewportSize({ width: 375, height: 400 })
+        await menu.getByRole('option').last().scrollIntoViewIfNeeded()
+        await expect.poll(() => menu.evaluate(element => element.scrollTop)).toBeGreaterThan(0)
+        await expect(scrollbar).not.toHaveClass(/os-scrollbar-unusable/)
 
-      await page.setViewportSize({ width: 1200, height: 1000 })
-      await expect(menu).toBeVisible()
-      await expect(menu.getByRole('option').first()).toHaveCSS('font-size', '14px')
-      await expect.poll(() => menu.evaluate(element => element.scrollTop)).toBe(0)
-      await expect.poll(() => menu.evaluate(element => element.scrollHeight - element.clientHeight)).toBeLessThanOrEqual(1)
-      await expect(scrollbar).toHaveClass(/os-scrollbar-unusable/)
-      await expect(menu.getByRole('option').first()).toBeInViewport()
-      await expect(menu.getByRole('option').last()).toBeInViewport()
+        await page.setViewportSize({ width: 1200, height: 1000 })
+        await expect(menu).toBeVisible()
+        await expect(menu.getByRole('option').first()).toHaveCSS('font-size', '14px')
+        await expect.poll(() => menu.evaluate(element => element.scrollTop)).toBe(0)
+        await expect.poll(() => menu.evaluate(element => element.scrollHeight - element.clientHeight)).toBeLessThanOrEqual(1)
+        await expect(scrollbar).toHaveClass(/os-scrollbar-unusable/)
+        await expect(menu.getByRole('option').first()).toBeInViewport()
+        await expect(menu.getByRole('option').last()).toBeInViewport()
+      }
     })
 
     test('opens a readable mobile menu with touch-sized options', async ({ page }) => {
@@ -1889,7 +1892,9 @@ test.describe('list video actions', () => {
 
   test('a tall options dropdown stays below the horizontal tab bar', async ({ page }) => {
     await goTo(page, 'history')
-    await page.setViewportSize({ width: 1200, height: 400 })
+    // The simplified menu needs a shorter viewport to exercise scrolling.
+    const viewportHeight = 300
+    await page.setViewportSize({ width: 1200, height: viewportHeight })
 
     const video = page.locator('.ft-list-video').first()
     await video.hover()
@@ -1912,7 +1917,7 @@ test.describe('list video actions', () => {
 
     expect(chromeBottom).toBeGreaterThan(0)
     expect(dropdownBounds.y).toBeGreaterThanOrEqual(chromeBottom)
-    expect(dropdownBounds.y + dropdownBounds.height).toBeLessThanOrEqual(400)
+    expect(dropdownBounds.y + dropdownBounds.height).toBeLessThanOrEqual(viewportHeight)
     expect(await dropdown.evaluate((element) => element.scrollHeight > element.clientHeight)).toBe(true)
 
     // Repositioning alone cannot keep up with a fast scroll, so the chrome also

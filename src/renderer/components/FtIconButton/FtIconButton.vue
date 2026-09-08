@@ -138,6 +138,7 @@
           <slot v-else>
             <ul
               v-if="dropdownOptions.length > 0"
+              ref="dropdownContentInner"
               class="list"
               role="listbox"
             >
@@ -424,8 +425,8 @@ function keepDropdownInViewport() {
     dropdown.value.style.overflowY = dropdownContent.value ? 'hidden' : 'auto'
   }
 
-  if (dropdownContent.value) {
-    clampOverlayScrollTop(dropdownContent.value, dropdownContentInner.value)
+  if (dropdownContentInner.value) {
+    clampOverlayScrollTop(dropdownContent.value ?? dropdown.value, dropdownContentInner.value)
   }
 
   if (props.dropdownPortal) {
