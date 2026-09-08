@@ -30,6 +30,10 @@ const dbSearchHistory = (action, data) => window.ftElectron.dbSearchHistory(acti
 const dbSubscriptionCache = (action, data) => window.ftElectron.dbSubscriptionCache(action, toPlain(data))
 
 class Settings {
+  static mergeSeenVideos(entries) {
+    return dbSettings(DBActions.SETTINGS.MERGE_SEEN_VIDEOS, entries)
+  }
+
   static find() {
     return dbSettings(DBActions.GENERAL.FIND)
   }

@@ -1,4 +1,5 @@
 import { test, expect, goTo } from '../../helpers/app.mjs'
+import { encryptSyncDocument, decryptSyncDocument } from '../../../src/renderer/helpers/sync-server-privacy.js'
 
 const now = Date.now()
 const HOUR = 3600000
@@ -396,6 +397,92 @@ test.describe('new subscriptions feed', () => {
     await video.hover()
     await video.locator('.optionsButton').click()
     await expect(page.getByRole('option', { name: 'Mark as seen' })).toHaveCount(0)
+  })
+
+  test('history sync imports seen videos and keeps them seen after refresh and restart', async ({ app, page }) => {
+    const key = Buffer.alloc(32, 1).toString('base64')
+    const salt = Buffer.alloc(16, 2).toString('base64')
+    const marks = [newVideo, newShort, newLive, { videoId: 'fetched-later' }]
+      .map(entry => ({ videoId: entry.videoId, seenAt: now, isMembersOnly: false }))
+    const remote = {
+      history: await encryptSyncDocument([], key, salt),
+      seenVideos: await encryptSyncDocument(marks, key, salt),
+    }
+    const uploads = []
+    await page.route('https://seen-sync.example/**', async route => {
+      const request = route.request()
+      const pathname = new URL(request.url()).pathname
+      let body
+      if (pathname === '/health') {
+        body = { capabilities: { encrypted_sync: 1, seen_videos: 1 } }
+      } else if (pathname === '/v1/encrypted_sync') {
+        body = { collections: [], legacy_data: false, legacy_encrypted_data: false }
+      } else {
+        const collection = pathname.split('/').at(-1)
+        expect(Object.hasOwn(remote, collection)).toBe(true)
+        if (request.method() === 'PUT') {
+          uploads.push(collection)
+          remote[collection] = request.postDataJSON().payload
+        }
+        body = { revision: 1, payload: remote[collection] }
+      }
+      await route.fulfill({ json: body })
+    })
+
+    await goTo(page, 'subscriptions')
+    await page.locator('[data-subscription-feed-tab="all"]').click()
+    await expect(page.getByText('New video', { exact: true })).toBeVisible()
+
+    const result = await page.evaluate(async ({ key, salt }) => {
+      const store = document.querySelector('#app').__vue_app__.config.globalProperties.$store
+      const settings = {
+        SyncServerEnabled: true,
+        SyncServerUrl: 'https://seen-sync.example',
+        SyncServerToken: 'test-token',
+        SyncServerPrivacyMode: 'enhanced',
+        SyncServerPrivacyKey: key,
+        SyncServerPrivacySalt: salt,
+        SyncServerAutoSync: false,
+        SyncServerSyncHistory: true,
+        SyncServerSyncSubscriptions: false,
+        SyncServerSyncPlaylists: false,
+        SyncServerSyncProfiles: false,
+        SyncServerSyncSettings: false,
+        SyncServerSyncSessions: false,
+      }
+      for (const [setting, value] of Object.entries(settings)) store.commit(`set${setting}`, value)
+      const historyBefore = JSON.stringify(store.getters.getHistoryCacheSorted)
+      await store.dispatch('syncWithSyncServer')
+      return {
+        status: store.state.syncServer.syncServerStatus,
+        error: store.state.syncServer.syncServerError,
+        historyUnchanged: historyBefore === JSON.stringify(store.getters.getHistoryCacheSorted),
+      }
+    }, { key, salt })
+    expect(result).toEqual({ status: 'success', error: '', historyUnchanged: true })
+    await expect(page.getByText('New video', { exact: true })).toHaveCount(0)
+    await expect(page.getByText('New short', { exact: true })).toHaveCount(0)
+    await expect(page.getByText('New live stream', { exact: true })).toHaveCount(0)
+    await expect(page.getByText('New community post', { exact: true })).toBeVisible()
+
+    await page.evaluate(async ({ channelId, videos }) => {
+      const store = document.querySelector('#app').__vue_app__.config.globalProperties.$store
+      await store.dispatch('updateSubscriptionVideosCacheByChannel', { channelId, videos, timestamp: new Date() })
+    }, { channelId: CHANNEL_ID, videos: [video('fetched-later', 'Fetched after sync', now, { isNewInSubscriptionFeed: true })] })
+    await expect(page.getByText('Fetched after sync', { exact: true })).toHaveCount(0)
+    expect(uploads).toContain('history')
+    expect((await decryptSyncDocument(remote.seenVideos, key)).map(entry => entry.videoId).sort())
+      .toEqual(marks.map(entry => entry.videoId).sort())
+
+    const relaunched = await app.relaunch()
+    await goTo(relaunched.page, 'subscriptions')
+    await relaunched.page.locator('[data-subscription-feed-tab="all"]').click()
+    await expect(relaunched.page.getByText('New community post', { exact: true })).toBeVisible()
+    await expect(relaunched.page.getByText('Fetched after sync', { exact: true })).toHaveCount(0)
+    expect(await relaunched.page.evaluate(() => {
+      const store = document.querySelector('#app').__vue_app__.config.globalProperties.$store
+      return JSON.parse(store.getters.getSubscriptionSeenVideos).length
+    })).toBe(4)
   })
 })
 

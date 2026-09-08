@@ -172,6 +172,11 @@ export class SyncServerClient {
     return capabilities.bulk_sync === 1
   }
 
+  async supportsSeenVideosSync() {
+    const capabilities = await this.getCapabilities()
+    return capabilities.seen_videos === 1
+  }
+
   async supportsKeyPairing() {
     const capabilities = await this.getCapabilities()
     return capabilities.key_pairing === 1

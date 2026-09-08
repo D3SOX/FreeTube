@@ -2,6 +2,7 @@ import {
   DBSubscriptionCacheHandlers,
 } from '../../../datastores/handlers/index'
 import { ensureSubscriptionFeedEntryState } from '../../helpers/subscription-entries'
+import { applySubscriptionSeenVideosToCache } from '../../helpers/subscription-seen-videos'
 
 const MAX_CONCURRENT_CACHE_WRITES = 8
 
@@ -77,11 +78,11 @@ const getters = {
   getSubscriptionPostsLastRefreshTimestamp: (state) => state.subscriptionPostsLastRefreshTimestamp,
   getSubscriptionPostsNextAutoRefreshTimestamp: (state) => state.subscriptionPostsNextAutoRefreshTimestamp,
 
-  getVideoCache: (state) => state.videoCache,
+  getVideoCache: (state, getters) => applySubscriptionSeenVideosToCache(state.videoCache, getters.getSubscriptionSeenVideos),
 
-  getShortsCache: (state) => state.shortsCache,
+  getShortsCache: (state, getters) => applySubscriptionSeenVideosToCache(state.shortsCache, getters.getSubscriptionSeenVideos),
 
-  getLiveCache: (state) => state.liveCache,
+  getLiveCache: (state, getters) => applySubscriptionSeenVideosToCache(state.liveCache, getters.getSubscriptionSeenVideos),
 
   getPostsCache: (state) => state.postsCache,
 }
@@ -212,7 +213,7 @@ const actions = {
     }
   },
 
-  async markSubscriptionEntriesAsSeen({ commit, state }, {
+  async markSubscriptionEntriesAsSeen({ commit, dispatch, state }, {
     tab,
     tabs = [tab],
     channelIds = [],
@@ -242,6 +243,8 @@ const actions = {
     }
 
     const writes = []
+    const seenVideos = []
+    const seenAt = Date.now()
 
     for (const feedTab of tabs) {
       const channelIdSet = new Set(channelIdsByTab[feedTab] ?? channelIds)
@@ -269,6 +272,10 @@ const actions = {
         writes.push(async () => {
           try {
             if (await config.updateEntries(channelId, seenEntries, timestamp) === false) return null
+            if (feedTab !== 'posts') {
+              seenVideos.push(...entries.filter(entry => entry.isNewInSubscriptionFeed === true)
+                .map(entry => ({ videoId: entry.videoId, seenAt, isMembersOnly: entry.isMembersOnly === true })))
+            }
             return { tab: feedTab, channelId, timestamp }
           } catch (errMessage) {
             console.error(errMessage)
@@ -282,9 +289,10 @@ const actions = {
     // render, so all cards leave together regardless of feed size.
     commit('markSubscriptionEntriesAsSeenInCache', (await runSubscriptionCacheWrites(writes))
       .filter(cacheEntry => cacheEntry != null))
+    if (seenVideos.length > 0) await dispatch('mergeSubscriptionSeenVideos', seenVideos)
   },
 
-  async markSubscriptionVideoAsSeen({ commit, state }, videoId) {
+  async markSubscriptionVideoAsSeen({ commit, dispatch, state }, videoId) {
     const cacheConfigs = [
       {
         cache: state.videoCache,
@@ -304,6 +312,8 @@ const actions = {
     ]
 
     const writes = []
+    const seenVideos = []
+    const seenAt = Date.now()
     for (const { cache, tab, updateEntries } of cacheConfigs) {
       for (const [channelId, cacheEntry] of Object.entries(cache)) {
         const entry = cacheEntry?.videos?.find(video => video.videoId === videoId)
@@ -319,6 +329,7 @@ const actions = {
         writes.push(async () => {
           try {
             if (await updateEntries(channelId, seenEntries, timestamp) === false) return
+            seenVideos.push({ videoId, seenAt, isMembersOnly: entry.isMembersOnly === true })
             commit('markSubscriptionVideoAsSeenByChannel', { tab, channelId, videoId, timestamp })
           } catch (errMessage) {
             console.error(errMessage)
@@ -327,6 +338,7 @@ const actions = {
       }
     }
     await runSubscriptionCacheWrites(writes)
+    if (seenVideos.length > 0) await dispatch('mergeSubscriptionSeenVideos', seenVideos)
   },
 
   async markSubscriptionPostAsSeen({ commit, state }, postId) {

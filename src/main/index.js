@@ -4653,6 +4653,15 @@ function runApp() {
 
     try {
       switch (action) {
+        case DBActions.SETTINGS.MERGE_SEEN_VIDEOS: {
+          const value = await baseHandlers.settings.mergeSeenVideos(data)
+          syncOtherWindows(IpcChannels.SYNC_SETTINGS, event, {
+            event: SyncEvents.GENERAL.UPSERT,
+            data: { _id: 'subscriptionSeenVideos', value }
+          })
+          return value
+        }
+
         case DBActions.GENERAL.FIND:
           return await baseHandlers.settings.find()
 

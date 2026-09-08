@@ -201,6 +201,7 @@ export function createEmptySyncDocument() {
     subscriptions: [],
     playlists: [],
     history: [],
+    seenVideos: [],
     playbackSpeeds: [],
     subscriptionGroups: [],
     playlistBookmarks: [],
@@ -266,6 +267,7 @@ export class EncryptedSyncAdapter {
     this.document.subscriptions ??= []
     this.document.playlists ??= []
     this.document.history ??= []
+    this.document.seenVideos ??= []
     this.document.playbackSpeeds ??= []
     this.document.profiles ??= []
     this.document.settings ??= []
@@ -327,6 +329,10 @@ export class EncryptedSyncAdapter {
   }
 
   async getWatchHistory() { return structuredClone(this.document.history) }
+
+  async getSeenVideos() { return structuredClone(this.document.seenVideos) }
+
+  async putSeenVideos(entries) { this.document.seenVideos = structuredClone(entries) }
 
   async getSessions() {
     return structuredClone(this.document.sessionsV2 ?? this.document.sessions)

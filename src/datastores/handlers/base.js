@@ -4,12 +4,27 @@ import { PlaylistVideoAddResult } from '../../constants'
 import { hasReachedWatchedThreshold, migrateLegacyHistoryRecord } from '../../history'
 import { resolveSearchHistoryEntry } from '../../search-history'
 import { createRecommendationStore } from '../recommendations'
+import { mergeSubscriptionSeenVideos } from '../../subscriptionSeenVideos'
 
 const recommendations = createRecommendationStore(db.recommendations)
 
 const HISTORY_WATCHED_STATUS_MIGRATION_ID = 'historyWatchedStatusMigrated'
 
 class Settings {
+  static pendingSeenVideosUpdate = Promise.resolve()
+
+  static mergeSeenVideos(entries) {
+    // Electron windows share this queue in the main process. Read the saved
+    // marks inside it so concurrent windows cannot replace each other's marks.
+    this.pendingSeenVideosUpdate = this.pendingSeenVideosUpdate.catch(() => {}).then(async () => {
+      const saved = await db.settings.findOneAsync({ _id: 'subscriptionSeenVideos' })
+      const value = JSON.stringify(mergeSubscriptionSeenVideos(saved?.value, entries))
+      if (value !== saved?.value) await this.upsert('subscriptionSeenVideos', value)
+      return value
+    })
+    return this.pendingSeenVideosUpdate
+  }
+
   static async find() {
     const currentLocale = await db.settings.findOneAsync({ _id: 'currentLocale' })
 

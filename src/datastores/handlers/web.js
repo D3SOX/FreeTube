@@ -19,6 +19,10 @@ export const subscriptionCache = createBrowserSubscriptionCache(
 // https://www.npmjs.com/package/localforage
 
 class Settings {
+  static mergeSeenVideos(entries) {
+    return baseHandlers.settings.mergeSeenVideos(entries)
+  }
+
   static find() {
     return baseHandlers.settings.find()
   }
