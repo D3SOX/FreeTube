@@ -47,7 +47,7 @@ jobs:
 
     - run: pnpm run ci
 
-    - name: Remove external images and links
+    - name: Enforce theme description and link limits
       id: moderation
       env:
         # Editing another author's discussion requires the user token.

@@ -129,6 +129,27 @@ test('moderation leaves allowed discussions alone without notifying the author',
   }
 })
 
+test('moderation limits descriptions to 500 characters and explains the change to the author', () => {
+  const post = { ...discussion({ screenshots: `![Image](${urls.watch})` }), author: { login: 'theme-author' } }
+  post.body = post.body.replace('A theme to share.', 'a'.repeat(501))
+  const api = fakeApi(post)
+  const notification = moderateDiscussion('OpenTubeX/OpenTubeX', 123, api.query)
+  assert.equal(api.mutations[0].variables.body, post.body.replace('a'.repeat(501), 'a'.repeat(500)))
+  assert.match(notification.variables.body, /@theme-author/)
+  assert.match(notification.variables.body, /500-character limit/)
+  assert.doesNotMatch(notification.variables.body, /removed external/)
+})
+
+test('moderation reports both link removal and description shortening in one comment', () => {
+  const post = discussion({ screenshots: '![Image](https://example.com/a.png)' })
+  post.body = post.body.replace('A theme to share.', 'a'.repeat(501))
+  const api = fakeApi(post)
+  const notification = moderateDiscussion('OpenTubeX/OpenTubeX', 123, api.query)
+  assert.equal(api.mutations.length, 1)
+  assert.match(notification.variables.body, /removed external/)
+  assert.match(notification.variables.body, /500-character limit/)
+})
+
 test('moderation does not overwrite an author edit made during the check', () => {
   const post = discussion({ screenshots: 'https://example.com' })
   let reads = 0

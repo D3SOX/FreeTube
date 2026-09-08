@@ -8,6 +8,7 @@ import { marked } from 'marked'
 
 import { normalizeCustomTheme } from '../src/customTheme.js'
 import { removeExternalDiscussionLinks } from './themeDiscussionLinks.mjs'
+import { limitThemeDescription, THEME_DESCRIPTION_LIMIT } from './themeDiscussionDescription.mjs'
 
 export const PREVIEW_MARKER = '<!-- theme-preview -->'
 const PREVIEW_END = '<!-- theme-preview:end -->'
@@ -79,7 +80,8 @@ export function loadDiscussion(repository, number, query = graphql) {
 export function moderateDiscussion(repository, number, query = graphql) {
   const discussion = loadDiscussion(repository, number, query)
   if (discussion?.category?.slug !== 'themes' || discussion.closed || discussion.locked) return null
-  const body = removeExternalDiscussionLinks(discussion.body)
+  const withoutExternalLinks = removeExternalDiscussionLinks(discussion.body)
+  const body = limitThemeDescription(withoutExternalLinks)
   if (body === discussion.body) return null
   // A queued edit will be checked by its own run. Do not overwrite newer text.
   const latest = loadDiscussion(repository, number, query)
@@ -88,15 +90,21 @@ export function moderateDiscussion(repository, number, query = graphql) {
     updateDiscussion(input:{discussionId:$id, body:$body}) { discussion { id } }
   }`, { id: discussion.id, body })
   const mention = discussion.author?.login ? `@${discussion.author.login} ` : ''
+  const changes = []
+  if (withoutExternalLinks !== discussion.body) {
+    changes.push('I removed external images and links. Please upload screenshots directly to GitHub and use GitHub-hosted links.')
+  }
+  if (body !== withoutExternalLinks) {
+    changes.push(`I shortened the description to fit the ${THEME_DESCRIPTION_LIMIT}-character limit, including Markdown formatting. ` +
+      'A final Markdown construct may be omitted to avoid cutting it in half.')
+  }
   return {
     query: `mutation($id:ID!, $body:String!) {
       addDiscussionComment(input:{discussionId:$id, body:$body}) { comment { id } }
     }`,
     variables: {
       id: discussion.id,
-      body: `${mention}I removed external images and links from this theme discussion. ` +
-        'Please upload screenshots directly to GitHub and use GitHub-hosted links. ' +
-        'The remaining text and theme JSON were preserved.',
+      body: `${mention}${changes.join(' ')} The theme JSON was preserved.`,
     },
   }
 }
@@ -172,7 +180,7 @@ async function main() {
       await writeFile(path.join(directory, 'moderation-comment.json'), JSON.stringify(notification))
     }
     if (process.env.GITHUB_OUTPUT) await appendFile(process.env.GITHUB_OUTPUT, `changed=${!!notification}\n`)
-    console.log(notification ? 'Removed external images and links.' : 'No external links removed.')
+    console.log(notification ? 'Updated the discussion to meet the theme posting limits.' : 'No moderation changes needed.')
   } else if (command === 'prepare') {
     const repository = process.env.GITHUB_REPOSITORY
     const number = Number(process.env.DISCUSSION_NUMBER)
