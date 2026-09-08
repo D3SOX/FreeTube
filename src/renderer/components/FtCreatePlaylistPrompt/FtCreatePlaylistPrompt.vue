@@ -115,9 +115,12 @@ async function createNewPlaylist() {
   const playlistObject = {
     playlistName: playlistName.value,
     protected: false,
-    description: '',
+    description: store.getters.getNewPlaylistVideoObject.description || '',
     videos: initialVideos,
   }
+
+  const sourcePlaylistId = store.getters.getNewPlaylistVideoObject.sourcePlaylistId
+  if (sourcePlaylistId) playlistObject.sourcePlaylistId = sourcePlaylistId
 
   try {
     await store.dispatch('addPlaylist', playlistObject)

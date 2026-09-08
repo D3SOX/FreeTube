@@ -205,6 +205,8 @@ Feed:
   Next Auto Refresh: 'Naslednja samodejna osvežitev: {date}'
   Refresh Feed: Osveži {subscriptionName}
 User Playlists:
+  Add Missing Videos: "Dodaj manjkajoče videoposnetke iz vira"
+  Source Playlist: "Izvorni seznam predvajanja"
   Save Playlist: "Shrani seznam predvajanja"
   Remove Saved Playlist: "Odstrani shranjeni seznam predvajanja"
   Load More Playlists: Naloži več seznamov predvajanja

@@ -169,6 +169,8 @@ Feed:
   Cancel Refresh: Ακύρωση ανανέωσης
   Next Auto Refresh: 'Επόμενη αυτόματη ανανέωση: {date}'
 User Playlists:
+  Add Missing Videos: "Προσθήκη βίντεο που λείπουν από την πηγή"
+  Source Playlist: "Αρχική λίστα αναπαραγωγής"
   Save Playlist: "Αποθήκευση λίστας αναπαραγωγής"
   Remove Saved Playlist: "Αφαίρεση αποθηκευμένης λίστας αναπαραγωγής"
   Load More Playlists: Φόρτωση περισσότερων λιστών αναπαραγωγής

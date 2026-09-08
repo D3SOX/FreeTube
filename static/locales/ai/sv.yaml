@@ -169,6 +169,8 @@ Feed:
   Cancel Refresh: Avbryt uppdatering
   Next Auto Refresh: 'Nästa automatiska uppdatering: {date}'
 User Playlists:
+  Add Missing Videos: "Lägg till saknade videor från källan"
+  Source Playlist: "Ursprunglig spellista"
   Save Playlist: "Spara spellista"
   Remove Saved Playlist: "Ta bort sparad spellista"
   Load More Playlists: Läs in fler spellistor

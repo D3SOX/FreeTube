@@ -169,6 +169,8 @@ Feed:
   Cancel Refresh: Utzi freskatzeari
   Next Auto Refresh: 'Hurrengo freskatze automatikoa: {date}'
 User Playlists:
+  Add Missing Videos: "Gehitu falta diren bideoak iturburutik"
+  Source Playlist: "Jatorrizko erreprodukzio-zerrenda"
   Save Playlist: "Gorde erreprodukzio-zerrenda"
   Remove Saved Playlist: "Kendu gordetako erreprodukzio-zerrenda"
   Load More Playlists: Kargatu erreprodukzio-zerrenda gehiago

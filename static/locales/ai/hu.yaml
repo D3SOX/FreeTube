@@ -167,6 +167,8 @@ Feed:
   Cancel Refresh: Frissítés megszakítása
   Next Auto Refresh: 'Következő automatikus frissítés: {date}'
 User Playlists:
+  Add Missing Videos: "Hiányzó videók hozzáadása a forrásból"
+  Source Playlist: "Forráslejátszási lista"
   Save Playlist: "Lejátszási lista mentése"
   Remove Saved Playlist: "Mentett lejátszási lista eltávolítása"
   Load More Playlists: További lejátszási listák betöltése

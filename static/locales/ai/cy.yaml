@@ -169,6 +169,8 @@ Feed:
   Cancel Refresh: Canslo'r adnewyddiad
   Next Auto Refresh: 'Adnewyddiad awtomatig nesaf: {date}'
 User Playlists:
+  Add Missing Videos: "Ychwanegu fideos coll o’r ffynhonnell"
+  Source Playlist: "Rhestr chwarae wreiddiol"
   Save Playlist: "Cadw'r rhestr chwarae"
   Remove Saved Playlist: "Dileu'r rhestr chwarae sydd wedi'i chadw"
   Load More Playlists: Llwytho rhagor o restrau chwarae

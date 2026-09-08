@@ -171,6 +171,8 @@ Feed:
   Cancel Refresh: Annuller opdatering
   Next Auto Refresh: 'Næste automatiske opdatering: {date}'
 User Playlists:
+  Add Missing Videos: "Tilføj manglende videoer fra kilden"
+  Source Playlist: "Oprindelig afspilningsliste"
   Save Playlist: "Gem playliste"
   Remove Saved Playlist: "Fjern gemt playliste"
   Load More Playlists: Indlæs flere playlister

@@ -172,6 +172,8 @@ Feed:
   Cancel Refresh: புதுப்பிப்பை ரத்துசெய்
   Next Auto Refresh: 'அடுத்த தானியக்கப் புதுப்பிப்பு: {date}'
 User Playlists:
+  Add Missing Videos: "மூலத்திலிருந்து விடுபட்ட காணொளிகளைச் சேர்"
+  Source Playlist: "மூல இயக்கப்பட்டியல்"
   Save Playlist: "பிளேலிஸ்ட்டைச் சேமி"
   Remove Saved Playlist: "சேமித்த பிளேலிஸ்ட்டை அகற்று"
   Load More Playlists: மேலும் பிளேலிஸ்ட்களை ஏற்று

@@ -169,6 +169,8 @@ Feed:
   Cancel Refresh: Peruuta päivitys
   Next Auto Refresh: 'Seuraava automaattinen päivitys: {date}'
 User Playlists:
+  Add Missing Videos: "Lisää puuttuvat videot lähteestä"
+  Source Playlist: "Alkuperäinen soittolista"
   Save Playlist: "Tallenna soittolista"
   Remove Saved Playlist: "Poista tallennettu soittolista"
   Load More Playlists: Lataa lisää soittolistoja

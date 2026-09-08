@@ -213,6 +213,8 @@ Feed:
   Next Auto Refresh: 'Propera actualització automàtica: {date}'
   Refresh Feed: Actualitza {subscriptionName}
 User Playlists:
+  Add Missing Videos: "Afegeix els vídeos que falten de la font"
+  Source Playlist: "Llista de reproducció original"
   Save Playlist: "Desa la llista de reproducció"
   Remove Saved Playlist: "Elimina la llista de reproducció desada"
   Load More Playlists: Carrega més llistes de reproducció

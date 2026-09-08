@@ -177,6 +177,8 @@ Feed:
   Cancel Refresh: Avbryt oppdateringa
   Next Auto Refresh: 'Neste automatiske oppdatering: {date}'
 User Playlists:
+  Add Missing Videos: "Legg til manglande videoar frå kjelda"
+  Source Playlist: "Opphavleg speleliste"
   Save Playlist: "Lagre speleliste"
   Remove Saved Playlist: "Fjern lagra speleliste"
   Load More Playlists: Last inn fleire spelelister

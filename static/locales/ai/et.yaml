@@ -167,6 +167,8 @@ Feed:
   Cancel Refresh: Tühista värskendamine
   Next Auto Refresh: 'Järgmine automaatne värskendamine: {date}'
 User Playlists:
+  Add Missing Videos: "Lisa allikast puuduvad videod"
+  Source Playlist: "Algne esitusloend"
   Save Playlist: "Salvesta esitusloend"
   Remove Saved Playlist: "Eemalda salvestatud esitusloend"
   Load More Playlists: Laadi veel esitusloendeid

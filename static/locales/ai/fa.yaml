@@ -179,6 +179,8 @@ Feed:
   Cancel Refresh: لغو تازه‌سازی
   Next Auto Refresh: 'تازه‌سازی خودکار بعدی: {date}'
 User Playlists:
+  Add Missing Videos: "افزودن ویدیوهای موجود در منبع که در این فهرست نیستند"
+  Source Playlist: "فهرست پخش منبع"
   Save Playlist: "ذخیره فهرست پخش"
   Remove Saved Playlist: "حذف فهرست پخش ذخیره‌شده"
   Load More Playlists: بارگذاری فهرست‌های پخش بیشتر

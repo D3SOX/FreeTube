@@ -167,6 +167,8 @@ Feed:
   Cancel Refresh: Zrušiť obnovenie
   Next Auto Refresh: 'Ďalšie automatické obnovenie: {date}'
 User Playlists:
+  Add Missing Videos: "Pridať chýbajúce videá zo zdroja"
+  Source Playlist: "Zdrojový zoznam videí"
   Save Playlist: "Uložiť playlist"
   Remove Saved Playlist: "Odstrániť uložený playlist"
   Load More Playlists: Načítať ďalšie zoznamy videí

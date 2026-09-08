@@ -169,6 +169,8 @@ Feed:
   Cancel Refresh: إلغاء التحديث
   Next Auto Refresh: 'التحديث التلقائي التالي: {date}'
 User Playlists:
+  Add Missing Videos: "إضافة الفيديوهات المفقودة من المصدر"
+  Source Playlist: "قائمة التشغيل المصدر"
   Save Playlist: "حفظ قائمة التشغيل"
   Remove Saved Playlist: "إزالة قائمة التشغيل المحفوظة"
   Load More Playlists: تحميل المزيد من قوائم التشغيل
