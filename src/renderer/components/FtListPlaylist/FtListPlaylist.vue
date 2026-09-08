@@ -28,7 +28,8 @@
       >
         <div class="background" />
         <div class="inner">
-          <div>{{ playlistMetadata.videoCount }}</div>
+          <!-- eslint-disable-next-line @intlify/vue-i18n/no-raw-text -- Infinity is a language-independent count indicator. -->
+          <div>{{ playlistMetadata.videoCount < 0 ? '∞' : playlistMetadata.videoCount }}</div>
           <div><FtIcon :icon="['fas','list']" /></div>
         </div>
       </div>

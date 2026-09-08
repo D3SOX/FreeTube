@@ -311,7 +311,7 @@ export async function searchInvidiousChannel(channelId, query, page) {
  *  descriptionHtml: string,
  *  videoCount: number,
  *  viewCount: number,
- *  updated: number,
+ *  updated: number | null,
  *  videos: {
  *    title: string,
  *    videoId: string,
@@ -334,6 +334,21 @@ export async function invidiousGetPlaylistInfo(playlistId, page) {
 
   playlist.pageVideoCount = playlist.videos.length
   playlist.videos = filterUnavailableInvidiousPlaylistVideos(playlist.videos)
+  // RD playlists redirect to /mixes, which returns only title, mixId and videos.
+  // Expose the returned batch as a playlist to both the playlist page and player.
+  if (playlist.mixId != null) {
+    Object.assign(playlist, {
+      playlistId: playlist.mixId,
+      author: '',
+      authorId: '',
+      authorThumbnails: [],
+      description: '',
+      descriptionHtml: '',
+      videoCount: playlist.videos.length,
+      viewCount: -1,
+      updated: null,
+    })
+  }
   normalizeManyInvidiousVideosAttributes(playlist.videos)
   setMultiplePublishedTimestamps(playlist.videos)
 
