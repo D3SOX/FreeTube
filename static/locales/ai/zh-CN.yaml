@@ -244,6 +244,7 @@ Settings:
     Swipe to refresh: 下拉刷新
     Blur Thumbnails: 模糊缩略图
     Navigation:
+      Show Active Subscriptions: 显示活跃订阅
       Navigation: 导航
       Customize Navigation: 自定义导航
       Add Item: 添加项目

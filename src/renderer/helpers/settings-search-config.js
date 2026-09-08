@@ -109,6 +109,7 @@ export const SETTINGS_SEARCH_SOURCES = {
     type: 'distraction',
     key: 'Settings.Distraction Free Settings',
     exclude: new Set([
+      'Hide Active Subscriptions',
       'Hide Home',
       'Hide Popular Videos',
       'Hide Trending Videos',
