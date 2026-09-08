@@ -8,6 +8,7 @@ import { buildYtDlpDownloadArguments } from '../../ytDlpArguments'
 import { PLAYBACK_INFO_OUTPUT_TEMPLATE, mapPlaybackFormat, mapPlaybackCaptions, toFiniteNumber, toNonEmptyString } from '../../ytDlpMetadata'
 import { buildYtDlpStoryboardVtt } from '../../main/ytDlpStoryboard'
 import { isYouTubeSubtitleUrl } from '../../youtubeSubtitle'
+import { chooseAndroidDirectory } from './androidStorage'
 
 const native = process.env.IS_CAPACITOR ? registerPlugin('YtDlp') : null
 
@@ -85,7 +86,7 @@ const android = {
   ytDlpRemoveDownload: id => native.remove({ id }).then(result => result.ok),
   handleYtDlpDownloadStatus: callback => listen('downloadStatus', callback),
   handleYtDlpDownloadsRemoved: callback => listen('downloadsRemoved', result => callback(result.ids)),
-  ytDlpChooseDownloadFolder: () => native.chooseFolder().then(result => result.path),
+  ytDlpChooseDownloadFolder: chooseAndroidDirectory,
   ytDlpChooseCookies: () => native.chooseCookies().then(result => result.path),
   ytDlpGetInfo: () => native.info(),
   ytDlpCheckBinaryUpdate: binary => native.checkUpdate({ binary, channel: configuration().channel }),

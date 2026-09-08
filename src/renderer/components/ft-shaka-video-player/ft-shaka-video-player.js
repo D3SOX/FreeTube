@@ -1,3 +1,4 @@
+import { chooseAndroidDirectory } from '../../helpers/androidStorage'
 import { isAppHidden } from '../../helpers/appVisibility.js'
 import { playbackScreenWake } from '../../helpers/playbackScreenWake'
 import { capturePlayerFrame } from '../../helpers/player/capturePlayerFrame'
@@ -1712,7 +1713,7 @@ export default defineComponent({
     /** @type {import('vue').ComputedRef<string>} */
     const screenshotMode = computed(() => {
       const mode = store.getters.getScreenshotMode
-      return !process.env.IS_ELECTRON && mode === 'default_folder' ? 'prompt_folder' : mode
+      return !process.env.IS_ELECTRON && !process.env.IS_CAPACITOR && mode === 'default_folder' ? 'prompt_folder' : mode
     })
 
     /** @type {import('vue').ComputedRef<string>} */
@@ -7222,7 +7223,10 @@ export default defineComponent({
       const imageQuality = screenshotQuality.value / 100
 
       const wasPlaying = !video_.paused
-      if ((!process.env.IS_ELECTRON || screenshotMode.value === 'prompt_folder') && wasPlaying) {
+      const needsFilePicker = screenshotMode.value === 'prompt_folder' ||
+        (process.env.IS_CAPACITOR && screenshotMode.value === 'default_folder' && !store.getters.getScreenshotFolderPath)
+      const pauseForScreenshot = needsFilePicker || (!process.env.IS_ELECTRON && !process.env.IS_CAPACITOR)
+      if (pauseForScreenshot && wasPlaying) {
         video_.pause()
       }
 
@@ -7250,6 +7254,15 @@ export default defineComponent({
           const filenameWithExtension = `${filename}.${format}`
 
           if (!process.env.IS_ELECTRON || screenshotMode.value === 'prompt_folder') {
+            let directory
+            if (process.env.IS_CAPACITOR && screenshotMode.value === 'default_folder') {
+              directory = store.getters.getScreenshotFolderPath
+              if (!directory) {
+                directory = await chooseAndroidDirectory()
+                if (!directory) return
+                await store.dispatch('updateScreenshotFolderPath', directory)
+              }
+            }
             const saved = await writeFileWithPicker(
               filenameWithExtension,
               blob,
@@ -7257,7 +7270,8 @@ export default defineComponent({
               mimeType,
               `.${format}`,
               'player-screenshots',
-              'pictures'
+              'pictures',
+              directory
             )
 
             if (saved) {
@@ -7277,7 +7291,7 @@ export default defineComponent({
       } finally {
         canvas.remove()
 
-        if ((!process.env.IS_ELECTRON || screenshotMode.value === 'prompt_folder') && wasPlaying) {
+        if (pauseForScreenshot && wasPlaying) {
           video_.play()
         }
       }

@@ -93,7 +93,7 @@ function isSettingsSearchMessageVisible(sectionType, path, options) {
       return store.getters.getScreenshotMode !== 'clipboard'
     }
     if (['Folder Label', 'Folder Button'].includes(item)) {
-      return usingElectron && store.getters.getScreenshotMode === 'default_folder'
+      return (usingElectron || isCapacitor) && store.getters.getScreenshotMode === 'default_folder'
     }
     return false
   }

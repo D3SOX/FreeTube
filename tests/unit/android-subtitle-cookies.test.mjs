@@ -10,8 +10,8 @@ const adapterSource = (await readFile(new URL('../../src/renderer/helpers/ytDlp.
   .replace(/^export /gm, '')
 
 function adapter(getters, subtitle) {
-  return new Function('process', 'registerPlugin', 'store', 'isYouTubeSubtitleUrl', `${adapterSource}\nreturn ytDlp`)(
-    { env: { IS_CAPACITOR: true } }, () => ({ subtitle }), { getters }, isYouTubeSubtitleUrl)
+  return new Function('process', 'registerPlugin', 'store', 'isYouTubeSubtitleUrl', 'chooseAndroidDirectory', `${adapterSource}\nreturn ytDlp`)(
+    { env: { IS_CAPACITOR: true } }, () => ({ subtitle }), { getters }, isYouTubeSubtitleUrl, async () => undefined)
 }
 
 test('Android subtitle cookies preserve the exact selected translation and use only imported cookies', async () => {
