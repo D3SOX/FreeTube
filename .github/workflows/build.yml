@@ -476,22 +476,42 @@ jobs:
         pnpm run capacitor:sync:android
         ./android/gradlew --project-dir android :app:assembleNightly -PsplitApks \
           -I ../tests/android/build-identity.init.gradle verifyBuildIdentity
-        python3 _scripts/android_apks.py android/app/build/outputs/apk/nightly android-apks \
-          | tee -a "$GITHUB_STEP_SUMMARY"
+        python3 _scripts/android_apks.py android/app/build/outputs/apk/nightly android-apks
         printf 'version=%s\n' "$version" >> "$GITHUB_OUTPUT"
 
-    - name: Upload Android APKs
+    - name: Upload Android arm64-v8a APK
       uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
       with:
-        name: opentubex-${{ steps.apk.outputs.version }}-android-apks
-        path: android-apks/*.apk
+        path: android-apks/opentubex-${{ steps.apk.outputs.version }}-android-arm64-v8a.apk
+        archive: false
         if-no-files-found: error
 
-    - name: Upload Android shrinking reports
+    - name: Upload Android armeabi-v7a APK
       uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
       with:
-        name: android-shrinking-reports
-        path: android/app/build/outputs/mapping/nightly/
+        path: android-apks/opentubex-${{ steps.apk.outputs.version }}-android-armeabi-v7a.apk
+        archive: false
+        if-no-files-found: error
+
+    - name: Upload Android x86 APK
+      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+      with:
+        path: android-apks/opentubex-${{ steps.apk.outputs.version }}-android-x86.apk
+        archive: false
+        if-no-files-found: error
+
+    - name: Upload Android x86_64 APK
+      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+      with:
+        path: android-apks/opentubex-${{ steps.apk.outputs.version }}-android-x86_64.apk
+        archive: false
+        if-no-files-found: error
+
+    - name: Upload Android universal APK
+      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+      with:
+        path: android-apks/opentubex-${{ steps.apk.outputs.version }}-android-universal.apk
+        archive: false
         if-no-files-found: error
 
   publish-nightly:
@@ -527,18 +547,6 @@ jobs:
         for artifact_directory in artifacts/*; do
           artifact_name="$(basename "$artifact_directory")"
           mapfile -t files < <(find "$artifact_directory" -type f -print)
-
-          if [[ "$artifact_name" == *-android-apks ]]; then
-            if (( ${#files[@]} != 5 )); then
-              echo "Expected five Android APKs in $artifact_directory" >&2
-              exit 1
-            fi
-            for apk in "${files[@]}"; do
-              [[ "$apk" == *.apk ]]
-              cp "$apk" "release-assets/$(basename "$apk")"
-            done
-            continue
-          fi
 
           if (( ${#files[@]} != 1 )); then
             echo "Expected one file in $artifact_directory, found ${#files[@]}" >&2

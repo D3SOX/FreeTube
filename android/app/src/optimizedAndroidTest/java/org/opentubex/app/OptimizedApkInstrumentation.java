@@ -21,6 +21,7 @@ import java.util.concurrent.atomic.AtomicReference;
 /** Exercises the shipped APK without depending on classes that R8 can inline or remove. */
 public class OptimizedApkInstrumentation extends Instrumentation {
     private volatile Activity resumedActivity;
+    private boolean permissionsOnly;
 
     @Override public void callActivityOnResume(Activity activity) {
         super.callActivityOnResume(activity);
@@ -29,6 +30,7 @@ public class OptimizedApkInstrumentation extends Instrumentation {
 
     @Override public void onCreate(Bundle arguments) {
         super.onCreate(arguments);
+        permissionsOnly = arguments != null && "true".equals(arguments.getString("permissionsOnly"));
         start();
     }
 
@@ -50,7 +52,15 @@ public class OptimizedApkInstrumentation extends Instrumentation {
             await(web, "document.readyState === 'complete' && !!window.Capacitor");
             check(call(web, "App", "getInfo", new JSONObject()).getString("id")
                 .equals(getTargetContext().getPackageName()), "Generated Capacitor plugins survive shrinking");
+            String permission = call(web, "LocalNotifications", "checkPermissions", new JSONObject()).getString("display");
+            check(Arrays.asList("granted", "denied", "prompt", "prompt-with-rationale").contains(permission),
+                "Notification permission metadata survives shrinking: " + permission);
             report("Bridge passed");
+            if (permissionsOnly) {
+                result.putString("stream", "\nOK (startup and notification permissions)\n");
+                resultCode = Activity.RESULT_OK;
+                return;
+            }
 
             JSONObject info = call(web, "YtDlp", "info", new JSONObject());
             for (String binary : new String[] { "ytDlp", "ffmpeg", "ffprobe" }) {
@@ -132,8 +142,8 @@ public class OptimizedApkInstrumentation extends Instrumentation {
             }
             fixture.delete();
             converted.delete();
+            finish(resultCode, result);
         }
-        finish(resultCode, result);
     }
 
     private void report(String message) {

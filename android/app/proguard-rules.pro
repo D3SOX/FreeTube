@@ -1,4 +1,8 @@
 # Capacitor and WorkManager supply their own consumer keep rules.
+# Capacitor's rules keep plugin classes but not their runtime annotation types.
+# R8 full mode otherwise treats plugin permission metadata as null.
+-keep @interface com.getcapacitor.annotation.** { *; }
+
 # Commons Compress registers ZIP extra fields with Class.newInstance(). Keep
 # their no-argument constructors and concrete classes for runtime extraction.
 -keep,allowobfuscation class org.apache.commons.compress.archivers.zip.** implements org.apache.commons.compress.archivers.zip.ZipExtraField {

@@ -201,16 +201,7 @@ jobs:
         export ANDROID_VERSION_CODE ANDROID_VERSION_NAME
         pnpm run capacitor:sync:android
         ./android/gradlew --project-dir android :app:assembleRelease -PsplitApks
-        python3 _scripts/android_apks.py android/app/build/outputs/apk/release android-apks --release \
-          | tee -a "$GITHUB_STEP_SUMMARY"
-
-    - name: Upload Android shrinking reports
-      if: matrix.runtime == 'android'
-      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-      with:
-        name: android-release-shrinking-reports
-        path: android/app/build/outputs/mapping/release/
-        if-no-files-found: error
+        python3 _scripts/android_apks.py android/app/build/outputs/apk/release android-apks --release
 
     - name: Convert x64 AppImage to Anylinux AppImage
       if: startsWith(matrix.os, 'ubuntu') && startsWith(matrix.runtime, 'linux-x64')
