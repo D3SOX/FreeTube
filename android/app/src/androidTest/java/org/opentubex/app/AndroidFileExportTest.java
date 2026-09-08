@@ -44,6 +44,10 @@ public class AndroidFileExportTest {
             awaitValue(scenario, "window.exportResult !== null", "true");
             JSONObject result = new JSONObject(new JSONArray("[" + evaluate(scenario, "JSON.stringify(window.exportResult)") + "]").getString(0));
             assertTrue(result.toString(), result.optBoolean("saved"));
+            long cleanupDeadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(5);
+            while (!Arrays.equals(exportsBefore, stagedExports()) && System.nanoTime() < cleanupDeadline) {
+                Thread.sleep(20);
+            }
             assertArrayEquals(exportsBefore, stagedExports());
             Uri uri = Uri.parse(result.getString("uri"));
             try {
