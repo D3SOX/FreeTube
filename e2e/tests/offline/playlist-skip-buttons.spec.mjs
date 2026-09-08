@@ -109,6 +109,43 @@ function readSkipAvailability(page) {
   })
 }
 
+test('playlist counter stays below the title when expanded and collapsed', async ({ page, attachScreenshot }) => {
+  await page.route(/^https?:\/\//, (route) => route.abort())
+  await goTo(page, 'userplaylists')
+  await page.getByText('Skip button playlist').click()
+  await page.getByText(VIDEO_TITLES[1]).first().click()
+
+  const playlist = page.locator('.watchVideoPlaylist')
+  const counter = playlist.locator('.playlistIndex label')
+  await expect(counter).toHaveText('2 / 3')
+
+  const expectCounterBelowTitle = async () => {
+    await expect.poll(() => playlist.evaluate((element) => {
+      const title = element.querySelector('.playlistTitle').getBoundingClientRect()
+      const counter = element.querySelector('.playlistIndex label').getBoundingClientRect()
+      return counter.top - title.bottom
+    })).toBeGreaterThanOrEqual(0)
+  }
+
+  for (const scale of [1, 0.95, 1.25]) {
+    await page.evaluate(value => window.ftElectron.setZoomFactor(value), scale)
+    for (const width of ['240px', '']) {
+      await playlist.evaluate((element, value) => {
+        element.style.inlineSize = value
+      }, width)
+      await expectCounterBelowTitle()
+      await playlist.getByRole('button', { name: 'Collapse Playlist', exact: true }).click()
+      await expect(playlist.locator('.playlistItemsWrapper')).toBeHidden()
+      await expectCounterBelowTitle()
+      await playlist.getByRole('button', { name: 'Expand Playlist', exact: true }).click()
+      await expect(playlist.locator('.playlistItemsWrapper')).toBeVisible()
+      await expectCounterBelowTitle()
+    }
+  }
+  await playlist.scrollIntoViewIfNeeded()
+  await attachScreenshot('playlist counter below title at 125% UI scale')
+})
+
 test('only offers skipping to playlist videos that exist', async ({ page, attachScreenshot }) => {
   await page.route(/^https?:\/\//, (route) => route.abort())
 

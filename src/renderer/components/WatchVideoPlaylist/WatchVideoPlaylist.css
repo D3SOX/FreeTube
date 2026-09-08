@@ -22,19 +22,14 @@
 
 .channelName {
   font-size: 15px;
-  position: relative;
-  inset-block-end: 15px;
 }
 
 .playlistIndex {
-  position: relative;
-  inset-block-end: 15px;
   color: var(--tertiary-text-color);
 }
 
 .playlistIndex.isCollapsed {
   display: block;
-  inset-block-end: 0;
   margin-block-end: -6px;
 }
 
@@ -284,10 +279,6 @@
   font-size: 18px;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.fullscreenPlaylist :is(.channelName, .playlistIndex) {
-  inset-block-end: 0;
 }
 
 .fullscreenPlaylist .playlistItemsWrapper {
