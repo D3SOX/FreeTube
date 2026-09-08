@@ -14,8 +14,8 @@ endorsed by, maintained by, or supported by the FreeTube project.
   <a href="https://github.com/OpenTubeX/OpenTubeX/actions/workflows/build.yml">
     <img alt='Build status' src="https://github.com/OpenTubeX/OpenTubeX/actions/workflows/build.yml/badge.svg?branch=development" />
   </a>
-  <a href="https://weblate.d3sox.me/engage/opentubex/">
-    <img src="https://weblate.d3sox.me/widgets/opentubex/-/svg-badge.svg" alt="Translation status" />
+  <a href="https://weblate.opentubex.org/engage/opentubex/">
+    <img src="https://weblate.opentubex.org/widgets/opentubex/-/svg-badge.svg" alt="Translation status" />
   </a>
   <a href="https://fluxer.opentubex.org">
     <img alt="Fluxer members" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fapi.fluxer.app%2Finvites%2FPHdJoM1G&query=%24.member_count&label=Fluxer&suffix=%20members&color=4641D9&logo=fluxer&logoColor=white" />
@@ -563,12 +563,12 @@ have your help.  Send a pull request and someone will review your code.
 
 <a id="localization"></a>
 ## 🌍 Localization
-<a href="https://weblate.d3sox.me/engage/opentubex/">
-<img src="https://weblate.d3sox.me/widgets/opentubex/-/287x66-grey.png" alt="Translation status" />
-<img src="https://weblate.d3sox.me/widget/opentubex/application/matrix-auto.svg" alt="Translation matrix" />
+<a href="https://weblate.opentubex.org/engage/opentubex/">
+<img src="https://weblate.opentubex.org/widgets/opentubex/-/287x66-grey.png" alt="Translation status" />
+<img src="https://weblate.opentubex.org/widget/opentubex/application/matrix-auto.svg" alt="Translation matrix" />
 </a>
 
-We are actively looking for translations! We use [Weblate](https://weblate.d3sox.me/engage/opentubex/) to make it easy for translators to get involved. Click on one of the graphics above to learn how to get involved.
+We are actively looking for translations! We use [Weblate](https://weblate.opentubex.org/engage/opentubex/) to make it easy for translators to get involved. Click on one of the graphics above to learn how to get involved.
 
 For the Linux Flatpak, the desktop entry comment string can be translated at our [Flatpak repository](https://github.com/OpenTubeX/flatpak/blob/main/org.opentubex.OpenTubeX.desktop).
 

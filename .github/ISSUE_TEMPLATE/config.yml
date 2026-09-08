@@ -13,7 +13,7 @@ contact_links:
     url: https://github.com/OpenTubeX/OpenTubeX/discussions/categories/q-a
     about: Ask and answer questions
   - name: Translate OpenTubeX
-    url: https://weblate.d3sox.me/engage/opentubex/
+    url: https://weblate.opentubex.org/engage/opentubex/
     about: Help translate OpenTubeX on Weblate
   - name: OpenTubeX Documentation
     url: https://opentubex.org/

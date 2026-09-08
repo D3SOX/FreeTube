@@ -137,7 +137,7 @@ const chunks = computed(() => [
   {
     icon: ['fas', 'language'],
     title: t('About.Translate'),
-    content: '<a href="https://weblate.d3sox.me/engage/opentubex/">https://weblate.d3sox.me/engage/opentubex/</a>',
+    content: '<a href="https://weblate.opentubex.org/engage/opentubex/">https://weblate.opentubex.org/engage/opentubex/</a>',
   },
 ])
 </script>
