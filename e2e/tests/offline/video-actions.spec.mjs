@@ -77,6 +77,42 @@ function silentWav(duration, sampleRate = 8_000) {
 
 test.use({ seed: SEED })
 
+test.describe('video link copy actions', () => {
+  test.use({
+    seed: {
+      ...SEED,
+      settings: { ...SEED.settings, backendFallback: true, extraThumbnailAction: 'copyYoutube' }
+    }
+  })
+
+  for (const width of [1600, 375]) {
+    test(`keeps copying in the context menu and thumbnail action at ${width}px`, async ({ app, page }) => {
+      await goTo(page, 'history')
+      await page.setViewportSize({ width, height: 900 })
+      const video = page.locator('.ft-list-video').first()
+      await video.locator('.optionsButton .iconButton').click()
+      const menu = page.locator('.listVideoOptionsDropdown')
+      await expect(menu.getByRole('option', { name: 'Open in YouTube', exact: true })).toBeVisible()
+      await expect(menu.getByRole('option', { name: 'Open in Invidious', exact: true })).toBeVisible()
+      await expect(menu.getByRole('option', { name: /^Copy / })).toHaveCount(0)
+      await page.keyboard.press('Escape')
+
+      await video.locator('.title').click({ button: 'right' })
+      await expect(page.getByRole('menuitem', { name: 'Copy YouTube Link', exact: true })).toBeVisible()
+      await expect(page.getByRole('menuitem', { name: 'Copy Invidious Link', exact: true })).toBeVisible()
+      await page.getByRole('menuitem', { name: 'Copy YouTube Link', exact: true }).click()
+      await expect.poll(() => app.electronApp.evaluate(({ clipboard }) => clipboard.readText()))
+        .toBe('https://youtu.be/eeeeeeeeeee')
+
+      await app.electronApp.evaluate(({ clipboard }) => clipboard.clear())
+      await video.hover()
+      await video.locator('.extraThumbnailActionIcon .iconButton').click()
+      await expect.poll(() => app.electronApp.evaluate(({ clipboard }) => clipboard.readText()))
+        .toBe('https://youtu.be/eeeeeeeeeee')
+    })
+  }
+})
+
 for (const [iconPack, uiScale] of [['material', 100], ['remix', 125]]) {
   test.describe(`kebab menu with ${iconPack} at ${uiScale}% UI scale`, () => {
     test.use({
@@ -152,9 +188,11 @@ for (const [iconPack, uiScale] of [['material', 100], ['remix', 125]]) {
           const menu = page.locator('.listVideoOptionsDropdown')
           const options = menu.getByRole('option')
           await expect(options.first()).toHaveCSS('font-size', '16px')
-          expect(await options.evaluateAll(elements => elements.every(element => (
-            element.getBoundingClientRect().height >= 48
-          )))).toBe(true)
+          const minimumOptionHeight = await options.evaluateAll(elements => Math.min(
+            ...elements.map(element => element.getBoundingClientRect().height)
+          ))
+          // Electron zoom can introduce fractional-pixel rounding.
+          expect(minimumOptionHeight).toBeGreaterThanOrEqual(48 - 0.01)
           await expect.poll(() => menu.evaluate(element => {
             const bounds = element.getBoundingClientRect()
             return bounds.left >= -1 && bounds.right <= innerWidth + 1 &&
