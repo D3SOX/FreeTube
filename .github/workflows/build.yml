@@ -449,7 +449,10 @@ jobs:
     - run: pnpm run ci
       shell: bash
 
-    - name: Build signed universal APK
+    - name: Test Android APK packaging
+      run: python3 -m unittest discover -s tests/android
+
+    - name: Build signed Android APKs
       id: apk
       shell: bash
       run: |
@@ -470,17 +473,25 @@ jobs:
         ANDROID_VERSION_NAME="$version"
         export ANDROID_VERSION_CODE ANDROID_VERSION_NAME
 
-        apk_path=android/app/build/outputs/apk/debug/app-debug.apk
         pnpm run capacitor:sync:android
-        ./android/gradlew --project-dir android assembleDebug
-        cp "$apk_path" android/app/build/outputs/apk/opentubex-android-universal.apk
+        ./android/gradlew --project-dir android :app:assembleNightly -PsplitApks
+        python3 _scripts/android_apks.py android/app/build/outputs/apk/nightly android-apks \
+          | tee -a "$GITHUB_STEP_SUMMARY"
         printf 'version=%s\n' "$version" >> "$GITHUB_OUTPUT"
 
-    - name: Upload Android APK
+    - name: Upload Android APKs
       uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
       with:
-        name: opentubex-${{ steps.apk.outputs.version }}-android-universal.apk
-        path: android/app/build/outputs/apk/opentubex-android-universal.apk
+        name: opentubex-${{ steps.apk.outputs.version }}-android-apks
+        path: android-apks/*.apk
+        if-no-files-found: error
+
+    - name: Upload Android shrinking reports
+      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+      with:
+        name: android-shrinking-reports
+        path: android/app/build/outputs/mapping/nightly/
+        if-no-files-found: error
 
   publish-nightly:
     name: Publish nightly release
@@ -515,6 +526,18 @@ jobs:
         for artifact_directory in artifacts/*; do
           artifact_name="$(basename "$artifact_directory")"
           mapfile -t files < <(find "$artifact_directory" -type f -print)
+
+          if [[ "$artifact_name" == *-android-apks ]]; then
+            if (( ${#files[@]} != 5 )); then
+              echo "Expected five Android APKs in $artifact_directory" >&2
+              exit 1
+            fi
+            for apk in "${files[@]}"; do
+              [[ "$apk" == *.apk ]]
+              cp "$apk" "release-assets/$(basename "$apk")"
+            done
+            continue
+          fi
 
           if (( ${#files[@]} != 1 )); then
             echo "Expected one file in $artifact_directory, found ${#files[@]}" >&2

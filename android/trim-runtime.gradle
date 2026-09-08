@@ -1,0 +1,89 @@
+import java.util.zip.ZipEntry
+import java.util.zip.ZipFile
+import java.util.zip.ZipOutputStream
+import org.apache.commons.compress.archivers.zip.ZipArchiveEntry
+import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream
+import org.apache.commons.compress.utils.SeekableInMemoryByteChannel
+import org.gradle.api.artifacts.transform.CacheableTransform
+import org.gradle.api.artifacts.transform.InputArtifact
+import org.gradle.api.artifacts.transform.TransformAction
+import org.gradle.api.artifacts.transform.TransformOutputs
+import org.gradle.api.artifacts.transform.TransformParameters
+
+buildscript {
+    repositories { mavenCentral() }
+    dependencies {
+        // Build-only ZIP support: java.util.zip cannot preserve Unix symlinks.
+        classpath 'org.apache.commons:commons-compress:1.28.0'
+    }
+}
+
+// Keep the downloaded dependency intact. Gradle caches this derived AAR and
+// invalidates it when the dependency or transformation changes.
+@CacheableTransform
+abstract class TrimPythonRuntime implements TransformAction<TransformParameters.None> {
+    @InputArtifact
+    @PathSensitive(PathSensitivity.NAME_ONLY)
+    abstract Provider<FileSystemLocation> getInputArtifact()
+
+    void transform(TransformOutputs outputs) {
+        File input = inputArtifact.get().asFile
+        new ZipFile(input).withCloseable { archive ->
+            def pythonEntries = archive.entries().findAll {
+                it.name.startsWith('jni/') && it.name.endsWith('/libpython.zip.so')
+            }
+            if (pythonEntries.isEmpty()) {
+                outputs.file(input)
+                return
+            }
+            new ZipOutputStream(new FileOutputStream(outputs.file(input.name))).withCloseable { output ->
+                archive.entries().each { entry ->
+                    ZipEntry copy = new ZipEntry(entry.name)
+                    copy.time = 0
+                    output.putNextEntry(copy)
+                    archive.getInputStream(entry).withCloseable { content ->
+                        if (pythonEntries.any { it.name == entry.name }) {
+                            output.write(TrimPythonRuntime.trimPython(content))
+                        } else {
+                            content.transferTo(output)
+                        }
+                    }
+                    output.closeEntry()
+                }
+            }
+        }
+    }
+
+    static byte[] trimPython(InputStream input) {
+        def buffer = new ByteArrayOutputStream()
+        new ZipArchiveOutputStream(buffer).withCloseable { output ->
+            // Read the central directory: local ZIP headers omit Unix modes.
+            new org.apache.commons.compress.archivers.zip.ZipFile(
+                new SeekableInMemoryByteChannel(input.readAllBytes())
+            ).withCloseable { archive ->
+                archive.entries.each { entry ->
+                    // QuickJS executes via libqjs.so. This static archive is
+                    // only needed when linking a new executable at build time.
+                    if (entry.name == 'usr/lib/quickjs/libquickjs.a') return
+                    // Preserve Unix modes and symlinks in the runtime archive.
+                    output.putArchiveEntry(new ZipArchiveEntry(entry))
+                    archive.getInputStream(entry).withCloseable { it.transferTo(output) }
+                    output.closeArchiveEntry()
+                }
+            }
+        }
+        return buffer.toByteArray()
+    }
+}
+
+def trimmedRuntime = Attribute.of('org.opentubex.trimmedPythonRuntime', Boolean)
+dependencies {
+    artifactTypes.maybeCreate('aar').attributes.attribute(trimmedRuntime, false)
+    registerTransform(TrimPythonRuntime) {
+        from.attribute(trimmedRuntime, false)
+        to.attribute(trimmedRuntime, true)
+    }
+}
+configurations.configureEach {
+    attributes.attribute(trimmedRuntime, true)
+}

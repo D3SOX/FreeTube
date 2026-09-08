@@ -26,13 +26,26 @@ android {
         versionCode = (System.getenv("ANDROID_VERSION_CODE") ?: "1").toInteger()
         versionName = System.getenv("ANDROID_VERSION_NAME") ?: "0.33.0-dev"
         ndk { abiFilters.addAll((project.findProperty('testAbi') ?: 'arm64-v8a,armeabi-v7a,x86_64,x86').split(',')) }
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner(project.findProperty('testBuildType') == 'nightly'
+            ? "org.opentubex.app.OptimizedApkInstrumentation"
+            : "androidx.test.runner.AndroidJUnitRunner")
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
              // Default: https://android.googlesource.com/platform/frameworks/base/+/282e181b58cf72b6ca770dc7ca5f91f135444502/tools/aapt/AaptAssets.cpp#61
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    // CI publishes a standalone APK for each CPU plus a universal fallback.
+    // Keep local debug/instrumentation builds as one APK.
+    splits {
+        abi {
+            enable project.hasProperty('splitApks') && !project.hasProperty('testAbi')
+            reset()
+            include 'arm64-v8a', 'armeabi-v7a', 'x86_64', 'x86'
+            universalApk true
+        }
+    }
+    testBuildType project.findProperty('testBuildType') ?: 'debug'
     signingConfigs {
         nightly {
             // This public testing key keeps preview APK updates installable.
@@ -52,6 +65,12 @@ android {
         }
     }
     sourceSets { androidTest.assets.srcDirs += ['../../e2e/fixtures/media'] }
+    if (project.findProperty('testBuildType') == 'nightly') {
+        sourceSets.androidTest {
+            java.srcDirs = ['src/optimizedAndroidTest/java']
+            manifest.srcFile 'src/optimizedAndroidTest/AndroidManifest.xml'
+        }
+    }
     packagingOptions {
         jniLibs {
             useLegacyPackaging = true
@@ -67,14 +86,24 @@ android {
             signingConfig signingConfigs.nightly
         }
         release {
-            minifyEnabled false
+            minifyEnabled true
+            shrinkResources true
             if (releaseSigningConfigured) {
                 signingConfig signingConfigs.production
             }
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        nightly {
+            initWith release
+            applicationIdSuffix ".nightly"
+            signingConfig signingConfigs.nightly
+            matchingFallbacks = ['release']
         }
     }
+    sourceSets { nightly.res.srcDirs = ['src/debug/res'] }
 }
+
+apply from: '../trim-runtime.gradle'
 
 // Pairing uses ZXing; exclude the plugin's unused proprietary ML Kit dependency.
 configurations.configureEach {
@@ -104,8 +133,10 @@ dependencies {
     implementation "androidx.media3:media3-ui:1.9.2"
     implementation project(':capacitor-android')
     testImplementation "junit:junit:$junitVersion"
-    androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
-    androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
+    if (project.findProperty('testBuildType') != 'nightly') {
+        androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
+        androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
+    }
     implementation project(':capacitor-cordova-android-plugins')
 }
 
