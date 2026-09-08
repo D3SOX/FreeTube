@@ -981,11 +981,6 @@ const dropdownOptions = computed(() => {
         value: 'openYoutube',
         icon: ['fab', 'youtube']
       },
-      {
-        label: t('Video.Open YouTube Embedded Player'),
-        value: 'openYoutubeEmbed',
-        icon: ['fas', 'display']
-      },
       ...showInvidiousShareOptions.value
         ? [
             {
@@ -1145,10 +1140,6 @@ async function toggleLiveReminder() {
   }
 }
 
-function getYoutubeEmbedUrl() {
-  return `https://www.youtube-nocookie.com/embed/${id.value}`
-}
-
 function getYoutubeChannelUrl() {
   return `https://youtube.com/channel/${channelId.value}`
 }
@@ -1222,9 +1213,6 @@ function handleOptionsClick(option) {
       openExternalLink(videoUrl)
       break
     }
-    case 'openYoutubeEmbed':
-      openExternalLink(getYoutubeEmbedUrl())
-      break
     case 'openInvidious':
       openExternalLink(getInvidiousUrl())
       break

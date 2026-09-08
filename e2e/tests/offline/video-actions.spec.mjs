@@ -95,6 +95,7 @@ test.describe('video link copy actions', () => {
       await expect(menu.getByRole('option', { name: 'Open in YouTube', exact: true })).toBeVisible()
       await expect(menu.getByRole('option', { name: 'Open in Invidious', exact: true })).toBeVisible()
       await expect(menu.getByRole('option', { name: /^Copy / })).toHaveCount(0)
+      await expect(menu.getByRole('option', { name: 'Open YouTube Embedded Player', exact: true })).toHaveCount(0)
       await page.keyboard.press('Escape')
 
       await video.locator('.title').click({ button: 'right' })
