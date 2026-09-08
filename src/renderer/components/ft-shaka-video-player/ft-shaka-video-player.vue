@@ -79,6 +79,7 @@
         fullscreenDockResizing,
         fullscreenDockReordering,
         mobileFullscreenSwipeEnabled: enableMobileFullscreenSwipe,
+        mobileSideSwipesEnabled,
         mobileFullscreenSwiping,
         mobileFullscreenSwipeSettling,
         presentationModeChanging,
@@ -882,7 +883,7 @@
               />
             </template>
           </span>
-          <span>{{
+          <span class="valueChangeText">{{
             showTemporaryPlaybackRateIndicator
               ? temporaryPlaybackRateIndicatorMessage
               : valueChangeMessage

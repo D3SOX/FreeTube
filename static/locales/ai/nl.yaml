@@ -464,6 +464,15 @@ Settings:
         Destructive pressed: Verwijderactie bij indrukken
         Text and icons on destructive actions: Tekst en pictogrammen bij verwijderacties
   Player Settings:
+    Swipe Gestures:
+      Fullscreen Brightness: Maximale helderheid op volledig scherm
+      Left: Vegen aan de linkerkant
+      Right: Vegen aan de rechterkant
+      Disabled: Uitgeschakeld
+      Brightness: Helderheid
+      Volume: Volume
+      Hint: Veeg omhoog of omlaag aan een zijkant van de video.
+      Unavailable: De afspeelbediening kon niet worden aangepast.
     yt-dlp Streaming: "yt-dlp-streaming"
     Continue Playback When Screen Is Locked: 'Doorgaan met afspelen wanneer het scherm is vergrendeld'
     Music Visualizer: Muziekvisualisatie

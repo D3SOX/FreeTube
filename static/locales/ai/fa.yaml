@@ -481,6 +481,15 @@ Settings:
       Catppuccin Latte Mauve: Catppuccin Latte Mauve
       Catppuccin Latte Red: Catppuccin Latte Red
   Player Settings:
+    Swipe Gestures:
+      Fullscreen Brightness: بیشترین روشنایی در حالت تمام‌صفحه
+      Left: کشیدن در سمت چپ
+      Right: کشیدن در سمت راست
+      Disabled: غیرفعال
+      Brightness: روشنایی
+      Volume: بلندی صدا
+      Hint: در یکی از کناره‌های ویدیو به بالا یا پایین بکشید.
+      Unavailable: تنظیم کنترل‌های پخش ممکن نشد.
     yt-dlp Streaming: "پخش جریانی yt-dlp"
     Continue Playback When Screen Is Locked: 'ادامه پخش هنگام قفل بودن صفحه'
     Music Visualizer: تصویرساز موسیقی

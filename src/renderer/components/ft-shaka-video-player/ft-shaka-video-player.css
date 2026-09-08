@@ -1793,7 +1793,9 @@ html[data-reduced-motion='reduce'] .musicVisualizerCanvas {
   font-size: 1.1em;
   background-color: rgb(0 0 0 / 60%);
   color: #fff;
-  width: 85px;
+  width: max-content;
+  max-width: calc(100% - 32px);
+  box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1807,9 +1809,9 @@ html[data-reduced-motion='reduce'] .musicVisualizerCanvas {
   flex-direction: row-reverse;
 }
 
-.valueChangePopup:has(.valueChangeCustomIcon) {
-  width: max-content;
-  white-space: nowrap;
+.valueChangeText {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .ftVideoPlayer:is(:fullscreen, [data-native-player-screen], .fullWindow) .valueChangePopup {
@@ -1819,6 +1821,7 @@ html[data-reduced-motion='reduce'] .musicVisualizerCanvas {
 
 .valueChangeIcons {
   display: inline-flex;
+  flex: none;
   align-items: center;
   gap: 2px;
 }

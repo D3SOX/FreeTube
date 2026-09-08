@@ -460,6 +460,15 @@ Settings:
         Destructive pressed: Destruktiv handling ved trykk
         Text and icons on destructive actions: Tekst og ikoner på destruktive handlinger
   Player Settings:
+    Swipe Gestures:
+      Fullscreen Brightness: Full lysstyrke i fullskjerm
+      Left: Sveip på venstre side
+      Right: Sveip på høyre side
+      Disabled: Deaktivert
+      Brightness: Lysstyrke
+      Volume: Lydstyrke
+      Hint: Sveip opp eller ned på en av sidene av videoen.
+      Unavailable: Kunne ikke justere avspillingskontrollene.
     yt-dlp Streaming: "yt-dlp-strømming"
     Continue Playback When Screen Is Locked: 'Fortsett avspillingen når skjermen er låst'
     Music Visualizer: Musikkvisualisering

@@ -182,6 +182,15 @@ Settings:
         Destructive hover and focus: Działanie usuwające dane po najechaniu lub zaznaczeniu
         Destructive pressed: Działanie usuwające dane po naciśnięciu
   Player Settings:
+    Swipe Gestures:
+      Fullscreen Brightness: Maksymalna jasność na pełnym ekranie
+      Left: Przesunięcie po lewej stronie
+      Right: Przesunięcie po prawej stronie
+      Disabled: Wyłączone
+      Brightness: Jasność
+      Volume: Głośność
+      Hint: Przesuń w górę lub w dół z boku filmu.
+      Unavailable: Nie udało się dostosować sterowania odtwarzaniem.
     yt-dlp Streaming: "Strumieniowanie yt-dlp"
     Continue Playback When Screen Is Locked: 'Kontynuuj odtwarzanie przy zablokowanym ekranie'
     Music Visualizer: Wizualizator muzyki

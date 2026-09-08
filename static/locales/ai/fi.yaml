@@ -464,6 +464,15 @@ Settings:
         Destructive pressed: Poistava toiminto painettaessa
         Text and icons on destructive actions: Poistavien toimintojen teksti ja kuvakkeet
   Player Settings:
+    Swipe Gestures:
+      Fullscreen Brightness: Täysi kirkkaus koko näytössä
+      Left: Pyyhkäisy vasemmalla
+      Right: Pyyhkäisy oikealla
+      Disabled: Pois käytöstä
+      Brightness: Kirkkaus
+      Volume: Äänenvoimakkuus
+      Hint: Pyyhkäise ylös tai alas videon reunalla.
+      Unavailable: Toiston säätimiä ei voitu säätää.
     yt-dlp Streaming: "yt-dlp-suoratoisto"
     Continue Playback When Screen Is Locked: 'Jatka toistoa näytön ollessa lukittuna'
     Music Visualizer: Musiikkivisualisointi

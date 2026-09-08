@@ -464,6 +464,15 @@ Settings:
         Destructive pressed: Thao tác xóa khi nhấn
         Text and icons on destructive actions: Chữ và biểu tượng trên thao tác xóa
   Player Settings:
+    Swipe Gestures:
+      Fullscreen Brightness: Độ sáng tối đa khi toàn màn hình
+      Left: Vuốt bên trái
+      Right: Vuốt bên phải
+      Disabled: Tắt
+      Brightness: Độ sáng
+      Volume: Âm lượng
+      Hint: Vuốt lên hoặc xuống ở một bên video.
+      Unavailable: Không thể điều chỉnh các điều khiển phát lại.
     yt-dlp Streaming: "Phát trực tuyến bằng yt-dlp"
     Continue Playback When Screen Is Locked: 'Tiếp tục phát khi màn hình bị khóa'
     Music Visualizer: Trình trực quan hóa nhạc

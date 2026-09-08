@@ -462,6 +462,15 @@ Settings:
         Destructive pressed: Nedtryckt destruktiv åtgärd
         Text and icons on destructive actions: Text och ikoner på destruktiva åtgärder
   Player Settings:
+    Swipe Gestures:
+      Fullscreen Brightness: Full ljusstyrka i helskärm
+      Left: Svep på vänster sida
+      Right: Svep på höger sida
+      Disabled: Inaktiverat
+      Brightness: Ljusstyrka
+      Volume: Volym
+      Hint: Svep uppåt eller nedåt på ena sidan av videon.
+      Unavailable: Kunde inte justera uppspelningskontrollerna.
     yt-dlp Streaming: "yt-dlp-strömning"
     Continue Playback When Screen Is Locked: 'Fortsätt uppspelningen när skärmen är låst'
     Music Visualizer: Musikvisualisering

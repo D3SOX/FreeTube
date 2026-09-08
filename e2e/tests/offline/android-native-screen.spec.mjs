@@ -93,6 +93,26 @@ for (const uiScale of [100, 125]) {
       expect(await offset()).toBeLessThanOrEqual(32)
       await page.evaluate(() => window.nativeScreenTest.show())
       expect(await offset()).toBeCloseTo(56, 0)
+      // Brightness/volume labels must fit the OSD, including long translations.
+      for (const message of ['Brightness: 23%', 'Lautstärke: 100%', 'Helligkeit: 100%']) {
+        await watch.evaluate((instance, message) => {
+          instance.refs.player.$.setupState.valueChangeMessage = message
+          instance.refs.player.$.setupState.valueChangeIcons = ['sun']
+        }, message)
+        await expect(osd.locator('.valueChangeText')).toHaveText(message)
+        const geometry = await osd.evaluate(element => {
+          const box = element.getBoundingClientRect()
+          const message = element.lastElementChild
+          const range = document.createRange()
+          range.selectNodeContents(message)
+          const text = range.getBoundingClientRect()
+          return { text: message.textContent, left: text.left - box.left, right: box.right - text.right, bottom: box.bottom - text.bottom }
+        })
+        expect(geometry.text).toBe(message)
+        expect(geometry.left).toBeGreaterThanOrEqual(0)
+        expect(geometry.right).toBeGreaterThanOrEqual(0)
+        expect(geometry.bottom).toBeGreaterThanOrEqual(0)
+      }
       await page.evaluate(() => window.nativeScreenTest.destroy())
     })
     test('keeps the player height stable through metadata, poster removal and native frames', async ({ app, page }) => {

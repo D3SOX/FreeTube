@@ -462,6 +462,15 @@ Settings:
         Destructive pressed: Gweithred ddinistriol wedi'i gwasgu
         Text and icons on destructive actions: Testun ac eiconau ar weithredoedd dinistriol
   Player Settings:
+    Swipe Gestures:
+      Fullscreen Brightness: Disgleirdeb llawn ar sgrin lawn
+      Left: Sweipio ar yr ochr chwith
+      Right: Sweipio ar yr ochr dde
+      Disabled: Analluogwyd
+      Brightness: Disgleirdeb
+      Volume: Lefel sain
+      Hint: Sweipiwch i fyny neu i lawr ar ochr y fideo.
+      Unavailable: Methu addasu rheolyddion chwarae.
     yt-dlp Streaming: "Ffrydio yt-dlp"
     Continue Playback When Screen Is Locked: 'Parhau i chwarae pan fydd y sgrin wedi’i chloi'
     Music Visualizer: Delweddydd cerddoriaeth

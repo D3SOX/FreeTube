@@ -464,6 +464,15 @@ Settings:
         Destructive pressed: Καταστροφική ενέργεια κατά το πάτημα
         Text and icons on destructive actions: Κείμενο και εικονίδια καταστροφικών ενεργειών
   Player Settings:
+    Swipe Gestures:
+      Fullscreen Brightness: Μέγιστη φωτεινότητα σε πλήρη οθόνη
+      Left: Σύρσιμο στην αριστερή πλευρά
+      Right: Σύρσιμο στη δεξιά πλευρά
+      Disabled: Απενεργοποιημένο
+      Brightness: Φωτεινότητα
+      Volume: Ένταση ήχου
+      Hint: Σύρετε πάνω ή κάτω σε μια πλευρά του βίντεο.
+      Unavailable: Δεν ήταν δυνατή η προσαρμογή των στοιχείων ελέγχου αναπαραγωγής.
     yt-dlp Streaming: "Ροή μέσω yt-dlp"
     Continue Playback When Screen Is Locked: 'Συνέχιση αναπαραγωγής όταν η οθόνη είναι κλειδωμένη'
     Music Visualizer: Οπτικοποίηση μουσικής

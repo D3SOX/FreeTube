@@ -701,6 +701,15 @@ Settings:
         Destructive pressed: Destruktive Aktion beim Drücken
         Text and icons on destructive actions: Text und Symbole auf destruktiven Aktionen
   Player Settings:
+    Swipe Gestures:
+      Fullscreen Brightness: Volle Helligkeit im Vollbild
+      Left: Wischen auf der linken Seite
+      Right: Wischen auf der rechten Seite
+      Disabled: Deaktiviert
+      Brightness: Helligkeit
+      Volume: Lautstärke
+      Hint: Wische an einer Seite des Videos nach oben oder unten.
+      Unavailable: Wiedergabesteuerung konnte nicht angepasst werden.
     Player Settings: Video-Player
     yt-dlp Streaming: yt-dlp-Streaming
     Music Visualizer: Musikvisualisierung

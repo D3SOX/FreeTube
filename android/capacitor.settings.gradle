@@ -5,6 +5,9 @@ project(':capacitor-android').projectDir = new File('../node_modules/.pnpm/@capa
 include ':capacitor-community-keep-awake'
 project(':capacitor-community-keep-awake').projectDir = new File('../node_modules/.pnpm/@capacitor-community+keep-awake@8.0.1_@capacitor+core@8.5.0/node_modules/@capacitor-community/keep-awake/android')
 
+include ':capacitor-community-screen-brightness'
+project(':capacitor-community-screen-brightness').projectDir = new File('../node_modules/.pnpm/@capacitor-community+screen-brightness@8.0.0_@capacitor+core@8.5.0/node_modules/@capacitor-community/screen-brightness/android')
+
 include ':capacitor-app'
 project(':capacitor-app').projectDir = new File('../node_modules/.pnpm/@capacitor+app@8.1.1_@capacitor+core@8.5.0/node_modules/@capacitor/app/android')
 
@@ -40,3 +43,6 @@ project(':capawesome-capacitor-screenshot').projectDir = new File('../node_modul
 
 include ':capawesome-capacitor-settings-launcher'
 project(':capawesome-capacitor-settings-launcher').projectDir = new File('../node_modules/.pnpm/@capawesome+capacitor-settings-launcher@0.1.2_@capacitor+core@8.5.0/node_modules/@capawesome/capacitor-settings-launcher/android')
+
+include ':capawesome-capacitor-volume'
+project(':capawesome-capacitor-volume').projectDir = new File('../node_modules/.pnpm/@capawesome+capacitor-volume@0.1.3_@capacitor+core@8.5.0/node_modules/@capawesome/capacitor-volume/android')

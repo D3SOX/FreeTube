@@ -191,6 +191,14 @@
           @change="updateContinuePlaybackWhenScreenIsLocked"
         />
         <FtToggleSwitch
+          v-if="IS_CAPACITOR"
+          :label="t('Settings.Player Settings.Swipe Gestures.Fullscreen Brightness')"
+          :compact="true"
+          :default-value="store.getters.getMobileFullscreenBrightness"
+          setting-key="mobileFullscreenBrightness"
+          @change="store.dispatch('updateMobileFullscreenBrightness', $event)"
+        />
+        <FtToggleSwitch
           :label="t('Settings.Player Settings.Show Playback Rate Adjusted Timestamp')"
           :compact="true"
           :default-value="showPlaybackRateAdjustedTimestamp"
@@ -243,6 +251,28 @@
       />
     </FtFlexBox>
     <FtFlexBox class="playerSelectGrid">
+      <template v-if="IS_CAPACITOR">
+        <FtSelect
+          :placeholder="t('Settings.Player Settings.Swipe Gestures.Left')"
+          :value="store.getters.getMobileLeftSwipeAction"
+          setting-key="mobileLeftSwipeAction"
+          :select-names="mobileSwipeActionNames"
+          :select-values="MOBILE_SWIPE_ACTION_VALUES"
+          :tooltip="t('Settings.Player Settings.Swipe Gestures.Hint')"
+          :icon="['fas', 'sun']"
+          @change="store.dispatch('updateMobileLeftSwipeAction', $event)"
+        />
+        <FtSelect
+          :placeholder="t('Settings.Player Settings.Swipe Gestures.Right')"
+          :value="store.getters.getMobileRightSwipeAction"
+          setting-key="mobileRightSwipeAction"
+          :select-names="mobileSwipeActionNames"
+          :select-values="MOBILE_SWIPE_ACTION_VALUES"
+          :tooltip="t('Settings.Player Settings.Swipe Gestures.Hint')"
+          :icon="['fas', 'volume-high']"
+          @change="store.dispatch('updateMobileRightSwipeAction', $event)"
+        />
+      </template>
       <FtSelect
         :placeholder="t('Settings.Player Settings.Default Viewing Mode.Default Viewing Mode')"
         :value="defaultViewingMode"
@@ -607,6 +637,13 @@ const QUICK_PLAYBACK_SPEED_LIMIT = 14
 /** @type {boolean} */
 const USING_ELECTRON = process.env.IS_ELECTRON
 const IS_CAPACITOR = process.env.IS_CAPACITOR
+const MOBILE_SWIPE_ACTION_VALUES = ['disabled', 'brightness', 'volume', 'speed']
+const mobileSwipeActionNames = computed(() => [
+  t('Settings.Player Settings.Swipe Gestures.Disabled'),
+  t('Settings.Player Settings.Swipe Gestures.Brightness'),
+  t('Settings.Player Settings.Swipe Gestures.Volume'),
+  t('Settings.Player Settings.Playback Speed'),
+])
 
 /** @type {import('vue').ComputedRef<boolean>} */
 const enableSubtitlesByDefault = computed(() => store.getters.getEnableSubtitlesByDefault)

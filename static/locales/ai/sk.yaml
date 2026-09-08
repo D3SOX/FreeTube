@@ -460,6 +460,15 @@ Settings:
         Destructive pressed: Deštruktívna akcia pri stlačení
         Text and icons on destructive actions: Text a ikony deštruktívnych akcií
   Player Settings:
+    Swipe Gestures:
+      Fullscreen Brightness: Maximálny jas na celej obrazovke
+      Left: Potiahnutie na ľavej strane
+      Right: Potiahnutie na pravej strane
+      Disabled: Vypnuté
+      Brightness: Jas
+      Volume: Hlasitosť
+      Hint: Potiahnite nahor alebo nadol na strane videa.
+      Unavailable: Nepodarilo sa upraviť ovládanie prehrávania.
     yt-dlp Streaming: "Streamovanie cez yt-dlp"
     Continue Playback When Screen Is Locked: 'Pokračovať v prehrávaní pri zamknutej obrazovke'
     Music Visualizer: Hudobný vizualizér

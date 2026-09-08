@@ -464,6 +464,15 @@ Settings:
         Destructive pressed: الضغط المدمر
         Text and icons on destructive actions: النص والأيقونات على الإجراءات المدمرة
   Player Settings:
+    Swipe Gestures:
+      Fullscreen Brightness: أقصى سطوع في وضع ملء الشاشة
+      Left: السحب على الجانب الأيسر
+      Right: السحب على الجانب الأيمن
+      Disabled: معطّل
+      Brightness: السطوع
+      Volume: مستوى الصوت
+      Hint: اسحب لأعلى أو لأسفل على أحد جانبي الفيديو.
+      Unavailable: تعذّر ضبط عناصر التحكم في التشغيل.
     yt-dlp Streaming: "بث yt-dlp"
     Continue Playback When Screen Is Locked: 'متابعة التشغيل عند قفل الشاشة'
     Music Visualizer: مؤثرات موسيقية مرئية

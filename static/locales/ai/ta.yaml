@@ -465,6 +465,15 @@ Settings:
         Destructive pressed: அழிக்கும் செயல் அழுத்தப்பட்டது
         Text and icons on destructive actions: அழிக்கும் செயல்களிலுள்ள உரையும் படவுருக்களும்
   Player Settings:
+    Swipe Gestures:
+      Fullscreen Brightness: முழுத்திரையில் அதிகபட்ச ஒளிர்வு
+      Left: இடப்புற ஸ்வைப்
+      Right: வலப்புற ஸ்வைப்
+      Disabled: முடக்கப்பட்டது
+      Brightness: ஒளிர்வு
+      Volume: ஒலியளவு
+      Hint: காணொளியின் ஓரத்தில் மேலே அல்லது கீழே ஸ்வைப் செய்யவும்.
+      Unavailable: இயக்கக் கட்டுப்பாடுகளைச் சரிசெய்ய முடியவில்லை.
     yt-dlp Streaming: "yt-dlp ஸ்ட்ரீமிங்"
     Continue Playback When Screen Is Locked: 'திரை பூட்டப்பட்டிருக்கும்போதும் இயக்கத்தைத் தொடரவும்'
     Music Visualizer: இசைக் காட்சிப்படுத்தி

@@ -122,6 +122,7 @@ import {
 } from '../../helpers/player/caption-settings'
 import { useAmbientMode } from './opentubex/useAmbientMode'
 import { useAutoPictureInPicture } from './opentubex/useAutoPictureInPicture'
+import { createMobilePlayerAdjustments } from '../../helpers/mobilePlayerAdjustments'
 import {
   isCapacitorMobilePlayer,
   useMobileFullscreenGestures,
@@ -4776,6 +4777,49 @@ export default defineComponent({
         ].join(',')) === null
     }
 
+    const mobileSideSwipesEnabled = computed(() => process.env.IS_CAPACITOR && (
+      ['brightness', 'volume', 'speed'].includes(store.getters.getMobileLeftSwipeAction) ||
+      ['brightness', 'volume', 'speed'].includes(store.getters.getMobileRightSwipeAction)
+    ))
+    const mobileAdjustments = createMobilePlayerAdjustments({
+      getPlaybackRateOptions: () => ({ maximum: maxVideoPlaybackRate.value, step: videoPlaybackRateInterval.value }),
+      async read(action) {
+        if (action === 'speed') {
+          cancelTemporaryPlaybackRateHolds()
+          return getCurrentPlaybackRate()
+        }
+        if (action === 'brightness') {
+          const { ScreenBrightness } = await import('@capacitor-community/screen-brightness')
+          return (await ScreenBrightness.getBrightness()).brightness
+        }
+        const { Volume } = await import('@capawesome/capacitor-volume')
+        return (await Volume.getVolume()).volume
+      },
+      async write(action, value) {
+        if (action === 'speed') {
+          applyPlaybackRate(value)
+        } else if (action === 'brightness') {
+          const { ScreenBrightness } = await import('@capacitor-community/screen-brightness')
+          await ScreenBrightness.setBrightness({ brightness: value })
+        } else {
+          const { Volume } = await import('@capawesome/capacitor-volume')
+          await Volume.setVolume({ volume: value })
+        }
+      },
+      onChange(action, value) {
+        // applyPlaybackRate already shows the multiplier OSD.
+        if (action === 'speed') return
+        const label = action === 'brightness'
+          ? t('Settings.Player Settings.Swipe Gestures.Brightness')
+          : t('Settings.Player Settings.Swipe Gestures.Volume')
+        showValueChange(`${label}: ${Math.round(value * 100)}%`, action === 'brightness' ? 'sun' : 'volume-high')
+      },
+      onError(error) {
+        console.error('Mobile player adjustment failed', error)
+        showToast(t('Settings.Player Settings.Swipe Gestures.Unavailable'))
+      },
+    })
+
     const {
       cancelMobileFullscreenGesture,
       consumeMobileTitleClickSuppression,
@@ -4803,11 +4847,20 @@ export default defineComponent({
         seekBySeconds(distance, true, false, false)
         return distance
       },
+      getSwipeAction: side => process.env.IS_CAPACITOR
+        ? store.getters[side === 'left' ? 'getMobileLeftSwipeAction' : 'getMobileRightSwipeAction']
+        : 'disabled',
+      adjustments: mobileAdjustments,
       setFullscreenMetadata,
       setShowUiOnPaused,
       showOverlayControls,
       togglePlayerFullScreen: () => ui?.getControls().toggleFullScreen(),
     })
+
+    function resetMobileAdjustments() {
+      cancelMobileFullscreenGesture()
+      mobileAdjustments.reset()
+    }
 
     /** @type {number | null} */
     let temporaryPlaybackRatePointerId = null
@@ -6429,6 +6482,28 @@ export default defineComponent({
       props,
       tabId,
       video,
+    })
+
+    const mobileAdjustmentsVisible = ref(!isAppHidden())
+    const mobileFullscreenBrightnessActive = computed(() => process.env.IS_CAPACITOR &&
+      isActiveTab.value && !scrollMiniPlayerActive.value && mobileAdjustmentsVisible.value &&
+      isFullscreen.value && store.getters.getMobileFullscreenBrightness)
+    watch(mobileFullscreenBrightnessActive, enabled => mobileAdjustments.setFullscreenBrightness(Boolean(enabled)))
+    watch([isActiveTab, scrollMiniPlayerActive, mobileAdjustmentsVisible, () => props.videoId], () => {
+      resetMobileAdjustments()
+      if (mobileFullscreenBrightnessActive.value) mobileAdjustments.setFullscreenBrightness(true)
+    })
+    watch(() => [store.getters.getMobileLeftSwipeAction, store.getters.getMobileRightSwipeAction], () => {
+      cancelMobileFullscreenGesture()
+      mobileAdjustments.cancel()
+    })
+    function handleMobileAdjustmentsVisibility() {
+      mobileAdjustmentsVisible.value = !isAppHidden()
+    }
+    onMounted(() => document.addEventListener('visibilitychange', handleMobileAdjustmentsVisibility))
+    onBeforeUnmount(() => {
+      document.removeEventListener('visibilitychange', handleMobileAdjustmentsVisibility)
+      resetMobileAdjustments()
     })
 
     watch(scrollMiniPlayerDetached, (detached) => {
@@ -11262,6 +11337,7 @@ export default defineComponent({
       fullscreenDockResizing,
       fullscreenDockReordering,
       enableMobileFullscreenSwipe,
+      mobileSideSwipesEnabled,
       mobileFullscreenSwiping,
       mobileFullscreenSwipeSettling,
       mobileFullscreenSwipeStyle,

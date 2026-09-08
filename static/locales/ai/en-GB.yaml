@@ -447,6 +447,15 @@ Settings:
         Destructive pressed: Destructive pressed
         Text and icons on destructive actions: Text and icons on destructive actions
   Player Settings:
+    Swipe Gestures:
+      Fullscreen Brightness: Full brightness in fullscreen
+      Left: Left-side swipe
+      Right: Right-side swipe
+      Disabled: Disabled
+      Brightness: Brightness
+      Volume: Volume
+      Hint: Swipe up or down on either side of the video.
+      Unavailable: Could not adjust playback controls.
     yt-dlp Streaming: "yt-dlp Streaming"
     Continue Playback When Screen Is Locked: 'Continue playback when the screen is locked'
     Music Visualizer: Music visualiser

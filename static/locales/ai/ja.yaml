@@ -460,6 +460,15 @@ Settings:
         Destructive pressed: 破壊的な操作の押下時
         Text and icons on destructive actions: 破壊的な操作上のテキストとアイコン
   Player Settings:
+    Swipe Gestures:
+      Fullscreen Brightness: 全画面表示で明るさを最大にする
+      Left: 左側のスワイプ
+      Right: 右側のスワイプ
+      Disabled: 無効
+      Brightness: 明るさ
+      Volume: 音量
+      Hint: 動画の左右どちらかで上下にスワイプします。
+      Unavailable: 再生コントロールを調整できませんでした。
     yt-dlp Streaming: "yt-dlp ストリーミング"
     Continue Playback When Screen Is Locked: '画面ロック中も再生を続ける'
     Music Visualizer: 音楽ビジュアライザー

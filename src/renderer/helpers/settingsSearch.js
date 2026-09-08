@@ -334,6 +334,7 @@ function isSettingsSearchMessageVisible(sectionType, path, options) {
   if (sectionType === 'player' && !isCapacitor && [
     'Rotate Wide Videos to Landscape in Fullscreen',
     'Swipe Up or Down to Enter or Exit Fullscreen',
+    'Swipe Gestures',
   ].includes(group)) {
     return false
   }

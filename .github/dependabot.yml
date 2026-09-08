@@ -10,6 +10,7 @@ updates:
     open-pull-requests-limit: 15
     allow:
       - dependency-name: "@capacitor-community/keep-awake"
+      - dependency-name: "@capacitor-community/screen-brightness"
       - dependency-name: "@capacitor/android"
       - dependency-name: "@capacitor/app"
       - dependency-name: "@capacitor/barcode-scanner"
@@ -25,6 +26,7 @@ updates:
       - dependency-name: "@capawesome/capacitor-screen-orientation"
       - dependency-name: "@capawesome/capacitor-screenshot"
       - dependency-name: "@capawesome/capacitor-settings-launcher"
+      - dependency-name: "@capawesome/capacitor-volume"
       - dependency-name: "@hpke/core"
       - dependency-name: "@iconify-json/material-symbols"
       - dependency-name: "@iconify-json/ri"

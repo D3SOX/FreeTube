@@ -464,6 +464,15 @@ Settings:
         Destructive pressed: Натиснута небезпечна дія
         Text and icons on destructive actions: Текст і піктограми небезпечних дій
   Player Settings:
+    Swipe Gestures:
+      Fullscreen Brightness: Максимальна яскравість у повноекранному режимі
+      Left: Жест на лівій стороні
+      Right: Жест на правій стороні
+      Disabled: Вимкнено
+      Brightness: Яскравість
+      Volume: Гучність
+      Hint: Проведіть угору або вниз збоку відео.
+      Unavailable: Не вдалося налаштувати елементи керування відтворенням.
     yt-dlp Streaming: "Потокове передавання yt-dlp"
     Continue Playback When Screen Is Locked: 'Продовжувати відтворення із заблокованим екраном'
     Music Visualizer: Музичний візуалізатор

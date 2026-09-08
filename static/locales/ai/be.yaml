@@ -481,6 +481,15 @@ Settings:
       Catppuccin Latte Mauve: Catppuccin Latte Mauve
       Catppuccin Latte Red: Catppuccin Latte Red
   Player Settings:
+    Swipe Gestures:
+      Fullscreen Brightness: Максімальная яркасць у поўнаэкранным рэжыме
+      Left: Правядзенне злева
+      Right: Правядзенне справа
+      Disabled: Адключана
+      Brightness: Яркасць
+      Volume: Гучнасць
+      Hint: Правядзіце ўверх або ўніз збоку відэа.
+      Unavailable: Не ўдалося наладзіць элементы кіравання прайграваннем.
     yt-dlp Streaming: "Стрымінг yt-dlp"
     Continue Playback When Screen Is Locked: 'Працягваць прайграванне пры заблакіраваным экране'
     Music Visualizer: Музычны візуалізатар

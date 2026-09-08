@@ -464,6 +464,15 @@ Settings:
         Destructive pressed: פעולה הרסנית בלחיצה
         Text and icons on destructive actions: טקסט וסמלים בפעולות הרסניות
   Player Settings:
+    Swipe Gestures:
+      Fullscreen Brightness: בהירות מרבית במסך מלא
+      Left: החלקה בצד שמאל
+      Right: החלקה בצד ימין
+      Disabled: מושבת
+      Brightness: בהירות
+      Volume: עוצמת קול
+      Hint: יש להחליק למעלה או למטה באחד מצדי הסרטון.
+      Unavailable: לא ניתן לכוונן את פקדי הניגון.
     yt-dlp Streaming: "הזרמת yt-dlp"
     Continue Playback When Screen Is Locked: 'המשך הפעלה כשהמסך נעול'
     Music Visualizer: מציג מוזיקה
