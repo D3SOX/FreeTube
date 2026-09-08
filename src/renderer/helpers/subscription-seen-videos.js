@@ -1,7 +1,7 @@
 import { parseSubscriptionSeenVideos, mergeSubscriptionSeenVideos } from '../../subscriptionSeenVideos.js'
 
 export function applySubscriptionSeenVideosToCache(cache, seenVideos) {
-  const byId = new Map(parseSubscriptionSeenVideos(seenVideos).map(entry => [entry.videoId, entry]))
+  const byId = new Map(mergeSubscriptionSeenVideos([], seenVideos).map(entry => [entry.videoId, entry]))
   if (byId.size === 0) return cache
 
   return Object.fromEntries(Object.entries(cache).map(([channelId, cached]) => {
@@ -22,7 +22,7 @@ export function applySubscriptionSeenVideosToCache(cache, seenVideos) {
 export async function syncSubscriptionSeenVideos(client, store) {
   const remote = await client.getSeenVideos()
   await store.dispatch('mergeSubscriptionSeenVideos', remote)
-  const merged = mergeSubscriptionSeenVideos(store.state.settings.subscriptionSeenVideos, remote)
+  const merged = parseSubscriptionSeenVideos(store.state.settings.subscriptionSeenVideos)
   await client.putSeenVideos(merged)
   return merged.length
 }

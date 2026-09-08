@@ -973,10 +973,12 @@ function updateOrderedSetting(commit, settings, settingId, value) {
 }
 
 const customActions = {
-  async mergeSubscriptionSeenVideos({ commit, state }, entries) {
+  async mergeSubscriptionSeenVideos({ commit, state, rootGetters }, entries) {
     const saved = await DBSettingHandlers.mergeSeenVideos(entries)
     // Another window's newer update may arrive before this request's reply.
-    const value = JSON.stringify(mergeSubscriptionSeenVideos(state.subscriptionSeenVideos, saved))
+    const value = JSON.stringify(mergeSubscriptionSeenVideos(
+      state.subscriptionSeenVideos, saved, rootGetters.getHistoryCacheById
+    ))
     if (value !== state.subscriptionSeenVideos) commit('setSubscriptionSeenVideos', value)
   },
   recordSyncSettingEdit: ({ commit, state }, settingId) => (

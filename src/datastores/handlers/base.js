@@ -18,7 +18,17 @@ class Settings {
     // marks inside it so concurrent windows cannot replace each other's marks.
     this.pendingSeenVideosUpdate = this.pendingSeenVideosUpdate.catch(() => {}).then(async () => {
       const saved = await db.settings.findOneAsync({ _id: 'subscriptionSeenVideos' })
-      const value = JSON.stringify(mergeSubscriptionSeenVideos(saved?.value, entries))
+      const history = await db.history.findAsync({}, {
+        videoId: 1,
+        isWatched: 1,
+        isLive: 1,
+        isUpcoming: 1,
+        premiereTimestamp: 1,
+        watchProgress: 1,
+        lengthSeconds: 1,
+      })
+      const historyById = Object.fromEntries(history.map(entry => [entry.videoId, entry]))
+      const value = JSON.stringify(mergeSubscriptionSeenVideos(saved?.value, entries, historyById))
       if (value !== saved?.value) await this.upsert('subscriptionSeenVideos', value)
       return value
     })

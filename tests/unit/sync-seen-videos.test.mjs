@@ -10,6 +10,18 @@ import { EncryptedSyncAdapter, createEmptySyncDocument } from '../../src/rendere
 const source = await readFile(new URL('../../src/renderer/store/modules/subscription-cache.js', import.meta.url), 'utf8')
 const seenVideos = { ...seenSync, ...seenData }
 
+async function settingsFixture(history = []) {
+  const baseSource = await readFile(new URL('../../src/datastores/handlers/base.js', import.meta.url), 'utf8')
+  const db = {
+    settings: new Datastore({ inMemoryOnly: true }),
+    history: new Datastore({ inMemoryOnly: true }),
+  }
+  if (history.length > 0) await db.history.insertAsync(history)
+  const Settings = vm.runInNewContext(baseSource.slice(baseSource.indexOf('class Settings {'),
+    baseSource.indexOf('\nclass History {')) + '\nSettings', { db, ...seenVideos })
+  return { db, Settings }
+}
+
 function cacheFixture(applied = true) {
   const recorded = []
   const context = vm.createContext({
@@ -129,10 +141,7 @@ test('malformed records cannot replace valid marks', () => {
 
 test('two windows persist both marks and delayed replies cannot overwrite newer marks', async () => {
   const settingsSource = await readFile(new URL('../../src/renderer/store/modules/settings.js', import.meta.url), 'utf8')
-  const baseSource = await readFile(new URL('../../src/datastores/handlers/base.js', import.meta.url), 'utf8')
-  const db = { settings: new Datastore({ inMemoryOnly: true }) }
-  const Settings = vm.runInNewContext(baseSource.slice(baseSource.indexOf('class Settings {'),
-    baseSource.indexOf('\nclass History {')) + '\nSettings', { db, ...seenVideos })
+  const { db, Settings } = await settingsFixture()
   let releaseReply
   const delayedReply = new Promise(resolve => { releaseReply = resolve })
   const makeWindow = (delayReply = false) => {
@@ -155,6 +164,7 @@ test('two windows persist both marks and delayed replies cannot overwrite newer 
       state,
       mark: entry => context.merge({
         state,
+        rootGetters: { getHistoryCacheById: {} },
         commit(type, value) { state.subscriptionSeenVideos = value },
       }, [entry]),
     }
@@ -183,4 +193,75 @@ test('mark all records videos, Shorts and live streams, excluding community post
   assert.equal(fixture.recorded[0][0], 'mergeSubscriptionSeenVideos')
   assert.deepEqual(fixture.recorded[0][1].map(entry => entry.videoId).sort(),
     ['liveCache', 'shortsCache', 'videoCache'])
+})
+
+
+test('seen mark retention keeps the newest 10,000 videos with deterministic timestamp ties', () => {
+  const marks = Array.from({ length: 10002 }, (_, index) => ({
+    videoId: `video-${String(index).padStart(5, '0')}`,
+    seenAt: Math.max(1, index),
+  }))
+  const merged = seenVideos.mergeSubscriptionSeenVideos(marks.slice(0, 5000), marks.slice(5000))
+  assert.equal(merged.length, 10000)
+  assert.equal(merged[0].videoId, 'video-00002')
+  assert.equal(merged.at(-1).videoId, 'video-10001')
+  const tied = marks.map(mark => ({ ...mark, seenAt: 1000 }))
+  assert.deepEqual(seenVideos.mergeSubscriptionSeenVideos(tied, []),
+    seenVideos.mergeSubscriptionSeenVideos([], tied.toReversed()))
+  assert.equal(seenVideos.mergeSubscriptionSeenVideos(tied, []).length, 10000)
+})
+
+test('watched marks are removed before applying the cap while partial and live entries remain', () => {
+  const marks = Array.from({ length: 10000 }, (_, index) => ({ videoId: `watched-${index}`, seenAt: 2000 }))
+  const history = Object.fromEntries(marks.map(mark => [mark.videoId, { isWatched: true }]))
+  const retained = ['unwatched', 'partial', 'live', 'upcoming']
+    .map(videoId => ({ videoId, seenAt: 1000 }))
+  Object.assign(history, {
+    partial: { isWatched: false, watchProgress: 90, lengthSeconds: 100 },
+    live: { isWatched: true, isLive: true },
+    upcoming: { isWatched: true, isUpcoming: true },
+    legacyWatched: { watchProgress: 100, lengthSeconds: 100 },
+  })
+  const merged = seenVideos.mergeSubscriptionSeenVideos(
+    [...marks, { videoId: 'legacyWatched', seenAt: 3000 }], retained, history)
+  assert.deepEqual(merged.map(mark => mark.videoId), ['live', 'partial', 'unwatched', 'upcoming'])
+})
+
+test('persistence prunes watched marks from saved and stale incoming data before capping', async () => {
+  const { db, Settings } = await settingsFixture([{ videoId: 'watched', isWatched: true }])
+  const marks = Array.from({ length: 10001 }, (_, index) => ({ videoId: `video-${index}`, seenAt: index + 1 }))
+  await db.settings.insertAsync({ _id: 'subscriptionSeenVideos', value: JSON.stringify([
+    ...marks, { videoId: 'watched', seenAt: 20000 },
+  ]) })
+  const saved = await Settings.mergeSeenVideos([{ videoId: 'watched', seenAt: 30000 }])
+  const retained = JSON.parse(saved)
+  assert.equal(retained.length, 10000)
+  assert.ok(!retained.some(mark => ['watched', 'video-0'].includes(mark.videoId)))
+  assert.equal((await db.settings.findOneAsync({ _id: 'subscriptionSeenVideos' })).value, saved)
+})
+
+test('sync uploads the retained local set without restoring pruned remote marks', async () => {
+  const remote = [{ videoId: 'watched', seenAt: 3000 }, { videoId: 'keep', seenAt: 2000 }]
+  const retained = [{ videoId: 'keep', seenAt: 2000, isMembersOnly: false }]
+  const store = {
+    state: { settings: { subscriptionSeenVideos: JSON.stringify(remote) } },
+    async dispatch() { this.state.settings.subscriptionSeenVideos = JSON.stringify(retained) },
+  }
+  let uploaded
+  await seenVideos.syncSubscriptionSeenVideos({
+    getSeenVideos: async () => remote,
+    putSeenVideos: async entries => { uploaded = entries },
+  }, store)
+  assert.deepEqual(uploaded, retained)
+})
+
+test('cache filtering uses the same capped mark set as persistence and sync', () => {
+  const marks = Array.from({ length: 10001 }, (_, index) => ({ videoId: `video-${index}`, seenAt: index + 1 }))
+  const cache = { channel: { videos: [
+    { videoId: 'video-0', isNewInSubscriptionFeed: true },
+    { videoId: 'video-10000', isNewInSubscriptionFeed: true },
+  ] } }
+  const result = seenVideos.applySubscriptionSeenVideosToCache(cache, marks)
+  assert.equal(result.channel.videos[0].isNewInSubscriptionFeed, true)
+  assert.equal(result.channel.videos[1].isNewInSubscriptionFeed, false)
 })

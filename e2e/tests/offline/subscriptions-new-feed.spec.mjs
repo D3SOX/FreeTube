@@ -404,9 +404,16 @@ test.describe('new subscriptions feed', () => {
     const salt = Buffer.alloc(16, 2).toString('base64')
     const marks = [newVideo, newShort, newLive, { videoId: 'fetched-later' }]
       .map(entry => ({ videoId: entry.videoId, seenAt: now, isMembersOnly: false }))
+    const olderMarks = Array.from({ length: 10000 }, (_, index) => ({
+      videoId: `older-seen-${index}`, seenAt: now - 10000 + index, isMembersOnly: false,
+    }))
+    const retainedMarks = [...olderMarks.slice(marks.length), ...marks]
     const remote = {
       history: await encryptSyncDocument([], key, salt),
-      seenVideos: await encryptSyncDocument(marks, key, salt),
+      seenVideos: await encryptSyncDocument([
+        ...olderMarks, ...marks,
+        { videoId: watchedVideo.videoId, seenAt: now + 1, isMembersOnly: false },
+      ], key, salt),
     }
     const uploads = []
     await page.route('https://seen-sync.example/**', async route => {
@@ -473,7 +480,7 @@ test.describe('new subscriptions feed', () => {
     expect(uploads).toContain('history')
     expect(uploads).toContain('seenVideos')
     expect((await decryptSyncDocument(remote.seenVideos, key)).map(entry => entry.videoId).sort())
-      .toEqual(marks.map(entry => entry.videoId).sort())
+      .toEqual(retainedMarks.map(entry => entry.videoId).sort())
 
     const relaunched = await app.relaunch()
     await goTo(relaunched.page, 'subscriptions')
@@ -483,7 +490,7 @@ test.describe('new subscriptions feed', () => {
     expect(await relaunched.page.evaluate(() => {
       const store = document.querySelector('#app').__vue_app__.config.globalProperties.$store
       return JSON.parse(store.getters.getSubscriptionSeenVideos).length
-    })).toBe(4)
+    })).toBe(10000)
   })
 })
 
