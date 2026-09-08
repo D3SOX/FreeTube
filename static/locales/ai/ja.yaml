@@ -167,7 +167,7 @@ Feed:
   Cancel Refresh: 更新をキャンセル
   Next Auto Refresh: '次回の自動更新: {date}'
 User Playlists:
-  Add Missing Videos: "コピー元から不足している動画を追加"
+  Add Missing Videos: "コピー元の再生リストから不足している動画を追加"
   Source Playlist: "コピー元の再生リスト"
   Save Playlist: "再生リストを保存"
   Remove Saved Playlist: "保存した再生リストを削除"

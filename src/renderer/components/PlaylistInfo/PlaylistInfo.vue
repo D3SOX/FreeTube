@@ -193,7 +193,7 @@
           <FtIconButton
             v-if="!editMode && isUserPlaylist && selectedUserPlaylist?.sourcePlaylistId"
             :title="t('User Playlists.Add Missing Videos')"
-            :icon="['fas', 'sync']"
+            :icon="snapshotPending ? ['fas', 'sync'] : ['fas', 'playlist-merge']"
             :disabled="snapshotPending"
             :spin="snapshotPending"
             :aria-busy="snapshotPending"

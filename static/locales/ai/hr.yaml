@@ -169,7 +169,7 @@ Feed:
   Cancel Refresh: Otkaži osvježavanje
   Next Auto Refresh: 'Sljedeće automatsko osvježavanje: {date}'
 User Playlists:
-  Add Missing Videos: "Dodaj videozapise koji nedostaju iz izvora"
+  Add Missing Videos: "Dodaj videozapise koji nedostaju iz izvornog popisa za reprodukciju"
   Source Playlist: "Izvorni popis za reprodukciju"
   Save Playlist: "Spremi popis za reprodukciju"
   Remove Saved Playlist: "Ukloni spremljeni popis za reprodukciju"

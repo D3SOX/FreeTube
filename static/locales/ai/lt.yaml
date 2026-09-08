@@ -196,7 +196,7 @@ Feed:
   Next Auto Refresh: 'Kitas automatinis atnaujinimas: {date}'
   Refresh Feed: Atnaujinti {subscriptionName}
 User Playlists:
-  Add Missing Videos: "Pridėti trūkstamus vaizdo įrašus iš šaltinio"
+  Add Missing Videos: "Pridėti trūkstamus vaizdo įrašus iš šaltinio grojaraščio"
   Source Playlist: "Šaltinio grojaraštis"
   Save Playlist: "Išsaugoti grojaraštį"
   Remove Saved Playlist: "Pašalinti išsaugotą grojaraštį"

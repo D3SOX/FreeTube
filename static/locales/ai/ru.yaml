@@ -144,7 +144,7 @@ Feed:
   Cancel Refresh: Отменить обновление
   Next Auto Refresh: 'Следующее автоматическое обновление: {date}'
 User Playlists:
-  Add Missing Videos: "Добавить недостающие видео из источника"
+  Add Missing Videos: "Добавить недостающие видео из исходного плейлиста"
   Source Playlist: "Исходный плейлист"
   Save Playlist: "Сохранить плейлист"
   Remove Saved Playlist: "Удалить сохранённый плейлист"

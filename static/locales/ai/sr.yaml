@@ -171,7 +171,7 @@ Feed:
   Cancel Refresh: Откажи освежавање
   Next Auto Refresh: 'Следеће аутоматско освежавање: {date}'
 User Playlists:
-  Add Missing Videos: "Додај видео-снимке који недостају из извора"
+  Add Missing Videos: "Додај видео-снимке који недостају из изворне плејлисте"
   Source Playlist: "Изворна плејлиста"
   Save Playlist: "Сачувај плејлисту"
   Remove Saved Playlist: "Уклони сачувану плејлисту"
