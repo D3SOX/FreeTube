@@ -89,7 +89,7 @@
                     :icon="option.active ? ['fas', 'check'] : option.icon"
                   />
                 </div>
-                <span>{{ option.label }}</span>
+                <span :class="{ wrapLabel: option.wrapLabel }">{{ option.label }}</span>
               </template>
             </li>
           </ul>
@@ -167,7 +167,10 @@
                     :icon="option.active ? ['fas', 'check'] : option.icon"
                   />
                 </div>
-                <span v-if="option.type !== 'divider'">{{ option.label }}</span>
+                <span
+                  v-if="option.type !== 'divider'"
+                  :class="{ wrapLabel: option.wrapLabel }"
+                >{{ option.label }}</span>
               </li>
             </ul>
           </slot>
@@ -253,6 +256,7 @@ const props = defineProps({
     // - (OPTIONAL) icon: semantic icon tuple (if type === 'labelValue')
     // - (OPTIONAL) active: Number (if type === 'labelValue')
     // - (OPTIONAL) disabled: Boolean (if type === 'labelValue')
+    // - (OPTIONAL) wrapLabel: Boolean (if type === 'labelValue')
     type: Array,
     default: () => []
   },

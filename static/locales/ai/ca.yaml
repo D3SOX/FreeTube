@@ -172,6 +172,7 @@ Home Page:
   All sections hidden: Totes les seccions estan ocultes
   All sections hidden description: Personalitzeu l'inici per tornar a mostrar una secció.
 Subscriptions:
+  Never show {type} from this channel in feeds again: No tornis a mostrar {type} d’aquest canal als canals de contingut
   Disabled Automatic Fetching: Heu desactivat l'obtenció automàtica de subscripcions. Actualitzeu-les per veure-les aquí.
   Empty Channels: Els canals als quals us heu subscrit no tenen cap vídeo ara mateix.
   Empty Posts: Els canals als quals us heu subscrit no tenen cap publicació ara mateix.

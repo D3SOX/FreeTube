@@ -117,6 +117,7 @@ Home Page:
   All sections hidden: Все разделы скрыты
   All sections hidden description: Настройте главную, чтобы снова показать раздел.
 Subscriptions:
+  Never show {type} from this channel in feeds again: Больше никогда не показывать {type} с этого канала в лентах
   Refreshing Subscription Videos: Обновление видео из подписок
   Refreshing Subscription Shorts: Обновление Shorts из подписок
   Refreshing Subscription Live Streams: Обновление трансляций из подписок

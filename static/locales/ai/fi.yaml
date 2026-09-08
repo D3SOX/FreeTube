@@ -142,6 +142,7 @@ Home Page:
   All sections hidden: Kaikki osiot on piilotettu
   All sections hidden description: Mukauta etusivua, jotta voit näyttää osion uudelleen.
 Subscriptions:
+  Never show {type} from this channel in feeds again: Älä enää näytä tämän kanavan sisältöä tyypillä {type} syötteissä
   Refreshing Subscription Videos: Päivitetään tilausten videoita
   Refreshing Subscription Shorts: Päivitetään tilausten Shorts-videoita
   Refreshing Subscription Live Streams: Päivitetään tilausten suoria lähetyksiä

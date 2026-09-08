@@ -3,6 +3,7 @@
     class="newFeed"
     :is-loading="isLoading"
     :video-list="displayedEntries"
+    :subscription-feed-type="activeCategory ?? 'videos'"
     :error-channels="errorChannels"
     :attempted-fetch="attemptedFetch"
     :only-show-new="true"
@@ -26,6 +27,7 @@
         <h3>{{ $t('Global.Shorts') }}</h3>
         <FtElementList
           :data="newShorts"
+          subscription-feed-type="shorts"
           stable-item-keys
           :youtube-style-shorts="useCustomShortsPlayer"
           :use-channels-hidden-preference="false"
@@ -40,6 +42,7 @@
         <h3>{{ $t('Global.Live') }}</h3>
         <FtElementList
           :data="newLive"
+          subscription-feed-type="live"
           stable-item-keys
           :use-channels-hidden-preference="false"
         />
@@ -53,6 +56,7 @@
         <h3>{{ $t('Global.Posts') }}</h3>
         <FtElementList
           :data="newPosts"
+          subscription-feed-type="posts"
           display="list"
           stable-item-keys
           :use-channels-hidden-preference="false"
