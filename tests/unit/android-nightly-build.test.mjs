@@ -6,6 +6,25 @@ import { join } from 'node:path'
 import test from 'node:test'
 import { load } from 'js-yaml'
 
+test('the Obtainium nightly link allows architecture APKs and the universal fallback', async () => {
+  const readme = await readFile('README.md', 'utf8')
+  const encoded = readme.match(/obtainium:\/\/app\/([^)]*)/)[1]
+  const app = JSON.parse(decodeURIComponent(encoded))
+  const settings = JSON.parse(app.additionalSettings)
+  const filter = new RegExp(settings.apkFilterRegEx)
+
+  assert.equal(app.id, 'org.opentubex.app.nightly')
+  assert.equal(settings.includePrereleases, true)
+  assert.equal(settings.fallbackToOlderReleases, true)
+  assert.equal(settings.filterReleaseTitlesByRegEx, 'nightly')
+  for (const abi of ['arm64-v8a', 'armeabi-v7a', 'x86', 'x86_64', 'universal']) {
+    assert.ok(filter.test(`opentubex-0.34.0-nightly-1234-android-${abi}.apk`), abi)
+  }
+  assert.ok(!filter.test('org.opentubex.app-0.34.0-alpha-arm64-v8a.apk'))
+  assert.ok(!filter.test('opentubex-0.34.0-nightly-1234-android-arm64-v8a.apk.sha256'))
+  assert.equal(settings.autoApkFilterByArch, true)
+})
+
 test('embeds the generated nightly version in the Android web bundle', async () => {
   const workflow = await readFile('.github/workflows/build.yml', 'utf8')
   const buildStart = workflow.indexOf('    - name: Build signed Android APKs')
