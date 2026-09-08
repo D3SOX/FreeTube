@@ -978,6 +978,8 @@ Settings:
     Unlocking: Aflæsi…
   Search Settings: Leitarstillingar
   No Settings Found: Engar stillingar fundust
+  Experimental Settings:
+    Disable Hardware Acceleration: Slökkva á vélbúnaðarhröðun
 Tutorial:
   Skip: Sleppa
   Next: Næsta
@@ -1271,6 +1273,8 @@ Video:
       DownvoteSegment: Gefa neikvætt atkvæði
       VoteFailed: Ekki tókst að senda SponsorBlock-atkvæði.
   Station: Stöð
+  Playlist:
+    Unavailable videos are hidden: 1 ótiltækt myndskeið er falið | {count} ótiltæk myndskeið eru falin
 Playlist:
   Playlist Already Preloaded: "Öll myndskeið spilunarlistans eru þegar forhlaðin"
   Playlist Preload Progress: "Forhleðsla myndskeiða: {completed} af {requested}"
@@ -1280,6 +1284,7 @@ Playlist:
   Playlist Preload Complete: "Forhlaðin myndskeið: {count}."
   Playlist Preload Partial: "Forhlóð {preloaded} af {requested} myndskeiðum. Ekki tókst að forhlaða {failed}."
   Playlist Preload Pagination Failed: "Ekki tókst að hlaða allan spilunarlistann og forhleðslu var hætt."
+  Unavailable videos are hidden: Ótiltæk myndskeið eru falin
 Change Format:
   Local Video File: Staðbundin myndbandsskrá
   Local Audio File: Staðbundin hljóðskrá
@@ -1515,6 +1520,8 @@ Tooltips:
     Scroll Speed: Breytir hversu langt er skrunað með músarhjóli og snertifleti.
     Use Fixed Tab Width: Gefur öllum flipum á láréttu flipastikunni sömu breidd í stað þess að laga breidd þeirra að titlinum.
     Use Grid Player Menu: Raðar stillingavalmynd myndbandsspilarans í reitanet í stað raðalista.
+  Experimental Settings:
+    Disable Hardware Acceleration: Slekkur á vélbúnaðarhröðun skjákorts. Getur lagað myndrænar villur, en mun líklega draga úr afköstum.
 The playlist is at the beginning. Enable loop to continue playing: Þú ert við upphaf spilunarlistans. Kveiktu á endurtekningu til að halda spilun áfram
 External link opening has been disabled in Settings → Privacy: Slökkt hefur verið á opnun ytri tengla undir Stillingar → Persónuvernd
 KeyboardShortcutPrompt:

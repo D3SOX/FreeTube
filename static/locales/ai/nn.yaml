@@ -1171,6 +1171,8 @@ Settings:
     Unlocking: Låser opp …
   Search Settings: Innstillingar for søk
   No Settings Found: Fann ingen innstillingar
+  Experimental Settings:
+    Disable Hardware Acceleration: Slå av maskinvareakselerasjon
 Tutorial:
   Skip: Hopp over
   Next: Neste
@@ -1552,6 +1554,8 @@ Video:
     'Remaining preroll-ad time: {remindingTimeSeconds}s': 'Attverande tid for førehandsannonsen: {remindingTimeSeconds}s'
     'Remaining SABR backoff time: {remindingTimeSeconds}s': 'Attverande ventetid for SABR: {remindingTimeSeconds}s'
   Station: Stasjon
+  Playlist:
+    Unavailable videos are hidden: 1 utilgjengeleg video er gøymd | {count} utilgjengelege videoar er gøymde
 Playlist:
   Playlist Already Preloaded: "Alle videoane i spelelista er allereie førehandslasta"
   Playlist Preload Progress: "Førehandslastar videoar: {completed} av {requested}"
@@ -1573,6 +1577,7 @@ Playlist:
   Playlist Preload Complete: "Førehandslasta videoar: {count}."
   Playlist Preload Partial: "Førehandslasta {preloaded} av {requested} videoar. {failed} kunne ikkje førehandslastast."
   Playlist Preload Pagination Failed: "Heile spelelista kunne ikkje lastast, så førehandslastinga vart avbroten."
+  Unavailable videos are hidden: Utilgjengelege videoar er gøymde
 Change Format:
   Local Video File: Lokal videofil
   Local Audio File: Lokal lydfil
@@ -1827,6 +1832,8 @@ Tooltips:
   SponsorBlock Settings:
     UseDeArrowTitles: Byt ut videotitlar med titlar som brukarar har sendt inn til DeArrow.
     UseDeArrowThumbnails: Byt ut videominiatyrar med miniatyrar frå DeArrow.
+  Experimental Settings:
+    Disable Hardware Acceleration: Slår av GPU-maskinvareakselerasjon. Kan løyse grafikkproblem, men vil truleg redusere ytinga.
 Autoplay Interruption Timer: Automatisk avspeling vart avbroten etter {autoplayInterruptionIntervalHours} timar utan aktivitet
 The playlist is at the beginning. Enable loop to continue playing: Spelelista er på byrjinga. Slå på gjentaking for å spele vidare
 Age Restricted:

@@ -980,6 +980,8 @@ Settings:
     Unlocking: Desbloqueando…
   Search Settings: Buscar na configuración
   No Settings Found: Non se atopou ningún axuste
+  Experimental Settings:
+    Disable Hardware Acceleration: Desactivar a aceleración por hardware
 Tutorial:
   Skip: Omitir
   Next: Seguinte
@@ -1274,6 +1276,8 @@ Video:
       DownvoteSegment: Valorar negativamente
       VoteFailed: Non se puido enviar o voto a SponsorBlock.
   Station: Estación
+  Playlist:
+    Unavailable videos are hidden: 1 vídeo non dispoñible está oculto | {count} vídeos non dispoñibles están ocultos
 Playlist:
   Playlist Already Preloaded: "Todos os vídeos da lista xa están precargados"
   Playlist Preload Progress: "Precargando vídeos: {completed} de {requested}"
@@ -1283,6 +1287,7 @@ Playlist:
   Playlist Preload Complete: "Vídeos precargados: {count}."
   Playlist Preload Partial: "Precargáronse {preloaded} de {requested} vídeos. Non se puideron precargar {failed}."
   Playlist Preload Pagination Failed: "Non se puido cargar a lista completa, polo que se cancelou a precarga."
+  Unavailable videos are hidden: Os vídeos non dispoñibles están ocultos
 Change Format:
   Local Video File: Ficheiro de vídeo local
   Local Audio File: Ficheiro de son local
@@ -1518,6 +1523,8 @@ Tooltips:
     Scroll Speed: Cambia a distancia de desprazamento dos xestos da roda do rato e do panel táctil.
     Use Fixed Tab Width: Dálles a todas as lapelas da barra horizontal a mesma largura en lugar de adaptar o tamaño ao título.
     Use Grid Player Menu: Organiza o menú de configuración do reprodutor de vídeo como unha grade de bloques en lugar dunha lista de filas.
+  Experimental Settings:
+    Disable Hardware Acceleration: Desactiva a aceleración por hardware da GPU. Pode resolver problemas gráficos, pero probablemente reducirá o rendemento.
 The playlist is at the beginning. Enable loop to continue playing: A lista de reprodución está no principio. Activa a repetición para continuar a reprodución
 External link opening has been disabled in Settings → Privacy: A apertura de ligazóns externas desactivouse en Configuración → Privacidade
 KeyboardShortcutPrompt:

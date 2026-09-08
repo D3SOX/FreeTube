@@ -1267,6 +1267,7 @@ Settings:
     Experimental Settings: Poskusno
     Warning: Te nastavitve so poskusne in lahko povzročijo sesutje aplikacije. Močno priporočamo izdelavo varnostnih kopij. Uporabljate jih na lastno odgovornost!
     Replace HTTP Cache: Zamenjaj predpomnilnik HTTP
+    Disable Hardware Acceleration: Onemogoči strojno pospeševanje
   Password Dialog:
     Password: Geslo
     Enter Password To Unlock: Vnesite geslo za odklep nastavitev
@@ -1691,6 +1692,8 @@ Video:
     'Remaining preroll-ad time: {remindingTimeSeconds}s': 'Preostali čas oglasa pred videoposnetkom: {remindingTimeSeconds}s'
     'Remaining SABR backoff time: {remindingTimeSeconds}s': 'Preostali čas zakasnitve SABR: {remindingTimeSeconds}s'
   Station: Postaja
+  Playlist:
+    Unavailable videos are hidden: 1 nedostopen videoposnetek je skrit | {count} nedostopna videoposnetka sta skrita | {count} nedostopni videoposnetki so skriti | {count} nedostopnih videoposnetkov je skritih
 Playlist:
   Playlist Already Preloaded: "Vsi videoposnetki na seznamu so že prednaloženi"
   Playlist Preload Progress: "Prednalaganje videoposnetkov: {completed} od {requested}"
@@ -1712,6 +1715,7 @@ Playlist:
   Playlist Preload Complete: "Prednaloženi videoposnetki: {count}."
   Playlist Preload Partial: "Prednaloženih je {preloaded} od {requested} videov. {failed} jih ni bilo mogoče prednaložiti."
   Playlist Preload Pagination Failed: "Celotnega seznama ni bilo mogoče naložiti, zato je bilo prednalaganje preklicano."
+  Unavailable videos are hidden: Nedostopni videoposnetki so skriti
 Change Format:
   Local Video File: Lokalna videodatoteka
   Local Audio File: Lokalna zvočna datoteka
@@ -1987,6 +1991,7 @@ Tooltips:
     Use Grid Player Menu: Meni z nastavitvami predvajalnika videoposnetkov je razporejen v mrežo ploščic namesto v seznam vrstic.
   Experimental Settings:
     Replace HTTP Cache: Onemogoči Electronov predpomnilnik HTTP na disku in omogoči prilagojen predpomnilnik slik v pomnilniku. Poraba pomnilnika RAM bo večja.
+    Disable Hardware Acceleration: Onemogoči strojno pospeševanje GPU. Lahko odpravi grafične težave, vendar bo verjetno zmanjšalo zmogljivost.
   SponsorBlock Settings:
     UseDeArrowTitles: Naslove videoposnetkov zamenja z naslovi, ki so jih uporabniki poslali v DeArrow.
     UseDeArrowThumbnails: Sličice videoposnetkov zamenja s sličicami iz DeArrow.

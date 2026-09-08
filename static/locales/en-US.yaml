@@ -1631,6 +1631,7 @@ Settings:
     Experimental Settings: Experimental
     Warning: These settings are experimental, they may cause crashes while enabled. Making backups is highly recommended. Use at your own risk!
     Replace HTTP Cache: Replace HTTP Cache
+    Disable Hardware Acceleration: Disable Hardware Acceleration
   Password Dialog:
     Password: Password
     Enter Password To Unlock: Enter password to unlock settings
@@ -2193,6 +2194,8 @@ Video:
   Watch:
     'Remaining preroll-ad time: {remindingTimeSeconds}s': 'Remaining preroll-ad time: {remindingTimeSeconds}s'
     'Remaining SABR backoff time: {remindingTimeSeconds}s': 'Remaining SABR backoff time: {remindingTimeSeconds}s'
+  Playlist:
+    Unavailable videos are hidden: 1 unavailable video is hidden | {count} unavailable videos are hidden
 #& Playlists
 Playlist:
   #& About
@@ -2207,6 +2210,7 @@ Playlist:
   Playlist Preload Partial: 'Preloaded {preloaded} of {requested} videos. {failed} could not be preloaded.'
   Playlist Preload Pagination Failed: The full playlist could not be loaded, so preloading was canceled.
   Last Updated On: Last Updated On
+  Unavailable videos are hidden: Unavailable videos are hidden
   Sort By:
     DateAddedNewest: Date added (Newest)
     DateAddedOldest: Date added (Oldest)
@@ -2581,6 +2585,7 @@ Tooltips:
     Use Grid Player Menu: Arranges the video player's settings menu as a grid of tiles instead of a list of rows.
   Experimental Settings:
     Replace HTTP Cache: Disables Electron's disk based HTTP cache and enables a custom in-memory image cache. Will lead to increased RAM usage.
+    Disable Hardware Acceleration: Disables GPU hardware acceleration. May fix graphical issues, but will probably perform worse.
   SponsorBlock Settings:
     UseDeArrowTitles: Replace video titles with user-submitted titles from DeArrow.
     UseDeArrowThumbnails: Replace video thumbnails with thumbnails from DeArrow.

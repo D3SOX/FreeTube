@@ -939,6 +939,8 @@ Settings:
     Unlocking: Unlocking…
   Search Settings: Search settings
   No Settings Found: No settings found
+  Experimental Settings:
+    Disable Hardware Acceleration: Disable Hardware Acceleration
 Tutorial:
   Skip: Skip
   Next: Next
@@ -1213,6 +1215,8 @@ Video:
       DownvoteSegment: Downvote
       VoteFailed: Failed to submit SponsorBlock vote.
   Station: Station
+  Playlist:
+    Unavailable videos are hidden: 1 unavailable video is hidden | {count} unavailable videos are hidden
 Playlist:
   Playlist Already Preloaded: "All playlist videos are already preloaded"
   Playlist Preload Progress: "Preloading videos: {completed} of {requested}"
@@ -1222,6 +1226,7 @@ Playlist:
   Playlist Preload Complete: "Preloaded videos: {count}."
   Playlist Preload Partial: "Preloaded {preloaded} of {requested} videos. {failed} could not be preloaded."
   Playlist Preload Pagination Failed: "The full playlist could not be loaded, so preloading was cancelled."
+  Unavailable videos are hidden: Unavailable videos are hidden
 Change Format:
   Local Video File: Local video file
   Local Audio File: Local audio file
@@ -1456,6 +1461,8 @@ Tooltips:
     Scroll Speed: Changes how far mouse-wheel and touchpad wheel gestures scroll.
     Use Fixed Tab Width: Gives every tab in the horizontal tab bar the same width instead of sizing them to their title.
     Use Grid Player Menu: Arranges the video player's settings menu as a grid of tiles instead of a list of rows.
+  Experimental Settings:
+    Disable Hardware Acceleration: Disables GPU hardware acceleration. May fix graphical issues, but will probably perform worse.
 The playlist is at the beginning. Enable loop to continue playing: The playlist is at the beginning. Enable loop to continue playing
 External link opening has been disabled in Settings → Privacy: External link opening has been disabled in Settings → Privacy
 KeyboardShortcutPrompt:

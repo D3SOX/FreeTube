@@ -1299,6 +1299,7 @@ Settings:
     Experimental Settings: Experimental
     Warning: Aquesta configuració és experimental i pot provocar fallades mentre estigui activada. Es recomana molt fer còpies de seguretat. Utilitzeu-la sota la vostra responsabilitat.
     Replace HTTP Cache: Substitueix la memòria cau HTTP
+    Disable Hardware Acceleration: Desactiva l'acceleració per maquinari
   Password Dialog:
     Password: Contrasenya
     Enter Password To Unlock: Introduïu la contrasenya per desbloquejar la configuració
@@ -1713,6 +1714,8 @@ Video:
     'Remaining preroll-ad time: {remindingTimeSeconds}s': 'Temps restant de l''anunci previ: {remindingTimeSeconds}s'
     'Remaining SABR backoff time: {remindingTimeSeconds}s': 'Temps d''espera de SABR restant: {remindingTimeSeconds}s'
   Station: Estació
+  Playlist:
+    Unavailable videos are hidden: 1 vídeo no disponible està ocult | {count} vídeos no disponibles estan ocults | {count} vídeos no disponibles estan ocults
 Playlist:
   Playlist Already Preloaded: "Tots els vídeos de la llista ja estan precarregats"
   Playlist Preload Progress: "S'estan precarregant vídeos: {completed} de {requested}"
@@ -1735,6 +1738,7 @@ Playlist:
   Playlist Preload Complete: "Vídeos precarregats: {count}."
   Playlist Preload Partial: "S’han precarregat {preloaded} de {requested} vídeos. No se n’han pogut precarregar {failed}."
   Playlist Preload Pagination Failed: "No s’ha pogut carregar la llista sencera i s’ha cancel·lat la precàrrega."
+  Unavailable videos are hidden: Els vídeos no disponibles estan ocults
 Change Format:
   Local Video File: Fitxer de vídeo local
   Local Audio File: Fitxer d'àudio local
@@ -2028,6 +2032,7 @@ Tooltips:
     Use Grid Player Menu: Organitza el menú de configuració del reproductor de vídeo com una quadrícula de rajoles en lloc d'una llista de files.
   Experimental Settings:
     Replace HTTP Cache: Desactiva la memòria cau HTTP al disc d'Electron i activa una memòria cau d'imatges personalitzada a la memòria. Augmentarà l'ús de RAM.
+    Disable Hardware Acceleration: Desactiva l'acceleració per maquinari de la GPU. Pot resoldre problemes gràfics, però probablement reduirà el rendiment.
   SponsorBlock Settings:
     UseDeArrowTitles: Substitueix els títols dels vídeos pels títols enviats pels usuaris de DeArrow.
     UseDeArrowThumbnails: Substitueix les miniatures dels vídeos per miniatures de DeArrow.

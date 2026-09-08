@@ -985,6 +985,8 @@ Settings:
     Unlocking: Avataan lukitusta…
   Search Settings: Hae asetuksista
   No Settings Found: Asetuksia ei löytynyt
+  Experimental Settings:
+    Disable Hardware Acceleration: Poista laitteistokiihdytys käytöstä
 Tutorial:
   Skip: Ohita
   Next: Seuraava
@@ -1270,6 +1272,8 @@ Video:
       DownvoteSegment: Äänestä vastaan
       VoteFailed: SponsorBlock-äänen lähettäminen epäonnistui.
   Station: Asema
+  Playlist:
+    Unavailable videos are hidden: 1 video, joka ei ole saatavilla, on piilotettu | {count} videota, jotka eivät ole saatavilla, on piilotettu
 Playlist:
   Playlist Already Preloaded: "Kaikki soittolistan videot on jo esiladattu"
   Playlist Preload Progress: "Esiladataan videoita: {completed}/{requested}"
@@ -1279,6 +1283,7 @@ Playlist:
   Playlist Preload Complete: "Esiladattuja videoita: {count}."
   Playlist Preload Partial: "Esiladattiin {preloaded}/{requested} videota. {failed} videon esilataus epäonnistui."
   Playlist Preload Pagination Failed: "Koko soittolistaa ei voitu ladata, joten esilataus peruttiin."
+  Unavailable videos are hidden: Videot, jotka eivät ole saatavilla, on piilotettu
 Change Format:
   Local Video File: Paikallinen videotiedosto
   Local Audio File: Paikallinen äänitiedosto
@@ -1514,6 +1519,8 @@ Tooltips:
     Scroll Speed: Muuttaa hiiren rullan ja kosketuslevyn vierityseleiden vieritysmatkaa.
     Use Fixed Tab Width: Tekee vaakasuuntaisen välilehtipalkin kaikista välilehdistä yhtä leveitä sen sijaan, että leveys määräytyisi nimen mukaan.
     Use Grid Player Menu: Järjestää videosoittimen asetusvalikon ruudukoksi riviluettelon sijaan.
+  Experimental Settings:
+    Disable Hardware Acceleration: Poistaa GPU:n laitteistokiihdytyksen käytöstä. Saattaa korjata grafiikkaongelmia, mutta todennäköisesti heikentää suorituskykyä.
 The playlist is at the beginning. Enable loop to continue playing: Soittolista on alussa. Jatka toistoa ottamalla jatkuva toisto käyttöön
 External link opening has been disabled in Settings → Privacy: Ulkoisten linkkien avaaminen on poistettu käytöstä kohdassa Asetukset → Tietosuoja
 Screenshot Clipboard Success: Kuvakaappaus tallennettiin leikepöydälle

@@ -1008,6 +1008,8 @@ Settings:
     Unlocking: در حال بازکردن قفل…
   Search Settings: جست‌وجوی تنظیمات
   No Settings Found: تنظیمی پیدا نشد
+  Experimental Settings:
+    Disable Hardware Acceleration: غیرفعال کردن شتاب‌دهی سخت‌افزاری
 Tutorial:
   Skip: ردکردن
   Next: بعدی
@@ -1306,6 +1308,8 @@ Video:
     'Remaining preroll-ad time: {remindingTimeSeconds}s': 'زمان باقی‌ماندهٔ تبلیغ پیش از پخش: {remindingTimeSeconds}s'
     'Remaining SABR backoff time: {remindingTimeSeconds}s': 'زمان باقی‌ماندهٔ وقفهٔ SABR: {remindingTimeSeconds}s'
   Station: ایستگاه
+  Playlist:
+    Unavailable videos are hidden: ۱ ویدیوی در دسترس‌نبوده پنهان است | {count} ویدیوی در دسترس‌نبوده پنهان هستند
 Playlist:
   Playlist Already Preloaded: "همه ویدیوهای فهرست پخش از قبل پیش‌بارگذاری شده‌اند"
   Playlist Preload Progress: "در حال پیش‌بارگذاری ویدیوها: {completed} از {requested}"
@@ -1315,6 +1319,7 @@ Playlist:
   Playlist Preload Complete: "ویدیوهای پیش‌بارگیری‌شده: {count}."
   Playlist Preload Partial: "از {requested} ویدیو، {preloaded} مورد پیش‌بارگیری شد. پیش‌بارگیری {failed} مورد ناموفق بود."
   Playlist Preload Pagination Failed: "فهرست پخش کامل بارگیری نشد، بنابراین پیش‌بارگیری لغو شد."
+  Unavailable videos are hidden: ویدیوهای در دسترس‌نبوده پنهان هستند
 Change Format:
   Local Video File: فایل ویدیویی محلی
   Local Audio File: فایل صوتی محلی
@@ -1554,6 +1559,8 @@ Tooltips:
     Scroll Speed: فاصلهٔ پیمایش با حرکت چرخ ماوس و صفحهٔ لمسی را تغییر می‌دهد.
     Use Fixed Tab Width: به‌جای تنظیم اندازه زبانه‌ها بر اساس عنوانشان، به همه زبانه‌های نوار افقی عرضی یکسان می‌دهد.
     Use Grid Player Menu: منوی تنظیمات پخش‌کننده ویدیو را به‌جای فهرستی از ردیف‌ها، به‌صورت شبکه‌ای از کاشی‌ها می‌چیند.
+  Experimental Settings:
+    Disable Hardware Acceleration: شتاب‌دهی سخت‌افزاری پردازندهٔ گرافیکی را غیرفعال می‌کند. ممکن است مشکلات گرافیکی را برطرف کند، اما احتمالاً کارایی را کاهش می‌دهد.
 The playlist is at the beginning. Enable loop to continue playing: فهرست پخش در ابتداست. برای ادامه پخش، تکرار را فعال کنید
 External link opening has been disabled in Settings → Privacy: بازکردن پیوندهای خارجی در تنظیمات → حریم خصوصی غیرفعال شده است
 Screenshot Clipboard Success: نماگرفت در بریده‌دان ذخیره شد

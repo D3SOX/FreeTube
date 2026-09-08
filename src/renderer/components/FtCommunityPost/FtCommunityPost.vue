@@ -142,6 +142,7 @@
         :aria-label="$t('Channel.Posts.View Full Post')"
       >
         <span
+          v-if="!hideComments"
           class="commentCount"
           :title="$t('Global.Counts.Comment Count', {count: formattedCommentCount}, commentCount)"
           :aria-label="$t('Global.Counts.Comment Count', {count: formattedCommentCount}, commentCount)"
@@ -234,6 +235,11 @@ const showNewSubscriptionFeedIndicator = computed(() => {
 /** @type {import('vue').ComputedRef<'local' | 'invidious'>} */
 const backendPreference = computed(() => {
   return store.getters.getBackendPreference
+})
+
+/** @type {import('vue').ComputedRef<boolean>} */
+const hideComments = computed(() => {
+  return store.getters.getHideComments
 })
 
 let postType = ''

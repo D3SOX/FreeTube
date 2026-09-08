@@ -976,6 +976,8 @@ Settings:
     Unlocking: Se deblochează…
   Search Settings: Caută în setări
   No Settings Found: Nu s-au găsit setări
+  Experimental Settings:
+    Disable Hardware Acceleration: Dezactivează accelerarea hardware
 Tutorial:
   Skip: Omite
   Next: Înainte
@@ -1268,6 +1270,8 @@ Video:
     'Remaining preroll-ad time: {remindingTimeSeconds}s': 'Timp rămas din reclama de început: {remindingTimeSeconds}s'
     'Remaining SABR backoff time: {remindingTimeSeconds}s': 'Timp rămas din așteptarea SABR: {remindingTimeSeconds}s'
   Station: Stație
+  Playlist:
+    Unavailable videos are hidden: 1 videoclip indisponibil este ascuns | {count} videoclipuri indisponibile sunt ascunse | {count} de videoclipuri indisponibile sunt ascunse
 Playlist:
   Playlist Already Preloaded: "Toate videoclipurile din lista de redare sunt deja preîncărcate"
   Playlist Preload Progress: "Se preîncarcă videoclipurile: {completed} din {requested}"
@@ -1277,6 +1281,7 @@ Playlist:
   Playlist Preload Complete: "Videoclipuri preîncărcate: {count}."
   Playlist Preload Partial: "S-au preîncărcat {preloaded} din {requested} videoclipuri. {failed} nu au putut fi preîncărcate."
   Playlist Preload Pagination Failed: "Lista completă nu a putut fi încărcată, așa că preîncărcarea a fost anulată."
+  Unavailable videos are hidden: Videoclipurile indisponibile sunt ascunse
 Change Format:
   Local Video File: Fișier video local
   Local Audio File: Fișier audio local
@@ -1516,6 +1521,8 @@ Tooltips:
     Scroll Speed: Modifică distanța de derulare a gesturilor rotiței mouse-ului și ale touchpadului.
     Use Fixed Tab Width: Atribuie aceeași lățime fiecărei file din bara de file orizontală, în loc să o dimensioneze după titlu.
     Use Grid Player Menu: Aranjează meniul de setări al playerului video ca o grilă de dale, în locul unei liste de rânduri.
+  Experimental Settings:
+    Disable Hardware Acceleration: Dezactivează accelerarea hardware a GPU-ului. Poate rezolva problemele grafice, dar probabil va reduce performanța.
 The playlist is at the beginning. Enable loop to continue playing: Playlistul este la început. Activați redarea în buclă pentru a continua
 External link opening has been disabled in Settings → Privacy: Deschiderea linkurilor externe a fost dezactivată în Setări → Confidențialitate
 Screenshot Clipboard Success: Captura de ecran a fost salvată în clipboard

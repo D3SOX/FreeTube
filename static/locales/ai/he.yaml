@@ -985,6 +985,8 @@ Settings:
     Unlocking: הנעילה מתבטלת…
   Search Settings: חיפוש בהגדרות
   No Settings Found: לא נמצאו הגדרות
+  Experimental Settings:
+    Disable Hardware Acceleration: השבתת האצת חומרה
 Tutorial:
   Skip: דילוג
   Next: הבא
@@ -1272,6 +1274,8 @@ Video:
       DownvoteSegment: הצבעה נגד
       VoteFailed: שליחת ההצבעה אל SponsorBlock נכשלה.
   Station: תחנה
+  Playlist:
+    Unavailable videos are hidden: סרטון אחד שאינו זמין מוסתר | {count} סרטונים לא זמינים מוסתרים | {count} סרטונים לא זמינים מוסתרים
 Playlist:
   Playlist Already Preloaded: "כל סרטוני הפלייליסט כבר נטענו מראש"
   Playlist Preload Progress: "טוען סרטונים מראש: {completed} מתוך {requested}"
@@ -1281,6 +1285,7 @@ Playlist:
   Playlist Preload Complete: "סרטונים שנטענו מראש: {count}."
   Playlist Preload Partial: "נטענו מראש {preloaded} מתוך {requested} סרטונים. טעינת {failed} נכשלה."
   Playlist Preload Pagination Failed: "לא ניתן היה לטעון את כל רשימת ההשמעה, לכן הטעינה מראש בוטלה."
+  Unavailable videos are hidden: סרטונים לא זמינים מוסתרים
 Change Format:
   Local Video File: קובץ וידאו מקומי
   Local Audio File: קובץ שמע מקומי
@@ -1516,6 +1521,8 @@ Tooltips:
     Scroll Speed: שינוי מרחק הגלילה של מחוות גלגלת העכבר ומשטח המגע.
     Use Fixed Tab Width: מקצה רוחב זהה לכל לשונית בסרגל הלשוניות האופקי, במקום להתאים את הרוחב לכותרת.
     Use Grid Player Menu: מסדר את תפריט ההגדרות של נגן הווידאו כרשת אריחים במקום כרשימת שורות.
+  Experimental Settings:
+    Disable Hardware Acceleration: משבית את האצת החומרה של המעבד הגרפי. עשוי לפתור בעיות גרפיות, אך כנראה יפגע בביצועים.
 The playlist is at the beginning. Enable loop to continue playing: רשימת ההשמעה בתחילתה. הפעילו לולאה כדי להמשיך לנגן
 External link opening has been disabled in Settings → Privacy: פתיחת קישורים חיצוניים הושבתה בהגדרות → פרטיות
 Screenshot Clipboard Success: צילום המסך נשמר בלוח

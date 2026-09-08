@@ -1003,6 +1003,8 @@ Settings:
     Unlocking: Откључавање…
   Search Settings: Подешавања претраге
   No Settings Found: Нису пронађена подешавања
+  Experimental Settings:
+    Disable Hardware Acceleration: Онемогући хардверско убрзање
 Tutorial:
   Skip: Прескочи
   Next: Даље
@@ -1295,6 +1297,8 @@ Video:
     'Remaining preroll-ad time: {remindingTimeSeconds}s': 'Преостало време уводног огласа: {remindingTimeSeconds}s'
     'Remaining SABR backoff time: {remindingTimeSeconds}s': 'Преостало време до поновног покушаја SABR-а: {remindingTimeSeconds}s'
   Station: Станица
+  Playlist:
+    Unavailable videos are hidden: 1 недоступан видео-снимак је скривен | {count} недоступна видео-снимка су скривена | {count} недоступних видео-снимака је скривено
 Playlist:
   Playlist Already Preloaded: "Сви видео снимци са плејлисте су већ претходно учитани"
   Playlist Preload Progress: "Претходно учитавање видео снимака: {completed} од {requested}"
@@ -1304,6 +1308,7 @@ Playlist:
   Playlist Preload Complete: "Унапред учитани снимци: {count}."
   Playlist Preload Partial: "Унапред је учитано {preloaded} од {requested} снимака. Учитавање {failed} видео-снимака унапред није успело."
   Playlist Preload Pagination Failed: "Цела плејлиста није могла да се учита, па је учитавање унапред отказано."
+  Unavailable videos are hidden: Недоступни видео-снимци су скривени
 Change Format:
   Local Video File: Локална видео-датотека
   Local Audio File: Локална аудио-датотека
@@ -1543,6 +1548,8 @@ Tooltips:
     Scroll Speed: Мења растојање померања покретима точкића миша и додирне табле.
     Use Fixed Tab Width: Даје свакој картици на водоравној траци картица исту ширину уместо да је прилагођава наслову.
     Use Grid Player Menu: Распоређује мени подешавања плејера као мрежу плочица уместо као листу редова.
+  Experimental Settings:
+    Disable Hardware Acceleration: Онемогућава хардверско убрзање GPU-а. Може решити графичке проблеме, али ће вероватно смањити перформансе.
 The playlist is at the beginning. Enable loop to continue playing: Листа за репродукцију је на почетку. Укључите понављање да бисте наставили репродукцију
 External link opening has been disabled in Settings → Privacy: Отварање спољних веза је искључено у Подешавања → Приватност
 Screenshot Clipboard Success: Снимак екрана је копиран у привремену меморију

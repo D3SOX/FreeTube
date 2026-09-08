@@ -978,6 +978,8 @@ Settings:
     Unlocking: Membuka kunci…
   Search Settings: Cari pengaturan
   No Settings Found: Pengaturan tidak ditemukan
+  Experimental Settings:
+    Disable Hardware Acceleration: Nonaktifkan Akselerasi Perangkat Keras
 Tutorial:
   Skip: Lewati
   Next: Berikutnya
@@ -1264,6 +1266,8 @@ Video:
       DownvoteSegment: Beri suara negatif
       VoteFailed: Gagal mengirim suara SponsorBlock.
   Station: Stasiun
+  Playlist:
+    Unavailable videos are hidden: '{count} video yang tidak tersedia disembunyikan'
 Playlist:
   Playlist Already Preloaded: "Semua video dalam daftar putar sudah dimuat sebelumnya"
   Playlist Preload Progress: "Memuat video terlebih dahulu: {completed} dari {requested}"
@@ -1273,6 +1277,7 @@ Playlist:
   Playlist Preload Complete: "Video yang dipramuat: {count}."
   Playlist Preload Partial: "Berhasil mempramuat {preloaded} dari {requested} video. {failed} gagal dipramuat."
   Playlist Preload Pagination Failed: "Daftar putar lengkap tidak dapat dimuat, sehingga pramuat dibatalkan."
+  Unavailable videos are hidden: Video yang tidak tersedia disembunyikan
 Change Format:
   Local Video File: Berkas video lokal
   Local Audio File: Berkas audio lokal
@@ -1508,6 +1513,8 @@ Tooltips:
     Scroll Speed: Mengubah jarak gulir gestur roda tetikus dan panel sentuh.
     Use Fixed Tab Width: Memberi setiap tab pada bilah tab horizontal lebar yang sama, bukan menyesuaikan lebar dengan judulnya.
     Use Grid Player Menu: Menyusun menu pengaturan pemutar video sebagai kisi ubin, bukan daftar baris.
+  Experimental Settings:
+    Disable Hardware Acceleration: Menonaktifkan akselerasi perangkat keras GPU. Dapat memperbaiki masalah grafis, tetapi kemungkinan akan menurunkan kinerja.
 The playlist is at the beginning. Enable loop to continue playing: Daftar putar berada di awal. Aktifkan pengulangan untuk melanjutkan pemutaran
 External link opening has been disabled in Settings → Privacy: Pembukaan tautan eksternal telah dinonaktifkan di Pengaturan → Privasi
 KeyboardShortcutPrompt:

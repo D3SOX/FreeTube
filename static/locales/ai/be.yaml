@@ -1011,6 +1011,8 @@ Settings:
     Unlocking: Разблакіраванне…
   Search Settings: Налады пошуку
   No Settings Found: Налады не знойдзены
+  Experimental Settings:
+    Disable Hardware Acceleration: Адключыць апаратнае паскарэнне
 Tutorial:
   Skip: Прапусціць
   Next: Далей
@@ -1312,6 +1314,8 @@ Video:
     'Remaining preroll-ad time: {remindingTimeSeconds}s': 'Да канца рэкламы перад відэа: {remindingTimeSeconds} с'
     'Remaining SABR backoff time: {remindingTimeSeconds}s': 'Да паўторнай спробы SABR: {remindingTimeSeconds} с'
   Station: Станцыя
+  Playlist:
+    Unavailable videos are hidden: 1 недаступнае відэа схавана | {count} недаступныя відэа схаваныя | {count} недаступных відэа схавана
 Playlist:
   Playlist Already Preloaded: "Усе відэа плэйліста ўжо папярэдне загружаны"
   Playlist Preload Progress: "Папярэдняя загрузка відэа: {completed} з {requested}"
@@ -1321,6 +1325,7 @@ Playlist:
   Playlist Preload Complete: "Папярэдне загружана відэа: {count}."
   Playlist Preload Partial: "Папярэдне загружана {preloaded} з {requested} відэа. Не ўдалося загрузіць {failed}."
   Playlist Preload Pagination Failed: "Не ўдалося загрузіць увесь плэйліст, таму папярэдняя загрузка скасавана."
+  Unavailable videos are hidden: Недаступныя відэа схаваныя
 Change Format:
   Local Video File: Лакальны відэафайл
   Local Audio File: Лакальны аўдыяфайл
@@ -1561,6 +1566,8 @@ Tooltips:
     Scroll Speed: Змяняе адлегласць пракруткі колам мышы і жэстамі кола сэнсарнай панэлі.
     Use Fixed Tab Width: Задае ўсім укладкам на гарызантальнай панэлі аднолькавую шырыню замест падбору шырыні паводле назвы.
     Use Grid Player Menu: Размяшчае меню налад відэапрайгравальніка ў выглядзе сеткі плітак замест спіса радкоў.
+  Experimental Settings:
+    Disable Hardware Acceleration: Адключае апаратнае паскарэнне GPU. Гэта можа вырашыць графічныя праблемы, але, верагодна, знізіць прадукцыйнасць.
 The playlist is at the beginning. Enable loop to continue playing: Гэта пачатак спіса прайгравання. Уключыце паўтор, каб працягнуць прайграванне
 External link opening has been disabled in Settings → Privacy: Адкрыццё вонкавых спасылак адключана ў раздзеле «Налады» → «Прыватнасць»
 Screenshot Clipboard Success: Здымак экрана захаваны ў буферы абмену

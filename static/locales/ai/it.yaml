@@ -1238,6 +1238,8 @@ Video:
       UpvoteSegment: Voto positivo
       DownvoteSegment: Voto negativo
       VoteFailed: Impossibile inviare il voto a SponsorBlock.
+  Playlist:
+    Unavailable videos are hidden: 1 video non disponibile è nascosto | {count} video non disponibili sono nascosti | {count} video non disponibili sono nascosti
 Playlist:
   Playlist Already Preloaded: "Tutti i video della playlist sono già precaricati"
   Playlist Preload Progress: "Precaricamento video: {completed} di {requested}"
@@ -1247,6 +1249,7 @@ Playlist:
   Playlist Preload Complete: "Video precaricati: {count}."
   Playlist Preload Partial: "Precaricati {preloaded} video su {requested}. Impossibile precaricarne {failed}."
   Playlist Preload Pagination Failed: "Non è stato possibile caricare l’intera playlist, quindi il precaricamento è stato annullato."
+  Unavailable videos are hidden: I video non disponibili sono nascosti
 Change Format:
   Local Video File: File video locale
   Local Audio File: File audio locale

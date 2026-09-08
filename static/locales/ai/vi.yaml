@@ -978,6 +978,8 @@ Settings:
     Unlocking: Đang mở khóa…
   Search Settings: Tìm trong cài đặt
   No Settings Found: Không tìm thấy cài đặt
+  Experimental Settings:
+    Disable Hardware Acceleration: Tắt tăng tốc phần cứng
 Tutorial:
   Skip: Bỏ qua
   Next: Tiếp
@@ -1262,6 +1264,8 @@ Video:
       DownvoteSegment: Bình chọn tiêu cực
       VoteFailed: Không thể gửi bình chọn SponsorBlock.
   Station: Trạm
+  Playlist:
+    Unavailable videos are hidden: '{count} video không có sẵn đã bị ẩn'
 Playlist:
   Playlist Already Preloaded: "Tất cả video trong danh sách phát đã được tải trước"
   Playlist Preload Progress: "Đang tải trước video: {completed}/{requested}"
@@ -1271,6 +1275,7 @@ Playlist:
   Playlist Preload Complete: "Video đã tải trước: {count}."
   Playlist Preload Partial: "Đã tải trước {preloaded}/{requested} video. Không thể tải trước {failed} video."
   Playlist Preload Pagination Failed: "Không thể tải toàn bộ danh sách phát nên đã hủy tải trước."
+  Unavailable videos are hidden: Các video không có sẵn đã bị ẩn
 Change Format:
   Local Video File: Tệp video cục bộ
   Local Audio File: Tệp âm thanh cục bộ
@@ -1506,6 +1511,8 @@ Tooltips:
     Scroll Speed: Thay đổi khoảng cách cuộn của cử chỉ con lăn chuột và con lăn bàn di chuột.
     Use Fixed Tab Width: Đặt cùng chiều rộng cho mọi thẻ trên thanh thẻ ngang thay vì điều chỉnh theo tiêu đề.
     Use Grid Player Menu: Sắp xếp menu cài đặt của trình phát video thành lưới ô thay vì danh sách hàng.
+  Experimental Settings:
+    Disable Hardware Acceleration: Tắt tăng tốc phần cứng GPU. Có thể khắc phục sự cố đồ họa, nhưng có thể làm giảm hiệu suất.
 The playlist is at the beginning. Enable loop to continue playing: Danh sách phát đang ở đầu. Hãy bật lặp lại để tiếp tục phát
 External link opening has been disabled in Settings → Privacy: Tính năng mở liên kết bên ngoài đã bị tắt trong Cài đặt → Quyền riêng tư
 KeyboardShortcutPrompt:

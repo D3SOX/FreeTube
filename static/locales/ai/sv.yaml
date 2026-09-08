@@ -963,6 +963,8 @@ Settings:
     Unlocking: Låser upp…
   Search Settings: Sök i inställningar
   No Settings Found: Inga inställningar hittades
+  Experimental Settings:
+    Disable Hardware Acceleration: Inaktivera maskinvaruacceleration
 Tutorial:
   Skip: Hoppa över
   Next: Nästa
@@ -1246,6 +1248,8 @@ Video:
       DownvoteSegment: Rösta ned
       VoteFailed: Det gick inte att skicka SponsorBlock-rösten.
   Station: Station
+  Playlist:
+    Unavailable videos are hidden: 1 otillgänglig video är dold | {count} otillgängliga videor är dolda
 Playlist:
   Playlist Already Preloaded: "Alla videor i spellistan är redan förladdade"
   Playlist Preload Progress: "Förladdar videor: {completed} av {requested}"
@@ -1255,6 +1259,7 @@ Playlist:
   Playlist Preload Complete: "Förinlästa videor: {count}."
   Playlist Preload Partial: "Förinläste {preloaded} av {requested} videor. {failed} kunde inte förinläsas."
   Playlist Preload Pagination Failed: "Hela spellistan kunde inte läsas in, så förinläsningen avbröts."
+  Unavailable videos are hidden: Otillgängliga videor är dolda
 Change Format:
   Local Video File: Lokal videofil
   Local Audio File: Lokal ljudfil
@@ -1490,6 +1495,8 @@ Tooltips:
     Scroll Speed: Ändrar hur långt mushjulets och pekplattans rullgester rullar.
     Use Fixed Tab Width: Ger alla flikar i det vågräta flikfältet samma bredd i stället för att anpassa bredden efter titeln.
     Use Grid Player Menu: Ordnar videospelarens inställningsmeny som ett rutnät med rutor i stället för en lista med rader.
+  Experimental Settings:
+    Disable Hardware Acceleration: Inaktiverar GPU-maskinvaruacceleration. Kan lösa grafikproblem, men kommer troligen att försämra prestandan.
 The playlist is at the beginning. Enable loop to continue playing: Spellistan är vid början. Aktivera upprepning för att fortsätta spela
 External link opening has been disabled in Settings → Privacy: Öppning av externa länkar har inaktiverats under Inställningar → Integritet
 KeyboardShortcutPrompt:

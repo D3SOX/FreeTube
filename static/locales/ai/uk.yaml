@@ -980,6 +980,8 @@ Settings:
     Unlocking: Розблокування…
   Search Settings: Пошук налаштувань
   No Settings Found: Налаштувань не знайдено
+  Experimental Settings:
+    Disable Hardware Acceleration: Вимкнути апаратне прискорення
 Tutorial:
   Skip: Пропустити
   Next: Далі
@@ -1265,6 +1267,8 @@ Video:
       DownvoteSegment: Проголосувати проти
       VoteFailed: Не вдалося надіслати голос у SponsorBlock.
   Station: Станція
+  Playlist:
+    Unavailable videos are hidden: 1 недоступне відео приховано | {count} недоступні відео приховано | {count} недоступних відео приховано
 Playlist:
   Playlist Already Preloaded: "Усі відео з плейлиста вже попередньо завантажені"
   Playlist Preload Progress: "Попереднє завантаження відео: {completed} з {requested}"
@@ -1274,6 +1278,7 @@ Playlist:
   Playlist Preload Complete: "Попередньо завантажено відео: {count}."
   Playlist Preload Partial: "Попередньо завантажено {preloaded} з {requested} відео. Не вдалося попередньо завантажити {failed} відео."
   Playlist Preload Pagination Failed: "Не вдалося завантажити весь список, тому попереднє завантаження скасовано."
+  Unavailable videos are hidden: Недоступні відео приховано
 Change Format:
   Local Video File: Локальний відеофайл
   Local Audio File: Локальний аудіофайл
@@ -1509,6 +1514,8 @@ Tooltips:
     Scroll Speed: Змінює відстань прокручування жестами коліщатка миші та сенсорної панелі.
     Use Fixed Tab Width: Установлює однакову ширину всіх вкладок на горизонтальній панелі замість припасування до їхніх назв.
     Use Grid Player Menu: Розміщує меню налаштувань відеопрогравача у вигляді сітки плиток замість списку рядків.
+  Experimental Settings:
+    Disable Hardware Acceleration: Вимикає апаратне прискорення GPU. Може усунути графічні проблеми, але, ймовірно, знизить продуктивність.
 The playlist is at the beginning. Enable loop to continue playing: Список відтворення на початку. Увімкніть повторення, щоб продовжити відтворення
 External link opening has been disabled in Settings → Privacy: Відкриття зовнішніх посилань вимкнено в розділі «Налаштування» → «Конфіденційність»
 KeyboardShortcutPrompt:

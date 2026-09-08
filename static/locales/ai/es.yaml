@@ -976,6 +976,8 @@ Settings:
     Unlocking: Desbloqueando…
   Search Settings: Buscar ajustes
   No Settings Found: No se encontraron ajustes
+  Experimental Settings:
+    Disable Hardware Acceleration: Desactivar la aceleración por hardware
 Tutorial:
   Skip: Omitir
   Next: Siguiente
@@ -1260,6 +1262,8 @@ Video:
       DownvoteSegment: Votar en contra
       VoteFailed: No se pudo enviar el voto a SponsorBlock.
   Station: Estación
+  Playlist:
+    Unavailable videos are hidden: 1 vídeo no disponible está oculto | {count} vídeos no disponibles están ocultos | {count} vídeos no disponibles están ocultos
 Playlist:
   Playlist Already Preloaded: "Todos los videos de la lista ya están precargados"
   Playlist Preload Progress: "Precargando videos: {completed} de {requested}"
@@ -1269,6 +1273,7 @@ Playlist:
   Playlist Preload Complete: "Vídeos precargados: {count}."
   Playlist Preload Partial: "Se precargaron {preloaded} de {requested} vídeos. No se pudieron precargar {failed}."
   Playlist Preload Pagination Failed: "No se pudo cargar la lista completa, así que se canceló la precarga."
+  Unavailable videos are hidden: Los vídeos no disponibles están ocultos
 Change Format:
   Local Video File: Archivo de vídeo local
   Local Audio File: Archivo de audio local
@@ -1504,6 +1509,8 @@ Tooltips:
     Scroll Speed: Cambia la distancia de desplazamiento de los gestos de rueda del ratón y del panel táctil.
     Use Fixed Tab Width: Asigna el mismo ancho a todas las pestañas de la barra horizontal en lugar de adaptarlo a su título.
     Use Grid Player Menu: Organiza el menú de ajustes del reproductor de vídeo como una cuadrícula de mosaicos en lugar de una lista de filas.
+  Experimental Settings:
+    Disable Hardware Acceleration: Desactiva la aceleración por hardware de la GPU. Puede resolver problemas gráficos, pero probablemente reducirá el rendimiento.
 The playlist is at the beginning. Enable loop to continue playing: La lista de reproducción está al principio. Activa la repetición para seguir reproduciendo
 External link opening has been disabled in Settings → Privacy: La apertura de enlaces externos se ha desactivado en Ajustes → Privacidad
 KeyboardShortcutPrompt:

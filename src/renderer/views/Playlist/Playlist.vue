@@ -80,6 +80,25 @@
       v-if="!isLoading && !playlistError"
       class="playlistItemsCard"
     >
+      <FtFlexBox
+        v-if="showUnavailableVideosAlert"
+        class="alertBox"
+      >
+        <p class="alertLabel">
+          {{ t("Playlist.Unavailable videos are hidden") }}
+        </p>
+        <button
+          class="alertButton"
+          :aria-label="t('Close')"
+          :title="t('Close')"
+          @click="handleCloseAlert"
+        >
+          <FtIcon
+            :icon="['fas', 'xmark']"
+            aria-hidden="true"
+          />
+        </button>
+      </FtFlexBox>
       <template
         v-if="shownPlaylistItems.length > 0 || moreVideoDataAvailable"
       >
@@ -220,6 +239,7 @@
 </template>
 
 <script setup>
+import { FtIcon } from '@opentubex/icons'
 import { supportsYtDlp } from '../../helpers/ytDlpCapabilities'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -314,6 +334,7 @@ const channelName = ref('')
 const channelThumbnail = ref('')
 const channelId = ref('')
 const infoSource = ref('local')
+const showUnavailableVideosAlert = ref(false)
 const playlistItems = ref([])
 /** @type {import('vue').ComputedRef<any[] | null>} */
 const tempShownPlaylistItems = ref(null)
@@ -831,6 +852,7 @@ function resetState() {
   channelThumbnail.value = ''
   channelId.value = ''
   infoSource.value = 'local'
+  showUnavailableVideosAlert.value = false
   playlistItems.value = []
   continuationData.value = null
   nextInvidiousPlaylistPage.value = null
@@ -879,6 +901,7 @@ async function getPlaylistLocal() {
     channelThumbnail.value = result.info.author?.best_thumbnail?.url ?? ''
     channelId.value = result.info.author?.id
     infoSource.value = 'local'
+    showUnavailableVideosAlert.value = result.menu?.items?.some((item) => item.text === 'Show unavailable videos')
 
     store.dispatch('updateSubscriptionDetails', {
       channelThumbnailUrl: channelThumbnail.value,
@@ -1601,6 +1624,10 @@ function handleResize() {
   forceListView.value = window.innerWidth <= MOBILE_WIDTH_THRESHOLD || window.innerHeight <= PLAYLIST_HEIGHT_FORCE_LIST_THRESHOLD
 }
 
+function handleCloseAlert() {
+  showUnavailableVideosAlert.value = false
+}
+
 onMounted(() => {
   getPlaylistInfoDebounce()
   handleResize()
@@ -1624,6 +1651,7 @@ function cachePlaylistForWatchTransition(to) {
       value: {
         id: playlistId.value,
         title: playlistTitle.value,
+        totalVideoCount: videoCount.value,
         channelName: channelName.value,
         channelId: channelId.value,
         items: sortedPlaylistItems.value,

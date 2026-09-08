@@ -984,6 +984,8 @@ Settings:
     Unlocking: பூட்டு திறக்கப்படுகிறது…
   Search Settings: அமைப்புகளைத் தேடு
   No Settings Found: அமைப்புகள் எதுவும் கிடைக்கவில்லை
+  Experimental Settings:
+    Disable Hardware Acceleration: வன்பொருள் முடுக்கத்தை முடக்கு
 Tutorial:
   Skip: தவிர்
   Next: அடுத்து
@@ -1275,6 +1277,8 @@ Video:
   Watch:
     'Remaining preroll-ad time: {remindingTimeSeconds}s': 'தொடக்க விளம்பரத்தில் மீதமுள்ள நேரம்: {remindingTimeSeconds}வி.'
   Station: நிலையம்
+  Playlist:
+    Unavailable videos are hidden: கிடைக்காத 1 காணொளி மறைக்கப்பட்டுள்ளது | கிடைக்காத {count} காணொளிகள் மறைக்கப்பட்டுள்ளன
 Playlist:
   Playlist Already Preloaded: "பிளேலிஸ்ட்டின் அனைத்து காணொளிகளும் ஏற்கனவே முன்பே ஏற்றப்பட்டுள்ளன"
   Playlist Preload Progress: "காணொளிகளை முன்பே ஏற்றுகிறது: {requested} இல் {completed}"
@@ -1284,6 +1288,7 @@ Playlist:
   Playlist Preload Complete: "முன்பே ஏற்றப்பட்ட காணொளிகள்: {count}."
   Playlist Preload Partial: "{requested} காணொளிகளில் {preloaded} முன்பே ஏற்றப்பட்டன. {failed} ஏற்ற முடியவில்லை."
   Playlist Preload Pagination Failed: "முழு இயக்கப்பட்டியலை ஏற்ற முடியாததால் முன்பே ஏற்றுவது நிறுத்தப்பட்டது."
+  Unavailable videos are hidden: கிடைக்காத காணொளிகள் மறைக்கப்பட்டுள்ளன
 Change Format:
   Local Video File: உள்ளகக் காணொளிக் கோப்பு
   Local Audio File: உள்ளக ஒலிக் கோப்பு
@@ -1519,6 +1524,8 @@ Tooltips:
     Scroll Speed: சுட்டிச் சக்கரம் மற்றும் தொடுதள உருள் சைகைகள் எவ்வளவு தூரம் உருளும் என்பதை மாற்றும்.
     Use Fixed Tab Width: கிடைமட்டத் தாவல் பட்டையில் ஒவ்வொரு தாவலுக்கும் அதன் தலைப்புக்கேற்ப அளவிடாமல் ஒரே அகலத்தை வழங்கும்.
     Use Grid Player Menu: காணொளி இயக்கியின் அமைப்பு மெனுவை வரிசைப் பட்டியலுக்குப் பதிலாக ஓடுகளின் கட்டமாக அமைக்கும்.
+  Experimental Settings:
+    Disable Hardware Acceleration: GPU வன்பொருள் முடுக்கத்தை முடக்குகிறது. வரைகலைச் சிக்கல்களைச் சரிசெய்யலாம், ஆனால் செயல்திறன் குறையக்கூடும்.
 The playlist is at the beginning. Enable loop to continue playing: பிளேலிஸ்ட் தொடக்கத்தில் உள்ளது. தொடர்ந்து இயக்கச் சுழற்சியை இயக்கு
 External link opening has been disabled in Settings → Privacy: அமைப்புகள் → தனியுரிமை என்பதில் வெளிப்புற இணைப்புகளைத் திறப்பது முடக்கப்பட்டுள்ளது
 Screenshot Clipboard Success: திரைப்பிடிப்பு இடைநிலைப் பலகையில் சேமிக்கப்பட்டது

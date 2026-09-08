@@ -1068,6 +1068,7 @@ Settings:
     Experimental Settings: Experimental
     Warning: Estas configuraciones son experimentales, pueden causar fallos mientras están habilitadas. Es muy recomendable hacer copias de seguridad. ¡Úselo bajo su propio riesgo!
     Replace HTTP Cache: Reemplazar la caché HTTP
+    Disable Hardware Acceleration: Desactivar la aceleración por hardware
   Password Dialog:
     Password: Contraseña
     Enter Password To Unlock: Ingresá la contraseña para desbloquear los ajustes
@@ -1603,6 +1604,8 @@ Video:
     'Remaining preroll-ad time: {remindingTimeSeconds}s': 'Tiempo restante previo al anuncio: {remindingTimeSeconds} s'
     'Remaining SABR backoff time: {remindingTimeSeconds}s': 'Tiempo restante de retroceso de SABR: {remindingTimeSeconds} s'
   Station: Estación
+  Playlist:
+    Unavailable videos are hidden: 1 video no disponible está oculto | {count} videos no disponibles están ocultos | {count} videos no disponibles están ocultos
 Playlist:
   Playlist Already Preloaded: "Todos los videos de la lista ya están precargados"
   Playlist Preload Progress: "Precargando videos: {completed} de {requested}"
@@ -1627,6 +1630,7 @@ Playlist:
   Playlist Preload Complete: "Vídeos precargados: {count}."
   Playlist Preload Partial: "Se precargaron {preloaded} de {requested} vídeos. No se pudieron precargar {failed}."
   Playlist Preload Pagination Failed: "No se pudo cargar la lista completa, así que se canceló la precarga."
+  Unavailable videos are hidden: Los videos no disponibles están ocultos
 Change Format:
   Change Media Formats: Cambiar formato de video
   Use Dash Formats: Utilizar formatos DASH
@@ -1937,6 +1941,7 @@ Tooltips:
     Use Grid Player Menu: Organiza el menú de ajustes del reproductor de video como una cuadrícula de mosaicos en lugar de una lista de filas.
   Experimental Settings:
     Replace HTTP Cache: Desactiva la caché HTTP basada en Electron disk y habilite una caché para la imagen en la memoria personalizada. Esto aumentará el uso de la memoria RAM.
+    Disable Hardware Acceleration: Desactiva la aceleración por hardware de la GPU. Puede resolver problemas gráficos, pero probablemente reducirá el rendimiento.
   SponsorBlock Settings:
     UseDeArrowTitles: Sustituye los títulos de los videos por títulos enviados por los usuarios desde DeArrow.
     UseDeArrowThumbnails: Sustituye las miniaturas de video por miniaturas de DeArrow.

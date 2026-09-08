@@ -963,6 +963,8 @@ Settings:
     Unlocking: Otključavanje…
   Search Settings: Postavke pretraživanja
   No Settings Found: Nisu pronađene postavke
+  Experimental Settings:
+    Disable Hardware Acceleration: Onemogući hardversko ubrzanje
 Tutorial:
   Skip: Preskoči
   Next: Dalje
@@ -1250,6 +1252,8 @@ Video:
       DownvoteSegment: Glasaj protiv
       VoteFailed: Slanje glasa u SponsorBlock nije uspjelo.
   Station: Postaja
+  Playlist:
+    Unavailable videos are hidden: 1 nedostupan videozapis je skriven | {count} nedostupna videozapisa su skrivena | {count} nedostupnih videozapisa je skriveno
 Playlist:
   Playlist Already Preloaded: "Svi videozapisi na popisu već su predučitani"
   Playlist Preload Progress: "Predučitavanje videozapisa: {completed} od {requested}"
@@ -1259,6 +1263,7 @@ Playlist:
   Playlist Preload Complete: "Predučitani videozapisi: {count}."
   Playlist Preload Partial: "Predučitano je {preloaded} od {requested} videozapisa. Predučitavanje {failed} videozapisa nije uspjelo."
   Playlist Preload Pagination Failed: "Cijeli popis nije se mogao učitati pa je predučitavanje otkazano."
+  Unavailable videos are hidden: Nedostupni videozapisi su skriveni
 Change Format:
   Local Video File: Lokalna videodatoteka
   Local Audio File: Lokalna audiodatoteka
@@ -1494,6 +1499,8 @@ Tooltips:
     Scroll Speed: Mijenja udaljenost pomicanja gestama kotačića miša i dodirne pločice.
     Use Fixed Tab Width: Daje svim karticama na vodoravnoj traci kartica jednaku širinu umjesto da se širina prilagođava njihovim naslovima.
     Use Grid Player Menu: Raspoređuje izbornik postavki reproduktora videozapisa kao mrežu pločica umjesto popisa redaka.
+  Experimental Settings:
+    Disable Hardware Acceleration: Onemogućuje hardversko ubrzanje GPU-a. Može riješiti grafičke probleme, ali će vjerojatno smanjiti performanse.
 The playlist is at the beginning. Enable loop to continue playing: Popis za reprodukciju je na početku. Omogućite ponavljanje za nastavak reprodukcije
 External link opening has been disabled in Settings → Privacy: Otvaranje vanjskih poveznica onemogućeno je u Postavke → Privatnost
 KeyboardShortcutPrompt:

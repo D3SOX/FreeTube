@@ -961,6 +961,8 @@ Settings:
     Unlocking: Avamine…
   Search Settings: Otsingu seaded
   No Settings Found: Seadeid ei leitud
+  Experimental Settings:
+    Disable Hardware Acceleration: Keela riistvarakiirendus
 Tutorial:
   Skip: Jäta vahele
   Next: Edasi
@@ -1244,6 +1246,8 @@ Video:
       DownvoteSegment: Anna vastuhääl
       VoteFailed: SponsorBlocki hääle saatmine nurjus.
   Station: Jaam
+  Playlist:
+    Unavailable videos are hidden: 1 kättesaamatu video on peidetud | {count} kättesaamatut videot on peidetud
 Playlist:
   Playlist Already Preloaded: "Kõik esitusloendi videod on juba eellaaditud"
   Playlist Preload Progress: "Videote eellaadimine: {completed}/{requested}"
@@ -1253,6 +1257,7 @@ Playlist:
   Playlist Preload Complete: "Eellaaditud videoid: {count}."
   Playlist Preload Partial: "Eellaaditi {preloaded}/{requested} videot. {failed} eellaadimine nurjus."
   Playlist Preload Pagination Failed: "Tervet esitusloendit ei saanud laadida, seega eellaadimine tühistati."
+  Unavailable videos are hidden: Kättesaamatud videod on peidetud
 Change Format:
   Local Video File: Kohalik videofail
   Local Audio File: Kohalik helifail
@@ -1488,6 +1493,8 @@ Tooltips:
     Scroll Speed: Muudab hiireratta ja puuteplaadi kerimisliigutuste vahemaad.
     Use Fixed Tab Width: Annab horisontaalsel vaheleheribal igale vahelehele pealkirjast sõltumata sama laiuse.
     Use Grid Player Menu: Paigutab videopleieri seadete menüü ridade loendi asemel paanide ruudustikuna.
+  Experimental Settings:
+    Disable Hardware Acceleration: Keelab GPU riistvarakiirenduse. Võib lahendada graafikaprobleeme, kuid tõenäoliselt vähendab jõudlust.
 The playlist is at the beginning. Enable loop to continue playing: Esitusloend on alguses. Esitamise jätkamiseks luba kordus
 External link opening has been disabled in Settings → Privacy: Väliste linkide avamine on jaotises Seaded → Privaatsus keelatud
 KeyboardShortcutPrompt:

@@ -957,6 +957,8 @@ Settings:
     Unlocking: Разблокировка…
   Search Settings: Поиск настроек
   No Settings Found: Настройки не найдены
+  Experimental Settings:
+    Disable Hardware Acceleration: Отключить аппаратное ускорение
 Tutorial:
   Skip: Пропустить
   Next: Далее
@@ -1242,6 +1244,8 @@ Video:
       DownvoteSegment: Не нравится
       VoteFailed: Не удалось отправить оценку в SponsorBlock.
   Station: Станция
+  Playlist:
+    Unavailable videos are hidden: 1 недоступное видео скрыто | {count} недоступных видео скрыто | {count} недоступных видео скрыто
 Playlist:
   Playlist Already Preloaded: "Все видео из плейлиста уже предварительно загружены"
   Playlist Preload Progress: "Предварительная загрузка видео: {completed} из {requested}"
@@ -1251,6 +1255,7 @@ Playlist:
   Playlist Preload Complete: "Предзагружено видео: {count}."
   Playlist Preload Partial: "Предзагружено {preloaded} из {requested} видео. Не удалось загрузить {failed}."
   Playlist Preload Pagination Failed: "Не удалось загрузить весь плейлист, поэтому предзагрузка отменена."
+  Unavailable videos are hidden: Недоступные видео скрыты
 Change Format:
   Local Video File: Локальный видеофайл
   Local Audio File: Локальный аудиофайл
@@ -1486,6 +1491,8 @@ Tooltips:
     Scroll Speed: Изменяет расстояние прокрутки жестами колеса мыши и сенсорной панели.
     Use Fixed Tab Width: Устанавливает одинаковую ширину всех вкладок на горизонтальной панели вместо подгонки под заголовок.
     Use Grid Player Menu: Располагает меню настроек проигрывателя видео в виде сетки плиток вместо списка строк.
+  Experimental Settings:
+    Disable Hardware Acceleration: Отключает аппаратное ускорение GPU. Может устранить графические проблемы, но, вероятно, снизит производительность.
 The playlist is at the beginning. Enable loop to continue playing: Достигнуто начало плейлиста. Включите повтор, чтобы продолжить воспроизведение
 External link opening has been disabled in Settings → Privacy: Открытие внешних ссылок отключено в разделе «Настройки» → «Конфиденциальность»
 Screenshot Clipboard Success: Снимок экрана сохранён в буфер обмена

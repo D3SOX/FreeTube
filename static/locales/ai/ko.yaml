@@ -1204,6 +1204,8 @@ Settings:
     Unlocking: 잠금 해제 중…
   Search Settings: 설정 검색
   No Settings Found: 설정을 찾을 수 없습니다
+  Experimental Settings:
+    Disable Hardware Acceleration: 하드웨어 가속 비활성화
 Tutorial:
   Skip: 건너뛰기
   Next: 다음
@@ -1580,6 +1582,8 @@ Video:
     'Remaining preroll-ad time: {remindingTimeSeconds}s': '프리롤 광고 남은 시간: {remindingTimeSeconds}초'
     'Remaining SABR backoff time: {remindingTimeSeconds}s': 'SABR 대기 남은 시간: {remindingTimeSeconds}초'
   Station: 스테이션
+  Playlist:
+    Unavailable videos are hidden: 사용할 수 없는 동영상 {count}개가 숨겨졌습니다
 Playlist:
   Playlist Already Preloaded: "재생목록의 모든 동영상을 이미 미리 불러왔습니다"
   Playlist Preload Progress: "동영상 미리 불러오는 중: {requested}개 중 {completed}개"
@@ -1601,6 +1605,7 @@ Playlist:
   Playlist Preload Complete: "미리 불러온 동영상: {count}개."
   Playlist Preload Partial: "동영상 {requested}개 중 {preloaded}개를 미리 불러왔습니다. {failed}개는 실패했습니다."
   Playlist Preload Pagination Failed: "재생목록 전체를 불러오지 못해 미리 불러오기를 취소했습니다."
+  Unavailable videos are hidden: 사용할 수 없는 동영상은 숨겨집니다
 Change Format:
   Local Video File: 로컬 동영상 파일
   Local Audio File: 로컬 오디오 파일
@@ -1854,6 +1859,7 @@ Tooltips:
     Use Grid Player Menu: 동영상 플레이어의 설정 메뉴를 행 목록 대신 타일 격자로 배치합니다.
   Experimental Settings:
     Replace HTTP Cache: Electron의 디스크 기반 HTTP 캐시를 비활성화하고 사용자 지정 메모리 내 이미지 캐시를 활성화합니다. RAM 사용량이 늘어납니다.
+    Disable Hardware Acceleration: GPU 하드웨어 가속을 비활성화합니다. 그래픽 문제를 해결할 수 있지만 성능이 저하될 수 있습니다.
   SponsorBlock Settings:
     UseDeArrowTitles: 동영상 제목을 DeArrow에서 사용자가 제출한 제목으로 바꿉니다.
     UseDeArrowThumbnails: 동영상 썸네일을 DeArrow의 썸네일로 바꿉니다.

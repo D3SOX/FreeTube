@@ -961,6 +961,8 @@ Settings:
     Unlocking: A desbloquear…
   Search Settings: Procurar nas configurações
   No Settings Found: Nenhuma configuração encontrada
+  Experimental Settings:
+    Disable Hardware Acceleration: Desativar aceleração de hardware
 Tutorial:
   Skip: Ignorar
   Next: Seguinte
@@ -1242,6 +1244,8 @@ Video:
       DownvoteSegment: Voto negativo
       VoteFailed: Não foi possível enviar o voto ao SponsorBlock.
   Station: Estação
+  Playlist:
+    Unavailable videos are hidden: 1 vídeo indisponível está oculto | {count} vídeos indisponíveis estão ocultos | {count} vídeos indisponíveis estão ocultos
 Playlist:
   Playlist Already Preloaded: "Todos os vídeos da playlist já estão pré-carregados"
   Playlist Preload Progress: "Pré-carregando vídeos: {completed} de {requested}"
@@ -1251,6 +1255,7 @@ Playlist:
   Playlist Preload Complete: "Vídeos pré-carregados: {count}."
   Playlist Preload Partial: "Foram pré-carregados {preloaded} de {requested} vídeos. Não foi possível pré-carregar {failed}."
   Playlist Preload Pagination Failed: "Não foi possível carregar a lista completa, por isso o pré-carregamento foi cancelado."
+  Unavailable videos are hidden: Os vídeos indisponíveis estão ocultos
 Change Format:
   Local Video File: Arquivo de vídeo local
   Local Audio File: Arquivo de áudio local
@@ -1486,6 +1491,8 @@ Tooltips:
     Scroll Speed: Altera a distância de rolagem dos gestos da roda do mouse e do touchpad.
     Use Fixed Tab Width: Atribui a mesma largura a todas as guias na barra horizontal, em vez de ajustar a largura ao respectivo título.
     Use Grid Player Menu: Organiza o menu de configurações do reprodutor de vídeo numa grelha de mosaicos em vez de uma lista de linhas.
+  Experimental Settings:
+    Disable Hardware Acceleration: Desativa a aceleração de hardware da GPU. Pode resolver problemas gráficos, mas provavelmente reduzirá o desempenho.
 The playlist is at the beginning. Enable loop to continue playing: A lista de reprodução está no início. Ative a repetição para continuar reproduzindo
 External link opening has been disabled in Settings → Privacy: A abertura de links externas foi desativada em Configurações → Privacidade
 KeyboardShortcutPrompt:

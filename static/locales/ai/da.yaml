@@ -1007,6 +1007,8 @@ Settings:
     Unlocking: Låser op…
   Search Settings: Søgeindstillinger
   No Settings Found: Ingen indstillinger fundet
+  Experimental Settings:
+    Disable Hardware Acceleration: Deaktiver hardwareacceleration
 Tutorial:
   Skip: Spring over
   Next: Næste
@@ -1301,6 +1303,8 @@ Video:
     'Remaining preroll-ad time: {remindingTimeSeconds}s': 'Resterende tid for preroll-annonce: {remindingTimeSeconds}s'
     'Remaining SABR backoff time: {remindingTimeSeconds}s': 'Resterende SABR-ventetid: {remindingTimeSeconds}s'
   Station: Station
+  Playlist:
+    Unavailable videos are hidden: 1 utilgængelig video er skjult | {count} utilgængelige videoer er skjult
 Playlist:
   Playlist Already Preloaded: "Alle videoer i playlisten er allerede forudindlæst"
   Playlist Preload Progress: "Forudindlæser videoer: {completed} af {requested}"
@@ -1310,6 +1314,7 @@ Playlist:
   Playlist Preload Complete: "Forudindlæste videoer: {count}."
   Playlist Preload Partial: "Forudindlæste {preloaded} af {requested} videoer. {failed} kunne ikke forudindlæses."
   Playlist Preload Pagination Failed: "Hele afspilningslisten kunne ikke indlæses, så forudindlæsningen blev annulleret."
+  Unavailable videos are hidden: Utilgængelige videoer er skjult
 Change Format:
   Local Video File: Lokal videofil
   Local Audio File: Lokal lydfil
@@ -1550,6 +1555,8 @@ Tooltips:
     Scroll Speed: Ændrer, hvor langt musehjulets og pegefeltets hjulbevægelser ruller.
     Use Fixed Tab Width: Giver alle faner i den vandrette fanelinje samme bredde i stedet for at tilpasse dem efter titlen.
     Use Grid Player Menu: Arrangerer videoafspillerens indstillingsmenu som et gitter af felter i stedet for en liste med rækker.
+  Experimental Settings:
+    Disable Hardware Acceleration: Deaktiverer GPU-hardwareacceleration. Kan løse grafikproblemer, men vil sandsynligvis forringe ydeevnen.
 The playlist is at the beginning. Enable loop to continue playing: Playlistens begyndelse er nået. Slå gentagelse til for at fortsætte afspilningen
 External link opening has been disabled in Settings → Privacy: Åbning af eksterne links er slået fra under Indstillinger → Privatliv
 Screenshot Clipboard Success: Skærmbilledet er gemt i udklipsholderen

@@ -961,6 +961,8 @@ Settings:
     Unlocking: Låser opp…
   Search Settings: Søkeinnstillinger
   No Settings Found: Fant ingen innstillinger
+  Experimental Settings:
+    Disable Hardware Acceleration: Deaktiver maskinvareakselerasjon
 Tutorial:
   Skip: Hopp over
   Next: Neste
@@ -1246,6 +1248,8 @@ Video:
       DownvoteSegment: Stem ned
       VoteFailed: Kunne ikke sende inn SponsorBlock-stemmen.
   Station: Stasjon
+  Playlist:
+    Unavailable videos are hidden: 1 utilgjengelig video er skjult | {count} utilgjengelige videoer er skjult
 Playlist:
   Playlist Already Preloaded: "Alle videoene i spillelisten er allerede forhåndslastet"
   Playlist Preload Progress: "Forhåndslaster videoer: {completed} av {requested}"
@@ -1255,6 +1259,7 @@ Playlist:
   Playlist Preload Complete: "Forhåndslastede videoer: {count}."
   Playlist Preload Partial: "Forhåndslastet {preloaded} av {requested} videoer. {failed} kunne ikke forhåndslastes."
   Playlist Preload Pagination Failed: "Hele spillelisten kunne ikke lastes, så forhåndslastingen ble avbrutt."
+  Unavailable videos are hidden: Utilgjengelige videoer er skjult
 Change Format:
   Local Video File: Lokal videofil
   Local Audio File: Lokal lydfil
@@ -1490,6 +1495,8 @@ Tooltips:
     Scroll Speed: Endrer hvor langt musehjul- og styreflatebevegelser ruller.
     Use Fixed Tab Width: Gir alle faner i det vannrette fanefeltet samme bredde i stedet for å tilpasse bredden etter tittelen.
     Use Grid Player Menu: Ordner innstillingsmenyen til videospilleren som et rutenett med fliser i stedet for en liste med rader.
+  Experimental Settings:
+    Disable Hardware Acceleration: Deaktiverer GPU-maskinvareakselerasjon. Kan løse grafikkproblemer, men vil sannsynligvis redusere ytelsen.
 The playlist is at the beginning. Enable loop to continue playing: Spillelisten er ved begynnelsen. Slå på gjentakelse for å fortsette avspillingen
 External link opening has been disabled in Settings → Privacy: Åpning av eksterne lenker er slått av under Innstillinger → Personvern
 KeyboardShortcutPrompt:

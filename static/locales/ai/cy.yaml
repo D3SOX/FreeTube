@@ -963,6 +963,8 @@ Settings:
     Unlocking: Wrthi'n datgloi…
   Search Settings: Gosodiadau chwilio
   No Settings Found: Ni chanfuwyd unrhyw osodiadau
+  Experimental Settings:
+    Disable Hardware Acceleration: Analluogi cyflymiad caledwedd
 Tutorial:
   Skip: Hepgor
   Next: Nesaf
@@ -1255,6 +1257,8 @@ Video:
       DownvoteSegment: Pleidleisio yn erbyn
       VoteFailed: Methodd cyflwyno pleidlais SponsorBlock.
   Station: Gorsaf
+  Playlist:
+    Unavailable videos are hidden: Mae {count} o fideos nad ydynt ar gael wedi'u cuddio | Mae 1 fideo nad yw ar gael wedi'i guddio | Mae {count} o fideos nad ydynt ar gael wedi'u cuddio | Mae {count} o fideos nad ydynt ar gael wedi'u cuddio | Mae {count} o fideos nad ydynt ar gael wedi'u cuddio | Mae {count} o fideos nad ydynt ar gael wedi'u cuddio
 Playlist:
   Playlist Already Preloaded: "Mae holl fideos y rhestr chwarae eisoes wedi'u rhaglwytho"
   Playlist Preload Progress: "Yn rhaglwytho fideos: {completed} o {requested}"
@@ -1264,6 +1268,7 @@ Playlist:
   Playlist Preload Complete: "Fideos wedi’u rhaglwytho: {count}."
   Playlist Preload Partial: "Rhaglwythwyd {preloaded} o {requested} fideo. Methodd {failed}."
   Playlist Preload Pagination Failed: "Ni ellid llwytho’r rhestr chwarae gyfan, felly canslwyd y rhaglwytho."
+  Unavailable videos are hidden: Mae fideos nad ydynt ar gael wedi'u cuddio
 Change Format:
   Local Video File: Ffeil fideo leol
   Local Audio File: Ffeil sain leol
@@ -1499,6 +1504,8 @@ Tooltips:
     Scroll Speed: Newid pa mor bell mae ystumiau olwyn llygoden ac olwyn pad cyffwrdd yn sgrolio.
     Use Fixed Tab Width: Mae'n rhoi'r un lled i bob tab yn y bar tabiau llorweddol yn lle eu meintio yn ôl eu teitl.
     Use Grid Player Menu: Mae'n trefnu dewislen gosodiadau'r chwaraewr fideo fel grid o deils yn lle rhestr o resi.
+  Experimental Settings:
+    Disable Hardware Acceleration: Yn analluogi cyflymiad caledwedd y GPU. Gall ddatrys problemau graffeg, ond mae'n debygol o leihau perfformiad.
 The playlist is at the beginning. Enable loop to continue playing: Mae'r rhestr chwarae ar y dechrau. Galluogwch ailadrodd i barhau i chwarae
 External link opening has been disabled in Settings → Privacy: Mae agor dolenni allanol wedi'i analluogi yn Gosodiadau → Preifatrwydd
 KeyboardShortcutPrompt:

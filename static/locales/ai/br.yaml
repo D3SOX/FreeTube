@@ -959,6 +959,8 @@ Settings:
     Unlocking: "O tibrennañ…"
   Search Settings: "Klask en arventennoù"
   No Settings Found: "N'eus bet kavet arventenn ebet"
+  Experimental Settings:
+    Disable Hardware Acceleration: Diweredekaat ar buanadur dre beriant
 Tutorial:
   Skip: "Lammat"
   Next: "War-lerc'h"
@@ -1247,6 +1249,8 @@ Video:
       UpvoteSegment: "Mouezhiañ a-du"
       DownvoteSegment: "Mouezhiañ a-enep"
       VoteFailed: "N'eus ket bet gallet kas ar vouezh SponsorBlock."
+  Playlist:
+    Unavailable videos are hidden: Kuzhet eo 1 video dihegerz | Kuzhet eo {count} video dihegerz | Kuzhet eo {count} video dihegerz | Kuzhet eo {count} video dihegerz | Kuzhet eo {count} video dihegerz
 Playlist:
   Playlist Already Preloaded: "Karget eo bet holl videoioù ar roll-lenn en a-raok"
   Playlist Preload Progress: "O kargañ videoioù en a-raok: {completed} diwar {requested}"
@@ -1256,6 +1260,7 @@ Playlist:
   Playlist Preload Complete: "Videoioù rakgarget: {count}."
   Playlist Preload Partial: "{preloaded} diwar {requested} video rakgarget. C’hwitet ez eus bet war {failed}."
   Playlist Preload Pagination Failed: "N’haller ket kargañ ar roll lenn a-bezh, setu eo bet nullet ar rakgargañ."
+  Unavailable videos are hidden: Kuzhet eo ar videoioù dihegerz
 Change Format:
   Local Video File: "Restr video lec'hel"
   Local Audio File: "Restr son lec'hel"
@@ -1491,6 +1496,8 @@ Tooltips:
     Scroll Speed: "Kemmañ ar pellder dibunañ gant rod al logodenn ha jestroù rod ar c'horreenn-stok."
     Use Fixed Tab Width: "Reiñ ar memes ledander da bep ivinell er varrenn ivinelloù a-blaen e-lec'h azasaat anezho diouzh o zitl."
     Use Grid Player Menu: "Aozadur lañser arventennoù al lenner video evel ur gael karrelloù e-lec'h ur roll linennoù."
+  Experimental Settings:
+    Disable Hardware Acceleration: Diweredekaat a ra buanadur dre beriant ar GPU. Gallout a ra reizhañ kudennoù grafek, met moarvat e vo gwanoc'h an digonusted.
 The playlist is at the beginning. Enable loop to continue playing: "Ar roll-videoioù zo en e zerou. Gweredekait al lenn en ur voul evit kenderc'hel da lenn"
 External link opening has been disabled in Settings → Privacy: "Diweredekaet eo bet digeriñ al liammoù diavaez en Arventennoù → Prevezded"
 KeyboardShortcutPrompt:

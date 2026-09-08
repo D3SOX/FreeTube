@@ -963,6 +963,8 @@ Settings:
     Unlocking: Desblokeatzen…
   Search Settings: Bilaketa-ezarpenak
   No Settings Found: Ez da ezarpenik aurkitu
+  Experimental Settings:
+    Disable Hardware Acceleration: Desgaitu hardware-azelerazioa
 Tutorial:
   Skip: Saltatu
   Next: Hurrengoa
@@ -1255,6 +1257,8 @@ Video:
       DownvoteSegment: Eman kontrako botoa
       VoteFailed: Ezin izan da SponsorBlock botoa bidali.
   Station: Estazioa
+  Playlist:
+    Unavailable videos are hidden: Erabilgarri ez dagoen bideo 1 ezkutatuta dago | Erabilgarri ez dauden {count} bideo ezkutatuta daude
 Playlist:
   Playlist Already Preloaded: "Erreprodukzio-zerrendako bideo guztiak aurrez kargatuta daude"
   Playlist Preload Progress: "Bideoak aurrez kargatzen: {completed}/{requested}"
@@ -1264,6 +1268,7 @@ Playlist:
   Playlist Preload Complete: "Aurrekargatutako bideoak: {count}."
   Playlist Preload Partial: "{requested} bideotatik {preloaded} aurrekargatu dira. {failed} ezin izan dira aurrekargatu."
   Playlist Preload Pagination Failed: "Ezin izan da erreprodukzio-zerrenda osoa kargatu; aurrekarga bertan behera utzi da."
+  Unavailable videos are hidden: Erabilgarri ez dauden bideoak ezkutatuta daude
 Change Format:
   Local Video File: Bideo-fitxategi lokala
   Local Audio File: Audio-fitxategi lokala
@@ -1499,6 +1504,8 @@ Tooltips:
     Scroll Speed: Saguaren gurpileko eta ukipen-paneleko keinuek zenbat korritzen duten aldatzen du.
     Use Fixed Tab Width: Fitxa horizontalen barrako fitxa guztiei zabalera bera ematen die, izenburuaren arabera tamainatu beharrean.
     Use Grid Player Menu: Erreproduzigailuaren ezarpen-menua lauzaz osatutako sareta batean antolatzen du, errenkada-zerrenda baten ordez.
+  Experimental Settings:
+    Disable Hardware Acceleration: GPUaren hardware-azelerazioa desgaitzen du. Arazo grafikoak konpon ditzake, baina ziurrenik errendimendua murriztuko du.
 The playlist is at the beginning. Enable loop to continue playing: Erreprodukzio-zerrenda hasieran dago. Gaitu begizta erreproduzitzen jarraitzeko
 External link opening has been disabled in Settings → Privacy: Kanpoko estekak irekitzea desgaitu da Ezarpenak → Pribatutasuna atalean
 KeyboardShortcutPrompt:

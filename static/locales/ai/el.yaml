@@ -985,6 +985,8 @@ Settings:
     Unlocking: Ξεκλείδωμα…
   Search Settings: Αναζήτηση ρυθμίσεων
   No Settings Found: Δεν βρέθηκαν ρυθμίσεις
+  Experimental Settings:
+    Disable Hardware Acceleration: Απενεργοποίηση επιτάχυνσης υλικού
 Tutorial:
   Skip: Παράλειψη
   Next: Επόμενο
@@ -1270,6 +1272,8 @@ Video:
       DownvoteSegment: Αρνητική ψήφος
       VoteFailed: Απέτυχε η υποβολή ψήφου στο SponsorBlock.
   Station: Σταθμός
+  Playlist:
+    Unavailable videos are hidden: 1 μη διαθέσιμο βίντεο είναι κρυμμένο | {count} μη διαθέσιμα βίντεο είναι κρυμμένα
 Playlist:
   Playlist Already Preloaded: "Όλα τα βίντεο της λίστας αναπαραγωγής έχουν ήδη προφορτωθεί"
   Playlist Preload Progress: "Προφόρτωση βίντεο: {completed} από {requested}"
@@ -1279,6 +1283,7 @@ Playlist:
   Playlist Preload Complete: "Προφορτωμένα βίντεο: {count}."
   Playlist Preload Partial: "Προφορτώθηκαν {preloaded} από {requested} βίντεο. Απέτυχαν {failed}."
   Playlist Preload Pagination Failed: "Δεν ήταν δυνατή η φόρτωση ολόκληρης της λίστας, οπότε η προφόρτωση ακυρώθηκε."
+  Unavailable videos are hidden: Τα μη διαθέσιμα βίντεο είναι κρυμμένα
 Change Format:
   Local Video File: Τοπικό αρχείο βίντεο
   Local Audio File: Τοπικό αρχείο ήχου
@@ -1514,6 +1519,8 @@ Tooltips:
     Scroll Speed: Αλλάζει την απόσταση κύλισης με τη ροδέλα του ποντικιού και τις χειρονομίες ροδέλας της επιφάνειας αφής.
     Use Fixed Tab Width: Δίνει σε κάθε καρτέλα της οριζόντιας γραμμής καρτελών το ίδιο πλάτος, αντί να προσαρμόζει το μέγεθός της στον τίτλο.
     Use Grid Player Menu: Διατάσσει το μενού ρυθμίσεων του προγράμματος αναπαραγωγής βίντεο ως πλέγμα πλακιδίων αντί για λίστα γραμμών.
+  Experimental Settings:
+    Disable Hardware Acceleration: Απενεργοποιεί την επιτάχυνση υλικού GPU. Μπορεί να διορθώσει προβλήματα γραφικών, αλλά πιθανότατα θα μειώσει την απόδοση.
 The playlist is at the beginning. Enable loop to continue playing: Η λίστα αναπαραγωγής βρίσκεται στην αρχή. Ενεργοποιήστε την επανάληψη για να συνεχιστεί η αναπαραγωγή
 External link opening has been disabled in Settings → Privacy: Το άνοιγμα εξωτερικών συνδέσμων έχει απενεργοποιηθεί στις Ρυθμίσεις → Απόρρητο
 Screenshot Clipboard Success: Το στιγμιότυπο οθόνης αποθηκεύτηκε στο πρόχειρο

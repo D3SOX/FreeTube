@@ -1226,6 +1226,8 @@ Settings:
     Set Password To Prevent Access: Nustatykite slaptažodį, kad apribotumėte prieigą prie nustatymų
     Set Password: Nustatyti slaptažodį
     Remove Password: Pašalinti slaptažodį
+  Experimental Settings:
+    Disable Hardware Acceleration: Išjungti aparatinį spartinimą
 Tutorial:
   Skip: Praleisti
   Next: Toliau
@@ -1615,6 +1617,8 @@ Video:
     'Remaining preroll-ad time: {remindingTimeSeconds}s': 'Reklamos prieš vaizdo įrašą likęs laikas: {remindingTimeSeconds} s'
     'Remaining SABR backoff time: {remindingTimeSeconds}s': 'Likęs SABR delsos laikas: {remindingTimeSeconds} s'
   Station: Stotis
+  Playlist:
+    Unavailable videos are hidden: 1 nepasiekiamas vaizdo įrašas paslėptas | {count} nepasiekiami vaizdo įrašai paslėpti | {count} nepasiekiamų vaizdo įrašų paslėpta
 Playlist:
   Playlist Already Preloaded: "Visi grojaraščio vaizdo įrašai jau įkelti iš anksto"
   Playlist Preload Progress: "Vaizdo įrašų išankstinis įkėlimas: {completed} iš {requested}"
@@ -1636,6 +1640,7 @@ Playlist:
   Playlist Preload Complete: "Iš anksto įkelta vaizdo įrašų: {count}."
   Playlist Preload Partial: "Iš anksto įkelta {preloaded} iš {requested} vaizdo įrašų. Nepavyko įkelti {failed}."
   Playlist Preload Pagination Failed: "Nepavyko įkelti viso grojaraščio, todėl išankstinis įkėlimas atšauktas."
+  Unavailable videos are hidden: Nepasiekiami vaizdo įrašai paslėpti
 Change Format:
   Local Video File: Vietinis vaizdo įrašo failas
   Local Audio File: Vietinis garso failas
@@ -1894,6 +1899,8 @@ Tooltips:
   SponsorBlock Settings:
     UseDeArrowTitles: Vaizdo įrašų pavadinimus pakeisti naudotojų pateiktais DeArrow pavadinimais.
     UseDeArrowThumbnails: Vaizdo įrašų miniatiūras pakeisti DeArrow miniatiūromis.
+  Experimental Settings:
+    Disable Hardware Acceleration: Išjungia GPU aparatinį spartinimą. Gali išspręsti grafikos problemas, bet tikriausiai sumažins našumą.
 Autoplay Interruption Timer: Automatinis atkūrimas atšauktas dėl {autoplayInterruptionIntervalHours} val. neveiklumo
 The playlist is at the beginning. Enable loop to continue playing: Pasiekta grojaraščio pradžia. Įjunkite kartojimą, kad atkūrimas būtų tęsiamas
 Age Restricted:

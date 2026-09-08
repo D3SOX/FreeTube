@@ -963,6 +963,8 @@ Settings:
     Unlocking: Отключване…
   Search Settings: Настройки за търсене
   No Settings Found: Няма намерени настройки
+  Experimental Settings:
+    Disable Hardware Acceleration: Изключване на хардуерното ускорение
 Tutorial:
   Skip: Пропускане
   Next: Напред
@@ -1246,6 +1248,8 @@ Video:
       DownvoteSegment: Гласуване „против“
       VoteFailed: Гласът в SponsorBlock не можа да бъде изпратен.
   Station: Станция
+  Playlist:
+    Unavailable videos are hidden: 1 недостъпен видеоклип е скрит | {count} недостъпни видеоклипа са скрити
 Playlist:
   Playlist Already Preloaded: "Всички видеоклипове в плейлиста вече са предварително заредени"
   Playlist Preload Progress: "Предварително зареждане на видеоклипове: {completed} от {requested}"
@@ -1255,6 +1259,7 @@ Playlist:
   Playlist Preload Complete: "Предварително заредени видеа: {count}."
   Playlist Preload Partial: "Предварително заредени са {preloaded} от {requested} видеа. {failed} не можаха да се заредят."
   Playlist Preload Pagination Failed: "Пълният плейлист не можа да се зареди и предварителното зареждане бе отменено."
+  Unavailable videos are hidden: Недостъпните видеоклипове са скрити
 Change Format:
   Local Video File: Локален видеофайл
   Local Audio File: Локален аудиофайл
@@ -1490,6 +1495,8 @@ Tooltips:
     Scroll Speed: Променя разстоянието за превъртане с колелцето на мишката и жестовете с колелце на тъчпада.
     Use Fixed Tab Width: Задава еднаква ширина на всеки раздел в хоризонталната лента вместо ширина според заглавието му.
     Use Grid Player Menu: Подрежда менюто с настройки на плейъра като решетка от плочки вместо списък с редове.
+  Experimental Settings:
+    Disable Hardware Acceleration: Изключва хардуерното ускорение на графичния процесор. Може да отстрани графични проблеми, но вероятно ще намали производителността.
 The playlist is at the beginning. Enable loop to continue playing: Плейлистът е в началото. Включете повтарянето, за да продължите възпроизвеждането
 External link opening has been disabled in Settings → Privacy: Отварянето на външни връзки е изключено в Настройки → Поверителност
 KeyboardShortcutPrompt:

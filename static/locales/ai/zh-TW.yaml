@@ -961,6 +961,8 @@ Settings:
     Unlocking: 正在解鎖…
   Search Settings: 搜尋設定
   No Settings Found: 找不到設定
+  Experimental Settings:
+    Disable Hardware Acceleration: 停用硬體加速
 Tutorial:
   Skip: 略過
   Next: 下一步
@@ -1244,6 +1246,8 @@ Video:
       DownvoteSegment: 投反對票
       VoteFailed: 無法提交 SponsorBlock 投票。
   Station: 電台
+  Playlist:
+    Unavailable videos are hidden: 已隱藏 {count} 部無法播放的影片
 Playlist:
   Playlist Already Preloaded: "播放清單中的所有影片均已預載"
   Playlist Preload Progress: "正在預載影片：{completed}/{requested}"
@@ -1253,6 +1257,7 @@ Playlist:
   Playlist Preload Complete: "已預先載入影片：{count}。"
   Playlist Preload Partial: "已預先載入 {requested} 部影片中的 {preloaded} 部，{failed} 部無法載入。"
   Playlist Preload Pagination Failed: "無法載入完整播放清單，已取消預先載入。"
+  Unavailable videos are hidden: 無法播放的影片已隱藏
 Change Format:
   Local Video File: 本機影片檔案
   Local Audio File: 本機音訊檔案
@@ -1488,6 +1493,8 @@ Tooltips:
     Scroll Speed: 變更滑鼠滾輪和觸控板滾輪手勢的捲動距離。
     Use Fixed Tab Width: 水平分頁列中的每個分頁使用相同寬度，而不依標題調整寬度。
     Use Grid Player Menu: 將影片播放器的設定選單排列成格狀方塊，而非逐列清單。
+  Experimental Settings:
+    Disable Hardware Acceleration: 停用 GPU 硬體加速。可能解決圖形問題，但可能會降低效能。
 The playlist is at the beginning. Enable loop to continue playing: 播放清單已在開頭。啟用循環播放即可繼續播放
 External link opening has been disabled in Settings → Privacy: 已在「設定」→「隱私權」中停用開啟外部連結
 KeyboardShortcutPrompt:

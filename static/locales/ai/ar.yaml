@@ -980,6 +980,8 @@ Settings:
     Unlocking: فتح…
   Search Settings: إعدادات البحث
   No Settings Found: لم يتم العثور على إعدادات
+  Experimental Settings:
+    Disable Hardware Acceleration: تعطيل تسريع الأجهزة
 Tutorial:
   Skip: تخطي
   Next: التالي
@@ -1265,6 +1267,8 @@ Video:
       DownvoteSegment: التصويت السلبي
       VoteFailed: فشل إرسال تصويت SponsorBlock.
   Station: محطة
+  Playlist:
+    Unavailable videos are hidden: تم إخفاء {count} من مقاطع الفيديو غير المتاحة | تم إخفاء فيديو واحد غير متاح | تم إخفاء {count} من مقاطع الفيديو غير المتاحة | تم إخفاء {count} من مقاطع الفيديو غير المتاحة | تم إخفاء {count} من مقاطع الفيديو غير المتاحة | تم إخفاء {count} من مقاطع الفيديو غير المتاحة
 Playlist:
   Playlist Already Preloaded: "تم تحميل جميع فيديوهات قائمة التشغيل مسبقًا بالفعل"
   Playlist Preload Progress: "جارٍ تحميل الفيديوهات مسبقًا: {completed} من {requested}"
@@ -1274,6 +1278,7 @@ Playlist:
   Playlist Preload Complete: "الفيديوهات المحمّلة مسبقًا: {count}."
   Playlist Preload Partial: "تم تحميل {preloaded} من أصل {requested} فيديو مسبقًا. تعذر تحميل {failed}."
   Playlist Preload Pagination Failed: "تعذر تحميل قائمة التشغيل كاملة، لذا أُلغي التحميل المسبق."
+  Unavailable videos are hidden: مقاطع الفيديو غير المتاحة مخفية
 Change Format:
   Local Video File: ملف فيديو محلي
   Local Audio File: ملف صوتي محلي
@@ -1494,6 +1499,8 @@ Tooltips:
     Scroll Speed: يغيّر مسافة التمرير بإيماءات عجلة الفأرة ولوحة اللمس.
     Use Fixed Tab Width: يمنح كل علامة تبويب في شريط علامات التبويب الأفقي نفس العرض بدلاً من تغيير حجمها حسب عنوانها.
     Use Grid Player Menu: يقوم بترتيب قائمة إعدادات مشغل الفيديو كشبكة من المربعات بدلاً من قائمة الصفوف.
+  Experimental Settings:
+    Disable Hardware Acceleration: يعطّل تسريع الأجهزة بواسطة وحدة معالجة الرسومات. قد يحل مشاكل الرسومات، لكنه سيؤدي على الأرجح إلى انخفاض الأداء.
 The playlist is at the beginning. Enable loop to continue playing: قائمة التشغيل في البداية. تمكين الحلقة لمواصلة اللعب
 External link opening has been disabled in Settings → Privacy: تم تعطيل فتح الرابط الخارجي في الإعدادات → الخصوصية
 KeyboardShortcutPrompt:

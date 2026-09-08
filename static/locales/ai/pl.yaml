@@ -342,8 +342,6 @@ Settings:
     Show Video Title: Pokazuj tytuł filmu
     Show Bottom Right Actions Dock: Pokazuj panel działań w prawym dolnym rogu
     Paused Interface Hide Delay: Opóźnienie ukrywania interfejsu po wstrzymaniu
-    Add: Dodaj
-    Remove: Usuń
   Data Settings:
     Data And Storage: Dane i pamięć
     Profile Directory: Katalog profilu
@@ -442,6 +440,8 @@ Settings:
     Unlocking: Odblokowywanie…
   Search Settings: Przeszukaj ustawienia
   No Settings Found: Nie znaleziono ustawień
+  Experimental Settings:
+    Disable Hardware Acceleration: Wyłącz przyspieszenie sprzętowe
 Tutorial:
   Skip: Pomiń
   Next: Dalej
@@ -487,7 +487,6 @@ Profile:
   Use Initial: Użyj inicjału
   The selected image could not be loaded: Nie udało się wczytać wybranego obrazu
   Theme Color: Kolor motywu
-  Go To Profile Manager: Przejdź do menedżera profili
 Channel:
   Subscription settings: Ustawienia subskrypcji
   Failed to save subscription settings: Nie udało się zapisać ustawień kanału
@@ -593,7 +592,8 @@ Video:
       MuteActionType: Wycisz
       MutePrompt: Wyciszyć segment „{segmentCategory}”?
       SkipActionType: Pomiń
-  Station: Stacja
+  Playlist:
+    Unavailable videos are hidden: 1 niedostępny film jest ukryty | {count} niedostępne filmy są ukryte | {count} niedostępnych filmów jest ukrytych
 Change Format:
   Local Video File: Lokalny plik filmu
   Local Audio File: Lokalny plik dźwiękowy
@@ -735,6 +735,8 @@ Tooltips:
     Scroll Speed: Zmienia odległość przewijania gestami kółka myszy i panelu dotykowego.
     Use Fixed Tab Width: Nadaje wszystkim kartom na poziomym pasku jednakową szerokość zamiast dopasowywać ją do tytułu.
     Use Grid Player Menu: Układa menu ustawień odtwarzacza filmu w siatkę kafelków zamiast listy wierszy.
+  Experimental Settings:
+    Disable Hardware Acceleration: Wyłącza przyspieszenie sprzętowe GPU. Może rozwiązać problemy graficzne, ale prawdopodobnie obniży wydajność.
 The playlist is at the beginning. Enable loop to continue playing: Playlista jest na początku. Włącz zapętlanie, aby kontynuować odtwarzanie
 External link opening has been disabled in Settings → Privacy: Otwieranie zewnętrznych odnośników wyłączono w sekcji Ustawienia → Prywatność
 KeyboardShortcutPrompt:
@@ -864,11 +866,9 @@ Playlist:
   Playlist Preload Complete: "Wstępnie wczytane filmy: {count}."
   Playlist Preload Partial: "Wstępnie wczytano {preloaded} z {requested} filmów. Nie udało się wczytać {failed}."
   Playlist Preload Pagination Failed: "Nie udało się wczytać całej playlisty, więc anulowano wstępne wczytywanie."
+  Unavailable videos are hidden: Niedostępne filmy są ukryte
 Channels:
   Load More Channels: "Wczytaj więcej kanałów"
-Search Bar:
-  Open Search Container: Otwórz pole wyszukiwania
-  Search: Szukaj
 
 Share:
   Share Link: "Udostępnij link"

@@ -985,6 +985,8 @@ Settings:
     Unlocking: Ontgrendelen…
   Search Settings: Instellingen zoeken
   No Settings Found: Geen instellingen gevonden
+  Experimental Settings:
+    Disable Hardware Acceleration: Hardwareversnelling uitschakelen
 Tutorial:
   Skip: Overslaan
   Next: Volgende
@@ -1281,6 +1283,8 @@ Video:
     'Remaining preroll-ad time: {remindingTimeSeconds}s': 'Resterende tijd van preroll-advertentie: {remindingTimeSeconds}s'
     'Remaining SABR backoff time: {remindingTimeSeconds}s': 'Resterende SABR-wachttijd: {remindingTimeSeconds}s'
   Station: Station
+  Playlist:
+    Unavailable videos are hidden: 1 niet-beschikbare video is verborgen | {count} niet-beschikbare video's zijn verborgen
 Playlist:
   Playlist Already Preloaded: "Alle video's in de afspeellijst zijn al vooraf geladen"
   Playlist Preload Progress: "Video's vooraf laden: {completed} van {requested}"
@@ -1290,6 +1294,7 @@ Playlist:
   Playlist Preload Complete: "Vooraf geladen video’s: {count}."
   Playlist Preload Partial: "{preloaded} van {requested} video’s vooraf geladen. {failed} konden niet worden geladen."
   Playlist Preload Pagination Failed: "De volledige afspeellijst kon niet worden geladen. Vooraf laden is geannuleerd."
+  Unavailable videos are hidden: Niet-beschikbare video's zijn verborgen
 Change Format:
   Local Video File: Lokaal videobestand
   Local Audio File: Lokaal audiobestand
@@ -1525,6 +1530,8 @@ Tooltips:
     Scroll Speed: Wijzigt hoe ver muiswiel- en touchpadbewegingen scrollen.
     Use Fixed Tab Width: Geeft elk tabblad in de horizontale tabbladbalk dezelfde breedte in plaats van de breedte aan de titel aan te passen.
     Use Grid Player Menu: Rangschikt het instellingenmenu van de videospeler als een raster met tegels in plaats van een lijst met rijen.
+  Experimental Settings:
+    Disable Hardware Acceleration: Schakelt GPU-hardwareversnelling uit. Kan grafische problemen oplossen, maar zal waarschijnlijk de prestaties verminderen.
 The playlist is at the beginning. Enable loop to continue playing: De afspeellijst staat aan het begin. Schakel herhalen in om door te gaan met afspelen
 External link opening has been disabled in Settings → Privacy: Het openen van externe links is uitgeschakeld via Instellingen → Privacy
 Screenshot Clipboard Success: Schermafbeelding op klembord opgeslagen
