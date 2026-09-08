@@ -185,6 +185,18 @@
                     @change="updateSetting('BaseTheme', $event)"
                   />
                   <FtSelect
+                    v-else-if="setting.id === 'systemLightTheme' || setting.id === 'systemDarkTheme'"
+                    class="quickSelect"
+                    :placeholder="setting.label"
+                    :value="store.state.settings[setting.id]"
+                    :setting-key="setting.id"
+                    :select-names="systemThemeOptions[setting.id].map(({ name }) => name)"
+                    :select-values="systemThemeOptions[setting.id].map(({ value }) => value)"
+                    :disabled="customThemeEditorOpen"
+                    :icon="setting.icon"
+                    @change="updateBasicQuickSetting(setting.id, $event)"
+                  />
+                  <FtSelect
                     v-else-if="setting.id === 'mainColor'"
                     class="quickSelect"
                     :placeholder="t('Settings.Theme Settings.Main Color Theme.Main Color Theme')"
@@ -411,6 +423,7 @@ import {
 import { defaultUpdaterId } from '../../store/modules/settings'
 import { switchActiveProfile, translateProfileName as getTranslatedProfileName } from '../../helpers/profileSwitching'
 import { customThemeValue, isCustomThemeValue } from '../../../customTheme'
+import { getThemeClassification } from '../../../appearanceSettings'
 
 const { locale, t } = useI18n()
 const id = useId()
@@ -482,6 +495,16 @@ const baseThemeNames = computed(() => [
   ...builtInBaseThemeNames.value,
   ...customThemes.value.map(({ name }) => name)
 ])
+const systemThemeOptions = computed(() => {
+  const options = { systemLightTheme: [], systemDarkTheme: [] }
+  baseThemeValues.value.forEach((value, index) => {
+    const classification = getThemeClassification(value, customThemes.value)
+    if (classification === null) return
+    const settingId = classification === 'light' ? 'systemLightTheme' : 'systemDarkTheme'
+    options[settingId].push({ name: baseThemeNames.value[index], value })
+  })
+  return options
+})
 
 const COLOR_VALUES = colors.map(color => color.name)
 const COLOR_SWATCHES = colors.map(color => color.value)
@@ -546,6 +569,7 @@ const orderedQuickSettingSections = computed(() => {
     .map(settingId => catalogById.get(settingId))
     .filter(setting => setting != null && (
       (setting.id !== 'mainColor' || mainColorAvailable.value) &&
+      (!['systemLightTheme', 'systemDarkTheme'].includes(setting.id) || baseTheme.value === 'system') &&
       (setting.id !== 'region' || regionValues.value.length > 0)
     ))
 

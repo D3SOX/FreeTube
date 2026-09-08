@@ -1,5 +1,7 @@
 const CORE_QUICK_SETTINGS = [
   ['baseTheme', 'appearance', 'Settings.Theme Settings.Base Theme.Base Theme', { control: 'select', icon: ['fas', 'palette'] }],
+  ['systemLightTheme', 'appearance', 'Settings.Theme Settings.Light Theme', { control: 'select', icon: ['fas', 'sun'] }],
+  ['systemDarkTheme', 'appearance', 'Settings.Theme Settings.Dark Theme', { control: 'select', icon: ['fas', 'moon'] }],
   ['mainColor', 'appearance', 'Settings.Theme Settings.Main Color Theme.Main Color Theme', { control: 'select', icon: ['fas', 'palette'] }],
   ['uiScale', 'appearance', 'Settings.Theme Settings.UI Scale', { control: 'slider', electronOnly: true, icon: ['fas', 'sliders-h'] }],
   ['thumbnailSize', 'appearance', 'Settings.Theme Settings.Thumbnail Size', { control: 'slider', icon: ['fas', 'photo-film'] }],
