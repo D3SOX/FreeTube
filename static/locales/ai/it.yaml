@@ -238,6 +238,7 @@ Settings:
       Network: rete
       Disk: disco
   General Settings:
+    Swipe to refresh: Scorri per aggiornare
     Blur Thumbnails: Sfoca le miniature
     Navigation:
       Navigation: Navigazione

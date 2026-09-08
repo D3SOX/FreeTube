@@ -7,7 +7,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
-import android.widget.FrameLayout;
 
 import androidx.media3.datasource.DefaultDataSource;
 import androidx.media3.ui.PlayerControlView;
@@ -51,7 +50,7 @@ public class NativePlaybackScreenTest {
             try {
                 scenario.onActivity(activity -> {
                     NativePlaybackEngine engine = new NativePlaybackEngine(activity, new DefaultDataSource.Factory(activity), state -> {});
-                    FrameLayout original = new FrameLayout(activity);
+                    PullToRefreshLayout original = new PullToRefreshLayout(activity, null);
                     TouchWebView web = new TouchWebView(activity);
                     original.addView(web);
                     activity.addContentView(original, new ViewGroup.LayoutParams(-1, -1));
@@ -94,8 +93,8 @@ public class NativePlaybackScreenTest {
             screen.setInlineVisible(true);
             View videoFrame = screen.getChildAt(0);
             assertEquals("Inline video must be drawn at its native cadence", 1f, videoFrame.getAlpha(), 0f);
-            assertSame("Web controls must remain above the native video", screen, web.getParent());
-            assertTrue(screen.indexOfChild(web) > screen.indexOfChild(videoFrame));
+            assertSame("Web controls must remain above the native video", screen, ((View) web.getParent()).getParent());
+            assertTrue(screen.indexOfChild((View) web.getParent()) > screen.indexOfChild(videoFrame));
             screen.setControlsVisible(false);
             tap(screen, 100, 100);
             assertEquals("Inline surface touches reach the shared gesture recognizer", 1, web.downs);
@@ -184,7 +183,7 @@ public class NativePlaybackScreenTest {
             web.setBackgroundColor(android.graphics.Color.RED);
             screen.setMenuBounds(new android.graphics.RectF[] { new android.graphics.RectF(0, 0, 1000, 80) });
             screen.animateVideo(new double[] { 0, 0, 500, 281.25 }, new double[] { 100, 0, 400, 225, 1000 }, 1200, 12, () -> {});
-            assertTrue("Moving video must draw over opaque route content", screen.indexOfChild(frame) > screen.indexOfChild(web));
+            assertTrue("Moving video must draw over opaque route content", screen.indexOfChild(frame) > screen.indexOfChild((View) web.getParent()));
             assertFalse("Transport buttons must not travel separately from the video", controls.isFullyVisible());
         }, (screen, controls, web, engine) -> {
             android.graphics.Bitmap image = android.graphics.Bitmap.createBitmap(screen.getWidth(), screen.getHeight(), android.graphics.Bitmap.Config.ARGB_8888);
@@ -241,14 +240,14 @@ public class NativePlaybackScreenTest {
             screen.finishPageScroll();
             assertNotNull(web.heldVisualState);
             web.heldVisualState.onComplete(web.heldVisualStateId);
-            assertTrue(screen.indexOfChild(frame[0]) > screen.indexOfChild(web));
+            assertTrue(screen.indexOfChild(frame[0]) > screen.indexOfChild((View) web.getParent()));
             // Start another fling before Chromium's previous ready frame draws.
             swipePage(screen);
             android.graphics.Bitmap image = android.graphics.Bitmap.createBitmap(screen.getWidth(), screen.getHeight(), android.graphics.Bitmap.Config.ARGB_8888);
             screen.draw(new android.graphics.Canvas(image));
             image.recycle();
         }, (screen, controls, web, engine) -> {
-            assertTrue("An obsolete handoff cannot lower a video during another swipe", screen.indexOfChild(frame[0]) > screen.indexOfChild(web));
+            assertTrue("An obsolete handoff cannot lower a video during another swipe", screen.indexOfChild(frame[0]) > screen.indexOfChild((View) web.getParent()));
             SystemClock.sleep(160);
             screen.finishPageScroll();
             web.heldVisualState.onComplete(web.heldVisualStateId);
@@ -256,7 +255,7 @@ public class NativePlaybackScreenTest {
             screen.draw(new android.graphics.Canvas(image));
             image.recycle();
         }, (screen, controls, web, engine) -> {
-            assertTrue("Settled scrolling must restore the shared mini-player controls", screen.indexOfChild(web) > screen.indexOfChild(frame[0]));
+            assertTrue("Settled scrolling must restore the shared mini-player controls", screen.indexOfChild((View) web.getParent()) > screen.indexOfChild(frame[0]));
         });
     }
 
@@ -357,13 +356,13 @@ public class NativePlaybackScreenTest {
             web.holdVisualState = true;
             screen.finishVideoTransition();
             web.heldVisualState.onComplete(web.heldVisualStateId);
-            assertTrue("A ready Chromium frame has not necessarily drawn its new transparent window yet", screen.indexOfChild(videoFrame) > screen.indexOfChild(web));
+            assertTrue("A ready Chromium frame has not necessarily drawn its new transparent window yet", screen.indexOfChild(videoFrame) > screen.indexOfChild((View) web.getParent()));
             assertFalse(controls.isFullyVisible());
             android.graphics.Bitmap image = android.graphics.Bitmap.createBitmap(screen.getWidth(), screen.getHeight(), android.graphics.Bitmap.Config.ARGB_8888);
             screen.draw(new android.graphics.Canvas(image));
             image.recycle();
         }, (screen, controls, web, engine) -> {
-            assertTrue("After the WebView draws, its controls must be above the video again", screen.indexOfChild(web) > 0);
+            assertTrue("After the WebView draws, its controls must be above the video again", screen.indexOfChild((View) web.getParent()) > 0);
             assertTrue(controls.isFullyVisible());
         });
     }
@@ -377,7 +376,7 @@ public class NativePlaybackScreenTest {
                 new NativeCaptionTimeline.Entry(0, 10000, "External caption in PiP")), true);
         }, (screen, controls, web, engine) -> {
             assertEquals("External caption in PiP", engine.getCaptionCues().get(0).text.toString());
-            assertEquals(0f, web.getAlpha(), 0f);
+            assertEquals(0f, ((View) web.getParent()).getAlpha(), 0f);
             assertTrue("PiP captions must draw without the WebView", brightPixels(screen) > 0);
             engine.setCaptionsVisible(false);
         }, (screen, controls, web, engine) -> {
@@ -440,7 +439,7 @@ public class NativePlaybackScreenTest {
             android.graphics.drawable.ColorDrawable background = (android.graphics.drawable.ColorDrawable) scrim.getBackground();
             assertEquals("The native scrim must not darken the shared UI", 0, android.graphics.Color.alpha(background.getColor()));
             assertNull("Watch owns the feature-complete bottom toolbar", controls.findViewById(androidx.media3.ui.R.id.exo_bottom_bar));
-            assertTrue("Native buttons must remain above the ambient canvas", screen.indexOfChild(controls) > screen.indexOfChild(web));
+            assertTrue("Native buttons must remain above the ambient canvas", screen.indexOfChild(controls) > screen.indexOfChild((View) web.getParent()));
         });
     }
 
@@ -480,6 +479,43 @@ public class NativePlaybackScreenTest {
             screen.setControlsVisible(false);
             screen.setControlsVisible(true);
             assertNull(controls.findViewById(androidx.media3.ui.R.id.exo_fullscreen));
+        });
+    }
+
+    @Test public void refreshIndicatorDrawsAboveNativeControlsAndVideoButHidesInPictureInPicture() {
+        withScreen((screen, controls, web, engine) -> {
+            screen.setFullscreen(false);
+            screen.setInlineVisible(true);
+            screen.setWebOverlayActive(true);
+            screen.setControlsVisible(true);
+            controls.setBackgroundColor(android.graphics.Color.MAGENTA);
+            PullToRefreshLayout refresh = (PullToRefreshLayout) web.getParent();
+            android.widget.ImageView indicator = null;
+            for (int i = 0; i < refresh.getChildCount(); i++) {
+                if (refresh.getChildAt(i) instanceof android.widget.ImageView) {
+                    indicator = (android.widget.ImageView) refresh.getChildAt(i);
+                }
+            }
+            assertNotNull(indicator);
+            // A solid marker makes the draw-order assertion independent of spinner animation.
+            indicator.setImageDrawable(null);
+            indicator.setBackgroundColor(android.graphics.Color.GREEN);
+            indicator.setVisibility(View.VISIBLE);
+            indicator.layout(450, 100, 550, 200);
+            android.graphics.Bitmap bitmap = android.graphics.Bitmap.createBitmap(1000, 600, android.graphics.Bitmap.Config.ARGB_8888);
+            screen.draw(new android.graphics.Canvas(bitmap));
+            assertEquals("Player controls cannot cover the refresh indicator", android.graphics.Color.GREEN, bitmap.getPixel(500, 150));
+            assertEquals("The remaining controls stay visible", android.graphics.Color.MAGENTA, bitmap.getPixel(800, 150));
+
+            screen.getChildAt(0).bringToFront();
+            screen.draw(new android.graphics.Canvas(bitmap));
+            assertEquals("Raising the native video cannot cover the indicator", android.graphics.Color.GREEN, bitmap.getPixel(500, 150));
+
+            screen.setPictureInPicture(true);
+            bitmap.eraseColor(android.graphics.Color.BLACK);
+            screen.draw(new android.graphics.Canvas(bitmap));
+            assertNotEquals("The indicator stays out of PiP", android.graphics.Color.GREEN, bitmap.getPixel(500, 150));
+            bitmap.recycle();
         });
     }
 

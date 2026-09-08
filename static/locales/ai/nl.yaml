@@ -242,6 +242,7 @@ Settings:
       Network: netwerk
       Disk: schijf
   General Settings:
+    Swipe to refresh: Vegen om te vernieuwen
     Blur Thumbnails: Miniaturen vervagen
     Navigation:
       Navigation: Navigatie

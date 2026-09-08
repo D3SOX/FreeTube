@@ -238,6 +238,7 @@ Settings:
       Network: 网络
       Disk: 磁盘
   General Settings:
+    Swipe to refresh: 下拉刷新
     Blur Thumbnails: 模糊缩略图
     Navigation:
       Navigation: 导航

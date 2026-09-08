@@ -114,7 +114,7 @@ function isSettingsSearchMessageVisible(sectionType, path, options) {
 
   if (sectionType === 'general') {
     if (group === 'Stream Extraction Method') return usingElectron || isCapacitor
-    if (group === 'Mobile Layout') {
+    if (['Mobile Layout', 'Swipe to refresh'].includes(group)) {
       return isCapacitor
     }
     if (group === 'Minimize to system tray') {

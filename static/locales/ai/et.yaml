@@ -238,6 +238,7 @@ Settings:
       Network: võrgu
       Disk: ketta
   General Settings:
+    Swipe to refresh: Värskendamiseks viipa
     Blur Thumbnails: Hägusta pisipildid
     Navigation:
       Navigation: Navigeerimine

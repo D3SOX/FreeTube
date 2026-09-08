@@ -242,6 +242,7 @@ Settings:
       Network: verkko
       Disk: levytila
   General Settings:
+    Swipe to refresh: Päivitä pyyhkäisemällä
     Blur Thumbnails: Sumenna pikkukuvat
     Navigation:
       Navigation: Navigointi

@@ -238,6 +238,7 @@ Settings:
       Network: ağ
       Disk: disk
   General Settings:
+    Swipe to refresh: Yenilemek için kaydır
     Blur Thumbnails: Küçük resimleri bulanıklaştır
     Navigation:
       Navigation: Gezinme

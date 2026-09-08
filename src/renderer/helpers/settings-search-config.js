@@ -15,6 +15,7 @@ const GENERAL_EVERYDAY_KEYS = new Set([
   'Reduced Motion',
   'Region for Trending',
   'Startup Behavior',
+  'Swipe to refresh',
   'System Default',
   'Tab Close Focus',
   'Update Relative Timestamps',

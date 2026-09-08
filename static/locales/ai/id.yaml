@@ -242,6 +242,7 @@ Settings:
       Network: jaringan
       Disk: disk
   General Settings:
+    Swipe to refresh: Geser untuk menyegarkan
     Blur Thumbnails: Buramkan gambar mini
     Navigation:
       Navigation: Navigasi
