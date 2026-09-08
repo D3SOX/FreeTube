@@ -328,6 +328,21 @@ Settings:
     Invalid Engine: Anna nimi ja kelvollinen HTTP- tai HTTPS-hakuosoite, joka sisältää merkkijonon %s.
     Engine Limit: Voit lisätä enintään {count} mukautettua hakukonetta.
   Theme Settings:
+    Main Color Theme:
+      Catppuccin Macchiato Rosewater: "Catppuccin Macchiato Rosewater -teema"
+      Catppuccin Macchiato Flamingo: "Catppuccin Macchiato Flamingo -teema"
+      Catppuccin Macchiato Pink: "Catppuccin Macchiato Pink -teema"
+      Catppuccin Macchiato Mauve: "Catppuccin Macchiato Mauve -teema"
+      Catppuccin Macchiato Red: "Catppuccin Macchiato Red -teema"
+      Catppuccin Macchiato Maroon: "Catppuccin Macchiato Maroon -teema"
+      Catppuccin Macchiato Peach: "Catppuccin Macchiato Peach -teema"
+      Catppuccin Macchiato Yellow: "Catppuccin Macchiato Yellow -teema"
+      Catppuccin Macchiato Green: "Catppuccin Macchiato Green -teema"
+      Catppuccin Macchiato Teal: "Catppuccin Macchiato Teal -teema"
+      Catppuccin Macchiato Sky: "Catppuccin Macchiato Sky -teema"
+      Catppuccin Macchiato Sapphire: "Catppuccin Macchiato Sapphire -teema"
+      Catppuccin Macchiato Blue: "Catppuccin Macchiato Blue -teema"
+      Catppuccin Macchiato Lavender: "Catppuccin Macchiato Lavender -teema"
     Move Downloads to App Header: Siirrä lataukset sovelluksen yläpalkkiin
     Move Settings to App Header: Siirrä asetukset sovelluksen yläpalkkiin
     Hide Side Bar on Watch Pages: Piilota sivupalkki katselusivuilla
@@ -374,6 +389,22 @@ Settings:
       Unable to Load: Asennettuja järjestelmäfontteja ei voitu ladata
     Always Show Scrollbars: Näytä vierityspalkit aina
     Base Theme:
+      Tokyo Night Night: Tokyo Night Night
+      Tokyo Night Storm: Tokyo Night Storm
+      Tokyo Night Moon: Tokyo Night Moon
+      Tokyo Night Day: Tokyo Night Day
+      Rosé Pine: Rosé Pine
+      Rosé Pine Moon: Rosé Pine Moon
+      Rosé Pine Dawn: Rosé Pine Dawn
+      Kanagawa Wave: Kanagawa Wave
+      Kanagawa Dragon: Kanagawa Dragon
+      Kanagawa Lotus: Kanagawa Lotus
+      Ayu Dark: Ayu Dark
+      Ayu Mirage: Ayu Mirage
+      Ayu Light: Ayu Light
+      One Dark: One Dark
+      Carbonfox: Carbonfox
+      Catppuccin Macchiato: Catppuccin Macchiato
       OpenTubeX Light: "OpenTubeX Vaalea"
       OpenTubeX Dark: "OpenTubeX Tumma"
       Custom: Mukautettu

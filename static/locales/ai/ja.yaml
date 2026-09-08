@@ -324,6 +324,21 @@ Settings:
     Invalid Engine: 名前と、%sを含む有効なHTTPまたはHTTPSの検索URLを入力してください。
     Engine Limit: カスタム検索エンジンは{count}件まで追加できます。
   Theme Settings:
+    Main Color Theme:
+      Catppuccin Macchiato Rosewater: "キャプチーノ・Macchiato 淡いピンク"
+      Catppuccin Macchiato Flamingo: "キャプチーノ・Macchiato 明るいピンク"
+      Catppuccin Macchiato Pink: "キャプチーノ・Macchiato ピンク"
+      Catppuccin Macchiato Mauve: "キャプチーノ・Macchiato 淡い紫"
+      Catppuccin Macchiato Red: "キャプチーノ・Macchiato 赤色"
+      Catppuccin Macchiato Maroon: "キャプチーノ・Macchiato 暗い赤茶色"
+      Catppuccin Macchiato Peach: "キャプチーノ・Macchiato 桃色"
+      Catppuccin Macchiato Yellow: "キャプチーノ・Macchiato 黄色"
+      Catppuccin Macchiato Green: "キャプチーノ・Macchiato 緑色"
+      Catppuccin Macchiato Teal: "キャプチーノ・Macchiato 青緑"
+      Catppuccin Macchiato Sky: "キャプチーノ・Macchiato 空色"
+      Catppuccin Macchiato Sapphire: "キャプチーノ・Macchiato 深い青"
+      Catppuccin Macchiato Blue: "キャプチーノ・Macchiato 青色"
+      Catppuccin Macchiato Lavender: "キャプチーノ・Macchiato 淡い紫"
     Move Downloads to App Header: ダウンロードをアプリのヘッダーに移動
     Move Settings to App Header: 設定をアプリのヘッダーに移動
     Hide Side Bar on Watch Pages: 動画再生ページでサイドバーを非表示
@@ -370,6 +385,22 @@ Settings:
       Unable to Load: インストール済みのシステムフォントを読み込めませんでした
     Always Show Scrollbars: スクロールバーを常に表示
     Base Theme:
+      Tokyo Night Night: Tokyo Night Night
+      Tokyo Night Storm: Tokyo Night Storm
+      Tokyo Night Moon: Tokyo Night Moon
+      Tokyo Night Day: Tokyo Night Day
+      Rosé Pine: Rosé Pine
+      Rosé Pine Moon: Rosé Pine Moon
+      Rosé Pine Dawn: Rosé Pine Dawn
+      Kanagawa Wave: Kanagawa Wave
+      Kanagawa Dragon: Kanagawa Dragon
+      Kanagawa Lotus: Kanagawa Lotus
+      Ayu Dark: Ayu Dark
+      Ayu Mirage: Ayu Mirage
+      Ayu Light: Ayu Light
+      One Dark: One Dark
+      Carbonfox: Carbonfox
+      Catppuccin Macchiato: Catppuccin Macchiato
       OpenTubeX Light: "OpenTubeX ライト"
       OpenTubeX Dark: "OpenTubeX ダーク"
       Custom: カスタム

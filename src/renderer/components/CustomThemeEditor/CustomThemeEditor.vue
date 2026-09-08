@@ -200,17 +200,47 @@ let colorPreviewTimer = null
 
 const BASE_THEME_VALUES = [
   'light', 'dark', 'black', 'openTubeXLight', 'openTubeXDark', 'nordic', 'hotPink', 'pastelPink',
-  'catppuccinFrappe', 'catppuccinLatte', 'catppuccinMocha', 'dracula',
+  'catppuccinFrappe', 'catppuccinLatte', 'catppuccinMacchiato', 'catppuccinMocha', 'dracula',
   'everforestDarkHard', 'everforestDarkMedium', 'everforestDarkLow',
   'everforestLightHard', 'everforestLightMedium', 'everforestLightLow',
-  'gruvboxDark', 'gruvboxLight', 'solarizedDark', 'solarizedLight'
+  'gruvboxDark', 'gruvboxLight', 'solarizedDark', 'solarizedLight',
+  'tokyoNightNight',
+  'tokyoNightStorm',
+  'tokyoNightMoon',
+  'tokyoNightDay',
+  'rosePine',
+  'rosePineMoon',
+  'rosePineDawn',
+  'kanagawaWave',
+  'kanagawaDragon',
+  'kanagawaLotus',
+  'ayuDark',
+  'ayuMirage',
+  'ayuLight',
+  'oneDark',
+  'carbonfox'
 ]
 const BASE_THEME_TRANSLATION_KEYS = [
   'Light', 'Dark', 'Black', 'OpenTubeX Light', 'OpenTubeX Dark', 'Nordic', 'Hot Pink', 'Pastel Pink',
-  'Catppuccin Frappe', 'Catppuccin Latte', 'Catppuccin Mocha', 'Dracula',
+  'Catppuccin Frappe', 'Catppuccin Latte', 'Catppuccin Macchiato', 'Catppuccin Mocha', 'Dracula',
   'Everforest Dark Hard', 'Everforest Dark Medium', 'Everforest Dark Low',
   'Everforest Light Hard', 'Everforest Light Medium', 'Everforest Light Low',
-  'Gruvbox Dark', 'Gruvbox Light', 'Solarized Dark', 'Solarized Light'
+  'Gruvbox Dark', 'Gruvbox Light', 'Solarized Dark', 'Solarized Light',
+  'Tokyo Night Night',
+  'Tokyo Night Storm',
+  'Tokyo Night Moon',
+  'Tokyo Night Day',
+  'Rosé Pine',
+  'Rosé Pine Moon',
+  'Rosé Pine Dawn',
+  'Kanagawa Wave',
+  'Kanagawa Dragon',
+  'Kanagawa Lotus',
+  'Ayu Dark',
+  'Ayu Mirage',
+  'Ayu Light',
+  'One Dark',
+  'Carbonfox'
 ]
 const MAIN_COLOR_KEYS = [
   'primary', 'primaryHover', 'primaryActive', 'textWithPrimary',

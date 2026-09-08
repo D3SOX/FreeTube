@@ -3,9 +3,24 @@ import { test } from 'node:test'
 
 import {
   getThemeClassification,
+  hasFixedThemeColors,
   resolveBaseTheme,
   resolveSystemTheme,
 } from '../../src/appearanceSettings.js'
+import { PALETTE_BASE_THEMES } from '../../src/constants.js'
+
+test('all 16 palette themes survive setting repair and work as system theme choices', () => {
+  const light = ['tokyoNightDay', 'rosePineDawn', 'kanagawaLotus', 'ayuLight']
+  const themes = [...PALETTE_BASE_THEMES, 'catppuccinMacchiato']
+  assert.equal(new Set(themes).size, 16)
+  for (const theme of themes) {
+    const classification = light.includes(theme) ? 'light' : 'dark'
+    assert.equal(resolveBaseTheme(theme, 'system'), theme)
+    assert.equal(getThemeClassification(theme), classification)
+    assert.equal(resolveSystemTheme(theme, classification), theme)
+    assert.equal(hasFixedThemeColors(theme), theme !== 'catppuccinMacchiato')
+  }
+})
 
 test('invalid appearance choices fall back to their defaults', () => {
   assert.equal(resolveBaseTheme('missing', 'system'), 'system')

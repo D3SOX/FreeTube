@@ -324,6 +324,21 @@ Settings:
     Invalid Engine: 請輸入名稱，以及包含 %s 的有效 HTTP 或 HTTPS 搜尋 URL。
     Engine Limit: 最多可新增 {count} 個自訂搜尋引擎。
   Theme Settings:
+    Main Color Theme:
+      Catppuccin Macchiato Rosewater: "卡布奇諾Macchiato玫瑰水"
+      Catppuccin Macchiato Flamingo: "卡布奇諾Macchiato紅鶴"
+      Catppuccin Macchiato Pink: "卡布奇諾Macchiato粉紅"
+      Catppuccin Macchiato Mauve: "卡布奇諾Macchiato紫紅色"
+      Catppuccin Macchiato Red: "卡布奇諾Macchiato紅色"
+      Catppuccin Macchiato Maroon: "卡布奇諾Macchiato褐紅色"
+      Catppuccin Macchiato Peach: "卡布奇諾Macchiato桃紅色"
+      Catppuccin Macchiato Yellow: "卡布奇諾Macchiato黃色"
+      Catppuccin Macchiato Green: "卡布奇諾Macchiato綠色"
+      Catppuccin Macchiato Teal: "卡布奇諾Macchiato藍綠色"
+      Catppuccin Macchiato Sky: "卡布奇諾Macchiato天藍色"
+      Catppuccin Macchiato Sapphire: "卡布奇諾Macchiato藍寶石色"
+      Catppuccin Macchiato Blue: "卡布奇諾Macchiato藍色"
+      Catppuccin Macchiato Lavender: "卡布奇諾Macchiato薰衣草色"
     Move Downloads to App Header: 將下載移至應用程式標頭
     Move Settings to App Header: 將設定移至應用程式標頭
     Hide Side Bar on Watch Pages: 在觀看頁面隱藏側邊欄
@@ -370,6 +385,22 @@ Settings:
       Unable to Load: 無法載入已安裝的系統字型
     Always Show Scrollbars: 永遠顯示捲軸
     Base Theme:
+      Tokyo Night Night: Tokyo Night Night
+      Tokyo Night Storm: Tokyo Night Storm
+      Tokyo Night Moon: Tokyo Night Moon
+      Tokyo Night Day: Tokyo Night Day
+      Rosé Pine: Rosé Pine
+      Rosé Pine Moon: Rosé Pine Moon
+      Rosé Pine Dawn: Rosé Pine Dawn
+      Kanagawa Wave: Kanagawa Wave
+      Kanagawa Dragon: Kanagawa Dragon
+      Kanagawa Lotus: Kanagawa Lotus
+      Ayu Dark: Ayu Dark
+      Ayu Mirage: Ayu Mirage
+      Ayu Light: Ayu Light
+      One Dark: One Dark
+      Carbonfox: Carbonfox
+      Catppuccin Macchiato: Catppuccin Macchiato
       OpenTubeX Light: "OpenTubeX 淺色"
       OpenTubeX Dark: "OpenTubeX 深色"
       Custom: 自訂

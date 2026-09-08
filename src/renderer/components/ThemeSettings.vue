@@ -467,6 +467,7 @@ const BUILTIN_BASE_THEME_VALUES = [
   // Third group
   'catppuccinFrappe',
   'catppuccinLatte',
+  'catppuccinMacchiato',
   'catppuccinMocha',
   'dracula',
   'everforestDarkHard',
@@ -478,7 +479,22 @@ const BUILTIN_BASE_THEME_VALUES = [
   'gruvboxDark',
   'gruvboxLight',
   'solarizedDark',
-  'solarizedLight'
+  'solarizedLight',
+  'tokyoNightNight',
+  'tokyoNightStorm',
+  'tokyoNightMoon',
+  'tokyoNightDay',
+  'rosePine',
+  'rosePineMoon',
+  'rosePineDawn',
+  'kanagawaWave',
+  'kanagawaDragon',
+  'kanagawaLotus',
+  'ayuDark',
+  'ayuMirage',
+  'ayuLight',
+  'oneDark',
+  'carbonfox'
 ]
 
 const builtInBaseThemeNames = computed(() => [
@@ -496,6 +512,7 @@ const builtInBaseThemeNames = computed(() => [
   // Third group
   t('Settings.Theme Settings.Base Theme.Catppuccin Frappe'),
   t('Settings.Theme Settings.Base Theme.Catppuccin Latte'),
+  t('Settings.Theme Settings.Base Theme.Catppuccin Macchiato'),
   t('Settings.Theme Settings.Base Theme.Catppuccin Mocha'),
   t('Settings.Theme Settings.Base Theme.Dracula'),
   t('Settings.Theme Settings.Base Theme.Everforest Dark Hard'),
@@ -507,7 +524,22 @@ const builtInBaseThemeNames = computed(() => [
   t('Settings.Theme Settings.Base Theme.Gruvbox Dark'),
   t('Settings.Theme Settings.Base Theme.Gruvbox Light'),
   t('Settings.Theme Settings.Base Theme.Solarized Dark'),
-  t('Settings.Theme Settings.Base Theme.Solarized Light')
+  t('Settings.Theme Settings.Base Theme.Solarized Light'),
+  t('Settings.Theme Settings.Base Theme.Tokyo Night Night'),
+  t('Settings.Theme Settings.Base Theme.Tokyo Night Storm'),
+  t('Settings.Theme Settings.Base Theme.Tokyo Night Moon'),
+  t('Settings.Theme Settings.Base Theme.Tokyo Night Day'),
+  t('Settings.Theme Settings.Base Theme.Rosé Pine'),
+  t('Settings.Theme Settings.Base Theme.Rosé Pine Moon'),
+  t('Settings.Theme Settings.Base Theme.Rosé Pine Dawn'),
+  t('Settings.Theme Settings.Base Theme.Kanagawa Wave'),
+  t('Settings.Theme Settings.Base Theme.Kanagawa Dragon'),
+  t('Settings.Theme Settings.Base Theme.Kanagawa Lotus'),
+  t('Settings.Theme Settings.Base Theme.Ayu Dark'),
+  t('Settings.Theme Settings.Base Theme.Ayu Mirage'),
+  t('Settings.Theme Settings.Base Theme.Ayu Light'),
+  t('Settings.Theme Settings.Base Theme.One Dark'),
+  t('Settings.Theme Settings.Base Theme.Carbonfox')
 ])
 const customThemes = computed(() => store.getters.getCustomThemes)
 const baseThemeValues = computed(() => [

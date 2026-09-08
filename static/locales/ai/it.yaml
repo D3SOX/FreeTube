@@ -324,6 +324,21 @@ Settings:
     Invalid Engine: Inserisci un nome e un URL di ricerca HTTP o HTTPS valido contenente %s.
     Engine Limit: Puoi aggiungere fino a {count} motori di ricerca personalizzati.
   Theme Settings:
+    Main Color Theme:
+      Catppuccin Macchiato Rosewater: "Cappuccino Macchiato acqua di rose"
+      Catppuccin Macchiato Flamingo: "Cappuccino Macchiato fenicottero"
+      Catppuccin Macchiato Pink: "Cappuccino Macchiato rosa"
+      Catppuccin Macchiato Mauve: "Cappuccino Macchiato malva"
+      Catppuccin Macchiato Red: "Cappuccino Macchiato rosso"
+      Catppuccin Macchiato Maroon: "Cappuccino Macchiato marrone"
+      Catppuccin Macchiato Peach: "Cappuccino Macchiato pesca"
+      Catppuccin Macchiato Yellow: "Cappuccino Macchiato giallo"
+      Catppuccin Macchiato Green: "Cappuccino Macchiato verde"
+      Catppuccin Macchiato Teal: "Cappuccino Macchiato alzavola"
+      Catppuccin Macchiato Sky: "Cappuccino Macchiato cielo"
+      Catppuccin Macchiato Sapphire: "Cappuccino Macchiato zaffiro"
+      Catppuccin Macchiato Blue: "Cappuccino Macchiato blu"
+      Catppuccin Macchiato Lavender: "Cappuccino Macchiato lavanda"
     Move Downloads to App Header: Sposta Download nell'intestazione dell'app
     Move Settings to App Header: Sposta Impostazioni nell'intestazione dell'app
     Hide Side Bar on Watch Pages: Nascondi barra laterale nelle pagine di visione
@@ -370,6 +385,22 @@ Settings:
       Unable to Load: Impossibile caricare i caratteri installati nel sistema
     Always Show Scrollbars: Mostra sempre le barre di scorrimento
     Base Theme:
+      Tokyo Night Night: Tokyo Night Night
+      Tokyo Night Storm: Tokyo Night Storm
+      Tokyo Night Moon: Tokyo Night Moon
+      Tokyo Night Day: Tokyo Night Day
+      Rosé Pine: Rosé Pine
+      Rosé Pine Moon: Rosé Pine Moon
+      Rosé Pine Dawn: Rosé Pine Dawn
+      Kanagawa Wave: Kanagawa Wave
+      Kanagawa Dragon: Kanagawa Dragon
+      Kanagawa Lotus: Kanagawa Lotus
+      Ayu Dark: Ayu Dark
+      Ayu Mirage: Ayu Mirage
+      Ayu Light: Ayu Light
+      One Dark: One Dark
+      Carbonfox: Carbonfox
+      Catppuccin Macchiato: Catppuccin Macchiato
       OpenTubeX Light: "OpenTubeX Chiaro"
       OpenTubeX Dark: "OpenTubeX Scuro"
       Custom: Personalizzato

@@ -720,6 +720,24 @@ const DEFAULT_QUICK_PLAYBACK_SPEED_BAR_OPTIONS = Object.freeze([
   { speed: 3, name: '' },
 ])
 
+const PALETTE_BASE_THEMES = [
+  'tokyoNightNight',
+  'tokyoNightStorm',
+  'tokyoNightMoon',
+  'tokyoNightDay',
+  'rosePine',
+  'rosePineMoon',
+  'rosePineDawn',
+  'kanagawaWave',
+  'kanagawaDragon',
+  'kanagawaLotus',
+  'ayuDark',
+  'ayuMirage',
+  'ayuLight',
+  'oneDark',
+  'carbonfox',
+]
+
 const LIGHT_BASE_THEMES = [
   'light',
   'openTubeXLight',
@@ -730,6 +748,10 @@ const LIGHT_BASE_THEMES = [
   'everforestLightLow',
   'gruvboxLight',
   'solarizedLight',
+  'tokyoNightDay',
+  'rosePineDawn',
+  'kanagawaLotus',
+  'ayuLight',
 ]
 
 const DARK_BASE_THEMES = [
@@ -739,6 +761,7 @@ const DARK_BASE_THEMES = [
   'nordic',
   'hotPink',
   'catppuccinFrappe',
+  'catppuccinMacchiato',
   'catppuccinMocha',
   'dracula',
   'everforestDarkHard',
@@ -746,6 +769,17 @@ const DARK_BASE_THEMES = [
   'everforestDarkLow',
   'gruvboxDark',
   'solarizedDark',
+  'tokyoNightNight',
+  'tokyoNightStorm',
+  'tokyoNightMoon',
+  'rosePine',
+  'rosePineMoon',
+  'kanagawaWave',
+  'kanagawaDragon',
+  'ayuDark',
+  'ayuMirage',
+  'oneDark',
+  'carbonfox',
 ]
 
 export {
@@ -780,6 +814,7 @@ export {
   DEFAULT_QUICK_PLAYBACK_SPEED_BAR_OPTIONS,
   DEFAULT_WATCHED_PERCENTAGE_THRESHOLD,
   WATCHED_MAX_REMAINING_SECONDS,
+  PALETTE_BASE_THEMES,
   LIGHT_BASE_THEMES,
   DARK_BASE_THEMES,
   DOWNLOADED_MEDIA_MIME_TYPES,

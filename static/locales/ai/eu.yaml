@@ -326,6 +326,21 @@ Settings:
     Invalid Engine: Idatzi izen bat eta %s duen baliozko HTTP edo HTTPS bilaketa-URL bat.
     Engine Limit: Gehienez {count} bilaketa-motor pertsonalizatu gehi ditzakezu.
   Theme Settings:
+    Main Color Theme:
+      Catppuccin Macchiato Rosewater: "Kaputxino Macchiato urlarrosa"
+      Catppuccin Macchiato Flamingo: "Kaputxino Macchiato flamingoa"
+      Catppuccin Macchiato Pink: "Kaputxino Macchiato arrosa"
+      Catppuccin Macchiato Mauve: "Kaputxino Macchiato ubela"
+      Catppuccin Macchiato Red: "Kaputxino Macchiato gorria"
+      Catppuccin Macchiato Maroon: "Kaputxino Macchiato marroia"
+      Catppuccin Macchiato Peach: "Kaputxino Macchiato mertxika"
+      Catppuccin Macchiato Yellow: "Kaputxino Macchiato horia"
+      Catppuccin Macchiato Green: "Kaputxino Macchiato berdea"
+      Catppuccin Macchiato Teal: "Kaputxino Macchiato berde-urdinxka"
+      Catppuccin Macchiato Sky: "Kaputxino Macchiato zerua"
+      Catppuccin Macchiato Sapphire: "Kaputxino Macchiato zafiroa"
+      Catppuccin Macchiato Blue: "Kaputxino Macchiato urdina"
+      Catppuccin Macchiato Lavender: "Kaputxino Macchiato izpilikua"
     Move Downloads to App Header: Eraman Deskargak aplikazioaren goiburura
     Move Settings to App Header: Eraman Ezarpenak aplikazioaren goiburura
     Hide Side Bar on Watch Pages: Ezkutatu alboko barra bideoen orrietan
@@ -372,6 +387,22 @@ Settings:
       Unable to Load: Ezin izan dira sisteman instalatutako letra-tipoak kargatu
     Always Show Scrollbars: Erakutsi beti korritze-barrak
     Base Theme:
+      Tokyo Night Night: Tokyo Night Night
+      Tokyo Night Storm: Tokyo Night Storm
+      Tokyo Night Moon: Tokyo Night Moon
+      Tokyo Night Day: Tokyo Night Day
+      Rosé Pine: Rosé Pine
+      Rosé Pine Moon: Rosé Pine Moon
+      Rosé Pine Dawn: Rosé Pine Dawn
+      Kanagawa Wave: Kanagawa Wave
+      Kanagawa Dragon: Kanagawa Dragon
+      Kanagawa Lotus: Kanagawa Lotus
+      Ayu Dark: Ayu Dark
+      Ayu Mirage: Ayu Mirage
+      Ayu Light: Ayu Light
+      One Dark: One Dark
+      Carbonfox: Carbonfox
+      Catppuccin Macchiato: Catppuccin Macchiato
       OpenTubeX Light: "OpenTubeX Argia"
       OpenTubeX Dark: "OpenTubeX Iluna"
       Custom: Pertsonalizatua

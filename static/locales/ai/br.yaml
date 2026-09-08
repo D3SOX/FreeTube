@@ -324,6 +324,21 @@ Settings:
     Invalid Engine: "Lakait un anv hag un URL enklask HTTP pe HTTPS talvoudek ennañ %s."
     Engine Limit: "Gallout a rit ouzhpennañ betek {count} keflusker enklask personelaet."
   Theme Settings:
+    Main Color Theme:
+      Catppuccin Macchiato Rosewater: "Catppuccin Macchiato Roz sklaer"
+      Catppuccin Macchiato Flamingo: "Catppuccin Macchiato Flammeg boutin"
+      Catppuccin Macchiato Pink: "Catppuccin Macchiato Roz"
+      Catppuccin Macchiato Mauve: "Catppuccin Macchiato Mouk"
+      Catppuccin Macchiato Red: "Catppuccin Macchiato Ruz"
+      Catppuccin Macchiato Maroon: "Catppuccin Macchiato Gell"
+      Catppuccin Macchiato Peach: "Catppuccin Macchiato Pechez"
+      Catppuccin Macchiato Yellow: "Catppuccin Macchiato Melen"
+      Catppuccin Macchiato Green: "Catppuccin Macchiato Gwer"
+      Catppuccin Macchiato Teal: "Catppuccin Macchiato Glas-gwer"
+      Catppuccin Macchiato Sky: "Catppuccin Macchiato Glas oabl"
+      Catppuccin Macchiato Sapphire: "Catppuccin Macchiato Safir"
+      Catppuccin Macchiato Blue: "Catppuccin Macchiato Glas"
+      Catppuccin Macchiato Lavender: "Catppuccin Macchiato Lavand"
     Move Downloads to App Header: "Kas ar pellgargadennoù da dalbenn an arload"
     Move Settings to App Header: "Kas an arventennoù da dalbenn an arload"
     Hide Side Bar on Watch Pages: "Kuzhat ar varrenn gostez war ar pajennoù sellout"
@@ -370,6 +385,22 @@ Settings:
       Unable to Load: "N'eus ket bet gallet kargañ nodrezhoù ar reizhiad staliet"
     Always Show Scrollbars: "Diskouez ar barrennoù dibunañ bepred"
     Base Theme:
+      Tokyo Night Night: Tokyo Night Night
+      Tokyo Night Storm: Tokyo Night Storm
+      Tokyo Night Moon: Tokyo Night Moon
+      Tokyo Night Day: Tokyo Night Day
+      Rosé Pine: Rosé Pine
+      Rosé Pine Moon: Rosé Pine Moon
+      Rosé Pine Dawn: Rosé Pine Dawn
+      Kanagawa Wave: Kanagawa Wave
+      Kanagawa Dragon: Kanagawa Dragon
+      Kanagawa Lotus: Kanagawa Lotus
+      Ayu Dark: Ayu Dark
+      Ayu Mirage: Ayu Mirage
+      Ayu Light: Ayu Light
+      One Dark: One Dark
+      Carbonfox: Carbonfox
+      Catppuccin Macchiato: Catppuccin Macchiato
       OpenTubeX Light: "OpenTubeX Sklaer"
       OpenTubeX Dark: "OpenTubeX Teñval"
       Custom: "Personelaet"

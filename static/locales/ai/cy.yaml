@@ -326,6 +326,21 @@ Settings:
     Invalid Engine: Rhowch enw ac URL chwilio HTTP neu HTTPS dilys sy'n cynnwys %s.
     Engine Limit: Gallwch ychwanegu hyd at {count} o beiriannau chwilio personol.
   Theme Settings:
+    Main Color Theme:
+      Catppuccin Macchiato Rosewater: "Catppuccin Macchiato Rosewater"
+      Catppuccin Macchiato Flamingo: "Catppuccin Macchiato Fflamingo"
+      Catppuccin Macchiato Pink: "Catppuccin Macchiato Pinc"
+      Catppuccin Macchiato Mauve: "Catppuccin Macchiato Mauve"
+      Catppuccin Macchiato Red: "Catppuccin Macchiato Coch"
+      Catppuccin Macchiato Maroon: "Catppuccin Macchiato Maroon"
+      Catppuccin Macchiato Peach: "Catppuccin Macchiato Peach"
+      Catppuccin Macchiato Yellow: "Catppuccin Macchiato Melyn"
+      Catppuccin Macchiato Green: "Catppuccin Macchiato Gwyrdd"
+      Catppuccin Macchiato Teal: "Corhwyaden Catppuccin Macchiato"
+      Catppuccin Macchiato Sky: "Awyr Catppuccin Macchiato"
+      Catppuccin Macchiato Sapphire: "Catppuccin Macchiato Sapphire"
+      Catppuccin Macchiato Blue: "Catppuccin Macchiato Glas"
+      Catppuccin Macchiato Lavender: "Catppuccin Macchiato Lafant"
     Move Downloads to App Header: Symud Lawrlwythiadau i bennyn yr ap
     Move Settings to App Header: Symud Gosodiadau i bennyn yr ap
     Hide Side Bar on Watch Pages: Cuddio'r bar ochr ar dudalennau gwylio
@@ -372,6 +387,22 @@ Settings:
       Unable to Load: Nid oedd modd llwytho ffontiau'r system sydd wedi'u gosod
     Always Show Scrollbars: Dangos bariau sgrolio bob amser
     Base Theme:
+      Tokyo Night Night: Tokyo Night Night
+      Tokyo Night Storm: Tokyo Night Storm
+      Tokyo Night Moon: Tokyo Night Moon
+      Tokyo Night Day: Tokyo Night Day
+      Rosé Pine: Rosé Pine
+      Rosé Pine Moon: Rosé Pine Moon
+      Rosé Pine Dawn: Rosé Pine Dawn
+      Kanagawa Wave: Kanagawa Wave
+      Kanagawa Dragon: Kanagawa Dragon
+      Kanagawa Lotus: Kanagawa Lotus
+      Ayu Dark: Ayu Dark
+      Ayu Mirage: Ayu Mirage
+      Ayu Light: Ayu Light
+      One Dark: One Dark
+      Carbonfox: Carbonfox
+      Catppuccin Macchiato: Catppuccin Macchiato
       OpenTubeX Light: "OpenTubeX Golau"
       OpenTubeX Dark: "OpenTubeX Tywyll"
       Custom: Personol

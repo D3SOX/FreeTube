@@ -124,7 +124,38 @@ Settings:
       Phone: 'Telefon'
       Tablet: 'Tablet'
   Theme Settings:
+    Main Color Theme:
+      Catppuccin Macchiato Rosewater: "Catppuccin Macchiato Woda Różana"
+      Catppuccin Macchiato Flamingo: "Catppuccin Macchiato Flaming"
+      Catppuccin Macchiato Pink: "Catppuccin Macchiato Różowy"
+      Catppuccin Macchiato Mauve: "Catppuccin Macchiato Mauve"
+      Catppuccin Macchiato Red: "Catppuccin Macchiato Czerwony"
+      Catppuccin Macchiato Maroon: "Catppuccin Macchiato Kasztanowy"
+      Catppuccin Macchiato Peach: "Catppuccin Macchiato Brzoskwiniowy"
+      Catppuccin Macchiato Yellow: "Catppuccin Macchiato Żółty"
+      Catppuccin Macchiato Green: "Catppuccin Macchiato Zielony"
+      Catppuccin Macchiato Teal: "Catppuccin Macchiato Turkusowy"
+      Catppuccin Macchiato Sky: "Catppuccin Macchiato Kolor Nieba"
+      Catppuccin Macchiato Sapphire: "Catppuccin Macchiato Szafirowy"
+      Catppuccin Macchiato Blue: "Catppuccin Macchiato Niebieski"
+      Catppuccin Macchiato Lavender: "Catppuccin Macchiato Lawendowy"
     Base Theme:
+      Tokyo Night Night: Tokyo Night Night
+      Tokyo Night Storm: Tokyo Night Storm
+      Tokyo Night Moon: Tokyo Night Moon
+      Tokyo Night Day: Tokyo Night Day
+      Rosé Pine: Rosé Pine
+      Rosé Pine Moon: Rosé Pine Moon
+      Rosé Pine Dawn: Rosé Pine Dawn
+      Kanagawa Wave: Kanagawa Wave
+      Kanagawa Dragon: Kanagawa Dragon
+      Kanagawa Lotus: Kanagawa Lotus
+      Ayu Dark: Ayu Dark
+      Ayu Mirage: Ayu Mirage
+      Ayu Light: Ayu Light
+      One Dark: One Dark
+      Carbonfox: Carbonfox
+      Catppuccin Macchiato: Catppuccin Macchiato
       OpenTubeX Light: "OpenTubeX Jasny"
       OpenTubeX Dark: "OpenTubeX Ciemny"
     Toast Position:

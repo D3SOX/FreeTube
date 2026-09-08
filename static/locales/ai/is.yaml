@@ -328,6 +328,21 @@ Settings:
     Invalid Engine: Sláðu inn heiti og gilda HTTP- eða HTTPS-leitarslóð sem inniheldur %s.
     Engine Limit: Þú getur bætt við allt að {count} sérsniðnum leitarvélum.
   Theme Settings:
+    Main Color Theme:
+      Catppuccin Macchiato Rosewater: "Catppuccin Macchiato rósavatn"
+      Catppuccin Macchiato Flamingo: "Catppuccin Macchiato flamingó"
+      Catppuccin Macchiato Pink: "Catppuccin Macchiato bleikt"
+      Catppuccin Macchiato Mauve: "Catppuccin Macchiato lillablátt"
+      Catppuccin Macchiato Red: "Catppuccin Macchiato rautt"
+      Catppuccin Macchiato Maroon: "Catppuccin Macchiato kastaníubrúnt"
+      Catppuccin Macchiato Peach: "Catppuccin Macchiato ferskju"
+      Catppuccin Macchiato Yellow: "Catppuccin Macchiato gult"
+      Catppuccin Macchiato Green: "Catppuccin Macchiato grænt"
+      Catppuccin Macchiato Teal: "Catppuccin Macchiato sægrænt"
+      Catppuccin Macchiato Sky: "Catppuccin Macchiato himinblátt"
+      Catppuccin Macchiato Sapphire: "Catppuccin Macchiato safír"
+      Catppuccin Macchiato Blue: "Catppuccin Macchiato blátt"
+      Catppuccin Macchiato Lavender: "Catppuccin Macchiato lavander"
     Move Downloads to App Header: Færa niðurhal í haus forrits
     Move Settings to App Header: Færa stillingar í haus forrits
     Hide Side Bar on Watch Pages: Fela hliðarstiku á áhorfssíðum
@@ -374,6 +389,22 @@ Settings:
       Unable to Load: Ekki tókst að hlaða uppsettum kerfisleturgerðum
     Always Show Scrollbars: Sýna alltaf skrunstikur
     Base Theme:
+      Tokyo Night Night: Tokyo Night Night
+      Tokyo Night Storm: Tokyo Night Storm
+      Tokyo Night Moon: Tokyo Night Moon
+      Tokyo Night Day: Tokyo Night Day
+      Rosé Pine: Rosé Pine
+      Rosé Pine Moon: Rosé Pine Moon
+      Rosé Pine Dawn: Rosé Pine Dawn
+      Kanagawa Wave: Kanagawa Wave
+      Kanagawa Dragon: Kanagawa Dragon
+      Kanagawa Lotus: Kanagawa Lotus
+      Ayu Dark: Ayu Dark
+      Ayu Mirage: Ayu Mirage
+      Ayu Light: Ayu Light
+      One Dark: One Dark
+      Carbonfox: Carbonfox
+      Catppuccin Macchiato: Catppuccin Macchiato
       OpenTubeX Light: "OpenTubeX Ljóst"
       OpenTubeX Dark: "OpenTubeX Dökkt"
       Custom: Sérsniðið

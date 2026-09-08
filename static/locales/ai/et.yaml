@@ -324,6 +324,21 @@ Settings:
     Invalid Engine: Sisestage nimi ja sobiv HTTP- või HTTPS-otsingu URL, mis sisaldab %s.
     Engine Limit: Saate lisada kuni {count} kohandatud otsingumootorit.
   Theme Settings:
+    Main Color Theme:
+      Catppuccin Macchiato Rosewater: "Catppuccin Macchiato Roosivesi"
+      Catppuccin Macchiato Flamingo: "Catppuccin Macchiato Flamingo"
+      Catppuccin Macchiato Pink: "Catppuccin Macchiato Roosa"
+      Catppuccin Macchiato Mauve: "Catppuccin Macchiato Lillakas"
+      Catppuccin Macchiato Red: "Catppuccin Macchiato Punane"
+      Catppuccin Macchiato Maroon: "Catppuccin Macchiato Kastanipunane"
+      Catppuccin Macchiato Peach: "Catppuccin Macchiato Oranž"
+      Catppuccin Macchiato Yellow: "Catppuccin Macchiato Kollane"
+      Catppuccin Macchiato Green: "Catppuccin Macchiato Roheline"
+      Catppuccin Macchiato Teal: "Catppuccin Macchiato Rohekassinine"
+      Catppuccin Macchiato Sky: "Catppuccin Macchiato Helesinine"
+      Catppuccin Macchiato Sapphire: "Catppuccin Macchiato Safiir"
+      Catppuccin Macchiato Blue: "Catppuccin Macchiato Sinine"
+      Catppuccin Macchiato Lavender: "Catppuccin Macchiato Lavendel"
     Move Downloads to App Header: Teisalda allalaadimised rakenduse päisesse
     Move Settings to App Header: Teisalda seaded rakenduse päisesse
     Hide Side Bar on Watch Pages: Peida vaatamislehtedel külgriba
@@ -370,6 +385,22 @@ Settings:
       Unable to Load: Paigaldatud süsteemifonte ei saa laadida
     Always Show Scrollbars: Kuva kerimisribad alati
     Base Theme:
+      Tokyo Night Night: Tokyo Night Night
+      Tokyo Night Storm: Tokyo Night Storm
+      Tokyo Night Moon: Tokyo Night Moon
+      Tokyo Night Day: Tokyo Night Day
+      Rosé Pine: Rosé Pine
+      Rosé Pine Moon: Rosé Pine Moon
+      Rosé Pine Dawn: Rosé Pine Dawn
+      Kanagawa Wave: Kanagawa Wave
+      Kanagawa Dragon: Kanagawa Dragon
+      Kanagawa Lotus: Kanagawa Lotus
+      Ayu Dark: Ayu Dark
+      Ayu Mirage: Ayu Mirage
+      Ayu Light: Ayu Light
+      One Dark: One Dark
+      Carbonfox: Carbonfox
+      Catppuccin Macchiato: Catppuccin Macchiato
       OpenTubeX Light: "OpenTubeX Hele"
       OpenTubeX Dark: "OpenTubeX Tume"
       Custom: Kohandatud

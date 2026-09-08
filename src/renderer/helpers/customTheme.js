@@ -7,17 +7,18 @@ import {
   normalizeCustomTheme,
   normalizeCustomThemes,
 } from '../../customTheme'
+import { PALETTE_BASE_THEMES } from '../../constants'
 
 const STORAGE_KEY = 'opentubex-custom-theme'
 let appliedBodyThemeClasses = []
 
 export function applyThemeToDocument(baseTheme, mainColor, secColor, customTheme) {
   const themeClass = isCustomThemeValue(baseTheme) ? 'custom' : (baseTheme || 'system')
-  const themeClasses = [
-    themeClass,
-    `main${mainColor || 'Red'}`,
-    `sec${secColor || 'Blue'}`,
-  ]
+  const themeClasses = [themeClass]
+  // Fixed palettes must not inherit selectable accent or destructive overrides.
+  if (!PALETTE_BASE_THEMES.includes(themeClass)) {
+    themeClasses.push(`main${mainColor || 'Red'}`, `sec${secColor || 'Blue'}`)
+  }
   document.body.classList.remove(...appliedBodyThemeClasses)
   document.body.classList.add(...themeClasses)
   appliedBodyThemeClasses = themeClasses

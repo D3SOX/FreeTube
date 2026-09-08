@@ -328,6 +328,21 @@ Settings:
     Invalid Engine: Voer een naam en een geldige HTTP- of HTTPS-zoek-URL met %s in.
     Engine Limit: Je kunt maximaal {count} aangepaste zoekmachines toevoegen.
   Theme Settings:
+    Main Color Theme:
+      Catppuccin Macchiato Rosewater: "Catppuccin Macchiato Rozenwater"
+      Catppuccin Macchiato Flamingo: "Catppuccin Macchiato Flamingo"
+      Catppuccin Macchiato Pink: "Catppuccin Macchiato Roze"
+      Catppuccin Macchiato Mauve: "Catppuccin Macchiato Mauve"
+      Catppuccin Macchiato Red: "Catppuccin Macchiato Rood"
+      Catppuccin Macchiato Maroon: "Catppuccin Macchiato kastanjebruin"
+      Catppuccin Macchiato Peach: "Catppuccin Macchiato Perzik"
+      Catppuccin Macchiato Yellow: "Catppuccin Macchiato Geel"
+      Catppuccin Macchiato Green: "Catppuccin Macchiato Groen"
+      Catppuccin Macchiato Teal: "Catppuccin Macchiato blauwgroen"
+      Catppuccin Macchiato Sky: "Catppuccin Macchiato Hemel"
+      Catppuccin Macchiato Sapphire: "Catppuccin Macchiato Saffier"
+      Catppuccin Macchiato Blue: "Catppuccin Macchiato Blauw"
+      Catppuccin Macchiato Lavender: "Catppuccin Macchiato Lavendel"
     Move Downloads to App Header: Downloads naar appkop verplaatsen
     Move Settings to App Header: Instellingen naar appkop verplaatsen
     Hide Side Bar on Watch Pages: Zijbalk op kijkpagina's verbergen
@@ -374,6 +389,22 @@ Settings:
       Unable to Load: Geïnstalleerde systeemlettertypen kunnen niet worden geladen
     Always Show Scrollbars: Schuifbalken altijd tonen
     Base Theme:
+      Tokyo Night Night: Tokyo Night Night
+      Tokyo Night Storm: Tokyo Night Storm
+      Tokyo Night Moon: Tokyo Night Moon
+      Tokyo Night Day: Tokyo Night Day
+      Rosé Pine: Rosé Pine
+      Rosé Pine Moon: Rosé Pine Moon
+      Rosé Pine Dawn: Rosé Pine Dawn
+      Kanagawa Wave: Kanagawa Wave
+      Kanagawa Dragon: Kanagawa Dragon
+      Kanagawa Lotus: Kanagawa Lotus
+      Ayu Dark: Ayu Dark
+      Ayu Mirage: Ayu Mirage
+      Ayu Light: Ayu Light
+      One Dark: One Dark
+      Carbonfox: Carbonfox
+      Catppuccin Macchiato: Catppuccin Macchiato
       OpenTubeX Light: "OpenTubeX Licht"
       OpenTubeX Dark: "OpenTubeX Donker"
       Custom: Aangepast
