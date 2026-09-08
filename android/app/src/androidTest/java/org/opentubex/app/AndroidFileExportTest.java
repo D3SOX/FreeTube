@@ -18,6 +18,7 @@ import org.json.JSONObject;
 import org.junit.Test;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -25,7 +26,53 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class AndroidFileExportTest {
     @Test
+    public void savesLargeScreenshotThroughDocumentPicker() throws Exception {
+        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        String[] exportsBefore = stagedExports();
+        String filename = "screenshot-" + UUID.randomUUID() + ".png";
+        try (ActivityScenario<MainActivity> scenario = ActivityScenario.launch(MainActivity.class)) {
+            awaitValue(scenario, "typeof window.Capacitor === 'object' && document.readyState === 'complete'", "true");
+            // A video frame can easily exceed Android's activity-state transaction limit.
+            evaluate(scenario, "window.exportResult=null;window.screenshotData=btoa('frame'.repeat(300000));" +
+                "window.Capacitor.nativePromise('AndroidStorage','saveFile'," +
+                "{fileName:'" + filename + "',mimeType:'image/png',data:window.screenshotData})" +
+                ".then(function(result){window.exportResult=result;},function(error){window.exportResult={error:error.message};});");
+            awaitPicker();
+            // Leave time for the stopped activity's state to reach Android before saving.
+            Thread.sleep(2000);
+            clickPickerSave();
+            awaitValue(scenario, "window.exportResult !== null", "true");
+            JSONObject result = new JSONObject(new JSONArray("[" + evaluate(scenario, "JSON.stringify(window.exportResult)") + "]").getString(0));
+            assertTrue(result.toString(), result.optBoolean("saved"));
+            assertArrayEquals(exportsBefore, stagedExports());
+            Uri uri = Uri.parse(result.getString("uri"));
+            try {
+                try (InputStream input = context.getContentResolver().openInputStream(uri)) {
+                    assertArrayEquals("frame".repeat(300000).getBytes(StandardCharsets.UTF_8), YtDlpFiles.read(input, 2_000_000));
+                }
+            } finally {
+                DocumentsContract.deleteDocument(context.getContentResolver(), uri);
+            }
+        }
+    }
+
+    private static void clickPickerSave() throws Exception {
+        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(10);
+        do {
+            android.view.accessibility.AccessibilityNodeInfo root = InstrumentationRegistry.getInstrumentation().getUiAutomation().getRootInActiveWindow();
+            if (root != null) {
+                for (android.view.accessibility.AccessibilityNodeInfo node : root.findAccessibilityNodeInfosByText("Save")) {
+                    if (node.isClickable() && node.isEnabled() && node.performAction(android.view.accessibility.AccessibilityNodeInfo.ACTION_CLICK)) return;
+                }
+            }
+            Thread.sleep(100);
+        } while (System.nanoTime() < deadline);
+        fail("Android's save button is available");
+    }
+
+    @Test
     public void overlappingPickersRejectWithoutLosingTheOriginalCallback() throws Exception {
+        String[] exportsBefore = stagedExports();
         try (ActivityScenario<MainActivity> scenario = ActivityScenario.launch(MainActivity.class)) {
             awaitValue(scenario, "typeof window.Capacitor === 'object' && document.readyState === 'complete'", "true");
             for (String first : new String[]{"chooseDirectory", "saveFile"}) {
@@ -49,6 +96,7 @@ public class AndroidFileExportTest {
                     awaitValue(scenario, "window.firstPickerResult !== null", "true");
                     assertEquals(first.equals("saveFile") ? "{\"saved\":false}" : "{}",
                         evaluate(scenario, "window.firstPickerResult"));
+                    assertArrayEquals(exportsBefore, stagedExports());
                 }
             }
         }
@@ -119,6 +167,14 @@ public class AndroidFileExportTest {
 
     private static String encode(String value) {
         return Base64.encodeToString(value.getBytes(StandardCharsets.UTF_8), Base64.NO_WRAP);
+    }
+
+    private static String[] stagedExports() {
+        String[] names = InstrumentationRegistry.getInstrumentation().getTargetContext().getCacheDir()
+            .list((directory, name) -> name.startsWith("export-") && name.endsWith(".tmp"));
+        assertNotNull(names);
+        Arrays.sort(names);
+        return names;
     }
 
     private static JSONObject save(ActivityScenario<MainActivity> scenario, JSONObject options) throws Exception {

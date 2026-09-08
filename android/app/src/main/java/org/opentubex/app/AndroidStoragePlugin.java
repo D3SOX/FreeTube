@@ -15,6 +15,8 @@ import com.getcapacitor.annotation.CapacitorPlugin;
 import com.getcapacitor.annotation.ActivityCallback;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.concurrent.CountDownLatch;
@@ -65,24 +67,42 @@ public class AndroidStoragePlugin extends Plugin {
             writeExport(call, null);
             return;
         }
-        openPicker(call, new Intent(Intent.ACTION_CREATE_DOCUMENT)
-            .addCategory(Intent.CATEGORY_OPENABLE)
-            .setType(call.getString("mimeType", "application/octet-stream"))
-            .putExtra(Intent.EXTRA_TITLE, name), "fileChosen");
+        File staged = null;
+        try {
+            staged = File.createTempFile("export-", ".tmp", getContext().getCacheDir());
+            try (OutputStream output = new FileOutputStream(staged)) {
+                output.write(Base64.decode(call.getString("data"), Base64.DEFAULT));
+            }
+            // Capacitor persists the entire call when the picker stops our activity.
+            // Keep the bytes on disk so screenshots cannot exceed Binder's state limit.
+            call.getData().remove("data");
+            call.getData().put("stagedExport", staged.getName());
+            if (!openPicker(call, new Intent(Intent.ACTION_CREATE_DOCUMENT)
+                .addCategory(Intent.CATEGORY_OPENABLE)
+                .setType(call.getString("mimeType", "application/octet-stream"))
+                .putExtra(Intent.EXTRA_TITLE, name), "fileChosen")) {
+                staged.delete();
+            }
+        } catch (Exception error) {
+            if (staged != null) staged.delete();
+            call.reject("Unable to prepare export file", error);
+        }
     }
 
-    private void openPicker(PluginCall call, Intent intent, String callbackName) {
+    private boolean openPicker(PluginCall call, Intent intent, String callbackName) {
         // Capacitor keeps only one activity-result call per plugin, including across picker types.
         if (pickerOpen) {
             call.reject("A file or folder dialog is already open");
-            return;
+            return false;
         }
         pickerOpen = true;
         try {
             startActivityForResult(call, intent, callbackName);
+            return true;
         } catch (Exception error) {
             pickerOpen = false;
             call.reject("Unable to open file picker", error);
+            return false;
         }
     }
 
@@ -91,6 +111,7 @@ public class AndroidStoragePlugin extends Plugin {
         pickerOpen = false;
         if (call == null) return;
         if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null || result.getData().getData() == null) {
+            stagedExport(call).delete();
             call.resolve(new JSObject().put("saved", false));
             return;
         }
@@ -100,8 +121,8 @@ public class AndroidStoragePlugin extends Plugin {
 
     private void writeExport(PluginCall call, Uri destination) {
         DocumentFile created = null;
+        File staged = destination == null ? null : stagedExport(call);
         try {
-            byte[] data = Base64.decode(call.getString("data"), Base64.DEFAULT);
             if (destination == null) {
                 DocumentFile directory = DocumentFile.fromTreeUri(getContext(), Uri.parse(call.getString("directory")));
                 if (directory == null || !directory.isDirectory() || !directory.canWrite()) {
@@ -113,7 +134,15 @@ public class AndroidStoragePlugin extends Plugin {
             }
             try (OutputStream output = getContext().getContentResolver().openOutputStream(destination, "wt")) {
                 if (output == null) throw new IOException("Unable to open export file");
-                output.write(data);
+                if (staged == null) {
+                    output.write(Base64.decode(call.getString("data"), Base64.DEFAULT));
+                } else {
+                    try (FileInputStream input = new FileInputStream(staged)) {
+                        byte[] buffer = new byte[8192];
+                        int length;
+                        while ((length = input.read(buffer)) != -1) output.write(buffer, 0, length);
+                    }
+                }
             }
             call.resolve(new JSObject().put("saved", true).put("uri", destination.toString()));
         } catch (Exception error) {
@@ -121,7 +150,13 @@ public class AndroidStoragePlugin extends Plugin {
                 try { created.delete(); } catch (Exception ignored) { /* Preserve the write error. */ }
             }
             call.reject("Unable to save file: " + error.getMessage(), error);
+        } finally {
+            if (staged != null) staged.delete();
         }
+    }
+
+    private File stagedExport(PluginCall call) {
+        return new File(getContext().getCacheDir(), call.getString("stagedExport"));
     }
 
     @PluginMethod
