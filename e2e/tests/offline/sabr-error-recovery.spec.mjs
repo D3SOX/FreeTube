@@ -594,6 +594,35 @@ test('a stale yt-dlp rejection probe preserves a newer cache entry', async ({ ap
 })
 
 for (const zoom of [1, 1.25]) {
+  test(`startup countdown keeps artwork visible at ${zoom * 100}% scale`, async ({ app, page }) => {
+    await mockPlayableWatchPage(app, page)
+    await page.route('https://i.ytimg.com/**', route => route.fulfill({
+      contentType: 'image/svg+xml',
+      body: '<svg xmlns="http://www.w3.org/2000/svg" width="480" height="360"><rect width="480" height="360" fill="#326b8a"/></svg>'
+    }))
+    await page.evaluate(zoom => window.ftElectron.setZoomFactor(zoom), zoom)
+    await openMockedVideo(page)
+    const watchView = await watchViewHandle(page)
+    await watchView.evaluate(async view => {
+      view.isLoading = true
+      await view.$nextTick()
+      view.adEndTimeUnixMs = Date.now() + 8000
+      view.isLoading = false
+    })
+    const player = page.locator('.ftVideoPlayer')
+    await expect(player.locator('.countdownOverlay')).toBeVisible()
+    const poster = player.locator('.countdownPoster img')
+    await expect(poster).toBeVisible()
+    await expect.poll(() => poster.evaluate(image => image.naturalWidth)).toBe(480)
+    expect(await poster.getAttribute('alt')).toBe('')
+    const bounds = await player.boundingBox()
+    expect(await poster.boundingBox()).toEqual(bounds)
+    expect(await poster.evaluate(image => getComputedStyle(image).objectFit)).toBe('contain')
+    await expect(player.locator('.countdownOverlay')).toBeHidden({ timeout: 15_000 })
+    await expect(poster).toHaveCount(0)
+    await expect.poll(() => player.locator('video').evaluate(video => video.readyState)).toBeGreaterThanOrEqual(3)
+  })
+
   for (const posterAvailable of [true, false]) {
     test(`yt-dlp 403 recovery keeps the player height at ${zoom * 100}% scale with poster ${posterAvailable ? 'available' : 'unavailable'}`, async ({ app, page }, testInfo) => {
       await mockPlayableWatchPage(app, page)

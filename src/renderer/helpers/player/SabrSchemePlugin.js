@@ -65,7 +65,7 @@ const ShakaError = shaka.util.Error
  * @property {string} sabrUrl
  * @property {Set<number>} activeSabrContextTypes
  * @property {Map<number, SabrContextUpdate>} sabrContexts
- * @property {?NextRequestPolicy} nextRequestPolicy
+ * @property {number} backoffUntilMs
  * @property {Uint8Array | undefined} playbackCookieBytes
  * @property {boolean} playerReloadRequested
  * @property {number} requestNumber
@@ -300,13 +300,25 @@ async function doRequest(
 
   try {
     let shouldReloadDueToBackoffLoop = false
-    if ((currentState.sabrStreamState.nextRequestPolicy?.backoffTimeMs || 0) > 0) {
-      const currentBackoffTimeMs = currentState.sabrStreamState.nextRequestPolicy.backoffTimeMs
+    while (currentState.sabrStreamState.backoffUntilMs > Date.now()) {
+      const currentBackoffTimeMs = currentState.sabrStreamState.backoffUntilMs - Date.now()
       currentState.eventEmitter.emit('backoff-requested', { backoffMs: currentBackoffTimeMs })
       // Wait but can be aborted
       await new Promise((resolve, reject) => {
-        setTimeout(resolve, currentBackoffTimeMs)
-        currentState.abortController.signal.addEventListener('abort', reject)
+        const signal = currentState.abortController.signal
+        if (signal.aborted) {
+          reject(signal.reason)
+          return
+        }
+        const timer = setTimeout(() => {
+          signal.removeEventListener('abort', onAbort)
+          resolve()
+        }, currentBackoffTimeMs)
+        const onAbort = () => {
+          clearTimeout(timer)
+          reject(signal.reason)
+        }
+        signal.addEventListener('abort', onAbort, { once: true })
       })
       // Must reset AFTER waiting to avoid requested aborted
       // Since long backoff time mostly happens on the start of video playback we only reset timeout once
@@ -324,6 +336,7 @@ async function doRequest(
         (timeoutMs > 0 && timeoutMs <= currentState.cumulativeBackOffTimeMs)
       ) {
         shouldReloadDueToBackoffLoop = true
+        break
       }
     }
     if (shouldReloadDueToBackoffLoop || currentState.cumulativeRetryDueToNextRequestPolicy >= 100) {
@@ -360,6 +373,11 @@ async function doRequest(
       }
 
       const remainingData = new UmpReader(chunkedDataBuffer).read((part) => {
+        // MEDIA_END completes this request and aborts its response. A WebView
+        // can deliver later parts in the same chunk; ignore them just as we
+        // ignore later chunks, so they cannot change another loader's backoff.
+        if (currentState.abortStatus.finished) return
+
         switch (part.type) {
           case UMPPartId.STREAM_PROTECTION_STATUS: {
             const streamProtectionStatus = decodePart(part, StreamProtectionStatus)
@@ -423,7 +441,10 @@ async function doRequest(
             shouldRetry = true
             shouldRetryDueToNextRequestPolicy = true
 
-            currentState.sabrStreamState.nextRequestPolicy = nextRequestPolicy
+            // Audio and video loaders can reach this policy at different times.
+            // Count from receipt so each loader waits only the remaining time,
+            // and later segments do not repeat a delay that already elapsed.
+            currentState.sabrStreamState.backoffUntilMs = Date.now() + (nextRequestPolicy?.backoffTimeMs || 0)
 
             const rawPolicy = part.data.chunks.length === 1
               ? part.data.chunks[0]
@@ -754,7 +775,7 @@ export function createSabrTransport(sabrData, getRequestContext) {
     sabrUrl: sabrData.url,
     activeSabrContextTypes: new Set(),
     sabrContexts: new Map(),
-    nextRequestPolicy: undefined,
+    backoffUntilMs: 0,
     playbackCookieBytes: undefined,
     playerReloadRequested: false,
     requestNumber: 0,

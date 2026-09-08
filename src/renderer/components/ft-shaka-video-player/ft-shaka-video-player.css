@@ -1870,6 +1870,20 @@ html[data-reduced-motion='reduce'] .musicVisualizerCanvas {
   font-size: 0.8em;
 }
 
+.countdownPoster {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: #000;
+  pointer-events: none;
+}
+
+.countdownPoster img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
 .countdownOverlay {
   position: absolute;
   inset: 0;
@@ -3117,6 +3131,7 @@ html[data-reduced-motion='reduce'] .musicVisualizerCanvas {
 }
 
 :deep(.shaka-spinner-container),
+.countdownPoster,
 .countdownOverlay {
   transition: inset-inline-end 250ms ease;
 }
@@ -4307,6 +4322,7 @@ html[data-reduced-motion='reduce'] .musicVisualizerCanvas {
 .ftVideoPlayer.presentationModeChanging .player,
 .ftVideoPlayer.presentationModeChanging :deep(.shaka-controls-container),
 .ftVideoPlayer.presentationModeChanging :deep(.shaka-spinner-container),
+.ftVideoPlayer.presentationModeChanging .countdownPoster,
 .ftVideoPlayer.presentationModeChanging .countdownOverlay,
 .ftVideoPlayer.presentationModeChanging :deep(.videoAnnotations),
 .ftVideoPlayer.presentationModeChanging :deep(.shaka-text-container),
@@ -4332,6 +4348,7 @@ html[data-reduced-motion='reduce'] .musicVisualizerCanvas {
 
 .ftVideoPlayer:is(:fullscreen, [data-native-player-screen]):is(.fullscreenDockLayoutOpen, .fullscreenMetadataOpen, .fullscreenTranscriptOpen, .fullscreenSponsorBlockOpen, .fullscreenLiveChatOpen, .fullscreenCommentsOpen, .fullscreenPlaylistOpen, .chaptersOverlayOpen) :is(
   :deep(.shaka-spinner-container),
+  .countdownPoster,
   .countdownOverlay,
   :deep(.videoAnnotations),
   :deep(.shaka-text-container),
@@ -4339,6 +4356,7 @@ html[data-reduced-motion='reduce'] .musicVisualizerCanvas {
 ),
   .ftVideoPlayer.fullWindow:is(.fullscreenDockLayoutOpen, .fullscreenMetadataOpen, .fullscreenTranscriptOpen, .fullscreenSponsorBlockOpen, .fullscreenLiveChatOpen, .fullscreenCommentsOpen, .fullscreenPlaylistOpen, .chaptersOverlayOpen) :is(
   :deep(.shaka-spinner-container),
+  .countdownPoster,
   .countdownOverlay,
   :deep(.videoAnnotations),
   :deep(.shaka-text-container),

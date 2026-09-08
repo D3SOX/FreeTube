@@ -151,6 +151,17 @@
         @enterpictureinpicture="handleEnterPictureInPicture"
         @leavepictureinpicture="handleLeavePictureInPicture"
       />
+      <!-- Native playback hides the video element, including its poster. -->
+      <div
+        v-if="showCountdownOverlay && !audioPlayerMode && thumbnail"
+        class="countdownPoster"
+        aria-hidden="true"
+      >
+        <img
+          :src="thumbnail"
+          alt=""
+        >
+      </div>
       <div
         v-if="audioPlayerMode"
         class="musicAudioSurface"
