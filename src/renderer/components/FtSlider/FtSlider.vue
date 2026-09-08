@@ -92,11 +92,12 @@ const FIGURE_SPACE = '\u2007'
 const id = useId()
 const currentValue = ref(props.defaultValue)
 
+// Apply new bounds before the value, or a range input clamps it to the old max.
 watch(() => props.defaultValue, (value) => {
   if (currentValue.value !== value) {
     currentValue.value = value
   }
-})
+}, { flush: 'post' })
 
 /**
  * @param {number} value
