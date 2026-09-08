@@ -189,27 +189,46 @@ test('keeps both types hidden when another hide is queued during a save', async 
 for (const locale of ['en-US', 'de-DE']) {
   test.describe(`${locale} menu labels`, () => {
     test.use({ seed: { ...seed, settings: { ...seed.settings, currentLocale: locale } } })
-    test('shows the full hide action label on desktop and narrow windows', async ({ app, page }) => {
-      await goTo(page, 'subscriptions')
-      for (const width of [1600, 375]) {
-        await app.electronApp.evaluate(({ BrowserWindow }, width) => {
-          BrowserWindow.getAllWindows()[0].setContentSize(width, 900)
-        }, width)
-        await card(page, 'videos').getByRole('button', {
-          name: locale === 'en-US' ? 'More Options' : 'Weitere Optionen', exact: true
-        }).click()
-        const label = page.getByRole('option', {
-          name: locale === 'en-US'
-            ? 'Never show Videos from this channel in feeds again'
-            : 'Nie wieder Videos von diesem Kanal in Feeds anzeigen',
-          exact: true
-        }).locator(':scope > span')
-        await expect(label).toBeVisible()
-        await expect.poll(() => label.evaluate(element => (
-          element.scrollWidth <= element.clientWidth && element.scrollHeight <= element.clientHeight
-        ))).toBe(true)
-        await page.keyboard.press('Escape')
-      }
-    })
+    for (const uiScale of [100, 125]) {
+      test(`shows readable hide action labels at ${uiScale}% UI scale`, async ({ app, page }) => {
+        await page.evaluate(scale => window.ftElectron.setZoomFactor(scale / 100), uiScale)
+        await goTo(page, 'subscriptions')
+        for (const width of [1600, 375]) {
+          await app.electronApp.evaluate(({ BrowserWindow }, width) => {
+            BrowserWindow.getAllWindows()[0].setContentSize(width, 900)
+          }, width)
+          for (const category of ['videos', 'posts']) {
+            await page.locator(`[data-subscription-feed-tab="${category}"]`).click()
+            await card(page, category).getByRole('button', {
+              name: locale === 'en-US' ? 'More Options' : 'Weitere Optionen', exact: true
+            }).click()
+            const type = locale === 'de-DE' && category === 'posts' ? 'Beiträge' : labels[category]
+            const label = page.getByRole('option', {
+              name: locale === 'en-US'
+                ? `Never show ${type} from this channel in feeds again`
+                : `Nie wieder ${type} von diesem Kanal in Feeds anzeigen`,
+              exact: true
+            }).locator(':scope > span')
+            await expect(label).toBeVisible()
+            await expect.poll(() => label.evaluate(element => (
+              element.scrollWidth <= element.clientWidth && element.scrollHeight <= element.clientHeight
+            ))).toBe(true)
+            // Wrapping must preserve whole words, not squeeze the label into a
+            // character-wide column that still passes the overflow check above.
+            const splitWords = await label.evaluate(element => {
+              const text = element.firstChild
+              return [...text.textContent.matchAll(/\S+/g)].filter(match => {
+                const range = document.createRange()
+                range.setStart(text, match.index)
+                range.setEnd(text, match.index + match[0].length)
+                return range.getClientRects().length > 1
+              }).map(match => match[0])
+            })
+            expect(splitWords).toEqual([])
+            await page.keyboard.press('Escape')
+          }
+        }
+      })
+    }
   })
 }
