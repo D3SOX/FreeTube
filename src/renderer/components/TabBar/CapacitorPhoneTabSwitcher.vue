@@ -315,7 +315,7 @@
     </Teleport>
     <FtPrompt
       v-if="sessionToOpen"
-      :inert="isOpeningSession"
+      :busy="isOpeningSession"
       card-class="capacitorPhoneSessionPrompt"
       :label="t('Settings.Sync Settings.Open All Tabs Confirmation')"
       :extra-labels="[formatDeviceSessionLabel(sessionToOpen, t)]"
@@ -611,6 +611,10 @@ function selectOtherDeviceSessionAt(index, focus = false) {
   selectOtherDeviceSession(sessions[wrappedIndex], focus)
 }
 
+async function openOtherDeviceSession(session) {
+  if (await store.dispatch('openSyncServerSession', session)) closeSwitcher()
+}
+
 async function handleOpenSessionPrompt(option) {
   if (isOpeningSession.value) return
   const session = sessionToOpen.value
@@ -621,7 +625,7 @@ async function handleOpenSessionPrompt(option) {
 
   isOpeningSession.value = true
   try {
-    if (await store.dispatch('openSyncServerSession', session)) closeSwitcher()
+    await openOtherDeviceSession(session)
   } catch (error) {
     showToast({
       message: t('Settings.Sync Settings.Sync failed', { error: error.message }),

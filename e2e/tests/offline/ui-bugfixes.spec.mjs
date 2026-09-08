@@ -531,15 +531,6 @@ for (const layout of ['phone', 'desktop']) {
     }
     await page.evaluate(() => {
       const store = document.querySelector('#app').__vue_app__.config.globalProperties.$store
-      const openSession = store._actions.openSyncServerSession[0]
-      window.__syncOpen = { calls: 0 }
-      store._actions.openSyncServerSession[0] = async session => {
-        window.__syncOpen.calls += 1
-        await new Promise((resolve, reject) => {
-          window.__syncOpen.release = fail => fail ? reject(new Error('Test opening failure')) : resolve()
-        })
-        return openSession(session)
-      }
       store.commit('setSyncServerEnabled', true)
       store.commit('setSyncServerToken', 'e2e-token')
       store.commit('setSyncServerPrivacyMode', 'enhanced')
@@ -555,12 +546,38 @@ for (const layout of ['phone', 'desktop']) {
         ],
       }])
     })
-    const tabIdsBefore = await page.evaluate(() => window.ftElectron.tabs.getState().then(state => state.tabs.map(tab => tab.id)))
+    const initialTabIds = await page.evaluate(() => window.ftElectron.tabs.getState().then(state => state.tabs.map(tab => tab.id)))
     await page.locator(layout === 'phone' ? '.capacitorPhoneTabSwitcherButton' : '.tabBar .tabOrganizerButton').click()
     const organizer = page.getByRole('dialog', { name: 'Tab Organizer', exact: true })
     if (layout === 'phone') await organizer.getByRole('tab', { name: 'Tabs from other devices' }).click()
     const openAll = organizer.getByRole('button', { name: 'Open all tabs' })
     const confirmation = page.getByRole('dialog', { name: 'Open all tabs?', exact: true })
+    // A single synced tab must still open directly, without the bulk confirmation.
+    await organizer.locator(layout === 'phone' ? '.capacitorPhoneSyncedTabTarget' : '.syncedTabTarget')
+      .filter({ hasText: 'History' }).click()
+    await expect.poll(() => page.evaluate(() => window.ftElectron.tabs.getState().then(state => state.tabs.length)))
+      .toBe(initialTabIds.length + 1)
+    expect(await page.evaluate(() => window.ftElectron.tabs.getState().then(state => state.tabs.at(-1).route.fullPath)))
+      .toBe('/history')
+    await expect(confirmation).toHaveCount(0)
+    if (layout === 'phone') {
+      await expect(organizer).toHaveCount(0)
+      await page.locator('.capacitorPhoneTabSwitcherButton').click()
+      await organizer.getByRole('tab', { name: 'Tabs from other devices' }).click()
+    }
+    const tabIdsBefore = await page.evaluate(() => window.ftElectron.tabs.getState().then(state => state.tabs.map(tab => tab.id)))
+    await page.evaluate(() => {
+      const store = document.querySelector('#app').__vue_app__.config.globalProperties.$store
+      const openSession = store._actions.openSyncServerSession[0]
+      window.__syncOpen = { calls: 0 }
+      store._actions.openSyncServerSession[0] = async session => {
+        window.__syncOpen.calls += 1
+        await new Promise((resolve, reject) => {
+          window.__syncOpen.release = fail => fail ? reject(new Error('Test opening failure')) : resolve()
+        })
+        return openSession(session)
+      }
+    })
     for (const dismiss of ['cancel', 'escape', 'backdrop']) {
       await openAll.click()
       await expect(confirmation).toContainText('Desktop · 2 tabs')
@@ -583,11 +600,13 @@ for (const layout of ['phone', 'desktop']) {
       await expect.poll(() => page.evaluate(() => window.__syncOpen.calls)).toBe(index + 1)
       await expect(confirmation).toBeVisible()
       await expect(organizer).toHaveAttribute('inert', '')
-      expect(await confirmation.evaluate(element => element.closest('.prompt').inert)).toBe(true)
+      await expect(confirmation).toHaveAttribute('inert', '')
       // Synthetic clicks exercise the handler guard even when native inert filtering is bypassed.
       await confirmation.getByRole('button', { name: 'Open all tabs', exact: true }).dispatchEvent('click')
       await confirmation.getByRole('button', { name: 'Cancel', exact: true }).dispatchEvent('click')
       await page.keyboard.press('Escape')
+      await page.mouse.click(5, 5)
+      await expect(organizer).toBeVisible()
       await expect(confirmation).toBeVisible()
       expect(await page.evaluate(() => window.__syncOpen.calls)).toBe(index + 1)
       await page.evaluate(fail => window.__syncOpen.release(fail), fail)

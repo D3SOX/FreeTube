@@ -15,6 +15,7 @@
         v-overlay-scrollbars="!fixedLayout"
         class="promptCard"
         :class="{ autosize, fixedLayout, [theme]: true, [cardClass]: cardClass !== '' }"
+        :inert="busy"
         role="dialog"
         aria-modal="true"
         :aria-labelledby="id"
@@ -123,6 +124,10 @@ const props = defineProps({
     type: Boolean,
     default: false
   },
+  busy: {
+    type: Boolean,
+    default: false
+  },
   lockScroll: {
     type: Boolean,
     default: true
@@ -212,6 +217,7 @@ function optionButtonBackgroundColor(index) {
  * @param {any} value
  */
 function click(value) {
+  if (props.busy) return
   emit('click', value)
 }
 
