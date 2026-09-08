@@ -106,6 +106,7 @@
           tabindex="-1"
           class="iconDropdown"
           :class="{
+            kebabMenu: isKebabMenu,
             left: dropdownPositionX === 'left',
             right: dropdownPositionX === 'right',
             center: dropdownPositionX === 'center',
@@ -275,6 +276,10 @@ const emit = defineEmits(['click', 'disabled-click'])
 const LONG_CLICK_BOUNDARY_MS = 500
 
 const id = useId()
+
+const isKebabMenu = computed(() => (
+  Array.isArray(props.icon) && ['ellipsis-v', 'ellipsis-vertical'].includes(props.icon[1])
+))
 
 const dropdownShown = ref(false)
 const useModal = ref(false)

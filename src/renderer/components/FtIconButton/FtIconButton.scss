@@ -149,6 +149,17 @@
   vertical-align: 0;
 }
 
+@media (pointer: coarse), (width <= 680px) {
+  .iconButton:has(> .icon[data-icon='ellipsis-vertical']) {
+    min-inline-size: 48px;
+    min-block-size: 48px;
+
+    > .icon {
+      font-size: 20px;
+    }
+  }
+}
+
 /* Overlay icons read as a cut-out of the main icon by matching the button background */
 .iconButton .overlayIcon {
   color: var(--card-bg-color);
@@ -293,5 +304,35 @@
   .listItem > .wrapLabel {
     overflow-wrap: anywhere;
     white-space: normal;
+  }
+}
+
+@media (pointer: coarse), (width <= 680px) {
+  .iconDropdown.kebabMenu {
+    &:has(> .list) {
+      min-inline-size: min(360px, calc(100vw - 16px));
+    }
+
+    .list {
+      font-size: 16px;
+      line-height: 1.5;
+    }
+
+    .listItem {
+      align-items: center;
+      box-sizing: border-box;
+      display: flex;
+      min-block-size: 48px;
+      padding: 12px;
+    }
+
+    .listItem > span {
+      overflow-wrap: anywhere;
+      white-space: normal;
+    }
+
+    .optionIconColumn {
+      font-size: 20px;
+    }
   }
 }

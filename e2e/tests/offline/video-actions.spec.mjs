@@ -77,6 +77,135 @@ function silentWav(duration, sampleRate = 8_000) {
 
 test.use({ seed: SEED })
 
+for (const [iconPack, uiScale] of [['material', 100], ['remix', 125]]) {
+  test.describe(`kebab menu with ${iconPack} at ${uiScale}% UI scale`, () => {
+    test.use({
+      seed: {
+        ...SEED,
+        settings: { ...SEED.settings, iconPack, uiScale },
+        history: [{ ...SEED.history[0], viewCount: 123456789 }]
+      }
+    })
+
+    test('keeps the mobile menu and page within the viewport', async ({ page }) => {
+      await goTo(page, 'history')
+      await page.setViewportSize({ width: 375, height: 812 })
+      const session = await page.context().newCDPSession(page)
+      try {
+        await session.send('Emulation.setTouchEmulationEnabled', { enabled: true })
+        for (const listType of ['list', 'grid']) {
+          await page.evaluate(value => {
+            document.querySelector('#app').__vue_app__.config.globalProperties.$store.commit('setListType', value)
+          }, listType)
+          const expectNoHorizontalOverflow = () => expect.poll(() => page.evaluate(() => (
+            Math.max(document.documentElement.scrollWidth, document.body.scrollWidth) - innerWidth
+          ))).toBeLessThanOrEqual(1)
+          await expectNoHorizontalOverflow()
+          const button = page.locator('.ft-list-video .optionsButton .iconButton').first()
+          expect(await button.evaluate(element => (
+            element.getBoundingClientRect().right - innerWidth
+          ))).toBeLessThanOrEqual(1)
+          await button.click()
+          await expect(page.locator('.listVideoOptionsDropdown')).toBeVisible()
+          await expectNoHorizontalOverflow()
+          expect(await page.evaluate(() => window.scrollX)).toBe(0)
+          await page.keyboard.press('Escape')
+          await expectNoHorizontalOverflow()
+        }
+      } finally {
+        await session.detach()
+      }
+    })
+
+    test('clears the obsolete scroll range when an open mobile menu becomes shorter', async ({ page }) => {
+      await goTo(page, 'history')
+      await page.setViewportSize({ width: 375, height: 400 })
+      await page.locator('.ft-list-video .optionsButton .iconButton').first().click()
+      const menu = page.locator('.listVideoOptionsDropdown')
+      const scrollbar = menu.locator('.os-scrollbar-vertical')
+      await menu.getByRole('option').last().scrollIntoViewIfNeeded()
+      await expect.poll(() => menu.evaluate(element => element.scrollTop)).toBeGreaterThan(0)
+      await expect(scrollbar).not.toHaveClass(/os-scrollbar-unusable/)
+
+      await page.setViewportSize({ width: 1200, height: 1000 })
+      await expect(menu).toBeVisible()
+      await expect(menu.getByRole('option').first()).toHaveCSS('font-size', '14px')
+      await expect.poll(() => menu.evaluate(element => element.scrollTop)).toBe(0)
+      await expect.poll(() => menu.evaluate(element => element.scrollHeight - element.clientHeight)).toBeLessThanOrEqual(1)
+      await expect(scrollbar).toHaveClass(/os-scrollbar-unusable/)
+      await expect(menu.getByRole('option').first()).toBeInViewport()
+      await expect(menu.getByRole('option').last()).toBeInViewport()
+    })
+
+    test('opens a readable mobile menu with touch-sized options', async ({ page }) => {
+      await goTo(page, 'history')
+      const session = await page.context().newCDPSession(page)
+      try {
+        await session.send('Emulation.setTouchEmulationEnabled', { enabled: true })
+        for (const viewport of [
+          { width: 375, height: 812 },
+          { width: 812, height: 375 },
+          { width: 1024, height: 768 }
+        ]) {
+          await page.setViewportSize(viewport)
+          await page.locator('.ft-list-video .optionsButton .iconButton').first().click()
+          const menu = page.locator('.listVideoOptionsDropdown')
+          const options = menu.getByRole('option')
+          await expect(options.first()).toHaveCSS('font-size', '16px')
+          expect(await options.evaluateAll(elements => elements.every(element => (
+            element.getBoundingClientRect().height >= 48
+          )))).toBe(true)
+          await expect.poll(() => menu.evaluate(element => {
+            const bounds = element.getBoundingClientRect()
+            return bounds.left >= -1 && bounds.right <= innerWidth + 1 &&
+              bounds.top >= -1 && bounds.bottom <= innerHeight + 1
+          })).toBe(true)
+          await options.last().scrollIntoViewIfNeeded()
+          await expect(options.last()).toBeInViewport()
+          await page.keyboard.press('Escape')
+        }
+        await page.locator('.ft-list-video .optionsButton .iconButton').first().click()
+        await page.getByRole('option', { name: 'Mark As Watched', exact: true }).click()
+        await expect(page.locator('.listVideoOptionsDropdown')).toBeHidden()
+      } finally {
+        await session.detach()
+      }
+    })
+
+    test('enlarges the mobile icon and tap target', async ({ page }) => {
+      await goTo(page, 'history')
+      const button = page.locator('.ft-list-video .optionsButton .iconButton').first()
+      const icon = button.locator('[data-icon="ellipsis-vertical"]')
+      await expect(icon).toHaveAttribute('data-icon-pack', iconPack)
+      await expect(button).toHaveCSS('width', '36px')
+      await expect(icon).toHaveCSS('font-size', '16px')
+
+      const session = await page.context().newCDPSession(page)
+      try {
+        await session.send('Emulation.setTouchEmulationEnabled', { enabled: true })
+        for (const viewport of [
+          { width: 375, height: 812 },
+          { width: 812, height: 375 },
+          { width: 1024, height: 768 }
+        ]) {
+          await page.setViewportSize(viewport)
+          await expect(button).toHaveCSS('width', '48px')
+          await expect(button).toHaveCSS('height', '48px')
+          await expect(icon).toHaveCSS('font-size', '20px')
+          // The added space around the glyph must open the menu too.
+          await button.click({ position: { x: 4, y: 24 } })
+          await expect(button).toHaveAttribute('aria-expanded', 'true')
+          await expect(page.getByRole('option', { name: 'Mark As Watched', exact: true })).toBeVisible()
+          await page.keyboard.press('Escape')
+          await expect(button).toHaveAttribute('aria-expanded', 'false')
+        }
+      } finally {
+        await session.detach()
+      }
+    })
+  })
+}
+
 test('persists the yt-dlp playback cache across app restarts', async ({ app, page }) => {
   const expiryTime = Date.now() + 60 * 60 * 1000
   const source = {
