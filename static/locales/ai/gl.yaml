@@ -379,6 +379,7 @@ Settings:
     Light Theme: Tema claro
     Dark Theme: Tema escuro
     Custom Theme:
+      Share Restrictions Prompt: "As descricións poden conter ata 500 caracteres, incluído Markdown. Só se permiten ligazóns e imaxes aloxadas en GitHub, incluídas as cargas directas aquí. O bot elimina as ligazóns e imaxes externas, acurta as descricións longas e deixa un comentario explicando os cambios."
       Import from Clipboard: "Importar do portapapeis"
       Invalid Clipboard Theme: "O portapapeis non contén un tema válido. Copia o JSON do tema e téntao de novo."
       Create Custom Theme: Crear un tema personalizado

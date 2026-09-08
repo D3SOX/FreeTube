@@ -375,6 +375,7 @@ Settings:
     Light Theme: Lyst tema
     Dark Theme: Mørkt tema
     Custom Theme:
+      Share Restrictions Prompt: "Beskrivelser kan inneholde opptil 500 tegn, inkludert Markdown. Bare lenker og bilder som ligger på GitHub er tillatt, også direkte opplastinger her. Boten fjerner eksterne lenker og bilder, forkorter lange beskrivelser og legger igjen en kommentar som forklarer endringene."
       Import from Clipboard: "Importer fra utklippstavlen"
       Invalid Clipboard Theme: "Utklippstavlen inneholder ikke et gyldig tema. Kopier temaets JSON og prøv igjen."
       Create Custom Theme: Opprett egendefinert tema

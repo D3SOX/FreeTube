@@ -530,6 +530,7 @@ Settings:
     Light Theme: Tema clar
     Dark Theme: Tema fosc
     Custom Theme:
+      Share Restrictions Prompt: "Les descripcions poden contenir fins a 500 caràcters, inclòs el Markdown. Només es permeten enllaços i imatges allotjats a GitHub, incloses les càrregues directes aquí. El bot elimina els enllaços i les imatges externs, escurça les descripcions llargues i deixa un comentari explicant els canvis."
       Import from Clipboard: "Importa del porta-retalls"
       Invalid Clipboard Theme: "El porta-retalls no conté cap tema vàlid. Copieu el JSON del tema i torneu-ho a provar."
       Create Custom Theme: Crea un tema personalitzat

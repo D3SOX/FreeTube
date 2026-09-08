@@ -130,6 +130,7 @@ Settings:
       Test Toast: Powiadomienie testowe
     Scroll Speed: Szybkość przewijania
     Custom Theme:
+      Share Restrictions Prompt: "Opisy mogą zawierać do 500 znaków, wliczając Markdown. Dozwolone są tylko odnośniki i obrazy hostowane w GitHub, także przesłane bezpośrednio tutaj. Bot usuwa zewnętrzne odnośniki i obrazy, skraca długie opisy i zostawia komentarz wyjaśniający zmiany."
       Import from Clipboard: "Importuj ze schowka"
       Invalid Clipboard Theme: "Schowek nie zawiera prawidłowego motywu. Skopiuj JSON motywu i spróbuj ponownie."
       Share Theme: Udostępnij motyw

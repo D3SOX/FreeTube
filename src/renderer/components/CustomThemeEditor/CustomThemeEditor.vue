@@ -636,6 +636,7 @@ async function shareTheme() {
       `## ${t('Settings.Theme Settings.Custom Theme.Share Description Heading')}`,
       '',
       `<!-- ${t('Settings.Theme Settings.Custom Theme.Share Description Prompt')} -->`,
+      `<!-- ${t('Settings.Theme Settings.Custom Theme.Share Restrictions Prompt')} -->`,
       '',
       `## ${t('Settings.Theme Settings.Custom Theme.Share Screenshots Heading')}`,
       '',

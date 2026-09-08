@@ -379,6 +379,7 @@ Settings:
     Light Theme: Tema terang
     Dark Theme: Tema gelap
     Custom Theme:
+      Share Restrictions Prompt: "Deskripsi boleh berisi hingga 500 karakter, termasuk Markdown. Hanya tautan dan gambar yang dihosting di GitHub yang diizinkan, termasuk unggahan langsung di sini. Bot menghapus tautan dan gambar eksternal, mempersingkat deskripsi panjang, dan meninggalkan komentar yang menjelaskan perubahan."
       Import from Clipboard: "Impor dari papan klip"
       Invalid Clipboard Theme: "Papan klip tidak berisi tema yang valid. Salin JSON tema dan coba lagi."
       Create Custom Theme: Buat tema khusus

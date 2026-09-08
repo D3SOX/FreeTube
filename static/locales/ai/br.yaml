@@ -375,6 +375,7 @@ Settings:
     Light Theme: "Neuz sklaer"
     Dark Theme: "Neuz teñval"
     Custom Theme:
+      Share Restrictions Prompt: "An deskrivadurioù a c’hall kaout betek 500 arouezenn, Markdown en o zouez. Nemet liammoù ha skeudennoù herberc’hiet war GitHub a zo aotreet, en o zouez ar re pellgaset war-eeun amañ. Ar bot a zilemel al liammoù hag ar skeudennoù diavaez, a verra an deskrivadurioù re hir hag a zispleg ar c’hemmoù en un evezhiadenn."
       Import from Clipboard: "Enporzhiañ eus ar golver"
       Invalid Clipboard Theme: "N’eus tem reizh ebet er golver. Eilit JSON an tem ha klaskit en-dro."
       Create Custom Theme: "Krouiñ un neuz personelaet"

@@ -379,6 +379,7 @@ Settings:
     Light Theme: Vaalea teema
     Dark Theme: Tumma teema
     Custom Theme:
+      Share Restrictions Prompt: "Kuvaus saa sisältää enintään 500 merkkiä, Markdown mukaan lukien. Vain GitHubissa sijaitsevat linkit ja kuvat ovat sallittuja, myös suoraan tähän ladatut tiedostot. Botti poistaa ulkoiset linkit ja kuvat, lyhentää pitkät kuvaukset ja jättää muutokset selittävän kommentin."
       Import from Clipboard: "Tuo leikepöydältä"
       Invalid Clipboard Theme: "Leikepöydällä ei ole kelvollista teemaa. Kopioi teeman JSON ja yritä uudelleen."
       Create Custom Theme: Luo mukautettu teema

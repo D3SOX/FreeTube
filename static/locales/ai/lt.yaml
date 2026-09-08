@@ -511,6 +511,7 @@ Settings:
     Light Theme: Šviesi tema
     Dark Theme: Tamsi tema
     Custom Theme:
+      Share Restrictions Prompt: "Aprašymuose gali būti iki 500 simbolių, įskaitant Markdown. Leidžiamos tik GitHub talpinamos nuorodos ir vaizdai, įskaitant tiesiogiai čia įkeltus failus. Botas pašalina išorines nuorodas ir vaizdus, sutrumpina ilgus aprašymus ir palieka komentarą, paaiškinantį pakeitimus."
       Import from Clipboard: "Importuoti iš iškarpinės"
       Invalid Clipboard Theme: "Iškarpinėje nėra tinkamos temos. Nukopijuokite temos JSON ir bandykite dar kartą."
       Create Custom Theme: Kurti pasirinktinę temą

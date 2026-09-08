@@ -33,8 +33,8 @@ test('counts Unicode characters without cutting a surrogate pair', () => {
   assert.equal(limitThemeDescription(post('🌈'.repeat(501))), post('🌈'.repeat(500)))
 })
 
-test('does not charge the generated description prompt against the limit', () => {
-  const hint = '<!-- Describe the theme. -->\n\n'
+test('does not charge the generated description and restriction prompts against the limit', () => {
+  const hint = '<!-- Describe the theme. -->\n<!-- Up to 500 characters. GitHub links and images only. -->\n\n'
   assert.equal(limitThemeDescription(post(hint + 'a'.repeat(501))), post(hint + 'a'.repeat(500)))
 })
 

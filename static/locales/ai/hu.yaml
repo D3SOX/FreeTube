@@ -375,6 +375,7 @@ Settings:
     Light Theme: Világos téma
     Dark Theme: Sötét téma
     Custom Theme:
+      Share Restrictions Prompt: "A leírás legfeljebb 500 karaktert tartalmazhat, a Markdown-jelölésekkel együtt. Csak a GitHubon tárolt hivatkozások és képek engedélyezettek, beleértve az ide közvetlenül feltöltötteket is. A bot eltávolítja a külső hivatkozásokat és képeket, lerövidíti a hosszú leírásokat, és hozzászólásban magyarázza el a változtatásokat."
       Import from Clipboard: "Importálás a vágólapról"
       Invalid Clipboard Theme: "A vágólap nem tartalmaz érvényes témát. Másolja a téma JSON-kódját, és próbálja újra."
       Create Custom Theme: Egyéni téma létrehozása

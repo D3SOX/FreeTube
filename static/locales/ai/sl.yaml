@@ -520,6 +520,7 @@ Settings:
     Light Theme: Svetla tema
     Dark Theme: Temna tema
     Custom Theme:
+      Share Restrictions Prompt: "Opisi lahko vsebujejo do 500 znakov, vključno z Markdownom. Dovoljene so le povezave in slike, gostovane na GitHubu, vključno z datotekami, naloženimi neposredno sem. Bot odstrani zunanje povezave in slike, skrajša dolge opise ter pusti komentar z razlago sprememb."
       Import from Clipboard: "Uvozi iz odložišča"
       Invalid Clipboard Theme: "Odložišče ne vsebuje veljavne teme. Kopirajte JSON teme in poskusite znova."
       Create Custom Theme: Ustvari temo po meri

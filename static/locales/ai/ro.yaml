@@ -377,6 +377,7 @@ Settings:
     Light Theme: Temă luminoasă
     Dark Theme: Temă întunecată
     Custom Theme:
+      Share Restrictions Prompt: "Descrierile pot conține până la 500 de caractere, inclusiv Markdown. Sunt permise doar linkuri și imagini găzduite pe GitHub, inclusiv încărcările directe aici. Botul elimină linkurile și imaginile externe, scurtează descrierile lungi și lasă un comentariu care explică modificările."
       Import from Clipboard: "Importă din clipboard"
       Invalid Clipboard Theme: "Clipboardul nu conține o temă validă. Copiază JSON-ul temei și încearcă din nou."
       Create Custom Theme: Creează o temă personalizată

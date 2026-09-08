@@ -379,6 +379,7 @@ Settings:
     Light Theme: Chủ đề sáng
     Dark Theme: Chủ đề tối
     Custom Theme:
+      Share Restrictions Prompt: "Mô tả có thể chứa tối đa 500 ký tự, bao gồm Markdown. Chỉ cho phép liên kết và hình ảnh được lưu trữ trên GitHub, kể cả tệp tải trực tiếp lên đây. Bot sẽ xóa liên kết và hình ảnh bên ngoài, rút ngắn mô tả dài và để lại bình luận giải thích các thay đổi."
       Import from Clipboard: "Nhập từ bảng nhớ tạm"
       Invalid Clipboard Theme: "Bảng nhớ tạm không chứa giao diện hợp lệ. Sao chép JSON của giao diện rồi thử lại."
       Create Custom Theme: Tạo chủ đề tùy chỉnh

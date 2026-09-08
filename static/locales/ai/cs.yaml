@@ -375,6 +375,7 @@ Settings:
     Light Theme: Světlý motiv
     Dark Theme: Tmavý motiv
     Custom Theme:
+      Share Restrictions Prompt: "Popisy mohou obsahovat nejvýše 500 znaků včetně Markdownu. Povoleny jsou pouze odkazy a obrázky hostované na GitHubu, včetně souborů nahraných přímo sem. Bot odstraňuje externí odkazy a obrázky, zkracuje dlouhé popisy a zanechává komentář vysvětlující změny."
       Import from Clipboard: "Importovat ze schránky"
       Invalid Clipboard Theme: "Schránka neobsahuje platný motiv. Zkopírujte JSON motivu a zkuste to znovu."
       Create Custom Theme: Vytvořit vlastní motiv

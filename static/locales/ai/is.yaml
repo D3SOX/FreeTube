@@ -379,6 +379,7 @@ Settings:
     Light Theme: Ljóst þema
     Dark Theme: Dökkt þema
     Custom Theme:
+      Share Restrictions Prompt: "Lýsingar mega innihalda allt að 500 stafi, að Markdown meðtöldu. Aðeins tenglar og myndir sem eru hýst á GitHub eru leyfð, þar á meðal skrár sem er hlaðið beint upp hér. Botninn fjarlægir ytri tengla og myndir, styttir langar lýsingar og skilur eftir athugasemd sem útskýrir breytingarnar."
       Import from Clipboard: "Flytja inn af klippispjaldi"
       Invalid Clipboard Theme: "Klippispjaldið inniheldur ekki gilt þema. Afritaðu JSON þemans og reyndu aftur."
       Create Custom Theme: Búa til sérsniðið þema

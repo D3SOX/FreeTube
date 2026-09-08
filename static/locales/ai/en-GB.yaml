@@ -362,6 +362,7 @@ Settings:
     Light Theme: Light theme
     Dark Theme: Dark theme
     Custom Theme:
+      Share Restrictions Prompt: "Descriptions may contain up to 500 characters, including Markdown. Only GitHub-hosted links and images are allowed, including direct uploads here. The bot removes external links and images, shortens long descriptions, and leaves a comment explaining any changes."
       Import from Clipboard: "Import from clipboard"
       Invalid Clipboard Theme: "Clipboard does not contain a valid theme. Copy the theme JSON and try again."
       Create Custom Theme: Create custom theme

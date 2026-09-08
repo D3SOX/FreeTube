@@ -453,6 +453,7 @@ Settings:
     Light Theme: Lyst tema
     Dark Theme: Mørkt tema
     Custom Theme:
+      Share Restrictions Prompt: "Skildringar kan innehalde opptil 500 teikn, inkludert Markdown. Berre lenkjer og bilete som ligg på GitHub er tillatne, også direkte opplastingar her. Boten fjernar eksterne lenkjer og bilete, kortar ned lange skildringar og legg att ein kommentar som forklarer endringane."
       Import from Clipboard: "Importer frå utklippstavla"
       Invalid Clipboard Theme: "Utklippstavla inneheld ikkje eit gyldig tema. Kopier JSON-koden til temaet og prøv igjen."
       Create Custom Theme: Lag eit eige tema

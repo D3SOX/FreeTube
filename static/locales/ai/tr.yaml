@@ -375,6 +375,7 @@ Settings:
     Light Theme: Açık tema
     Dark Theme: Koyu tema
     Custom Theme:
+      Share Restrictions Prompt: "Açıklamalar Markdown dahil en fazla 500 karakter içerebilir. Buraya doğrudan yüklenenler dahil, yalnızca GitHub üzerinde barındırılan bağlantılara ve görsellere izin verilir. Bot harici bağlantıları ve görselleri kaldırır, uzun açıklamaları kısaltır ve değişiklikleri açıklayan bir yorum bırakır."
       Import from Clipboard: "Panodan içe aktar"
       Invalid Clipboard Theme: "Pano geçerli bir tema içermiyor. Temanın JSON kodunu kopyalayıp tekrar deneyin."
       Create Custom Theme: Özel tema oluştur

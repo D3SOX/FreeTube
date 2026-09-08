@@ -375,6 +375,7 @@ Settings:
     Light Theme: 浅色主题
     Dark Theme: 深色主题
     Custom Theme:
+      Share Restrictions Prompt: "描述最多可包含500个字符，包括Markdown标记。仅允许使用托管在GitHub上的链接和图片，也可以直接在此上传。机器人会移除外部链接和图片、缩短过长的描述，并发表评论说明更改。"
       Import from Clipboard: "从剪贴板导入"
       Invalid Clipboard Theme: "剪贴板中没有有效的主题。请复制主题 JSON 后重试。"
       Create Custom Theme: 创建自定义主题

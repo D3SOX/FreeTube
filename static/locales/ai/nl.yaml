@@ -379,6 +379,7 @@ Settings:
     Light Theme: Licht thema
     Dark Theme: Donker thema
     Custom Theme:
+      Share Restrictions Prompt: "Beschrijvingen mogen maximaal 500 tekens bevatten, inclusief Markdown. Alleen links en afbeeldingen die op GitHub worden gehost zijn toegestaan, ook rechtstreekse uploads hier. De bot verwijdert externe links en afbeeldingen, kort lange beschrijvingen in en plaatst een reactie met uitleg over de wijzigingen."
       Import from Clipboard: "Importeren uit het klembord"
       Invalid Clipboard Theme: "Het klembord bevat geen geldig thema. Kopieer de JSON van het thema en probeer het opnieuw."
       Create Custom Theme: Aangepast thema maken

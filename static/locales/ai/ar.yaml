@@ -379,6 +379,7 @@ Settings:
     Light Theme: سمة فاتحة
     Dark Theme: سمة داكنة
     Custom Theme:
+      Share Restrictions Prompt: "يمكن أن تحتوي الأوصاف على 500 حرف كحد أقصى، بما في ذلك Markdown. يُسمح فقط بالروابط والصور المستضافة على GitHub، بما في ذلك الملفات المرفوعة مباشرة هنا. يزيل الروبوت الروابط والصور الخارجية، ويختصر الأوصاف الطويلة، ويترك تعليقًا يوضح أي تغييرات."
       Import from Clipboard: "استيراد من الحافظة"
       Invalid Clipboard Theme: "لا تحتوي الحافظة على سمة صالحة. انسخ JSON السمة وحاول مجددًا."
       Create Custom Theme: إنشاء موضوع مخصص

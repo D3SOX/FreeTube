@@ -616,6 +616,7 @@ Settings:
     Light Theme: Helles Design
     Dark Theme: Dunkles Design
     Custom Theme:
+      Share Restrictions Prompt: "Beschreibungen dürfen bis zu 500 Zeichen einschließlich Markdown enthalten. Nur auf GitHub gehostete Links und Bilder sind erlaubt, auch direkte Uploads hier. Der Bot entfernt externe Links und Bilder, kürzt zu lange Beschreibungen und erklärt Änderungen in einem Kommentar."
       Import from Clipboard: "Aus Zwischenablage importieren"
       Invalid Clipboard Theme: "Die Zwischenablage enthält kein gültiges Theme. Kopiere den Theme-JSON-Code und versuche es erneut."
       Create Custom Theme: Benutzerdefiniertes Design erstellen
