@@ -24,7 +24,7 @@ jobs:
     timeout-minutes: 20
     permissions:
       contents: read
-      discussions: write
+      discussions: read
     env:
       THEME_PREVIEW_DIR: .tmp/theme-preview
       DISCUSSION_NUMBER: ${{ github.event.discussion.number || inputs.discussion }}
@@ -69,33 +69,20 @@ jobs:
         LANGUAGE: en_US
       run: xvfb-run -a -s '-screen 0 1920x1080x24' pnpm exec playwright test -c e2e/theme-previews/playwright.config.mjs
 
-    - name: Upload permanent images
-      id: upload
+    - name: Upload discussion attachments
       if: steps.request.outputs.enabled == 'true'
       env:
-        # The existing cross-repository token needs Contents write on OpenTubeX/media.
+        # Native attachments require a user token with write access to this repo.
+        # GitHub does not support attachment uploads with GITHUB_TOKEN.
         GH_TOKEN: ${{ secrets.PUSH_TOKEN }}
       run: node _scripts/themePreview.mjs upload "$THEME_PREVIEW_DIR"
 
-    - name: Add or update the bot's discussion comment
-      id: publish
+    - name: Fill the Screenshots section in the discussion
       if: steps.request.outputs.enabled == 'true'
       env:
-        GH_TOKEN: ${{ github.token }}
-      run: node _scripts/themePreview.mjs publish "$THEME_PREVIEW_DIR"
-
-    - name: Check for unused uploads
-      if: always() && steps.upload.outcome != 'skipped' && steps.publish.outputs.published != 'true'
-      id: cleanup
-      env:
-        GH_TOKEN: ${{ github.token }}
-      run: node _scripts/themePreview.mjs check-cleanup "$THEME_PREVIEW_DIR"
-
-    - name: Remove unused images from this attempt
-      if: always() && steps.cleanup.outputs.enabled == 'true'
-      env:
+        # GITHUB_TOKEN cannot edit another author's discussion body.
         GH_TOKEN: ${{ secrets.PUSH_TOKEN }}
-      run: node _scripts/themePreview.mjs cleanup "$THEME_PREVIEW_DIR"
+      run: node _scripts/themePreview.mjs publish "$THEME_PREVIEW_DIR"
 
     - name: Keep failed capture diagnostics
       if: failure() && steps.request.outputs.enabled == 'true'

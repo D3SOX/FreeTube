@@ -1,24 +1,23 @@
 import { execFileSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
-import { appendFile, copyFile, mkdir, readFile, writeFile } from 'node:fs/promises'
+import { appendFile, mkdir, readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { pathToFileURL } from 'node:url'
 
 import { marked } from 'marked'
 
 import { normalizeCustomTheme } from '../src/customTheme.js'
-import { selectReleaseTag } from './releaseNoteMedia.mjs'
 
 export const PREVIEW_MARKER = '<!-- theme-preview -->'
+const PREVIEW_END = '<!-- theme-preview:end -->'
 export const SCREENSHOTS_START = '<!-- theme-screenshots:start -->'
 export const SCREENSHOTS_END = '<!-- theme-screenshots:end -->'
 export const PREVIEW_VIEWS = ['subscriptions', 'watch', 'settings']
-const MEDIA_REPOSITORY = 'OpenTubeX/media'
 
 /** Only inline JSON is accepted. Never fetch attachments or execute submitted code. */
 export function previewRequest(discussion) {
   if (discussion?.category?.slug !== 'themes' || discussion.closed || discussion.locked) return null
-  const body = discussion.body.replaceAll('\r\n', '\n')
+  const { body, existingHash } = removeGeneratedPreview(discussion.body)
   const tokens = marked.lexer(body)
   const themes = []
   let hasImage = false
@@ -31,9 +30,11 @@ export function previewRequest(discussion) {
 
   const start = body.indexOf(SCREENSHOTS_START)
   const end = body.indexOf(SCREENSHOTS_END)
-  let screenshots
+  let screenshotsStart
+  let screenshotsEnd
   if (start !== -1 && end > start) {
-    screenshots = body.slice(start + SCREENSHOTS_START.length, end)
+    screenshotsStart = start + SCREENSHOTS_START.length
+    screenshotsEnd = end
   } else {
     // Existing app-generated posts have localized headings and no markers.
     // The last H2 before the theme's details block is the screenshots section.
@@ -43,13 +44,14 @@ export function previewRequest(discussion) {
     const headings = [...prefix.matchAll(/^## [^\n]+\n/gm)]
     if (headings.length < 2) return null
     const heading = headings.at(-1)
-    screenshots = prefix.slice(heading.index + heading[0].length)
+    screenshotsStart = heading.index + heading[0].length
+    screenshotsEnd = details
   }
   // Text, attachment links, and unfamiliar markup all count as supplied content.
-  if (screenshots.split(/<!--[\s\S]*?-->/g).some(text => text.trim())) return null
+  if (body.slice(screenshotsStart, screenshotsEnd).split(/<!--[\s\S]*?-->/g).some(text => text.trim())) return null
   const theme = normalizeCustomTheme(JSON.parse(themes[0]))
   const hash = createHash('sha256').update(JSON.stringify(theme)).digest('hex')
-  return { theme, hash }
+  return { theme, hash, body, screenshotsEnd, existingHash }
 }
 
 function gh(args, input) {
@@ -73,89 +75,79 @@ export function loadDiscussion(repository, number, query = graphql) {
   return repo.discussion
 }
 
-export function findPreviewComment(id, query = graphql) {
-  let after = null
-  do {
-    const { node } = query(`query($id:ID!, $after:String) {
-      node(id:$id) { ... on Discussion { comments(first:100, after:$after) {
-        nodes { id body author { login __typename } }
-        pageInfo { hasNextPage endCursor }
-      } } }
-    }`, { id, after })
-    const { nodes, pageInfo } = node.comments
-    const comment = nodes.find(item => item.author?.__typename === 'Bot' &&
-      item.author.login === 'github-actions' && item.body.startsWith(PREVIEW_MARKER))
-    if (comment) return comment
-    after = pageInfo.hasNextPage ? pageInfo.endCursor : null
-  } while (after)
-  return null
-}
-
-export function renderPreviewComment(hash, urls) {
+export function renderPreviewImages(hash, urls) {
+  const images = PREVIEW_VIEWS.map(view => `![${view[0].toUpperCase() + view.slice(1)}](${urls[view]})`).join('\n')
+  const imagesHash = createHash('sha256').update(images).digest('hex')
   return [
     PREVIEW_MARKER,
     `<!-- theme-preview-hash:${hash} -->`,
-    'Three automatic theme previews, captured with an isolated profile and sample content. No personal subscriptions or history are used.',
+    `<!-- theme-preview-images:${imagesHash} -->`,
     '',
-    ...PREVIEW_VIEWS.map(view => `![${view[0].toUpperCase() + view.slice(1)}](${urls[view]})`),
-    '',
-    'Edit the theme JSON to refresh these previews. Add your own screenshots to the post to stop automatic updates.',
+    images,
+    PREVIEW_END,
   ].join('\n')
 }
 
+function removeGeneratedPreview(original) {
+  const start = original.indexOf(PREVIEW_MARKER)
+  const endMarker = original.indexOf(PREVIEW_END, start)
+  if (start < 0 || endMarker < start) return { body: original }
+  const end = endMarker + PREVIEW_END.length
+  const block = original.slice(start, end).replaceAll('\r\n', '\n')
+  const hash = block.match(/<!-- theme-preview-hash:([a-f0-9]{64}) -->/)?.[1]
+  const images = [...block.matchAll(/!\[[^\]]+\]\((https:\/\/github\.com\/user-attachments\/assets\/[a-zA-Z0-9-]+)\)/g)]
+  const urls = Object.fromEntries(PREVIEW_VIEWS.map((view, index) => [view, images[index]?.[1]]))
+  // Only manage a block whose contents are exactly what we generated. Preserve
+  // user edits inside it, including additional screenshots or changed URLs.
+  if (!hash || block !== renderPreviewImages(hash, urls)) return { body: original }
+  return { body: original.slice(0, start) + original.slice(end), existingHash: hash }
+}
+
 export function publishPreview(request, urls, query = graphql) {
-  // An author may have edited the theme or added screenshots during capture.
+  // Preserve the latest description and JSON if the author edited the post
+  // during capture. Added screenshots or a changed theme cancel publication.
   const discussion = loadDiscussion(request.repository, request.number, query)
   const current = previewRequest(discussion)
-  if (!current || current.hash !== request.hash) return false
-  const comment = findPreviewComment(discussion.id, query)
-  const body = renderPreviewComment(request.hash, urls)
-  if (comment?.body.includes(`<!-- theme-preview-hash:${request.hash} -->`)) return false
-  if (comment) {
-    query(`mutation($id:ID!, $body:String!) {
-      updateDiscussionComment(input:{commentId:$id, body:$body}) { comment { id } }
-    }`, { id: comment.id, body })
-  } else {
-    query(`mutation($id:ID!, $body:String!) {
-      addDiscussionComment(input:{discussionId:$id, body:$body}) { comment { id } }
-    }`, { id: discussion.id, body })
-  }
+  if (!current || current.hash !== request.hash || current.existingHash === request.hash) return false
+  const body = current.body.slice(0, current.screenshotsEnd).trimEnd() + '\n\n' +
+    renderPreviewImages(request.hash, urls) + '\n\n' + current.body.slice(current.screenshotsEnd)
+  query(`mutation($id:ID!, $body:String!) {
+    updateDiscussion(input:{discussionId:$id, body:$body}) { discussion { id } }
+  }`, { id: discussion.id, body })
   return true
 }
 
-export function unusedPreviewViews(request, urls, query = graphql) {
-  const discussion = loadDiscussion(request.repository, request.number, query)
-  const comment = discussion && findPreviewComment(discussion.id, query)
-  // Re-read after a failed mutation too: GitHub may have saved the comment
-  // even if the runner did not receive its response.
-  return PREVIEW_VIEWS.filter(view => !comment?.body.includes(urls[view]))
-}
-
-export function cleanupPreviewUploads({ tag, names }, runGh = gh) {
-  const releaseId = runGh(['api', `repos/${MEDIA_REPOSITORY}/releases/tags/${tag}`, '--jq', '.id'])
-  const pages = JSON.parse(runGh(['api', `repos/${MEDIA_REPOSITORY}/releases/${releaseId}/assets?per_page=100`, '--paginate', '--slurp']))
-  for (const asset of pages.flat().filter(asset => names.includes(asset.name))) {
-    runGh(['api', `repos/${MEDIA_REPOSITORY}/releases/assets/${asset.id}`, '--method', 'DELETE'])
+export function uploadPreviewImage(repositoryId, file, runGh = gh) {
+  // Use the same endpoint as gh's --attach flag. Discussion commands do not
+  // expose that flag yet, so upload first and include its URL in the comment.
+  const endpoint = new URL('https://uploads.github.com/user-attachments/assets')
+  endpoint.searchParams.set('repository_id', repositoryId)
+  endpoint.searchParams.set('name', path.basename(file))
+  endpoint.searchParams.set('content_type', 'image/png')
+  const { url } = JSON.parse(runGh([
+    'api', endpoint.href, '--method', 'POST', '--input', file,
+    '-H', 'Content-Type: application/octet-stream', '-H', 'Accept: application/vnd.github+json',
+  ]))
+  if (typeof url !== 'string' || !url.startsWith('https://github.com/user-attachments/assets/')) {
+    throw new Error('GitHub did not return an attachment URL')
   }
+  return url
 }
 
 async function main() {
   const [command, directory] = process.argv.slice(2)
-  if (!directory) throw new Error('Usage: themePreview.mjs prepare|upload|publish|check-cleanup|cleanup DIRECTORY')
+  if (!directory) throw new Error('Usage: themePreview.mjs prepare|upload|publish DIRECTORY')
   const requestPath = path.join(directory, 'request.json')
   const urlsPath = path.join(directory, 'urls.json')
-  const uploadPath = path.join(directory, 'upload.json')
-  const cleanupPath = path.join(directory, 'cleanup.json')
   if (command === 'prepare') {
     const repository = process.env.GITHUB_REPOSITORY
     const number = Number(process.env.DISCUSSION_NUMBER)
     const discussion = loadDiscussion(repository, number)
     const request = previewRequest(discussion)
-    const comment = request && findPreviewComment(discussion.id)
-    const enabled = !!request && !comment?.body.includes(`<!-- theme-preview-hash:${request.hash} -->`)
+    const enabled = !!request && request.existingHash !== request.hash
     if (enabled) {
       await mkdir(directory, { recursive: true })
-      await writeFile(requestPath, JSON.stringify({ repository, number, ...request }))
+      await writeFile(requestPath, JSON.stringify({ repository, number, theme: request.theme, hash: request.hash }))
       await writeFile(path.join(directory, 'theme.json'), JSON.stringify(request.theme))
     }
     if (process.env.GITHUB_OUTPUT) await appendFile(process.env.GITHUB_OUTPUT, `enabled=${enabled}\n`)
@@ -169,40 +161,16 @@ async function main() {
         throw new Error(`Invalid ${view} screenshot`)
       }
     }
-    const tag = selectReleaseTag(3)
+    const repositoryId = gh(['api', `repos/${request.repository}`, '--jq', '.id'])
     const urls = {}
-    const files = []
     for (const view of PREVIEW_VIEWS) {
-      const name = `theme-${request.number}-${request.hash}-${process.env.GITHUB_RUN_ID}-${process.env.GITHUB_RUN_ATTEMPT}-${view}.png`
-      const destination = path.join(directory, name)
-      await copyFile(path.join(directory, `${view}.png`), destination)
-      files.push(destination)
-      urls[view] = `https://github.com/${MEDIA_REPOSITORY}/releases/download/${tag}/${name}`
+      urls[view] = uploadPreviewImage(repositoryId, path.join(directory, `${view}.png`))
     }
-    // Record intended assets first so partial uploads can also be cleaned up.
-    await writeFile(uploadPath, JSON.stringify({ tag, names: files.map(file => path.basename(file)) }))
     await writeFile(urlsPath, JSON.stringify(urls))
-    gh(['release', 'upload', tag, ...files, '--repo', MEDIA_REPOSITORY])
   } else if (command === 'publish') {
     const request = JSON.parse(await readFile(requestPath, 'utf8'))
     const urls = JSON.parse(await readFile(urlsPath, 'utf8'))
-    const published = publishPreview(request, urls)
-    if (process.env.GITHUB_OUTPUT) await appendFile(process.env.GITHUB_OUTPUT, `published=${published}\n`)
-    console.log(published ? 'Published theme previews.' : 'Skipped unchanged or stale previews.')
-  } else if (command === 'check-cleanup') {
-    const upload = await readFile(uploadPath, 'utf8').catch(error => {
-      if (error.code !== 'ENOENT') throw error
-      return null
-    })
-    if (!upload) return
-    const request = JSON.parse(await readFile(requestPath, 'utf8'))
-    const urls = JSON.parse(await readFile(urlsPath, 'utf8'))
-    const unused = unusedPreviewViews(request, urls)
-    const { tag, names } = JSON.parse(upload)
-    await writeFile(cleanupPath, JSON.stringify({ tag, names: names.filter((_, index) => unused.includes(PREVIEW_VIEWS[index])) }))
-    if (process.env.GITHUB_OUTPUT) await appendFile(process.env.GITHUB_OUTPUT, `enabled=${unused.length > 0}\n`)
-  } else if (command === 'cleanup') {
-    cleanupPreviewUploads(JSON.parse(await readFile(cleanupPath, 'utf8')))
+    console.log(publishPreview(request, urls) ? 'Published theme previews.' : 'Skipped unchanged or stale previews.')
   } else {
     throw new Error(`Unknown command: ${command}`)
   }

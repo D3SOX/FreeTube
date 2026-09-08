@@ -3,15 +3,13 @@ import { test } from 'node:test'
 
 import { DEFAULT_CUSTOM_THEME } from '../../src/customTheme.js'
 import {
-  cleanupPreviewUploads,
-  findPreviewComment,
   PREVIEW_MARKER,
   previewRequest,
   publishPreview,
-  renderPreviewComment,
+  renderPreviewImages,
   SCREENSHOTS_START,
   SCREENSHOTS_END,
-  unusedPreviewViews,
+  uploadPreviewImage,
 } from '../../_scripts/themePreview.mjs'
 
 function discussion({ theme = DEFAULT_CUSTOM_THEME, screenshots = '', markers = true, fence = '```' } = {}) {
@@ -84,9 +82,9 @@ test('preserves theme names containing backticks and HTML comments as data', () 
   assert.equal(previewRequest(post).hash, previewRequest(reformatted).hash)
 })
 
-const urls = Object.fromEntries(['subscriptions', 'watch', 'settings'].map(view => [view, `https://example.com/${view}.png`]))
+const urls = Object.fromEntries(['subscriptions', 'watch', 'settings'].map(view => [view, `https://github.com/user-attachments/assets/${view}-123`]))
 
-function fakeApi(post, comments = []) {
+function fakeApi(post) {
   const mutations = []
   return {
     mutations,
@@ -95,36 +93,59 @@ function fakeApi(post, comments = []) {
         mutations.push({ query, variables })
         return {}
       }
-      if (query.includes('discussion(number:')) return { repository: { discussion: post } }
-      return { node: { comments: { nodes: comments, pageInfo: { hasNextPage: false } } } }
+      assert.ok(query.includes('discussion(number:'))
+      return { repository: { discussion: post } }
     },
   }
 }
 
-test('publishes three images once, then skips duplicates', () => {
-  const post = discussion()
-  const request = { ...previewRequest(post), repository: 'OpenTubeX/OpenTubeX', number: 123 }
-  const api = fakeApi(post)
-  assert.equal(publishPreview(request, urls, api.query), true)
-  assert.equal(api.mutations.length, 1)
-  assert.match(api.mutations[0].query, /addDiscussionComment/)
-  const body = api.mutations[0].variables.body
-  assert.equal((body.match(/!\[/g) ?? []).length, 3)
-  const duplicate = fakeApi(post, [{ id: 'C_1', body, author: { login: 'github-actions', __typename: 'Bot' } }])
-  assert.equal(publishPreview(request, urls, duplicate.query), false)
-  assert.equal(duplicate.mutations.length, 0)
+test('fills the original screenshot section and preserves surrounding text and theme JSON', () => {
+  for (const markers of [false, true]) {
+    const post = discussion({ markers })
+    const request = { ...previewRequest(post), repository: 'OpenTubeX/OpenTubeX', number: 123 }
+    const api = fakeApi(post)
+    assert.equal(publishPreview(request, urls, api.query), true)
+    assert.equal(api.mutations.length, 1)
+    assert.match(api.mutations[0].query, /updateDiscussion\(input:/)
+    assert.equal(api.mutations[0].variables.id, post.id)
+    const body = api.mutations[0].variables.body
+    assert.equal((body.match(/!\[/g) ?? []).length, 3)
+    assert.equal(body, post.body.slice(0, request.screenshotsEnd).trimEnd() + '\n\n' +
+      renderPreviewImages(request.hash, urls) + '\n\n' + post.body.slice(request.screenshotsEnd))
+    const duplicate = fakeApi({ ...post, body })
+    assert.equal(publishPreview(request, urls, duplicate.query), false)
+    assert.equal(duplicate.mutations.length, 0)
+  }
 })
 
-test('refreshes the bot comment and does not edit a user comment with a copied marker', () => {
-  const post = discussion()
+test('refreshes generated previews after a theme edit and preserves the latest description', () => {
+  const original = discussion()
+  const first = previewRequest(original)
+  const post = discussion({
+    theme: { ...DEFAULT_CUSTOM_THEME, name: 'Changed theme' },
+    screenshots: renderPreviewImages(first.hash, urls),
+  })
   const request = { ...previewRequest(post), repository: 'OpenTubeX/OpenTubeX', number: 123 }
-  const api = fakeApi(post, [
-    { id: 'user', body: PREVIEW_MARKER, author: { login: 'someone' } },
-    { id: 'bot', body: renderPreviewComment('old-hash', urls), author: { login: 'github-actions', __typename: 'Bot' } },
-  ])
+  post.body = post.body.replace('A theme to share.', 'An updated description.')
+  const api = fakeApi(post)
   assert.equal(publishPreview(request, urls, api.query), true)
-  assert.match(api.mutations[0].query, /updateDiscussionComment/)
-  assert.equal(api.mutations[0].variables.id, 'bot')
+  const body = api.mutations[0].variables.body
+  assert.ok(body.includes('An updated description.'))
+  assert.equal(body.split(PREVIEW_MARKER).length, 2)
+  assert.equal(previewRequest({ ...post, body }).existingHash, request.hash)
+})
+
+test('preserves user changes inside or alongside generated previews', () => {
+  const original = previewRequest(discussion())
+  const generated = renderPreviewImages(original.hash, urls)
+  for (const screenshots of [
+    generated + '\n![Mine](https://example.com/personal.png)',
+    generated.replace(urls.watch, 'https://example.com/personal.png'),
+    generated.replace(urls.watch, 'https://github.com/user-attachments/assets/user-upload'),
+    generated.replace('![Watch]', 'My own caption\n![Watch]'),
+  ]) {
+    assert.equal(previewRequest(discussion({ screenshots })), null)
+  }
 })
 
 test('rechecks category, theme, screenshots and lock state before posting', () => {
@@ -142,48 +163,27 @@ test('rechecks category, theme, screenshots and lock state before posting', () =
   }
 })
 
-test('finds an existing bot comment beyond the first page', () => {
-  const comment = { id: 'bot', body: PREVIEW_MARKER, author: { login: 'github-actions', __typename: 'Bot' } }
-  const cursors = []
-  const found = findPreviewComment('D_123', (_query, { after }) => {
-    cursors.push(after)
-    return { node: { comments: after
-      ? { nodes: [comment], pageInfo: { hasNextPage: false } }
-      : { nodes: [], pageInfo: { hasNextPage: true, endCursor: 'next' } } } }
+test('uploads a screenshot as a native attachment for the source repository', () => {
+  const url = 'https://github.com/user-attachments/assets/example'
+  const result = uploadPreviewImage('123', '/tmp/preview images/watch.png', args => {
+    const endpoint = new URL(args[1])
+    assert.equal(endpoint.origin, 'https://uploads.github.com')
+    assert.equal(endpoint.pathname, '/user-attachments/assets')
+    assert.equal(endpoint.searchParams.get('repository_id'), '123')
+    assert.equal(endpoint.searchParams.get('name'), 'watch.png')
+    assert.equal(endpoint.searchParams.get('content_type'), 'image/png')
+    assert.deepEqual(args.slice(2), [
+      '--method', 'POST', '--input', '/tmp/preview images/watch.png',
+      '-H', 'Content-Type: application/octet-stream', '-H', 'Accept: application/vnd.github+json',
+    ])
+    return JSON.stringify({ url })
   })
-  assert.deepEqual(found, comment)
-  assert.deepEqual(cursors, [null, 'next'])
+  assert.equal(result, url)
 })
 
-test('cleanup preserves images referenced by the bot after an uncertain publication result', () => {
-  const post = discussion()
-  const request = { repository: 'OpenTubeX/OpenTubeX', number: 123 }
-  const comments = [{
-    id: 'bot',
-    body: renderPreviewComment('hash', urls),
-    author: { login: 'github-actions', __typename: 'Bot' },
-  }]
-  assert.deepEqual(unusedPreviewViews(request, urls, fakeApi(post, comments).query), [])
-  assert.deepEqual(unusedPreviewViews(request, urls, fakeApi(post).query), ['subscriptions', 'watch', 'settings'])
-  const retryUrls = { ...urls, watch: 'https://example.com/retry-watch.png' }
-  assert.deepEqual(unusedPreviewViews(request, retryUrls, fakeApi(post, comments).query), ['watch'])
-  assert.throws(() => unusedPreviewViews(request, urls, () => { throw new Error('API unavailable') }), /API unavailable/)
-})
-
-test('cleanup finds uploads on later asset pages and deletes only this attempt by asset ID', () => {
-  const calls = []
-  cleanupPreviewUploads({ tag: 'attachments', names: ['this-attempt.png', 'never-uploaded.png'] }, args => {
-    calls.push(args)
-    if (args.includes('--jq')) return '123'
-    if (args.includes('--paginate')) {
-      assert.ok(args.includes('--slurp'))
-      return JSON.stringify([
-        [{ id: 1, name: 'older-preview.png' }],
-        [{ id: 2, name: 'this-attempt.png' }, { id: 3, name: 'another-attempt.png' }],
-      ])
-    }
-    assert.deepEqual(args, ['api', 'repos/OpenTubeX/media/releases/assets/2', '--method', 'DELETE'])
-    return ''
-  })
-  assert.equal(calls.length, 3)
+test('rejects missing or unexpected attachment URLs and propagates upload failures', () => {
+  for (const response of [{}, { url: 'https://example.com/image.png' }]) {
+    assert.throws(() => uploadPreviewImage('123', '/tmp/watch.png', () => JSON.stringify(response)), /attachment URL/)
+  }
+  assert.throws(() => uploadPreviewImage('123', '/tmp/watch.png', () => { throw new Error('Forbidden') }), /Forbidden/)
 })
