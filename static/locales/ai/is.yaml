@@ -949,6 +949,7 @@ Settings:
     Mobile Device: 'Fartæki'
     Desktop Device: 'Tölva'
     Open All Tabs: 'Opna alla flipa'
+    Open All Tabs Confirmation: "Opna alla flipa?"
   Proxy Settings:
     IP Block Recovery Script Path: Slóð að endurheimtarskriftu fyrir IP-lokun
     Select IP Block Recovery Script File: Velja skrá með endurheimtarskriftu fyrir IP-lokun

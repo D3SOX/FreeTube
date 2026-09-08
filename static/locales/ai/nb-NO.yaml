@@ -932,6 +932,7 @@ Settings:
     Mobile Device: 'Mobil'
     Desktop Device: 'Datamaskin'
     Open All Tabs: 'Åpne alle faner'
+    Open All Tabs Confirmation: "Åpne alle faner?"
   Proxy Settings:
     IP Block Recovery Script Path: Bane til skript for gjenoppretting etter IP-blokkering
     Select IP Block Recovery Script File: Velg skriptfil for gjenoppretting etter IP-blokkering

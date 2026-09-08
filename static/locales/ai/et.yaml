@@ -932,6 +932,7 @@ Settings:
     Mobile Device: 'Mobiilseade'
     Desktop Device: 'Arvuti'
     Open All Tabs: 'Ava kõik vahelehed'
+    Open All Tabs Confirmation: "Kas avada kõik vahelehed?"
   Proxy Settings:
     IP Block Recovery Script Path: IP-blokeeringust taastamise skripti asukoht
     Select IP Block Recovery Script File: Vali IP-blokeeringust taastamise skriptifail

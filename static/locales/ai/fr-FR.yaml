@@ -930,6 +930,7 @@ Settings:
     Mobile Device: 'Mobile'
     Desktop Device: 'Ordinateur'
     Open All Tabs: 'Ouvrir tous les onglets'
+    Open All Tabs Confirmation: "Ouvrir tous les onglets ?"
   Proxy Settings:
     IP Block Recovery Script Path: Chemin du script de récupération après blocage d’IP
     Select IP Block Recovery Script File: Sélectionner le fichier du script de récupération après blocage d’IP

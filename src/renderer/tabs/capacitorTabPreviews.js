@@ -1,9 +1,9 @@
-import { Capacitor } from '@capacitor/core'
+import { Capacitor, registerPlugin } from '@capacitor/core'
 import { Filesystem } from '@capacitor/filesystem'
-import { Screenshot } from '@capawesome/capacitor-screenshot'
 import { shallowReactive, watch } from 'vue'
 import { canCaptureCapacitorTab, createCapacitorPreviewCache } from './capacitorPreviewCache.js'
 
+const Screenshot = registerPlugin('Screenshot')
 const cache = createCapacitorPreviewCache(capturePage, shallowReactive(new Map()))
 let captureCurrent = async () => {}
 
@@ -97,8 +97,8 @@ async function capturePage() {
     context.drawImage(screenshot, 0, top * screenshot.height / height,
       screenshot.width, cropHeight * screenshot.height / height,
       0, 0, canvas.width, canvas.height)
-    // Android WebView.draw omits hardware video surfaces. Composite readable
-    // frames; if the frame is unavailable or tainted, retain the card fallback.
+    // Hardware video surfaces can be separate from the window buffer. Composite
+    // readable frames; otherwise retain the card fallback.
     for (const { video, rect } of videos) {
       if (video.readyState < 2 || !video.videoWidth) return null
       const fit = Math.min(rect.width / video.videoWidth, rect.height / video.videoHeight)

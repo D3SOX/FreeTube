@@ -1546,6 +1546,7 @@ Settings:
     Mobile Device: Mobile
     Desktop Device: Desktop
     Open All Tabs: Open all tabs
+    Open All Tabs Confirmation: "Open all tabs?"
     Disable Setting Sync: Stop syncing this setting
     Enable Setting Sync: Sync this setting
     Sync Now: Sync now

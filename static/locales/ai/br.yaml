@@ -930,6 +930,7 @@ Settings:
     Mobile Device: 'Pellgomzer'
     Desktop Device: 'Urzhiataer'
     Open All Tabs: 'Digeriñ an holl ivinelloù'
+    Open All Tabs Confirmation: "Digeriñ an holl ivinelloù?"
   Proxy Settings:
     IP Block Recovery Script Path: "Hent ar skript adtapout goude ur stankadur IP"
     Select IP Block Recovery Script File: "Dibab restr ar skript adtapout goude ur stankadur IP"

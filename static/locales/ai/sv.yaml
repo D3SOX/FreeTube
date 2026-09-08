@@ -934,6 +934,7 @@ Settings:
     Mobile Device: 'Mobil'
     Desktop Device: 'Dator'
     Open All Tabs: 'Öppna alla flikar'
+    Open All Tabs Confirmation: "Öppna alla flikar?"
   Proxy Settings:
     IP Block Recovery Script Path: Sökväg till skript för återställning efter IP-blockering
     Select IP Block Recovery Script File: Välj skriptfil för återställning efter IP-blockering

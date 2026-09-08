@@ -957,6 +957,7 @@ Settings:
     Mobile Device: 'Dispositivo móvel'
     Desktop Device: 'Computador'
     Open All Tabs: 'Abrir todos os separadores'
+    Open All Tabs Confirmation: "Abrir todos os separadores?"
   Proxy Settings:
     IP Block Recovery Script Path: Caminho do script de recuperação de bloqueio de IP
     Select IP Block Recovery Script File: Selecionar ficheiro do script de recuperação de bloqueio de IP

@@ -926,6 +926,7 @@ Settings:
     Mobile Device: 'Мобильное устройство'
     Desktop Device: 'Компьютер'
     Open All Tabs: 'Открыть все вкладки'
+    Open All Tabs Confirmation: "Открыть все вкладки?"
   Proxy Settings:
     IP Block Recovery Script Path: Путь к скрипту восстановления после блокировки IP
     Select IP Block Recovery Script File: Выбрать файл скрипта восстановления после блокировки IP

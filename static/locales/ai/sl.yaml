@@ -1216,6 +1216,7 @@ Settings:
     Mobile Device: 'Mobilna naprava'
     Desktop Device: 'Računalnik'
     Open All Tabs: 'Odpri vse zavihke'
+    Open All Tabs Confirmation: "Odprem vse zavihke?"
   Proxy Settings:
     Proxy Warning: OpenTubeX nima vgrajenega posredniškega strežnika, vendar se lahko poveže z zunanjim posredniškim strežnikom, na primer s storitvijo Tor v vašem računalniku ali strežnikom SOCKS5, ki ga ponujajo nekatera navidezna zasebna omrežja. Če ga omogočite, preverite, ali je posredniški strežnik oziroma Tor pravilno nastavljen, sicer OpenTubeX ne bo mogel pridobiti podatkov.
     Proxy Username: Uporabniško ime posredniškega strežnika

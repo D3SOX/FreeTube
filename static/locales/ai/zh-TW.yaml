@@ -932,6 +932,7 @@ Settings:
     Mobile Device: '行動裝置'
     Desktop Device: '桌面裝置'
     Open All Tabs: '開啟所有分頁'
+    Open All Tabs Confirmation: "開啟所有分頁？"
   Proxy Settings:
     IP Block Recovery Script Path: IP 封鎖復原指令碼路徑
     Select IP Block Recovery Script File: 選取 IP 封鎖復原指令碼檔案

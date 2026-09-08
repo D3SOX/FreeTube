@@ -949,6 +949,7 @@ Settings:
     Mobile Device: 'Móbil'
     Desktop Device: 'Escritorio'
     Open All Tabs: 'Abrir todas as lapelas'
+    Open All Tabs Confirmation: "Abrir todas as lapelas?"
   Proxy Settings:
     IP Block Recovery Script Path: Ruta do script de recuperación dun bloqueo de IP
     Select IP Block Recovery Script File: Escolle o ficheiro do script de recuperación dun bloqueo de IP

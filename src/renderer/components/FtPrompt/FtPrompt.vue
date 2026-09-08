@@ -15,6 +15,7 @@
         v-overlay-scrollbars="!fixedLayout"
         class="promptCard"
         :class="{ autosize, fixedLayout, [theme]: true, [cardClass]: cardClass !== '' }"
+        :inert="busy"
         role="dialog"
         aria-modal="true"
         :aria-labelledby="id"
@@ -61,7 +62,7 @@
               :text-color="optionButtonTextColor(index)"
               :background-color="optionButtonBackgroundColor(index)"
               :theme="index === 0 && isFirstOptionDestructive ? 'destructive' : ''"
-              :icon="index === 0 && isFirstOptionDestructive ? ['fas', 'trash'] : null"
+              :icon="optionIcons[index] ?? (index === 0 && isFirstOptionDestructive ? ['fas', 'trash'] : null)"
               @click="click(optionValues[index])"
             />
           </FtFlexBox>
@@ -99,6 +100,10 @@ const props = defineProps({
     type: Array,
     default: () => []
   },
+  optionIcons: {
+    type: Array,
+    default: () => []
+  },
   autosize: {
     type: Boolean,
     default: false
@@ -116,6 +121,10 @@ const props = defineProps({
     default: ''
   },
   inert: {
+    type: Boolean,
+    default: false
+  },
+  busy: {
     type: Boolean,
     default: false
   },
@@ -208,6 +217,7 @@ function optionButtonBackgroundColor(index) {
  * @param {any} value
  */
 function click(value) {
+  if (props.busy) return
   emit('click', value)
 }
 

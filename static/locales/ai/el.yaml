@@ -954,6 +954,7 @@ Settings:
     Mobile Device: 'Κινητό'
     Desktop Device: 'Υπολογιστής'
     Open All Tabs: 'Άνοιγμα όλων των καρτελών'
+    Open All Tabs Confirmation: "Άνοιγμα όλων των καρτελών;"
   Proxy Settings:
     IP Block Recovery Script Path: Διαδρομή δέσμης ενεργειών αποκατάστασης αποκλεισμού IP
     Select IP Block Recovery Script File: Επιλογή αρχείου δέσμης ενεργειών αποκατάστασης αποκλεισμού IP

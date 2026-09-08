@@ -431,6 +431,7 @@ Settings:
     Mobile Device: 'Urządzenie mobilne'
     Desktop Device: 'Komputer'
     Open All Tabs: 'Otwórz wszystkie karty'
+    Open All Tabs Confirmation: "Otworzyć wszystkie karty?"
   SponsorBlock Settings:
     Reveal Generated User ID: Pokaż wygenerowany identyfikator użytkownika
     Custom Color: Własny kolor

@@ -970,6 +970,7 @@ Settings:
     Mobile Device: 'Мобилни уређај'
     Desktop Device: 'Рачунар'
     Open All Tabs: 'Отвори све картице'
+    Open All Tabs Confirmation: "Отворити све картице?"
   Proxy Settings:
     Proxy Username: Корисничко име за прокси
     Proxy Password: Лозинка за прокси

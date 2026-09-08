@@ -930,6 +930,7 @@ Settings:
     Mobile Device: 'Mobil'
     Desktop Device: 'Počítač'
     Open All Tabs: 'Otvoriť všetky karty'
+    Open All Tabs Confirmation: "Otvoriť všetky karty?"
   Proxy Settings:
     IP Block Recovery Script Path: Cesta k skriptu na obnovenie po zablokovaní IP adresy
     Select IP Block Recovery Script File: Vybrať súbor skriptu na obnovenie po zablokovaní IP adresy

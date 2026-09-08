@@ -934,6 +934,7 @@ Settings:
     Mobile Device: 'Mobilni uređaj'
     Desktop Device: 'Računalo'
     Open All Tabs: 'Otvori sve kartice'
+    Open All Tabs Confirmation: "Otvoriti sve kartice?"
   Proxy Settings:
     IP Block Recovery Script Path: Putanja skripte za oporavak nakon blokiranja IP adrese
     Select IP Block Recovery Script File: Odaberi datoteku skripte za oporavak nakon blokiranja IP adrese

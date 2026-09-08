@@ -932,6 +932,7 @@ Settings:
     Mobile Device: 'Celular'
     Desktop Device: 'Computador'
     Open All Tabs: 'Abrir todas as abas'
+    Open All Tabs Confirmation: "Abrir todas as abas?"
   Proxy Settings:
     IP Block Recovery Script Path: Caminho do script de recuperação de bloqueio de IP
     Select IP Block Recovery Script File: Selecionar arquivo do script de recuperação de bloqueio de IP

@@ -930,6 +930,7 @@ Settings:
     Mobile Device: 'Mobil'
     Desktop Device: 'Masaüstü'
     Open All Tabs: 'Tüm sekmeleri aç'
+    Open All Tabs Confirmation: "Tüm sekmeler açılsın mı?"
   Proxy Settings:
     IP Block Recovery Script Path: IP Engeli Kurtarma Betiği Yolu
     Select IP Block Recovery Script File: IP Engeli Kurtarma Betiği Dosyasını Seç

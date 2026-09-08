@@ -953,6 +953,7 @@ Settings:
     Mobile Device: 'கைப்பேசி'
     Desktop Device: 'கணினி'
     Open All Tabs: 'எல்லா தாவல்களையும் திறக்கவும்'
+    Open All Tabs Confirmation: "எல்லா தாவல்களையும் திறக்கவா?"
   Proxy Settings:
     IP Block Recovery Script Path: IP தடுப்பு மீட்பு நிரலாக்கப் பாதை
     Select IP Block Recovery Script File: IP தடுப்பு மீட்பு நிரலாக்கக் கோப்பைத் தேர்ந்தெடு

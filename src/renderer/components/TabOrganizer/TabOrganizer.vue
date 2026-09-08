@@ -12,7 +12,7 @@
         role="dialog"
         aria-modal="true"
         :aria-labelledby="titleId"
-        :inert="sessionToDelete !== null"
+        :inert="sessionToDelete !== null || sessionToOpen !== null"
         @keydown="handleDialogKeydown"
       >
         <header class="tabOrganizerHeader">
@@ -487,7 +487,7 @@
                       <button
                         type="button"
                         class="syncedSessionActionButton"
-                        @click="openOtherDeviceSession(activeOtherDeviceSession)"
+                        @click="sessionToOpen = activeOtherDeviceSession"
                       >
                         <FtIcon
                           :icon="['fas', 'folder-open']"
@@ -605,6 +605,17 @@
     </div>
   </Teleport>
   <FtPrompt
+    v-if="sessionToOpen"
+    :busy="isOpeningSession"
+    :label="t('Settings.Sync Settings.Open All Tabs Confirmation')"
+    :extra-labels="[formatDeviceSessionLabel(sessionToOpen, t)]"
+    :option-names="[t('Settings.Sync Settings.Open All Tabs'), t('Cancel')]"
+    :option-values="['open', 'cancel']"
+    :option-icons="[['fas', 'folder-open'], ['fas', 'xmark']]"
+    autosize
+    @click="handleOpenSessionPrompt"
+  />
+  <FtPrompt
     v-if="sessionToDelete"
     :label="t('Delete')"
     :extra-labels="[formatDeviceSessionLabel(sessionToDelete, t)]"
@@ -653,6 +664,8 @@ const editingGroupName = ref('')
 const editingColorGroupId = ref(null)
 const failedTabAvatarUrls = ref({})
 const sessionToDelete = ref(null)
+const sessionToOpen = ref(null)
+const isOpeningSession = ref(false)
 const selectedOtherDeviceSessionKey = ref(null)
 const dialogRef = useTemplateRef('dialogRef')
 const searchRef = useTemplateRef('searchRef')
@@ -866,6 +879,28 @@ function selectOtherDeviceSessionAt(index, focus = false) {
 
 async function openOtherDeviceSession(session) {
   await store.dispatch('openSyncServerSession', session)
+}
+
+async function handleOpenSessionPrompt(option) {
+  if (isOpeningSession.value) return
+  const session = sessionToOpen.value
+  if (option !== 'open' || !session) {
+    sessionToOpen.value = null
+    return
+  }
+
+  isOpeningSession.value = true
+  try {
+    await openOtherDeviceSession(session)
+  } catch (error) {
+    showToast({
+      message: t('Settings.Sync Settings.Sync failed', { error: error.message }),
+      icon: ['fas', 'circle-exclamation'],
+    })
+  } finally {
+    sessionToOpen.value = null
+    isOpeningSession.value = false
+  }
 }
 
 async function handleDeleteSessionPrompt(option) {

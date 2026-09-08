@@ -43,7 +43,7 @@
             role="dialog"
             aria-modal="true"
             aria-labelledby="capacitor-phone-tab-dialog-title"
-            :inert="sessionToDelete !== null"
+            :inert="sessionToDelete !== null || sessionToOpen !== null"
           >
             <header class="capacitorPhoneTabHeader">
               <div class="capacitorPhoneTabHeading">
@@ -245,7 +245,7 @@
                       <button
                         type="button"
                         class="capacitorPhoneSyncedTabButton capacitorPhoneSyncedOpenAll"
-                        @click="openOtherDeviceSession(activeOtherDeviceSession)"
+                        @click="sessionToOpen = activeOtherDeviceSession"
                       >
                         <FtIcon
                           :icon="['fas', 'folder-open']"
@@ -314,8 +314,20 @@
       </Transition>
     </Teleport>
     <FtPrompt
+      v-if="sessionToOpen"
+      :busy="isOpeningSession"
+      card-class="capacitorPhoneSessionPrompt"
+      :label="t('Settings.Sync Settings.Open All Tabs Confirmation')"
+      :extra-labels="[formatDeviceSessionLabel(sessionToOpen, t)]"
+      :option-names="[t('Settings.Sync Settings.Open All Tabs'), t('Cancel')]"
+      :option-values="['open', 'cancel']"
+      :option-icons="[['fas', 'folder-open'], ['fas', 'xmark']]"
+      autosize
+      @click="handleOpenSessionPrompt"
+    />
+    <FtPrompt
       v-if="sessionToDelete"
-      card-class="capacitorPhoneDeletePrompt"
+      card-class="capacitorPhoneSessionPrompt"
       :label="t('Delete')"
       :extra-labels="[formatDeviceSessionLabel(sessionToDelete, t)]"
       :option-names="[t('Delete'), t('Cancel')]"
@@ -362,6 +374,8 @@ const syncedSessionIdPrefix = `capacitor-phone-synced-session-${useId().replaceA
 const syncedSessionPanelId = `${syncedSessionIdPrefix}-panel`
 const selectedOtherDeviceSessionKey = ref(null)
 const sessionToDelete = ref(null)
+const sessionToOpen = ref(null)
+const isOpeningSession = ref(false)
 const triggerRef = useTemplateRef('triggerRef')
 const dialogRef = useTemplateRef('dialogRef')
 const openTabsScrollRef = useTemplateRef('openTabsScrollRef')
@@ -599,6 +613,28 @@ function selectOtherDeviceSessionAt(index, focus = false) {
 
 async function openOtherDeviceSession(session) {
   if (await store.dispatch('openSyncServerSession', session)) closeSwitcher()
+}
+
+async function handleOpenSessionPrompt(option) {
+  if (isOpeningSession.value) return
+  const session = sessionToOpen.value
+  if (option !== 'open' || !session) {
+    sessionToOpen.value = null
+    return
+  }
+
+  isOpeningSession.value = true
+  try {
+    await openOtherDeviceSession(session)
+  } catch (error) {
+    showToast({
+      message: t('Settings.Sync Settings.Sync failed', { error: error.message }),
+      icon: ['fas', 'circle-exclamation'],
+    })
+  } finally {
+    sessionToOpen.value = null
+    isOpeningSession.value = false
+  }
 }
 
 async function handleDeleteSessionPrompt(option) {
