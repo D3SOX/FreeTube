@@ -1054,6 +1054,13 @@ export default defineComponent({
 
       return this.$store.getters.getPlaylist(this.playlistId)
     },
+    endScreenRecommendations: function () {
+      if (this.hideRecommendedVideos) return []
+      return this.recommendedVideos.filter(video =>
+        video.videoId && video.videoId !== this.videoId &&
+        !this.isHiddenVideo(this.forbiddenTitles, this.channelsHidden, video)
+      ).slice(0, 6)
+    },
     nextRecommendedVideo: function () {
       return this.recommendedVideos.find((video) =>
         !this.isHiddenVideo(this.forbiddenTitles, this.channelsHidden, video)

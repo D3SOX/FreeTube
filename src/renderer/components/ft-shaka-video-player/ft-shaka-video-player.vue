@@ -151,6 +151,50 @@
         @enterpictureinpicture="handleEnterPictureInPicture"
         @leavepictureinpicture="handleLeavePictureInPicture"
       />
+      <template v-if="showEndedScreen">
+        <div
+          class="endedPoster"
+          aria-hidden="true"
+        >
+          <img
+            :src="thumbnail"
+            alt=""
+          >
+        </div>
+        <div
+          v-if="endedRecommendations.length > 0"
+          class="endedScreen"
+        >
+          <nav
+            class="endedRecommendations shaka-no-propagation"
+            :aria-label="$t('Up Next')"
+            @click.stop
+            @dblclick.stop
+            @pointerdown.stop
+          >
+            <router-link
+              v-for="recommendation in endedRecommendations"
+              :key="recommendation.videoId"
+              class="endedRecommendation"
+              :to="{ path: `/watch/${recommendation.videoId}` }"
+              :title="recommendation.title"
+              :aria-label="recommendation.title"
+            >
+              <img
+                :class="{ blur: blurThumbnails }"
+                :src="recommendation.thumbnail"
+                alt=""
+              >
+              <span
+                class="endedRecommendationTitle"
+                dir="auto"
+              >
+                <span class="endedRecommendationTitleText">{{ recommendation.title }}</span>
+              </span>
+            </router-link>
+          </nav>
+        </div>
+      </template>
       <!-- Native playback hides the video element, including its poster. -->
       <div
         v-if="showCountdownOverlay && !audioPlayerMode && thumbnail"
@@ -240,7 +284,7 @@
             @click.stop="toggleShortsPlayback"
           >
             <svg
-              v-if="shortsEnded"
+              v-if="playbackEnded"
               class="shortsReplayIcon"
               viewBox="0 -960 960 960"
               aria-hidden="true"
@@ -523,7 +567,7 @@
         class="vrCanvas"
       />
       <FtVideoAnnotations
-        v-if="!hideAnnotations"
+        v-if="!hideAnnotations && !showEndedScreen"
         :active="isActiveTab"
         :annotations="annotations"
         :current-time="annotationCurrentTime"

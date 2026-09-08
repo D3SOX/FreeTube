@@ -60,6 +60,8 @@ import {
 import {
   addKeyboardShortcutToActionTitle,
   formatDurationAsTimestamp,
+  getCachedOembedTitle,
+  getOembedTitle,
   showToast,
   writeFileWithPicker,
   throttle,
@@ -316,6 +318,10 @@ export default defineComponent({
       default: ''
     },
     annotations: {
+      type: Array,
+      default: () => []
+    },
+    endScreenRecommendations: {
       type: Array,
       default: () => []
     },
@@ -584,10 +590,42 @@ export default defineComponent({
     // Shorts request autoplay, so do not render their paused-only controls
     // while the media element is still preparing its first `play` event.
     const shortsPaused = ref(false)
-    const shortsEnded = ref(false)
+    const playbackEnded = ref(false)
     const shortsMuted = ref(false)
     const shortsCaptionsAvailable = ref(false)
     const shortsCaptionsEnabled = ref(false)
+    const showEndedScreen = computed(() => playbackEnded.value &&
+      !props.autoplayEnabled && !props.autoplayCountdown && !props.shortsPlayer && !audioPlayerMode.value)
+    const blurThumbnails = computed(() => store.getters.getBlurThumbnails)
+    const originalEndedTitles = ref({})
+    const preferOriginalRecommendationTitles = computed(() => store.getters.getAvoidTranslation === 'entire_app')
+    watch(
+      [showEndedScreen, () => props.endScreenRecommendations, preferOriginalRecommendationTitles],
+      ([visible, recommendations, preferOriginal], _previous, onCleanup) => {
+        originalEndedTitles.value = {}
+        if (!visible || !preferOriginal) return
+
+        let active = true
+        onCleanup(() => { active = false })
+        for (const { videoId } of recommendations) {
+          const cachedTitle = getCachedOembedTitle(videoId)
+          if (cachedTitle !== null) {
+            originalEndedTitles.value[videoId] = cachedTitle
+          } else {
+            getOembedTitle(videoId).then(title => {
+              if (active && title) originalEndedTitles.value[videoId] = title
+            })
+          }
+        }
+      }
+    )
+    const endedRecommendations = computed(() => props.endScreenRecommendations.map(video => ({
+      ...video,
+      title: preferOriginalRecommendationTitles.value
+        ? originalEndedTitles.value[video.videoId] ?? video.title
+        : video.title,
+      thumbnail: getRecommendationThumbnail(video.videoId)
+    })))
     const showPoster = ref(true)
     const showPaidPromotion = ref(false)
     let paidPromotionTimer = null
@@ -610,8 +648,9 @@ export default defineComponent({
     }
 
     const autoplayNextVideo = computed(() => props.autoplayCountdown?.video ?? null)
-    const autoplayThumbnail = computed(() => {
-      const videoId = autoplayNextVideo.value?.videoId
+    const autoplayThumbnail = computed(() => getRecommendationThumbnail(autoplayNextVideo.value?.videoId))
+
+    function getRecommendationThumbnail(videoId) {
       if (!videoId) {
         return thumbnailPlaceholder
       }
@@ -638,7 +677,7 @@ export default defineComponent({
       }
 
       return `${baseUrl}/vi/${videoId}/${thumbnailName}`
-    })
+    }
     const autoplayDuration = computed(() => {
       const lengthSeconds = Number(autoplayNextVideo.value?.lengthSeconds)
       return Number.isFinite(lengthSeconds) && lengthSeconds > 0
@@ -5427,11 +5466,11 @@ export default defineComponent({
       mediaSessionStopped = false
       voiceOverTranslation.reset()
       showPoster.value = true
+      playbackEnded.value = false
       sponsorBlockMuteController.reset()
       clearSponsorBlockMuteSegments()
       if (props.shortsPlayer) {
         shortsPaused.value = false
-        shortsEnded.value = false
         shortsCaptionsAvailable.value = false
         shortsCaptionsEnabled.value = false
       }
@@ -5988,7 +6027,7 @@ export default defineComponent({
       playerPaused.value = false
       clearPausedInterfaceReveal()
       shortsPaused.value = false
-      shortsEnded.value = false
+      playbackEnded.value = false
       const isCurrentPictureInPictureVideo = document.pictureInPictureElement === video.value
       if (
         !isActiveTab.value &&
@@ -6083,7 +6122,7 @@ export default defineComponent({
 
       setShowUiOnPaused(true)
       shortsPaused.value = true
-      shortsEnded.value = true
+      playbackEnded.value = true
       syncPlayPauseControlIcons()
 
       if (isCapacitorMobilePlayer()) {
@@ -6115,7 +6154,7 @@ export default defineComponent({
 
     function handleSeeking() {
       hasPlaybackPosition.value = true
-      shortsEnded.value = false
+      playbackEnded.value = false
       cancelSponsorBlockSkipSchedule()
       clearAbRepeatBoundarySchedule()
       syncPlayPauseControlIcons()
@@ -11284,7 +11323,7 @@ export default defineComponent({
       useNativePlayback: process.env.IS_CAPACITOR,
       videoLayoutReady,
       shortsPaused,
-      shortsEnded,
+      playbackEnded,
       replayIcon: shaka.ui.Enums.MaterialDesignSVGIcons.REPLAY,
       shortsMuted,
       shortsCaptionsAvailable,
@@ -11292,6 +11331,9 @@ export default defineComponent({
       closedCaptionsOutlinedIcon: CLOSED_CAPTIONS_OUTLINED,
       closedCaptionsFilledIcon: shaka.ui.Enums.MaterialDesignSVGIcons.CLOSED_CAPTIONS,
       showPoster,
+      showEndedScreen,
+      endedRecommendations,
+      blurThumbnails,
       showPaidPromotion,
       toggleShortsPlayback,
       toggleShortsMuted,
