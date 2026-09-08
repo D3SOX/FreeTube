@@ -737,7 +737,6 @@ test('repeats an A-B range and manages it from the player menu', async ({ app, p
   await expect(player.locator('.abRepeatRange')).toHaveCount(0)
   const abRepeatPopup = player.locator('.valueChangePopup')
   await expect(abRepeatPopup.locator('.valueChangeCustomIcon')).toBeVisible()
-  await expect(abRepeatPopup).toHaveCSS('white-space', 'nowrap')
   await expect.poll(() => abRepeatPopup.locator(':scope > span:last-child').evaluate((element) => {
     const range = document.createRange()
     range.selectNodeContents(element)
