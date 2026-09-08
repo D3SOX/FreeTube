@@ -22,11 +22,15 @@ test.use({ seed: { settings: PLAYER_SEED } })
 
 test('only shows focus feedback during keyboard or gamepad navigation', async ({ page }) => {
   const searchInput = page.locator('.topNav .searchInput input.ft-input')
+  await expect(searchInput).not.toBeFocused()
+  // Themes can use a box shadow for the input border even without focus.
+  const unfocusedBoxShadow = await searchInput.evaluate(element => getComputedStyle(element).boxShadow)
 
   await searchInput.click()
+  await expect(searchInput).toBeFocused()
   await expect(page.locator('.app')).toHaveClass(/hideOutlines/)
   await expect(searchInput).toHaveCSS('outline-style', 'none')
-  await expect(searchInput).toHaveCSS('box-shadow', 'none')
+  await expect(searchInput).toHaveCSS('box-shadow', unfocusedBoxShadow)
 
   await page.keyboard.press('Shift+Tab')
   await page.keyboard.press('Tab')
@@ -34,6 +38,13 @@ test('only shows focus feedback during keyboard or gamepad navigation', async ({
   await expect(page.locator('.app')).not.toHaveClass(/hideOutlines/)
   await expect(searchInput).toHaveCSS('outline-style', 'solid')
   await expect(searchInput).not.toHaveCSS('box-shadow', 'none')
+  await expect(searchInput).not.toHaveCSS('box-shadow', unfocusedBoxShadow)
+
+  await searchInput.click()
+  await expect(searchInput).toBeFocused()
+  await expect(page.locator('.app')).toHaveClass(/hideOutlines/)
+  await expect(searchInput).toHaveCSS('outline-style', 'none')
+  await expect(searchInput).toHaveCSS('box-shadow', unfocusedBoxShadow)
 })
 
 async function connectMockGamepad(page) {
