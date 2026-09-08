@@ -447,14 +447,15 @@ function gitIsAncestor(ancestor, descendant) {
 export function selectPullRequests(pullRequests, previousTag, target) {
   if (!gitIsAncestor(previousTag, target)) { throw new Error(`${previousTag} is not an ancestor of ${target}.`) }
 
-  return pullRequests
-    .filter(({ mergeCommit }) => {
-      const commit = mergeCommit?.oid
+  // API results can include merges made after checkout. Match against the fixed
+  // release range without asking Git to resolve those newer commit objects.
+  const commits = new Set(execFileSync('git', ['rev-list', `${previousTag}..${target}`], {
+    encoding: 'utf8',
+    maxBuffer: 10 * 1024 * 1024,
+  }).split('\n').filter(Boolean))
 
-      return commit &&
-        gitIsAncestor(commit, target) &&
-        !gitIsAncestor(commit, previousTag)
-    })
+  return pullRequests
+    .filter(({ mergeCommit }) => commits.has(mergeCommit?.oid))
     .sort((left, right) => left.mergedAt.localeCompare(right.mergedAt))
 }
 
