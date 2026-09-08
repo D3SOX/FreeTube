@@ -77,6 +77,14 @@
         @change="updateHideToTrayOnMinimize"
       />
       <FtToggleSwitch
+        v-if="mode === 'general' && IS_CAPACITOR"
+        :label="t('Settings.General Settings.Swipe to refresh')"
+        :default-value="enablePullToRefresh"
+        setting-key="enablePullToRefresh"
+        :compact="true"
+        @change="store.dispatch('updateEnablePullToRefresh', $event)"
+      />
+      <FtToggleSwitch
         v-if="mode === 'general'"
         :label="t('Settings.General Settings.Use AI Translation Completions')"
         :default-value="useAITranslationCompletions"
@@ -356,6 +364,7 @@ import {
 
 const USING_ELECTRON = !!process.env.IS_ELECTRON
 const IS_CAPACITOR = !!process.env.IS_CAPACITOR
+const enablePullToRefresh = computed(() => store.getters.getEnablePullToRefresh)
 const SUPPORTS_LOCAL_API = !!process.env.SUPPORTS_LOCAL_API
 const IS_MAC = process.platform === 'darwin'
 const PLAYBACK_ENGINE_VALUES = ['yt-dlp', 'built-in']

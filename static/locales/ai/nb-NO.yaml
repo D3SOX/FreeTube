@@ -239,6 +239,7 @@ Settings:
       Network: nettverk
       Disk: disk
   General Settings:
+    Swipe to refresh: Sveip for å oppdatere
     Blur Thumbnails: Gjør miniatyrbilder uskarpe
     Navigation:
       Navigation: Navigasjon

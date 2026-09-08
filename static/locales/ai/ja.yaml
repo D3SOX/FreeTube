@@ -239,6 +239,7 @@ Settings:
       Network: ネットワーク
       Disk: ディスク
   General Settings:
+    Swipe to refresh: スワイプして更新
     Blur Thumbnails: サムネイルをぼかす
     Navigation:
       Navigation: ナビゲーション

@@ -35,6 +35,7 @@ final class NativePlaybackScreen extends FrameLayout implements TextureView.Surf
     private Surface surface;
     private boolean backgroundGesture;
     private final WebView webOverlay;
+    private final View webOverlayHost;
     private final ViewGroup originalParent;
     private final ViewGroup.LayoutParams originalLayout;
     private final int originalIndex;
@@ -151,8 +152,12 @@ final class NativePlaybackScreen extends FrameLayout implements TextureView.Surf
             originalParent.removeView(webOverlay);
             webOverlay.setBackgroundColor(Color.TRANSPARENT);
             webOverlay.getViewTreeObserver().addOnScrollChangedListener(pageScrollListener);
-            addView(webOverlay, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+            webOverlayHost = originalParent instanceof PullToRefreshLayout
+                ? ((PullToRefreshLayout) originalParent).wrapPlaybackOverlay(webOverlay)
+                : webOverlay;
+            addView(webOverlayHost, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         } else {
+            webOverlayHost = null;
             originalParent = null;
             originalLayout = null;
             originalIndex = 0;
@@ -238,8 +243,15 @@ final class NativePlaybackScreen extends FrameLayout implements TextureView.Surf
         });
     }
 
+    @Override protected void dispatchDraw(android.graphics.Canvas canvas) {
+        super.dispatchDraw(canvas);
+        if (!pictureInPicture && webOverlayHost instanceof PullToRefreshLayout) {
+            ((PullToRefreshLayout) webOverlayHost).drawRefreshIndicator(canvas, getDrawingTime());
+        }
+    }
+
     @Override protected boolean drawChild(android.graphics.Canvas canvas, View child, long drawingTime) {
-        if (child == webOverlay && readyWebFrame == transitionSequence) {
+        if (child == webOverlayHost && readyWebFrame == transitionSequence) {
             long sequence = readyWebFrame;
             readyWebFrame = -1;
             // This draw consumes Chromium's ready frame. Keep the video above
@@ -247,13 +259,13 @@ final class NativePlaybackScreen extends FrameLayout implements TextureView.Surf
             postOnAnimation(() -> {
                 if (transitionSequence != sequence) return;
                 transitioning = false;
-                webOverlay.bringToFront();
+                webOverlayHost.bringToFront();
                 controls.bringToFront();
                 refreshVideoLayout();
                 updatePresentation();
             });
         }
-        if (child == webOverlay) {
+        if (child == webOverlayHost) {
             boolean drawn = super.drawChild(canvas, child, drawingTime);
             if (!afterWebDraw.isEmpty()) {
                 java.util.List<Runnable> callbacks = new java.util.ArrayList<>(afterWebDraw);
@@ -336,8 +348,9 @@ final class NativePlaybackScreen extends FrameLayout implements TextureView.Surf
     }
 
     private void restoreWebView() {
-        if (webOverlay != null && webOverlay.getParent() == this) {
-            removeView(webOverlay);
+        if (webOverlayHost != null && webOverlayHost.getParent() == this) {
+            removeView(webOverlayHost);
+            if (webOverlayHost != webOverlay) ((ViewGroup) webOverlayHost).removeView(webOverlay);
             originalParent.addView(webOverlay, Math.min(originalIndex, originalParent.getChildCount()), originalLayout);
         }
     }
@@ -542,7 +555,7 @@ final class NativePlaybackScreen extends FrameLayout implements TextureView.Surf
     void setPictureInPicture(boolean enabled) {
         pictureInPicture = enabled;
         updatePresentation();
-        if (webOverlay != null) webOverlay.setAlpha(enabled ? 0 : 1);
+        if (webOverlayHost != null) webOverlayHost.setAlpha(enabled ? 0 : 1);
         refreshVideoLayout();
     }
 
@@ -582,7 +595,7 @@ final class NativePlaybackScreen extends FrameLayout implements TextureView.Surf
         if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
             clearNativeButtonDown();
             gestureTarget = !isOverMenu(event.getX(), event.getY()) && controls.isFullyVisible() &&
-                hasControlAt(controls, event.getRawX(), event.getRawY()) ? controls : webOverlay;
+                hasControlAt(controls, event.getRawX(), event.getRawY()) ? controls : webOverlayHost;
             backgroundGesture = gestureTarget == null;
             if (gestureTarget == controls && webOverlay != null) nativeButtonDown = MotionEvent.obtain(event);
         }
@@ -598,8 +611,8 @@ final class NativePlaybackScreen extends FrameLayout implements TextureView.Surf
                 cancel.setAction(MotionEvent.ACTION_CANCEL);
                 dispatchToTarget(controls, cancel);
                 cancel.recycle();
-                gestureTarget = webOverlay;
-                dispatchToTarget(webOverlay, nativeButtonDown);
+                gestureTarget = webOverlayHost;
+                dispatchToTarget(webOverlayHost, nativeButtonDown);
                 clearNativeButtonDown();
             }
         }

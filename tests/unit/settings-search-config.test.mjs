@@ -20,6 +20,19 @@ const locale = loadYaml(await readFile(
 ))
 const getAtPath = (value, path) => path.split('.').reduce((nested, key) => nested?.[key], value)
 
+test('swipe to refresh is searchable in mobile general settings only', () => {
+  for (const isCapacitor of [true, false]) {
+    const entries = createSettingsSearchIndex({
+      sections: [{ type: 'general', title: 'General', description: '' }],
+      tm: path => getAtPath(locale, path),
+      store: { getters: {} },
+      isCapacitor,
+      usingElectron: !isCapacitor,
+    }).get('general')
+    assert.equal(entries.some(({ label }) => label === 'Swipe to refresh'), isCapacitor)
+  }
+})
+
 test('settings search paths match the canonical locale structure', () => {
   for (const sources of Object.values(SETTINGS_SEARCH_SOURCES)) {
     for (const source of sources) {

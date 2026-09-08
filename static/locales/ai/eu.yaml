@@ -241,6 +241,7 @@ Settings:
       Network: sarea
       Disk: diskoa
   General Settings:
+    Swipe to refresh: Irristatu freskatzeko
     Blur Thumbnails: Lausotu koadro txikiak
     Navigation:
       Navigation: Nabigazioa

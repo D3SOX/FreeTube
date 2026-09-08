@@ -239,6 +239,7 @@ Settings:
       Network: 網路
       Disk: 磁碟
   General Settings:
+    Swipe to refresh: 下拉重新整理
     Blur Thumbnails: 模糊縮圖
     Navigation:
       Navigation: 導覽

@@ -250,6 +250,7 @@ Settings:
       Network: netværk
       Disk: diskplads
   General Settings:
+    Swipe to refresh: Stryg for at opdatere
     Blur Thumbnails: Slør miniaturebilleder
     Navigation:
       Navigation: Navigation

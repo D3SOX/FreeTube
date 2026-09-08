@@ -1,5 +1,9 @@
 # Project instructions
 
+## Documentation
+
+- Do not create new documentation files, feature writeups, implementation notes, plans, or task summaries unless the user explicitly requests them. Put change explanations and validation details in the PR description. Update existing documentation only when the change makes it inaccurate.
+
 ## Testing
 
 - For bugfixes, reproduce the failure with a regression test before applying the fix, then verify that it passes afterward. Verify new features with checks appropriate to the affected code. If automated reproduction or verification is impractical, explain why and report the evidence used, unless the user explicitly waived verification.

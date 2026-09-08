@@ -243,6 +243,7 @@ Settings:
       Network: rede
       Disk: disco
   General Settings:
+    Swipe to refresh: Esvarar para actualizar
     Blur Thumbnails: Desenfocar miniaturas
     Navigation:
       Navigation: Navegación

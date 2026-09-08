@@ -28,7 +28,13 @@ public class AndroidMediaSessionPlugin extends Plugin {
     protected void handleOnDestroy() {
         if (activePlugin.get() == this) {
             activePlugin.clear();
-            getContext().stopService(new Intent(getContext(), AndroidMediaSessionService.class));
+            try {
+                // Let pending foreground starts run and acknowledge before teardown.
+                getContext().startService(new Intent(getContext(), AndroidMediaSessionService.class)
+                    .setAction(AndroidMediaSessionService.ACTION_STOP));
+            } catch (IllegalStateException | SecurityException error) {
+                com.getcapacitor.Logger.error("Could not queue playback service shutdown", error);
+            }
         }
         super.handleOnDestroy();
     }
@@ -42,7 +48,7 @@ public class AndroidMediaSessionPlugin extends Plugin {
         }
 
         mainHandler.post(() -> {
-            if (!AndroidPlaybackPlugin.acceptsMediaOwner(state.optString("nativeOwner", ""))) {
+            if (activePlugin.get() != this || !AndroidPlaybackPlugin.acceptsMediaOwner(state.optString("nativeOwner", ""))) {
                 call.resolve();
                 return;
             }
@@ -62,7 +68,18 @@ public class AndroidMediaSessionPlugin extends Plugin {
     public void clear(PluginCall call) {
         mainHandler.post(() -> {
             if (AndroidPlaybackPlugin.acceptsMediaOwner(call.getString("nativeOwner", ""))) {
-                getContext().stopService(new Intent(getContext(), AndroidMediaSessionService.class));
+                try {
+                    // Deliver the stop after pending updates have acknowledged their
+                    // foreground starts. stopService() can kill an unstarted service.
+                    getContext().startService(new Intent(getContext(), AndroidMediaSessionService.class)
+                        .setAction(AndroidMediaSessionService.ACTION_UPDATE)
+                        .putExtra(AndroidMediaSessionService.EXTRA_STATE, new JSObject()
+                            .put("nativeOwner", call.getString("nativeOwner", ""))
+                            .put("playbackState", "none").toString()));
+                } catch (IllegalStateException | SecurityException error) {
+                    call.reject("Android did not allow clearing the playback service", error);
+                    return;
+                }
             }
             call.resolve();
         });

@@ -238,6 +238,7 @@ Settings:
       Network: network
       Disk: disk
   General Settings:
+    Swipe to refresh: Swipe to refresh
     Blur Thumbnails: Blur thumbnails
     Navigation:
       Navigation: Navigation

@@ -243,6 +243,7 @@ Settings:
       Network: nets
       Disk: disks
   General Settings:
+    Swipe to refresh: Strjúktu til að endurhlaða
     Blur Thumbnails: Þoka smámyndir
     Navigation:
       Navigation: Leiðsögn

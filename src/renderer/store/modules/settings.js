@@ -556,6 +556,7 @@ const state = {
   // If the playlist is removed quick bookmark is disabled
   quickBookmarkTargetPlaylistId: 'favorites',
   generalAutoLoadMorePaginatedItemsEnabled: true,
+  enablePullToRefresh: true,
   hideToTrayOnMinimize: false,
   dateFormat: 'locale',
   timeFormat: 'locale',

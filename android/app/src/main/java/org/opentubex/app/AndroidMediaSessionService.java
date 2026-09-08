@@ -36,6 +36,7 @@ import java.util.concurrent.Executors;
 public class AndroidMediaSessionService extends Service {
     private static java.lang.ref.WeakReference<AndroidMediaSessionService> activeService = new java.lang.ref.WeakReference<>(null);
     static final String ACTION_UPDATE = "org.opentubex.app.media.UPDATE";
+    static final String ACTION_STOP = "org.opentubex.app.media.STOP";
     static final String EXTRA_STATE = "state";
 
     private static final String ACTION_CONTROL_PREFIX = "org.opentubex.app.media.CONTROL.";
@@ -142,6 +143,11 @@ public class AndroidMediaSessionService extends Service {
             return START_NOT_STICKY;
         }
 
+        if (ACTION_STOP.equals(action)) {
+            stopPlaybackService();
+            return START_NOT_STICKY;
+        }
+
         String serializedState = intent == null ? null : intent.getStringExtra(EXTRA_STATE);
         if (!ACTION_UPDATE.equals(action) || serializedState == null) {
             stopPlaybackService();
@@ -151,8 +157,12 @@ public class AndroidMediaSessionService extends Service {
         try {
             JSONObject nextState = new JSONObject(serializedState);
             if (!AndroidPlaybackPlugin.acceptsMediaOwner(nextState.optString("nativeOwner", ""))) {
-                if (currentState == null) stopSelf(startId);
-                else applyState(currentState, true);
+                if (currentState == null) {
+                    // Even an obsolete start must acknowledge foreground startup
+                    // before stopping, or Android terminates the entire process.
+                    startForeground(NOTIFICATION_ID, buildNotification(nextState, java.util.Collections.emptySet()));
+                    stopSelf(startId);
+                } else applyState(currentState, true);
                 return START_NOT_STICKY;
             }
             currentState = nextState;

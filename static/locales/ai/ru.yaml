@@ -218,6 +218,7 @@ Settings:
       Network: сеть
       Disk: диск
   General Settings:
+    Swipe to refresh: Обновлять смахиванием
     Blur Thumbnails: Размывать миниатюры
     Navigation:
       Navigation: Навигация

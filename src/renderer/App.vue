@@ -539,6 +539,7 @@ import { tabMediaCoordinator } from './tabs/TabMediaCoordinator'
 import { tabRuntimeRegistry } from './tabs/TabRuntimeRegistry'
 import { getTabAvatarUrl, getTabPageIcon, getTabPreviewFallbackUrl } from './tabs/tabPreview'
 import { preloadResolvedRoute, preloadUtilityRoutes } from './router/index'
+import { initializeCapacitorPullToRefresh } from './helpers/capacitorPullToRefresh'
 
 const SettingsWindow = defineAsyncComponent(() => import('./views/Settings/Settings.vue'))
 const FtPlaylistAddVideoPrompt = defineAsyncComponent(() => import('./components/FtPlaylistAddVideoPrompt/FtPlaylistAddVideoPrompt.vue'))
@@ -834,6 +835,7 @@ let removeReloadRequestListener = null
 let removeConfirmMultipleTabsActionListener = null
 let removeOpenUrlListener = null
 let removeCapacitorIntegrationListeners = null
+let capacitorPullToRefreshSetup = null
 let removeCapacitorTabPreviews = null
 let removeYtDlpBinaryUpdatedListener = null
 let removeAndroidYtDlpSettingsListener = null
@@ -1327,6 +1329,10 @@ onMounted(async () => {
 
     await nextTick()
     scheduleUtilityRoutePreload()
+    if (isCapacitor) {
+      capacitorPullToRefreshSetup = initializeCapacitorPullToRefresh()
+        .catch(error => console.error('Failed to initialize pull to refresh', error))
+    }
     if (isElectron && tutorialPending) {
       try {
         await window.ftElectron.tabs.setShortcutsBlocked(true)
@@ -1447,6 +1453,7 @@ onBeforeUnmount(() => {
   removeConfirmMultipleTabsActionListener?.()
   removeOpenUrlListener?.()
   removeCapacitorIntegrationListeners?.()
+  capacitorPullToRefreshSetup?.then(remove => remove?.())
   removeYtDlpBinaryUpdatedListener?.()
   removeAndroidYtDlpSettingsListener?.()
   removeOpenTabOrganizerListener?.()
