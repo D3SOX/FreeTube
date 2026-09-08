@@ -3,6 +3,11 @@ import { sampleColors } from '../../helpers/colors.mjs'
 import { openMockedVideo, waitForPlayback } from '../../helpers/player.mjs'
 import { mockPlayableWatchPage, watchViewHandle } from '../../helpers/watch.mjs'
 
+function maxColorDifference(actual, reference) {
+  return Math.max(...actual.flatMap((color, point) =>
+    color.map((value, channel) => Math.abs(value - reference[point][channel]))))
+}
+
 async function expectContinuousBackground(app, region, points) {
   const colors = await sampleColors(app, region, points)
   const difference = Math.max(...colors.slice(1).flatMap(color =>
@@ -25,8 +30,7 @@ async function expectDescriptionBackground(app, region, points) {
     })
     try {
       const reference = await sampleColors(app, region, points)
-      return Math.max(...actual.flatMap((color, point) =>
-        color.map((value, channel) => Math.abs(value - reference[point][channel]))))
+      return maxColorDifference(actual, reference)
     } finally {
       await style.evaluate(element => element.remove())
     }
@@ -51,8 +55,7 @@ async function expectPanelOwnsBackground(app, card, points) {
   })
   try {
     const reference = await sampleColors(app, card, points)
-    const difference = Math.max(...actual.flatMap((color, point) =>
-      color.map((value, channel) => Math.abs(value - reference[point][channel]))))
+    const difference = maxColorDifference(actual, reference)
     expect.soft(difference, `Panel card pixels: ${JSON.stringify({ actual, reference })}`).toBeLessThanOrEqual(2)
   } finally {
     await card.evaluate((element, style) => {
@@ -90,6 +93,33 @@ for (const theme of ['openTubeXLight', 'openTubeXDark']) {
         // Sample the empty gutter on both sides of the header's bottom edge.
         await expectContinuousBackground(app, header, [[5, height - 4], [5, height + 4]])
         await attachThemeScreenshot(app, testInfo, `${theme} subscription header at ${scale}%`)
+      })
+
+      test('search filter background does not flash when its opening animation ends', async ({ app, page }) => {
+        await page.addStyleTag({ content: '.promptCard { animation-play-state: paused !important; }' })
+        await page.locator('.navFilterButton').click()
+        const dialog = page.getByRole('dialog', { name: 'Search Filters' })
+        await expect(dialog).toBeVisible()
+        await dialog.evaluate(element => {
+          const animation = element.getAnimations().find(animation => animation.animationName?.startsWith('prompt-card-enter'))
+          if (!animation) throw new Error('Missing prompt opening animation')
+          // Sample just before the transform is removed, with effectively
+          // identical geometry and opacity to the settled dialog.
+          animation.currentTime = animation.effect.getComputedTiming().duration - 0.001
+          element.closest('.prompt').getAnimations().forEach(animation => animation.finish())
+        })
+        await expect(dialog).not.toHaveCSS('transform', 'none')
+        const points = await dialog.evaluate(element => {
+          const { width, height } = element.getBoundingClientRect()
+          return [[4, 16], [width / 2, 4], [width - 4, height / 2], [4, height - 16]]
+        })
+        const opening = await sampleColors(app, dialog, points, { finishAnimations: false })
+        const settled = await sampleColors(app, dialog, points)
+        await expect(dialog).toHaveCSS('transform', 'none')
+        const difference = maxColorDifference(opening, settled)
+        expect(difference, `Opening and settled backgrounds: ${JSON.stringify({ opening, settled })}`).toBeLessThanOrEqual(2)
+        await page.getByRole('button', { name: 'Close', exact: true }).click()
+        await expect(dialog).toBeHidden()
       })
 
       test('description controls and fades blend into their card', async ({ app, page }, testInfo) => {
