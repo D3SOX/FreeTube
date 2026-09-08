@@ -365,6 +365,8 @@ Settings:
       Unable to Load: Não foi possível carregar os tipos de letra instalados no sistema
     Always Show Scrollbars: Mostrar sempre as barras de deslocamento
     Base Theme:
+      OpenTubeX Light: "OpenTubeX Claro"
+      OpenTubeX Dark: "OpenTubeX Escuro"
       Custom: Personalizado
     Light Theme: Tema claro
     Dark Theme: Tema escuro

@@ -504,6 +504,8 @@ Settings:
     Always Show Scrollbars: Mostra sempre les barres de desplaçament
     Hide OpenTubeX Header Logo: Oculta el logotip de l'OpenTubeX de la capçalera
     Base Theme:
+      OpenTubeX Light: "OpenTubeX Clar"
+      OpenTubeX Dark: "OpenTubeX Fosc"
       Custom: Personalitzat
       Catppuccin Frappe: Catppuccin Frappe
       Catppuccin Latte: Catppuccin Latte

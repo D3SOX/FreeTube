@@ -365,6 +365,8 @@ Settings:
       Unable to Load: Paigaldatud süsteemifonte ei saa laadida
     Always Show Scrollbars: Kuva kerimisribad alati
     Base Theme:
+      OpenTubeX Light: "OpenTubeX Hele"
+      OpenTubeX Dark: "OpenTubeX Tume"
       Custom: Kohandatud
     Light Theme: Hele teema
     Dark Theme: Tume teema

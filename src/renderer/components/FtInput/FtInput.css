@@ -137,6 +137,7 @@ body[dir='rtl'] .ft-input-component.search.showClearTextButton:focus-within .inp
   color: var(--secondary-text-color);
   border-radius: calc(5px * var(--ui-roundness));
   background-color: var(--search-bar-color);
+  box-shadow: inset 0 0 0 1px var(--input-border-color, transparent);
   backdrop-filter: var(--search-bar-blur, none);
 }
 

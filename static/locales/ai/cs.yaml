@@ -365,6 +365,8 @@ Settings:
       Unable to Load: Nainstalovaná systémová písma se nepodařilo načíst
     Always Show Scrollbars: Vždy zobrazovat posuvníky
     Base Theme:
+      OpenTubeX Light: "OpenTubeX Světlý"
+      OpenTubeX Dark: "OpenTubeX Tmavý"
       Custom: Vlastní
     Light Theme: Světlý motiv
     Dark Theme: Tmavý motiv

@@ -365,6 +365,8 @@ Settings:
       Unable to Load: Impossible de charger les polices installées sur le système
     Always Show Scrollbars: Toujours afficher les barres de défilement
     Base Theme:
+      OpenTubeX Light: "OpenTubeX Clair"
+      OpenTubeX Dark: "OpenTubeX Sombre"
       Custom: Personnalisé
     Light Theme: Thème clair
     Dark Theme: Thème sombre

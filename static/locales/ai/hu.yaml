@@ -365,6 +365,8 @@ Settings:
       Unable to Load: A rendszerre telepített betűkészletek nem tölthetők be
     Always Show Scrollbars: Görgetősávok mindig láthatók
     Base Theme:
+      OpenTubeX Light: "OpenTubeX Világos"
+      OpenTubeX Dark: "OpenTubeX Sötét"
       Custom: Egyéni
     Light Theme: Világos téma
     Dark Theme: Sötét téma

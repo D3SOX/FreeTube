@@ -202,7 +202,7 @@ let targetResizeObserver = null
 let observedTarget = null
 
 const BASE_THEME_VALUES = [
-  'system', 'light', 'dark', 'black', 'nordic', 'hotPink', 'pastelPink',
+  'system', 'light', 'dark', 'black', 'openTubeXLight', 'openTubeXDark', 'nordic', 'hotPink', 'pastelPink',
   'catppuccinFrappe', 'catppuccinLatte', 'catppuccinMocha', 'dracula',
   'everforestDarkHard', 'everforestDarkMedium', 'everforestDarkLow',
   'everforestLightHard', 'everforestLightMedium', 'everforestLightLow',
@@ -280,6 +280,8 @@ const baseThemeNames = computed(() => [
   t('Settings.Theme Settings.Base Theme.Light'),
   t('Settings.Theme Settings.Base Theme.Dark'),
   t('Settings.Theme Settings.Base Theme.Black'),
+  t('Settings.Theme Settings.Base Theme.OpenTubeX Light'),
+  t('Settings.Theme Settings.Base Theme.OpenTubeX Dark'),
   t('Settings.Theme Settings.Base Theme.Nordic'),
   t('Settings.Theme Settings.Base Theme.Hot Pink'),
   t('Settings.Theme Settings.Base Theme.Pastel Pink'),

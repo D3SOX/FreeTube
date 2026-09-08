@@ -369,6 +369,8 @@ Settings:
       Unable to Load: Δεν ήταν δυνατή η φόρτωση των εγκατεστημένων γραμματοσειρών συστήματος
     Always Show Scrollbars: Μόνιμη εμφάνιση γραμμών κύλισης
     Base Theme:
+      OpenTubeX Light: "OpenTubeX Φωτεινό"
+      OpenTubeX Dark: "OpenTubeX Σκοτεινό"
       Custom: Προσαρμοσμένο
     Light Theme: Φωτεινό θέμα
     Dark Theme: Σκοτεινό θέμα

@@ -382,6 +382,8 @@ Settings:
       Unable to Load: Не ўдалося загрузіць усталяваныя сістэмныя шрыфты
     Always Show Scrollbars: Заўсёды паказваць палосы пракруткі
     Base Theme:
+      OpenTubeX Light: "OpenTubeX Светлая"
+      OpenTubeX Dark: "OpenTubeX Цёмная"
       Custom: Карыстальніцкая
       Catppuccin Latte: Catppuccin Latte
     Light Theme: Светлая тэма

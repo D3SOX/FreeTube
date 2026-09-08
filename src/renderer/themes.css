@@ -4,9 +4,16 @@ body {
   font-family: var(--app-font-family);
   color: var(--primary-text-color);
   background-color: var(--bg-color);
+  background-image: var(--bg-image);
+  background-attachment: fixed;
 
   --app-font-family: 'Roboto', system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   --ui-roundness: 1;
+
+  /* Optional decorative layers, separate from colors used by contrast checks
+     and native windows. Fixed backgrounds keep the field aligned on scroll. */
+  --bg-image: none;
+  --card-bg-image: none;
   --scrollbar-thumb-width: 6px;
   --scrollbar-track-width: calc(var(--scrollbar-thumb-width) + 4px);
   --border-color: var(--tertiary-text-color);
@@ -155,6 +162,7 @@ it can be safely elided. This looks quite pleasant on this theme. */
 /* Dark theme Youtube and Invidious logo styling (in FtShareButton) */
 .system[data-system-theme*='dark'],
 .dark,
+.openTubeXDark,
 .black,
 .custom[data-custom-theme='dark'],
 .dracula,
@@ -292,10 +300,10 @@ it can be safely elided. This looks quite pleasant on this theme. */
   --logo-text: url('../../_icons/textBlackSmall.svg');
 }
 
-/* Custom themes tint the header logo instead of displaying the fixed-color
+/* Custom and OpenTubeX themes tint the header logo instead of displaying the fixed-color
    theme assets. Keeping the assets as masks preserves their sharp edges. */
-.custom .topNav .logoIcon,
-.custom .topNav .logoText {
+:is(.custom, .openTubeXLight, .openTubeXDark) .topNav .logoIcon,
+:is(.custom, .openTubeXLight, .openTubeXDark) .topNav .logoText {
   /* The component's fixed SVG has intentionally high scoped specificity. */
   /* stylelint-disable-next-line declaration-no-important */
   background-image: none !important;
@@ -305,23 +313,23 @@ it can be safely elided. This looks quite pleasant on this theme. */
   mask-position: center;
 }
 
-.custom .topNav .logoIcon {
+:is(.custom, .openTubeXLight, .openTubeXDark) .topNav .logoIcon {
   background-color: var(--logo-primary-color);
   mask-image: var(--logo-icon);
   mask-size: 25px;
 }
 
-.custom .topNav .logoText {
+:is(.custom, .openTubeXLight, .openTubeXDark) .topNav .logoText {
   background-color: var(--logo-secondary-color);
   mask-image: var(--logo-text);
   mask-size: 100px;
 }
 
-.custom .logo:hover :is(.logoIcon, .logoText) {
+:is(.custom, .openTubeXLight, .openTubeXDark) .logo:hover :is(.logoIcon, .logoText) {
   background-color: var(--logo-tertiary-color);
 }
 
-.custom .logo:active :is(.logoIcon, .logoText) {
+:is(.custom, .openTubeXLight, .openTubeXDark) .logo:active :is(.logoIcon, .logoText) {
   background-color: var(--logo-pressed-color);
 }
 
@@ -2217,6 +2225,8 @@ html[lang='ur'] [data-prefix='fas'][data-icon='circle-question'] {
 .app {
   color: var(--primary-text-color);
   background-color: var(--bg-color);
+  background-image: var(--bg-image);
+  background-attachment: fixed;
 }
 
 
@@ -2333,4 +2343,130 @@ body .os-scrollbar {
   to {
     background-position: 0% 50%;
   }
+}
+
+
+/* Homepage palette from opentubex.github.io/src/styles/signal.css.
+   Keep these after the selectable color palettes: the brand themes supply
+   their own primary and secondary colors. */
+.openTubeXLight,
+.openTubeXDark {
+  --toggle-track-color: #758b87;
+  --toggle-checked-track-color: #4e9185;
+  --toggle-thumb-color: #e6f4f1;
+  --bg-glows:
+    radial-gradient(ellipse 80% 50% at 15% 10%, var(--bg-glow-teal), transparent 55%),
+    radial-gradient(ellipse 60% 45% at 90% 20%, var(--bg-glow-ink), transparent 50%),
+    radial-gradient(ellipse 70% 40% at 50% 100%, var(--bg-glow-teal-soft), transparent 55%);
+  --bg-image:
+    var(--bg-glows),
+    linear-gradient(165deg, var(--bg-gradient-start), var(--bg-color) 40%, var(--bg-gradient-end));
+  --card-bg-image:
+    var(--bg-glows),
+    linear-gradient(165deg, var(--card-bg-color), var(--card-bg-color) 40%, var(--bg-gradient-end));
+
+  /* Settings sections share the window's field instead of repeating it. */
+  --settings-section-bg-color: transparent;
+  --settings-changed-color: var(--accent-color);
+
+  /* Keep thumbs distinct from their tracks and the surrounding gradient. */
+  --toggle-checked-thumb-color: var(--toggle-thumb-color);
+  --slider-track-color: var(--tertiary-text-color);
+  --input-border-color: var(--tertiary-text-color);
+  --primary-color: #147a70;
+  --text-with-main-color: #fbfefd;
+  --title-color: var(--primary-text-color);
+  --divider-color: var(--border-color);
+  --subtle-surface-color: var(--secondary-card-bg-color);
+  --dropdown-item-hover-color: var(--side-nav-hover-color);
+  --dropdown-item-hover-text-color: var(--primary-text-color);
+  --settings-search-bar-color: var(--search-bar-color);
+  --logo-primary-color: var(--primary-text-color);
+  --logo-secondary-color: var(--primary-text-color);
+  --logo-tertiary-color: var(--accent-color);
+  --logo-pressed-color: var(--accent-color-active);
+  --logo-icon: url('../../_icons/iconWhiteSmall.svg');
+  --logo-text: url('../../_icons/textWhiteSmall.svg');
+}
+
+.openTubeXLight {
+  --toggle-track-color: #b7c9c5;
+  --toggle-checked-track-color: #8cbaae;
+  --toggle-thumb-color: #17665f;
+  --bg-glow-teal: rgb(26 155 142 / 14%);
+  --bg-glow-ink: rgb(11 61 62 / 8%);
+  --bg-glow-teal-soft: rgb(26 155 142 / 10%);
+  --bg-gradient-start: #eef6f4;
+  --bg-gradient-end: #dceee9;
+  --primary-text-color: #0b3d3e;
+  --secondary-text-color: #3d5a5b;
+  --tertiary-text-color: #476263;
+  --bg-color: #e8f2f0;
+  --card-bg-color: #fbfefd;
+  --secondary-card-bg-color: #f4f9f8;
+  --side-nav-color: #f4f9f8;
+  --side-nav-hover-color: #d5e8e4;
+  --side-nav-active-color: #bfdcd6;
+  --search-bar-color: #e8f2f0;
+  --border-color: rgb(11 61 62 / 12%);
+  --primary-shadow-color: rgb(11 61 62 / 12%);
+  --primary-color-hover: #0b3d3e;
+  --primary-color-active: #1a4f50;
+  --accent-color-rgb: 17 104 95;
+  --accent-color-hover: #0b3d3e;
+  --accent-color-active: #1a4f50;
+  --accent-color-light: #d5e8e4;
+  --accent-color-visited: #3d5a5b;
+  --text-with-accent-color: #fbfefd;
+  --selection-background-color: #147a70;
+  --selection-text-color: #fbfefd;
+  --scrollbar-color: #49968a;
+  --scrollbar-color-hover: #147a70;
+  --scrollbar-color-active: #0b3d3e;
+  --favorite-icon-color: #147a70;
+}
+
+.openTubeXDark {
+  --toggle-track-color: #758b87;
+  --toggle-checked-track-color: #4e9185;
+  --toggle-thumb-color: #e6f4f1;
+  --bg-glow-teal: rgb(46 196 182 / 12%);
+  --bg-glow-ink: rgb(46 196 182 / 6%);
+  --bg-glow-teal-soft: rgb(26 155 142 / 10%);
+  --bg-gradient-start: #0e1a1c;
+  --bg-gradient-end: #0a1618;
+  --primary-text-color: #e6f4f1;
+  --secondary-text-color: #8aa3a4;
+  --tertiary-text-color: #8aa3a4;
+  --bg-color: #0b1416;
+  --card-bg-color: #142224;
+  --secondary-card-bg-color: #122022;
+  --side-nav-color: #101a1c;
+  --side-nav-hover-color: #203638;
+  --side-nav-active-color: #2a4547;
+  --search-bar-color: #122022;
+  --border-color: rgb(232 242 240 / 12%);
+  --primary-shadow-color: rgb(0 0 0 / 24%);
+  --primary-color-hover: #0f625c;
+  --primary-color-active: #0b3d3e;
+  --accent-color-rgb: 46 196 182;
+  --accent-color-hover: #68d8ce;
+  --accent-color-active: #1fb5a7;
+  --accent-color-light: #122022;
+  --accent-color-visited: #8aa3a4;
+  --text-with-accent-color: #071113;
+  --selection-background-color: #2ec4b6;
+  --selection-text-color: #071113;
+  --scrollbar-color: #549c98;
+  --scrollbar-color-hover: #2ec4b6;
+  --scrollbar-color-active: #68d8ce;
+  --favorite-icon-color: #2ec4b6;
+}
+
+
+:is(.openTubeXLight, .openTubeXDark) .topNavBarColor {
+  --logo-primary-color: var(--text-with-main-color);
+  --logo-secondary-color: var(--text-with-main-color);
+  --logo-tertiary-color: var(--text-with-main-color);
+  --logo-pressed-color: var(--text-with-main-color);
 }

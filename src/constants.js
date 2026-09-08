@@ -714,6 +714,7 @@ const DEFAULT_QUICK_PLAYBACK_SPEED_BAR_OPTIONS = Object.freeze([
 
 const LIGHT_BASE_THEMES = [
   'light',
+  'openTubeXLight',
   'pastelPink',
   'catppuccinLatte',
   'everforestLightHard',
@@ -725,6 +726,7 @@ const LIGHT_BASE_THEMES = [
 
 const DARK_BASE_THEMES = [
   'dark',
+  'openTubeXDark',
   'black',
   'nordic',
   'hotPink',

@@ -199,14 +199,14 @@ const pendingColorPreviews = new Map()
 let colorPreviewTimer = null
 
 const BASE_THEME_VALUES = [
-  'light', 'dark', 'black', 'nordic', 'hotPink', 'pastelPink',
+  'light', 'dark', 'black', 'openTubeXLight', 'openTubeXDark', 'nordic', 'hotPink', 'pastelPink',
   'catppuccinFrappe', 'catppuccinLatte', 'catppuccinMocha', 'dracula',
   'everforestDarkHard', 'everforestDarkMedium', 'everforestDarkLow',
   'everforestLightHard', 'everforestLightMedium', 'everforestLightLow',
   'gruvboxDark', 'gruvboxLight', 'solarizedDark', 'solarizedLight'
 ]
 const BASE_THEME_TRANSLATION_KEYS = [
-  'Light', 'Dark', 'Black', 'Nordic', 'Hot Pink', 'Pastel Pink',
+  'Light', 'Dark', 'Black', 'OpenTubeX Light', 'OpenTubeX Dark', 'Nordic', 'Hot Pink', 'Pastel Pink',
   'Catppuccin Frappe', 'Catppuccin Latte', 'Catppuccin Mocha', 'Dracula',
   'Everforest Dark Hard', 'Everforest Dark Medium', 'Everforest Dark Low',
   'Everforest Light Hard', 'Everforest Light Medium', 'Everforest Light Low',

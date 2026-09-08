@@ -365,6 +365,8 @@ Settings:
       Unable to Load: Yüklü sistem yazı tipleri yüklenemedi
     Always Show Scrollbars: Kaydırma Çubuklarını Her Zaman Göster
     Base Theme:
+      OpenTubeX Light: "OpenTubeX Açık"
+      OpenTubeX Dark: "OpenTubeX Koyu"
       Custom: Özel
     Light Theme: Açık tema
     Dark Theme: Koyu tema

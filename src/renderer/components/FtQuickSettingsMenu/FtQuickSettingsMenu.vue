@@ -422,8 +422,8 @@ import {
 } from '../../helpers/quickSettings'
 import { defaultUpdaterId } from '../../store/modules/settings'
 import { switchActiveProfile, translateProfileName as getTranslatedProfileName } from '../../helpers/profileSwitching'
-import { customThemeValue, isCustomThemeValue } from '../../../customTheme'
-import { getThemeClassification } from '../../../appearanceSettings'
+import { customThemeValue } from '../../../customTheme'
+import { getThemeClassification, hasFixedThemeColors } from '../../../appearanceSettings'
 
 const { locale, t } = useI18n()
 const id = useId()
@@ -456,7 +456,7 @@ const profileInitials = computed(() => profileList.value.reduce((initials, profi
 }, {}))
 
 const BUILTIN_BASE_THEME_VALUES = [
-  'system', 'light', 'dark', 'black', 'nordic', 'hotPink', 'pastelPink',
+  'system', 'light', 'dark', 'black', 'openTubeXLight', 'openTubeXDark', 'nordic', 'hotPink', 'pastelPink',
   'catppuccinFrappe', 'catppuccinLatte', 'catppuccinMocha', 'dracula',
   'everforestDarkHard', 'everforestDarkMedium', 'everforestDarkLow',
   'everforestLightHard', 'everforestLightMedium', 'everforestLightLow',
@@ -468,6 +468,8 @@ const builtInBaseThemeNames = computed(() => [
   t('Settings.Theme Settings.Base Theme.Light'),
   t('Settings.Theme Settings.Base Theme.Dark'),
   t('Settings.Theme Settings.Base Theme.Black'),
+  t('Settings.Theme Settings.Base Theme.OpenTubeX Light'),
+  t('Settings.Theme Settings.Base Theme.OpenTubeX Dark'),
   t('Settings.Theme Settings.Base Theme.Nordic'),
   t('Settings.Theme Settings.Base Theme.Hot Pink'),
   t('Settings.Theme Settings.Base Theme.Pastel Pink'),
@@ -521,17 +523,14 @@ const localeNames = computed(() => [
 ])
 
 const baseTheme = computed(() => store.getters.getBaseTheme)
-const usesCustomThemePalette = computed(() => isCustomThemeValue(baseTheme.value) || (
-  baseTheme.value === 'system' && isCustomThemeValue(systemUsesDarkTheme.value
-    ? store.getters.getSystemDarkTheme
-    : store.getters.getSystemLightTheme)
-))
+const usesFixedThemePalette = computed(() => hasFixedThemeColors(baseTheme.value === 'system'
+  ? (systemUsesDarkTheme.value ? store.getters.getSystemDarkTheme : store.getters.getSystemLightTheme)
+  : baseTheme.value))
 const customThemeEditorOpen = computed(() => store.getters.getCustomThemeEditorOpen)
 const mainColor = computed(() => store.getters.getMainColor)
 const mainColorAvailable = computed(() => (
   !customThemeEditorOpen.value &&
-  baseTheme.value !== 'hotPink' &&
-  !usesCustomThemePalette.value
+  !usesFixedThemePalette.value
 ))
 const uiScale = computed(() => store.getters.getUiScale)
 const thumbnailSize = computed(() => store.getters.getThumbnailSize)

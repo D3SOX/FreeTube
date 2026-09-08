@@ -119,6 +119,9 @@ Settings:
       Phone: 'Telefon'
       Tablet: 'Tablet'
   Theme Settings:
+    Base Theme:
+      OpenTubeX Light: "OpenTubeX Jasny"
+      OpenTubeX Dark: "OpenTubeX Ciemny"
     Toast Position:
       Test Toast: Powiadomienie testowe
     Scroll Speed: Szybkość przewijania

@@ -365,6 +365,8 @@ Settings:
       Unable to Load: 无法加载已安装的系统字体
     Always Show Scrollbars: 始终显示滚动条
     Base Theme:
+      OpenTubeX Light: "OpenTubeX 浅色"
+      OpenTubeX Dark: "OpenTubeX 深色"
       Custom: 自定义
     Light Theme: 浅色主题
     Dark Theme: 深色主题

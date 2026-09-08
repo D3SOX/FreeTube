@@ -367,6 +367,8 @@ Settings:
       Unable to Load: Instalirane fontove sustava nije moguće učitati
     Always Show Scrollbars: Uvijek prikaži klizne trake
     Base Theme:
+      OpenTubeX Light: "OpenTubeX Svijetla"
+      OpenTubeX Dark: "OpenTubeX Tamna"
       Custom: Prilagođena
     Light Theme: Svijetla tema
     Dark Theme: Tamna tema

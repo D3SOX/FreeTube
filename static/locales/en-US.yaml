@@ -680,6 +680,8 @@ Settings:
     Hide Side Bar Labels: Hide Side Bar Labels
     Hide OpenTubeX Header Logo: Hide OpenTubeX Header Logo
     Base Theme:
+      OpenTubeX Light: "OpenTubeX Light"
+      OpenTubeX Dark: "OpenTubeX Dark"
       Base Theme: Base Theme
       Black: Black
       Custom: Custom

@@ -369,6 +369,8 @@ Settings:
       Unable to Load: Asennettuja järjestelmäfontteja ei voitu ladata
     Always Show Scrollbars: Näytä vierityspalkit aina
     Base Theme:
+      OpenTubeX Light: "OpenTubeX Vaalea"
+      OpenTubeX Dark: "OpenTubeX Tumma"
       Custom: Mukautettu
     Light Theme: Vaalea teema
     Dark Theme: Tumma teema

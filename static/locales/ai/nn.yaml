@@ -428,6 +428,8 @@ Settings:
       Unable to Load: Klarte ikkje å laste inn installerte systemskrifter
     Always Show Scrollbars: Vis alltid rullefelt
     Base Theme:
+      OpenTubeX Light: "OpenTubeX Lys"
+      OpenTubeX Dark: "OpenTubeX Mørk"
       Custom: Eige
       Catppuccin Frappe: Catppuccin Frappe
       Catppuccin Latte: Catppuccin Latte

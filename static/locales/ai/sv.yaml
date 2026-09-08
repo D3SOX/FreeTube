@@ -367,6 +367,8 @@ Settings:
       Unable to Load: Det gick inte att läsa in installerade systemtypsnitt
     Always Show Scrollbars: Visa alltid rullningslister
     Base Theme:
+      OpenTubeX Light: "OpenTubeX Ljust"
+      OpenTubeX Dark: "OpenTubeX Mörkt"
       Custom: Anpassat
     Light Theme: Ljust tema
     Dark Theme: Mörkt tema

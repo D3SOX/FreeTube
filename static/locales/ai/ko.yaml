@@ -461,6 +461,8 @@ Settings:
       Unable to Load: 설치된 시스템 글꼴을 불러올 수 없습니다
     Always Show Scrollbars: 스크롤바 항상 표시
     Base Theme:
+      OpenTubeX Light: "OpenTubeX 밝은 테마"
+      OpenTubeX Dark: "OpenTubeX 어두운 테마"
       Custom: 사용자 지정
       Catppuccin Frappe: Catppuccin Frappe
       Catppuccin Latte: Catppuccin Latte
