@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url'
 
 export const WINDOWS_INTERPOSER_VERSION = '1.1.0'
 export const WINDOWS_INTERPOSER_COMMIT = '374aa10a904532acc7bb72f656cea1dcf1eefa14'
-export const WINDOWS_INTERPOSER_PATCH_SHA256 = 'f4cfce3f898ce5a436e3390974096129e6db1a28bc3d859d5c72d51edc8d4b55'
+export const WINDOWS_INTERPOSER_PATCH_SHA256 = '48a9c0ac85cdda21be249d8b5f6f16608f4dcefdffef4f5e8938ee5a4c95eba2'
 
 const repositoryRoot = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),

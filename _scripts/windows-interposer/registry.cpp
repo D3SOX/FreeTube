@@ -6,6 +6,7 @@
 #include <MinHook.h>
 #include <algorithm>
 #include <cwctype>
+#include <mutex>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -14,7 +15,8 @@ namespace {
 constexpr NTSTATUS Denied = static_cast<NTSTATUS>(0xC0000022L);
 constexpr NTSTATUS Unsupported = static_cast<NTSTATUS>(0xC00000BBL);
 HKEY hive = nullptr;
-std::wstring hivePath;
+std::wstring hiveDirectory;
+std::once_flag hiveInitialization;
 std::wstring userPath;
 using Open = NTSTATUS(NTAPI*)(PHANDLE, ACCESS_MASK, POBJECT_ATTRIBUTES);
 using OpenEx = NTSTATUS(NTAPI*)(PHANDLE, ACCESS_MASK, POBJECT_ATTRIBUTES, ULONG);
@@ -89,7 +91,6 @@ bool ApplicationComponent(const std::wstring& component)
 // Current-user paths are stored without the machine-specific SID.
 std::wstring ApplicationPath(const std::wstring& path)
 {
-    if (Below(path, hivePath)) return {};
     std::wstring logical;
     if (Below(path, userPath + L"_CLASSES"))
         logical = L"USER\\SOFTWARE\\CLASSES" + path.substr(userPath.size() + 8);
@@ -111,6 +112,18 @@ std::wstring ApplicationPath(const std::wstring& path)
 }
 
 bool HostApplicationKey(HANDLE key) { return !ApplicationPath(KeyPath(key)).empty(); }
+
+// Sandboxed Chromium helpers can read Windows configuration without having
+// permission to load a writable hive. Only application-key operations need it.
+HKEY PrivateHive()
+{
+    std::call_once(hiveInitialization, [] {
+        if (!CreateDirectoryW(hiveDirectory.c_str(), nullptr) && GetLastError() != ERROR_ALREADY_EXISTS) return;
+        // Options=0 shares the loaded hive between OpenTubeX processes.
+        RegLoadAppKeyW((hiveDirectory + L"\\Registry.hiv").c_str(), &hive, KEY_ALL_ACCESS, 0, 0);
+    });
+    return hive;
+}
 
 struct Redirect {
     std::wstring path;
@@ -159,7 +172,8 @@ struct Redirect {
         name.Length = static_cast<USHORT>(path.size() * sizeof(wchar_t));
         name.MaximumLength = name.Length;
         attributes = *source;
-        attributes.RootDirectory = hive;
+        attributes.RootDirectory = PrivateHive();
+        if (!attributes.RootDirectory) { status = Denied; return; }
         attributes.ObjectName = &name;
         // Private hives have one security descriptor; host ACLs are not copied.
         attributes.SecurityDescriptor = nullptr;
@@ -269,14 +283,7 @@ void InstallRegistryHooks()
     std::wstring directory(file, length);
     directory.resize(directory.find_last_of(L'\\') + 1);
     directory += L".interposer";
-    if (!CreateDirectoryW(directory.c_str(), nullptr) && GetLastError() != ERROR_ALREADY_EXISTS)
-        throw std::runtime_error("Cannot create portable registry directory");
-    // Options=0 permits other OpenTubeX processes to load the same private hive.
-    auto loadStatus = RegLoadAppKeyW((directory + L"\\Registry.hiv").c_str(), &hive, KEY_ALL_ACCESS, 0, 0);
-    if (loadStatus != ERROR_SUCCESS)
-        throw std::runtime_error("Cannot load portable registry hive: " + std::to_string(loadStatus));
-    hivePath = KeyPath(hive);
-    if (hivePath.empty()) throw std::runtime_error("Cannot resolve portable hive");
+    hiveDirectory = std::move(directory);
     Hook("NtOpenKey", OpenKey, originalOpen);
     Hook("NtOpenKeyEx", OpenKeyEx, originalOpenEx);
     Hook("NtCreateKey", CreateKey, originalCreate);
