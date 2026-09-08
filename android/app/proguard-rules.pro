@@ -1,21 +1,22 @@
-# Add project specific ProGuard rules here.
-# You can control the set of applied configuration files using the
-# proguardFiles setting in build.gradle.
-#
-# For more details, see
-#   http://developer.android.com/guide/developing/tools/proguard.html
+# Capacitor and WorkManager supply their own consumer keep rules.
+# Commons Compress registers ZIP extra fields with Class.newInstance(). Keep
+# their no-argument constructors and concrete classes for runtime extraction.
+-keep,allowobfuscation class org.apache.commons.compress.archivers.zip.** implements org.apache.commons.compress.archivers.zip.ZipExtraField {
+    public <init>();
+}
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
+# Pairing always selects ZXing. The barcode AAR also contains an unused ML Kit
+# backend whose proprietary dependencies are deliberately excluded in Gradle.
+-dontwarn com.google.android.gms.tasks.OnFailureListener
+-dontwarn com.google.android.gms.tasks.OnSuccessListener
+-dontwarn com.google.android.gms.tasks.Task
+-dontwarn com.google.mlkit.vision.barcode.BarcodeScanner
+-dontwarn com.google.mlkit.vision.barcode.BarcodeScannerOptions$Builder
+-dontwarn com.google.mlkit.vision.barcode.BarcodeScannerOptions
+-dontwarn com.google.mlkit.vision.barcode.BarcodeScanning
+-dontwarn com.google.mlkit.vision.barcode.common.Barcode
+-dontwarn com.google.mlkit.vision.common.InputImage
 
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
-
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
+# The barcode plugin constructs its Kotlin parameters directly; its AAR also
+# carries Gson field annotations, but the app does not use Gson serialization.
+-dontwarn com.google.gson.annotations.SerializedName
