@@ -62,7 +62,18 @@ public class AndroidMediaSessionPlugin extends Plugin {
     public void clear(PluginCall call) {
         mainHandler.post(() -> {
             if (AndroidPlaybackPlugin.acceptsMediaOwner(call.getString("nativeOwner", ""))) {
-                getContext().stopService(new Intent(getContext(), AndroidMediaSessionService.class));
+                try {
+                    // Deliver the stop after pending updates have acknowledged their
+                    // foreground starts. stopService() can kill an unstarted service.
+                    getContext().startService(new Intent(getContext(), AndroidMediaSessionService.class)
+                        .setAction(AndroidMediaSessionService.ACTION_UPDATE)
+                        .putExtra(AndroidMediaSessionService.EXTRA_STATE, new JSObject()
+                            .put("nativeOwner", call.getString("nativeOwner", ""))
+                            .put("playbackState", "none").toString()));
+                } catch (IllegalStateException | SecurityException error) {
+                    call.reject("Android did not allow clearing the playback service", error);
+                    return;
+                }
             }
             call.resolve();
         });

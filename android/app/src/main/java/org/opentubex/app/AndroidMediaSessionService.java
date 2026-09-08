@@ -151,8 +151,12 @@ public class AndroidMediaSessionService extends Service {
         try {
             JSONObject nextState = new JSONObject(serializedState);
             if (!AndroidPlaybackPlugin.acceptsMediaOwner(nextState.optString("nativeOwner", ""))) {
-                if (currentState == null) stopSelf(startId);
-                else applyState(currentState, true);
+                if (currentState == null) {
+                    // Even an obsolete start must acknowledge foreground startup
+                    // before stopping, or Android terminates the entire process.
+                    startForeground(NOTIFICATION_ID, buildNotification(nextState, java.util.Collections.emptySet()));
+                    stopSelf(startId);
+                } else applyState(currentState, true);
                 return START_NOT_STICKY;
             }
             currentState = nextState;
