@@ -179,6 +179,12 @@
   z-index: 6;
   overflow: hidden;
 
+  // Wrappable labels must not shrink the menu to its icon-sized anchor.
+  &:has(.wrapLabel) {
+    inline-size: max-content;
+    max-inline-size: min(320px, calc(100vw - 16px));
+  }
+
   &.hasFixedHeader {
     display: flex;
     flex-direction: column;
