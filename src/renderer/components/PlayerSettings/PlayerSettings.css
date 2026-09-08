@@ -48,6 +48,12 @@
   flex-grow: 0;
 }
 
+.screenshotFilenamePatternTitle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
 .screenshotFolderPath,
 .screenshotFilenamePatternInput,
 .screenshotFilenamePatternExample {
@@ -92,6 +98,12 @@
 .settingButtonWithSync {
   display: inline-flex;
   align-items: center;
+  max-inline-size: 100%;
+}
+
+.settingButtonWithSync :deep(.btn) {
+  min-inline-size: 0;
+  white-space: normal;
 }
 
 .quickPlaybackSpeedToolbarActions,

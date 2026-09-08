@@ -465,7 +465,7 @@
         v-if="screenshotMode !== 'clipboard'"
         class="screenshotFolderContainer"
       >
-        <p class="screenshotFilenamePatternTitle">
+        <p class="screenshotFilenamePatternTitle labelRow">
           {{ t('Settings.Player Settings.Screenshot.File Name Label') }}
           <FtTooltip
             class="selectTooltip"
