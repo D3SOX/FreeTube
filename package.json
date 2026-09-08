@@ -69,7 +69,7 @@
   "dependencies": {
     "@capacitor-community/keep-awake": "^8.0.1",
     "@capacitor-community/screen-brightness": "^8.0.0",
-    "@capacitor/android": "^8.5.0",
+    "@capacitor/android": "^8.5.1",
     "@capacitor/app": "^8.1.1",
     "@capacitor/barcode-scanner": "^3.1.2",
     "@capacitor/browser": "^8.0.4",
