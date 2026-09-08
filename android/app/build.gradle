@@ -26,9 +26,9 @@ android {
         versionCode = (System.getenv("ANDROID_VERSION_CODE") ?: "1").toInteger()
         versionName = System.getenv("ANDROID_VERSION_NAME") ?: "0.33.0-dev"
         ndk { abiFilters.addAll((project.findProperty('testAbi') ?: 'arm64-v8a,armeabi-v7a,x86_64,x86').split(',')) }
-        testInstrumentationRunner project.findProperty('testBuildType') == 'nightly'
+        testInstrumentationRunner(project.findProperty('testBuildType') == 'nightly'
             ? "org.opentubex.app.OptimizedApkInstrumentation"
-            : "androidx.test.runner.AndroidJUnitRunner"
+            : "androidx.test.runner.AndroidJUnitRunner")
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
              // Default: https://android.googlesource.com/platform/frameworks/base/+/282e181b58cf72b6ca770dc7ca5f91f135444502/tools/aapt/AaptAssets.cpp#61
@@ -71,7 +71,6 @@ android {
             manifest.srcFile 'src/optimizedAndroidTest/AndroidManifest.xml'
         }
     }
-    sourceSets { nightly.res.srcDirs = ['src/debug/res'] }
     packagingOptions {
         jniLibs {
             useLegacyPackaging = true
@@ -101,6 +100,7 @@ android {
             matchingFallbacks = ['release']
         }
     }
+    sourceSets { nightly.res.srcDirs = ['src/debug/res'] }
 }
 
 apply from: '../trim-runtime.gradle'
