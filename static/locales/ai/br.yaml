@@ -1699,3 +1699,19 @@ Theme Discovery:
 Connection:
   Reconnecting: "Kollet eo ar cʼhennask. O klask adkennaskañ…"
   Back Online: "Enlinenn en-dro"
+
+UnifiedPush:
+  Description: "Resevit kemennoù dre ur pourchaser UnifiedPush staliet war an trevnad-mañ."
+  Sender Hint: "Ur c’haser kenglotus a rank implijout ho titouroù kevreañ. Ne weredeka ket kemennadennoù emgefre evit videoioù YouTube nevez."
+  Provider: "Pourchaser"
+  No Providers: "Staliit ha kefluniit ur dasparzher UnifiedPush evel ntfy pe NextPush, ha freskait al listenn goude."
+  Connect: "Kevreañ"
+  Disconnect: "Digevreañ"
+  Refresh: "Freskaat"
+  Waiting: "O c’hortoz ar pourchaser…"
+  Connected: "Kevreet"
+  Failed: "N’haller ket kevreañ. Gwiriit ar pourchaser, aotre ar c’hemennoù hag an alc’hwez VAPID, ha klaskit en-dro."
+  Unavailable: "Pourchaser dihegerz"
+  VAPID Key: "Alc’hwez foran VAPID (diret)"
+  Copy Connection: "Eilañ an titouroù kevreañ"
+  Copied: "Titouroù kevreañ eilet"

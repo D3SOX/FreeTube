@@ -51,6 +51,7 @@ public class MainActivity extends BridgeActivity {
         registerPlugin(AndroidMediaSessionPlugin.class);
         registerPlugin(AndroidPlaybackPlugin.class);
         registerPlugin(SubscriptionRefreshPlugin.class);
+        registerPlugin(UnifiedPushPlugin.class);
         registerPlugin(SabrHttpPlugin.class);
         registerPlugin(VoiceOverHttpPlugin.class);
         super.onCreate(savedInstanceState);

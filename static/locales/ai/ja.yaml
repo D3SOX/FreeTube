@@ -1683,3 +1683,19 @@ Theme Discovery:
 Connection:
   Reconnecting: "接続が切れました。再接続しています…"
   Back Online: "オンラインに戻りました"
+
+UnifiedPush:
+  Description: "この端末にインストールされた UnifiedPush プロバイダーで通知を受信します。"
+  Sender Hint: "対応する送信元で接続情報を使用する必要があります。YouTube の新着動画の自動通知は有効になりません。"
+  Provider: "プロバイダー"
+  No Providers: "ntfy や NextPush などの UnifiedPush 配信アプリをインストールして設定し、更新してください。"
+  Connect: "接続"
+  Disconnect: "切断"
+  Refresh: "更新"
+  Waiting: "プロバイダーを待っています…"
+  Connected: "接続済み"
+  Failed: "接続できませんでした。プロバイダー、通知の権限、VAPID キーを確認して再試行してください。"
+  Unavailable: "プロバイダーを利用できません"
+  VAPID Key: "VAPID 公開鍵（任意）"
+  Copy Connection: "接続情報をコピー"
+  Copied: "接続情報をコピーしました"

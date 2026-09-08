@@ -2327,3 +2327,19 @@ Theme Discovery:
 Connection:
   Reconnecting: "S’ha perdut la connexió. S’està intentant reconnectar…"
   Back Online: "Torneu a estar en línia"
+
+UnifiedPush:
+  Description: "Rep notificacions mitjançant un proveïdor UnifiedPush instal·lat en aquest dispositiu."
+  Sender Hint: "Un remitent compatible ha d’utilitzar les dades de connexió. Això no activa avisos automàtics de vídeos nous a YouTube."
+  Provider: "Proveïdor"
+  No Providers: "Instal·la i configura un distribuïdor UnifiedPush com ntfy o NextPush i actualitza la llista."
+  Connect: "Connecta"
+  Disconnect: "Desconnecta"
+  Refresh: "Actualitza"
+  Waiting: "Esperant el proveïdor…"
+  Connected: "Connectat"
+  Failed: "No s’ha pogut connectar. Comprova el proveïdor, el permís de notificacions i la clau VAPID i torna-ho a provar."
+  Unavailable: "Proveïdor no disponible"
+  VAPID Key: "Clau pública VAPID (opcional)"
+  Copy Connection: "Copia les dades de connexió"
+  Copied: "Dades de connexió copiades"

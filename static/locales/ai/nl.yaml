@@ -1738,3 +1738,19 @@ Theme Discovery:
 Connection:
   Reconnecting: "Verbinding verbroken. Bezig met opnieuw verbinden…"
   Back Online: "Weer online"
+
+UnifiedPush:
+  Description: "Ontvang meldingen via een UnifiedPush-provider die op dit apparaat is geïnstalleerd."
+  Sender Hint: "Een compatibele afzender moet je verbindingsgegevens gebruiken. Dit schakelt geen automatische meldingen voor nieuwe YouTube-video's in."
+  Provider: "Provider"
+  No Providers: "Installeer en configureer een UnifiedPush-distributeur zoals ntfy of NextPush en vernieuw daarna."
+  Connect: "Verbinden"
+  Disconnect: "Verbinding verbreken"
+  Refresh: "Vernieuwen"
+  Waiting: "Wachten op provider…"
+  Connected: "Verbonden"
+  Failed: "Kan geen verbinding maken. Controleer de provider, de meldingsrechten en de VAPID-sleutel en probeer het opnieuw."
+  Unavailable: "Provider niet beschikbaar"
+  VAPID Key: "Openbare VAPID-sleutel (optioneel)"
+  Copy Connection: "Verbindingsgegevens kopiëren"
+  Copied: "Verbindingsgegevens gekopieerd"

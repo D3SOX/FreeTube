@@ -1729,3 +1729,19 @@ Theme Discovery:
 Connection:
   Reconnecting: "החיבור אבד. מנסה להתחבר מחדש…"
   Back Online: "החיבור חזר"
+
+UnifiedPush:
+  Description: "קבלת התראות דרך ספק UnifiedPush המותקן במכשיר זה."
+  Sender Hint: "שולח תואם חייב להשתמש בפרטי החיבור שלך. פעולה זו אינה מפעילה התראות אוטומטיות על סרטוני YouTube חדשים."
+  Provider: "ספק"
+  No Providers: "יש להתקין ולהגדיר מפיץ UnifiedPush כגון ntfy או NextPush ואז לרענן את הרשימה."
+  Connect: "התחברות"
+  Disconnect: "ניתוק"
+  Refresh: "רענון"
+  Waiting: "בהמתנה לספק…"
+  Connected: "מחובר"
+  Failed: "החיבור נכשל. יש לבדוק את הספק, את הרשאת ההתראות ואת מפתח VAPID ולנסות שוב."
+  Unavailable: "הספק אינו זמין"
+  VAPID Key: "מפתח VAPID ציבורי (רשות)"
+  Copy Connection: "העתקת פרטי חיבור"
+  Copied: "פרטי החיבור הועתקו"

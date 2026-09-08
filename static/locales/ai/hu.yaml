@@ -1683,3 +1683,19 @@ Theme Discovery:
 Connection:
   Reconnecting: "Megszakadt a kapcsolat. Újracsatlakozás folyamatban…"
   Back Online: "Újra online"
+
+UnifiedPush:
+  Description: "Értesítések fogadása az eszközre telepített UnifiedPush-szolgáltatón keresztül."
+  Sender Hint: "Egy kompatibilis küldőnek használnia kell a kapcsolati adataidat. Ez nem kapcsolja be az új YouTube-videók automatikus értesítéseit."
+  Provider: "Szolgáltató"
+  No Providers: "Telepíts és állíts be egy UnifiedPush-terjesztőt, például ntfy-t vagy NextPush-t, majd frissítsd a listát."
+  Connect: "Csatlakozás"
+  Disconnect: "Leválasztás"
+  Refresh: "Frissítés"
+  Waiting: "Várakozás a szolgáltatóra…"
+  Connected: "Csatlakoztatva"
+  Failed: "Nem sikerült csatlakozni. Ellenőrizd a szolgáltatót, az értesítési engedélyt és a VAPID-kulcsot, majd próbáld újra."
+  Unavailable: "A szolgáltató nem érhető el"
+  VAPID Key: "Nyilvános VAPID-kulcs (opcionális)"
+  Copy Connection: "Kapcsolati adatok másolása"
+  Copied: "Kapcsolati adatok másolva"

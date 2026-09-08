@@ -2899,3 +2899,19 @@ Theme Discovery:
 Connection:
   Reconnecting: "Connection lost. Trying to reconnect…"
   Back Online: "Back online"
+
+UnifiedPush:
+  Description: "Receive notifications through a UnifiedPush provider installed on this device."
+  Sender Hint: "A compatible sender must use your connection details. This does not enable automatic YouTube upload alerts."
+  Provider: "Provider"
+  No Providers: "Install and configure a UnifiedPush distributor such as ntfy or NextPush, then refresh."
+  Connect: "Connect"
+  Disconnect: "Disconnect"
+  Refresh: "Refresh"
+  Waiting: "Waiting for provider…"
+  Connected: "Connected"
+  Failed: "Could not connect. Check the provider, notification permission and VAPID key, then try again."
+  Unavailable: "Provider unavailable"
+  VAPID Key: "VAPID public key (optional)"
+  Copy Connection: "Copy connection details"
+  Copied: "Connection details copied"

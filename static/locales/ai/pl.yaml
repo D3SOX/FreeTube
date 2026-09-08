@@ -898,3 +898,19 @@ Theme Discovery:
 Connection:
   Reconnecting: "Utracono połączenie. Próba ponownego połączenia…"
   Back Online: "Ponownie online"
+
+UnifiedPush:
+  Description: "Odbieraj powiadomienia przez dostawcę UnifiedPush zainstalowanego na tym urządzeniu."
+  Sender Hint: "Zgodny nadawca musi używać danych połączenia. Nie włącza to automatycznych powiadomień o nowych filmach na YouTube."
+  Provider: "Dostawca"
+  No Providers: "Zainstaluj i skonfiguruj dystrybutora UnifiedPush, np. ntfy lub NextPush, a następnie odśwież."
+  Connect: "Połącz"
+  Disconnect: "Rozłącz"
+  Refresh: "Odśwież"
+  Waiting: "Oczekiwanie na dostawcę…"
+  Connected: "Połączono"
+  Failed: "Nie udało się połączyć. Sprawdź dostawcę, uprawnienia do powiadomień i klucz VAPID, a następnie spróbuj ponownie."
+  Unavailable: "Dostawca niedostępny"
+  VAPID Key: "Klucz publiczny VAPID (opcjonalny)"
+  Copy Connection: "Kopiuj dane połączenia"
+  Copied: "Skopiowano dane połączenia"

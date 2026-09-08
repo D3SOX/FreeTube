@@ -1767,3 +1767,19 @@ Theme Discovery:
 Connection:
   Reconnecting: "اتصال قطع شد. در حال تلاش برای اتصال مجدد…"
   Back Online: "دوباره آنلاین هستید"
+
+UnifiedPush:
+  Description: "اعلان‌ها را از طریق ارائه‌دهندهٔ UnifiedPush نصب‌شده روی این دستگاه دریافت کنید."
+  Sender Hint: "فرستنده‌ای سازگار باید از جزئیات اتصال شما استفاده کند. این کار هشدار خودکار ویدیوهای جدید YouTube را فعال نمی‌کند."
+  Provider: "ارائه‌دهنده"
+  No Providers: "توزیع‌کنندهٔ UnifiedPush مانند ntfy یا NextPush را نصب و پیکربندی کنید، سپس فهرست را تازه‌سازی کنید."
+  Connect: "اتصال"
+  Disconnect: "قطع اتصال"
+  Refresh: "تازه‌سازی"
+  Waiting: "در انتظار ارائه‌دهنده…"
+  Connected: "متصل"
+  Failed: "اتصال برقرار نشد. ارائه‌دهنده، مجوز اعلان و کلید VAPID را بررسی و دوباره تلاش کنید."
+  Unavailable: "ارائه‌دهنده در دسترس نیست"
+  VAPID Key: "کلید عمومی VAPID (اختیاری)"
+  Copy Connection: "کپی جزئیات اتصال"
+  Copied: "جزئیات اتصال کپی شد"

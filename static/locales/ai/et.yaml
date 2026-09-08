@@ -1685,3 +1685,19 @@ Theme Discovery:
 Connection:
   Reconnecting: "Ühendus katkes. Proovin uuesti ühendada…"
   Back Online: "Taas võrgus"
+
+UnifiedPush:
+  Description: "Saa teavitusi sellesse seadmesse paigaldatud UnifiedPushi pakkuja kaudu."
+  Sender Hint: "Ühilduv saatja peab kasutama sinu ühenduse andmeid. See ei lülita sisse automaatseid teavitusi uutest YouTube’i videotest."
+  Provider: "Pakkuja"
+  No Providers: "Paigalda ja seadista UnifiedPushi levitaja, näiteks ntfy või NextPush, ning värskenda loendit."
+  Connect: "Ühenda"
+  Disconnect: "Katkesta ühendus"
+  Refresh: "Värskenda"
+  Waiting: "Pakkuja ootel…"
+  Connected: "Ühendatud"
+  Failed: "Ühendamine ebaõnnestus. Kontrolli pakkujat, teavituste luba ja VAPID-võtit ning proovi uuesti."
+  Unavailable: "Pakkuja pole saadaval"
+  VAPID Key: "VAPID avalik võti (valikuline)"
+  Copy Connection: "Kopeeri ühenduse andmed"
+  Copied: "Ühenduse andmed kopeeritud"

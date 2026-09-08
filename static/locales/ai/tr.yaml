@@ -1683,3 +1683,19 @@ Theme Discovery:
 Connection:
   Reconnecting: "Bağlantı kesildi. Yeniden bağlanmaya çalışılıyor…"
   Back Online: "Yeniden çevrimiçi"
+
+UnifiedPush:
+  Description: "Bu cihazda yüklü bir UnifiedPush sağlayıcısı üzerinden bildirim alın."
+  Sender Hint: "Uyumlu bir gönderici bağlantı bilgilerinizi kullanmalıdır. Bu, yeni YouTube videoları için otomatik bildirimleri etkinleştirmez."
+  Provider: "Sağlayıcı"
+  No Providers: "ntfy veya NextPush gibi bir UnifiedPush dağıtıcısını yükleyip yapılandırın, ardından yenileyin."
+  Connect: "Bağlan"
+  Disconnect: "Bağlantıyı kes"
+  Refresh: "Yenile"
+  Waiting: "Sağlayıcı bekleniyor…"
+  Connected: "Bağlandı"
+  Failed: "Bağlanılamadı. Sağlayıcıyı, bildirim iznini ve VAPID anahtarını kontrol edip tekrar deneyin."
+  Unavailable: "Sağlayıcı kullanılamıyor"
+  VAPID Key: "VAPID genel anahtarı (isteğe bağlı)"
+  Copy Connection: "Bağlantı bilgilerini kopyala"
+  Copied: "Bağlantı bilgileri kopyalandı"
