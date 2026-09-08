@@ -5,7 +5,7 @@ import { Capacitor } from '@capacitor/core'
 // Register the plugins against a native bridge so their real proxies call our mocks.
 globalThis.androidBridge = {}
 Capacitor.PluginHeaders = [
-  { name: 'AndroidUi', methods: [{ name: 'takeScreenshot', rtype: 'promise' }] },
+  { name: 'Screenshot', methods: [{ name: 'take', rtype: 'promise' }] },
   { name: 'Filesystem', methods: [{ name: 'deleteFile', rtype: 'promise' }] },
 ]
 Capacitor.nativePromise = async () => {}
@@ -73,7 +73,7 @@ function setup(t, { cleanupError, decodeError } = {}) {
     if (cleanupError) throw cleanupError
   })
   t.mock.method(Capacitor, 'nativePromise', async (plugin, method, options) => {
-    if (plugin === 'AndroidUi' && method === 'takeScreenshot') return take(options)
+    if (plugin === 'Screenshot' && method === 'take') return take(options)
     if (plugin === 'Filesystem' && method === 'deleteFile') return remove(options)
     assert.fail(`Unexpected native call: ${plugin}.${method}`)
   })

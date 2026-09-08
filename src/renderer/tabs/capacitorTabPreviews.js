@@ -3,7 +3,7 @@ import { Filesystem } from '@capacitor/filesystem'
 import { shallowReactive, watch } from 'vue'
 import { canCaptureCapacitorTab, createCapacitorPreviewCache } from './capacitorPreviewCache.js'
 
-const AndroidUi = registerPlugin('AndroidUi')
+const Screenshot = registerPlugin('Screenshot')
 const cache = createCapacitorPreviewCache(capturePage, shallowReactive(new Map()))
 let captureCurrent = async () => {}
 
@@ -23,7 +23,7 @@ export async function captureBeforeTabOrganizer() {
 }
 
 export function initializeCapacitorTabPreviews(store) {
-  if (!process.env.IS_CAPACITOR || !Capacitor.isPluginAvailable('AndroidUi')) return () => {}
+  if (!process.env.IS_CAPACITOR || !Capacitor.isPluginAvailable('Screenshot')) return () => {}
   let timer
   const canCapture = () => canCaptureCapacitorTab(store.getters, document.visibilityState === 'visible') && !hasVisibleOverlay()
   captureCurrent = async () => {
@@ -88,7 +88,7 @@ async function capturePage() {
   const videos = [...document.querySelectorAll('.tabContent:not([inert]) video')]
     .map(video => ({ video, rect: video.getBoundingClientRect() }))
     .filter(({ rect }) => rect.width > 0 && rect.height > 0 && rect.bottom > top && rect.top < top + cropHeight)
-  const { uri } = await AndroidUi.takeScreenshot()
+  const { uri } = await Screenshot.take()
   try {
     const screenshot = new Image()
     screenshot.src = Capacitor.convertFileSrc(uri)

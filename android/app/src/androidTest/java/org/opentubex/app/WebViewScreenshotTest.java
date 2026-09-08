@@ -1,10 +1,11 @@
 package org.opentubex.app;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.webkit.WebView;
 
 import androidx.test.core.app.ActivityScenario;
@@ -13,7 +14,10 @@ import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.json.JSONObject;
+import org.json.JSONTokener;
 
+import java.io.File;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
@@ -74,20 +78,26 @@ public class WebViewScreenshotTest {
             }));
             assertTrue("The populated feed has rendered", rendered.await(10, TimeUnit.SECONDS));
 
-            AtomicReference<Bitmap> image = new AtomicReference<>();
-            AtomicReference<Exception> error = new AtomicReference<>();
-            CountDownLatch captured = new CountDownLatch(1);
-            scenario.onActivity(activity -> WebViewScreenshot.capture(activity, webView, bitmap -> {
-                image.set(bitmap);
-                captured.countDown();
-            }, failure -> {
-                error.set(failure);
-                captured.countDown();
-            }));
-            assertTrue("The screenshot completes", captured.await(10, TimeUnit.SECONDS));
-            assertNull("The screenshot succeeds", error.get());
-            Bitmap bitmap = image.get();
+            evaluate(webView, """
+                window.__screenshotTest = null;
+                Capacitor.Plugins.Screenshot.take().then(
+                    result => { window.__screenshotTest = result; },
+                    error => { window.__screenshotTest = { error: String(error) }; }
+                );
+                """);
+            awaitCondition(webView, "window.__screenshotTest !== null");
+            JSONObject result = new JSONObject((String) new JSONTokener(
+                evaluate(webView, "JSON.stringify(window.__screenshotTest)")).nextValue());
+            assertTrue("The screenshot plugin succeeds: " + result, !result.has("error"));
+            File screenshot = new File(result.getString("uri"));
+            Bitmap bitmap = null;
             try {
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                bitmap = BitmapFactory.decodeFile(screenshot.getAbsolutePath(), options);
+                assertNotNull("The plugin returns a readable image", bitmap);
+                assertEquals("The screenshot is a JPEG", "image/jpeg", options.outMimeType);
+                assertEquals(webView.getWidth(), bitmap.getWidth());
+                assertEquals(webView.getHeight(), bitmap.getHeight());
                 int left = bitmap.getWidth(), top = bitmap.getHeight(), right = -1, bottom = -1;
                 int[] pixels = new int[bitmap.getWidth() * bitmap.getHeight()];
                 bitmap.getPixels(pixels, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
@@ -106,7 +116,8 @@ public class WebViewScreenshotTest {
                 assertEquals("A square inside a feed tab must remain square in the screenshot",
                     right - left, bottom - top, 2);
             } finally {
-                bitmap.recycle();
+                if (bitmap != null) bitmap.recycle();
+                assertTrue("The temporary screenshot can be deleted", screenshot.delete());
             }
         }
     }
