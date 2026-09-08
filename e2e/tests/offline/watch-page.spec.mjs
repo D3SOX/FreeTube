@@ -3208,13 +3208,13 @@ test.describe('watch page', () => {
       const style = getComputedStyle(element)
       const fadeStyle = getComputedStyle(element, '::before')
       return {
-        fadeBackground: fadeStyle.backgroundImage,
+        fadeMask: fadeStyle.maskImage,
         fadeHeight: Number.parseFloat(fadeStyle.height),
         fontSize: Number.parseFloat(style.fontSize),
         marginBlockStart: Number.parseFloat(style.marginBlockStart)
       }
     })
-    expect(collapseControlStyles.fadeBackground).toContain('linear-gradient')
+    expect(collapseControlStyles.fadeMask).toContain('linear-gradient')
     expect(collapseControlStyles.fadeHeight).toBeGreaterThan(0)
     expect(collapseControlStyles.marginBlockStart).toBeGreaterThan(collapseControlStyles.fontSize)
     const maxScrollTop = await descriptionScroll.evaluate(element =>

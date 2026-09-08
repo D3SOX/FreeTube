@@ -25,6 +25,8 @@
   border-start-start-radius: calc(8px * var(--ui-roundness));
   border-start-end-radius: calc(8px * var(--ui-roundness));
   background-color: var(--card-bg-color);
+  background-image: var(--card-bg-image);
+  background-attachment: fixed;
   backdrop-filter: var(--card-bg-blur, none);
   box-shadow: 0 1px 0 var(--primary-shadow-color);
 }
