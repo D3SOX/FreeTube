@@ -21,7 +21,7 @@
   padding-inline: 0;
   overflow: hidden;
   color: #fff;
-  background-color: transparent;
+  background: transparent;
   backdrop-filter: none;
   box-shadow: none;
 }
