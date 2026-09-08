@@ -33,20 +33,26 @@ const videos = Array.from({ length: 12 }, (_, index) => ({
 
 test.use({
   launchArgs: ['--lang=en-US'],
+  showTutorial: true,
   seed: {
-    settings: {
-      currentLocale: 'en-US',
-      fetchSubscriptionsAutomatically: false,
-      videoPlaybackEngine: 'built-in',
-      ytDlpPlaybackEngineDefaultMigration: true,
-      playVideo: false,
-    },
-    profiles: [{ _id: 'allChannels', name: 'All Channels', bgColor: '#000000', textColor: '#ffffff', subscriptions: [channel] }],
-    subscriptionCache: [{ _id: channel.id, videos, videosTimestamp: new Date(now).toISOString() }],
+    freshProfile: true,
   },
 })
 
+test.afterEach(async ({ page }) => {
+  // Preserve the default confirmation settings until all captures are done.
+  await page.evaluate(async () => {
+    const store = document.querySelector('#app').__vue_app__.config.globalProperties.$store
+    await store.dispatch('updateConfirmCloseApp', false)
+    await store.dispatch('updateConfirmCloseWindowWithMultipleTabs', false)
+  })
+})
+
 test('captures the submitted theme in three views with sample content', async ({ app, page }, testInfo) => {
+  const tutorial = page.locator('.tutorialOverlay')
+  await tutorial.getByRole('button', { name: 'Skip', exact: true }).click()
+  await expect(tutorial).toBeHidden()
+
   await mockPlayableWatchPage(app, page)
   await page.route(url => ['ytimg.com', 'ggpht.com', 'googleusercontent.com']
     .some(domain => url.hostname === domain || url.hostname.endsWith(`.${domain}`)), route =>
@@ -64,21 +70,39 @@ test('captures the submitted theme in three views with sample content', async ({
   await expect(page.locator('body')).toHaveClass(/\bcustom\b/)
   await expect.poll(() => page.locator('body').evaluate(body => body.style.getPropertyValue('--bg-color')))
     .toBe(theme.colors.background)
+  await expect(page.locator('.profileTrigger')).toHaveCSS('background-color',
+    await page.locator('body').evaluate(body => {
+      const probe = document.createElement('span')
+      probe.style.backgroundColor = 'var(--primary-color)'
+      body.append(probe)
+      const color = getComputedStyle(probe).backgroundColor
+      probe.remove()
+      return color
+    }))
 
   async function capture(view) {
     await captureAppScreenshot(page, view, testInfo.outputPath(`${view}.png`))
   }
 
-  // Reload the feed after installing the local image routes.
+  // Like the README captures, photograph Settings before configuring content.
+  const settings = await openScreenshotSettings(page)
+  await expect(settings.locator('.changedSettingIndicator')).toHaveCount(0)
+  await capture('settings')
+  await settings.getByRole('button', { name: 'Close', exact: true }).click()
+  await expect(settings).toBeHidden()
+
+  await page.evaluate(async ({ channel, videos, now }) => {
+    const store = document.querySelector('#app').__vue_app__.config.globalProperties.$store
+    await store.dispatch('updateFetchSubscriptionsAutomatically', false)
+    await store.dispatch('addChannelToProfiles', { channel, profileIds: [store.getters.getActiveProfile._id] })
+    await store.dispatch('updateSubscriptionVideosCacheByChannel', {
+      channelId: channel.id, videos, timestamp: new Date(now),
+    })
+  }, { channel, videos, now })
   await goTo(page, 'history')
   await goTo(page, 'subscriptions')
   await expect(page.locator('.ft-list-video').nth(11)).toBeVisible()
   await capture('subscriptions')
-
-  const settings = await openScreenshotSettings(page)
-  await capture('settings')
-  await settings.getByRole('button', { name: 'Close', exact: true }).click()
-  await expect(settings).toBeHidden()
 
   await page.locator(sel.searchInput).fill('https://www.youtube.com/watch?v=jNQXAC9IVRw')
   await page.locator(sel.searchInput).press('Enter')
