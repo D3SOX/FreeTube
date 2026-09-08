@@ -47,6 +47,10 @@
     transform 200ms ease-out;
 }
 
+.player.nativePlayer {
+  aspect-ratio: 16 / 9;
+}
+
 .player.audioOnly,
 .player.musicAudioTrack {
   opacity: 0;
@@ -232,7 +236,7 @@ html[data-reduced-motion='reduce'] .musicVisualizerCanvas {
   transition: opacity 150ms ease;
 }
 
-.ftVideoPlayer:is(:fullscreen, .fullWindow):has(
+.ftVideoPlayer:is(:is(:fullscreen, [data-native-player-screen]), .fullWindow):has(
   :deep(.shaka-controls-container[shown='true'])
 ):not(.playerPaused.hideVideoTitleWhenPaused:not(.pausedInterfaceRevealed)) > .paidPromotionOverlay {
   /* Keep the badge clear of the single-line fullscreen title overlay. */
@@ -248,7 +252,7 @@ html[data-reduced-motion='reduce'] .musicVisualizerCanvas {
   overflow: visible !important;
 }
 
-.ftVideoPlayer.shortsPlayer:not(:fullscreen, .fullWindow) {
+.ftVideoPlayer.shortsPlayer:not(:is(:fullscreen, [data-native-player-screen]), .fullWindow) {
   inline-size: 100%;
   block-size: 100%;
   aspect-ratio: auto;
@@ -436,7 +440,7 @@ html[data-reduced-motion='reduce'] .musicVisualizerCanvas {
   pointer-events: auto;
 }
 
-.ftVideoPlayer.shortsPlayer:is(:fullscreen, .fullWindow) :deep(
+.ftVideoPlayer.shortsPlayer:is(:is(:fullscreen, [data-native-player-screen]), .fullWindow) :deep(
   .shaka-controls-button-panel:has(> .ft-quick-playback-rate-bar)
 ) {
   inset-inline: auto;
@@ -484,7 +488,7 @@ html[data-reduced-motion='reduce'] .musicVisualizerCanvas {
   z-index: 3;
 }
 
-.ftVideoPlayer.shortsPlayer:is(:fullscreen, .fullWindow) {
+.ftVideoPlayer.shortsPlayer:is(:is(:fullscreen, [data-native-player-screen]), .fullWindow) {
   --shorts-metadata-min-width: min(
     220px,
     calc((100vw - var(--shorts-dock-width, 0px)) / 3)
@@ -498,7 +502,7 @@ html[data-reduced-motion='reduce'] .musicVisualizerCanvas {
   );
 }
 
-.ftVideoPlayer.shortsPlayer:is(:fullscreen, .fullWindow) :deep(.shaka-seek-bar-container) {
+.ftVideoPlayer.shortsPlayer:is(:is(:fullscreen, [data-native-player-screen]), .fullWindow) :deep(.shaka-seek-bar-container) {
   inset-inline: auto;
   inset-inline-start: max(
     calc((100% - var(--shorts-video-width)) / 2),
@@ -559,7 +563,7 @@ html[data-reduced-motion='reduce'] .musicVisualizerCanvas {
   translate: var(--shorts-context-menu-x, 0) var(--shorts-context-menu-y, 0);
 }
 
-.ftVideoPlayer.shortsPlayer:fullscreen .shortsTopControls,
+.ftVideoPlayer.shortsPlayer:is(:fullscreen, [data-native-player-screen]) .shortsTopControls,
 .ftVideoPlayer.shortsPlayer.fullWindow .shortsTopControls {
   inset-block: 0;
   inset-inline: calc((100% - var(--shorts-dock-width, 0px)) / 2) auto;
@@ -582,7 +586,7 @@ html[data-reduced-motion='reduce'] .musicVisualizerCanvas {
   display: none;
 }
 
-.ftVideoPlayer.shortsPlayer:fullscreen .shortsFullscreenMetadata,
+.ftVideoPlayer.shortsPlayer:is(:fullscreen, [data-native-player-screen]) .shortsFullscreenMetadata,
 .ftVideoPlayer.shortsPlayer.fullWindow .shortsFullscreenMetadata {
   position: absolute;
   z-index: 5;
@@ -616,12 +620,12 @@ html[data-reduced-motion='reduce'] .musicVisualizerCanvas {
   aspect-ratio: var(--shorts-aspect-ratio);
 }
 
-.ftVideoPlayer.shortsPlayer:fullscreen :deep(.playerFullscreenTitleOverlay),
+.ftVideoPlayer.shortsPlayer:is(:fullscreen, [data-native-player-screen]) :deep(.playerFullscreenTitleOverlay),
 .ftVideoPlayer.shortsPlayer.fullWindow :deep(.playerFullscreenTitleOverlay) {
   display: none;
 }
 
-.ftVideoPlayer.shortsPlayer:fullscreen:is(
+.ftVideoPlayer.shortsPlayer:is(:fullscreen, [data-native-player-screen]):is(
   .fullscreenDockLayoutOpen,
   .fullscreenMetadataOpen,
   .fullscreenTranscriptOpen,
@@ -1264,6 +1268,27 @@ html[data-reduced-motion='reduce'] .musicVisualizerCanvas {
   text-align: center;
 }
 
+/* Reserve space for HD/4K beside a long resolution or bitrate label. */
+:deep(.shaka-overflow-menu.ft-menu-grid .shaka-overflow-button-label > span:has(.shaka-current-quality-mark)) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+}
+
+:deep(.shaka-overflow-menu.ft-menu-grid .shaka-resolution-button :is(.shaka-current-selection-span, .shaka-current-auto-quality)) {
+  flex: 0 1 auto;
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+:deep(.shaka-overflow-menu.ft-menu-grid .shaka-current-quality-mark) {
+  flex-shrink: 0;
+  block-size: auto;
+}
+
 /*
   The submenus are laid out as tiles too, so that switching between the menu and
   a submenu doesn't change the shape of the popup. Wrapping flex rather than a
@@ -1361,6 +1386,23 @@ html[data-reduced-motion='reduce'] .musicVisualizerCanvas {
   -webkit-box-orient: vertical;
   line-clamp: 2;
   -webkit-line-clamp: 2;
+}
+
+/* A quality badge stays beside its label even when the label needs two lines. */
+:deep(.shaka-sub-menu.ft-menu-grid > button.explicit-resolution) {
+  flex-wrap: nowrap;
+  align-items: center;
+}
+
+:deep(.shaka-sub-menu.ft-menu-grid > button.explicit-resolution > span) {
+  flex: 0 1 auto;
+  min-inline-size: 0;
+}
+
+:deep(.shaka-sub-menu.ft-menu-grid > button.explicit-resolution > .shaka-quality-mark) {
+  flex: 0 0 auto;
+  block-size: auto;
+  line-height: 1;
 }
 
 :deep(.ab-repeat-button[aria-pressed='true'] .shaka-ui-icon) {
@@ -1743,7 +1785,7 @@ html[data-reduced-motion='reduce'] .musicVisualizerCanvas {
 
 .valueChangePopup {
   position: absolute;
-  top: 70px;
+  top: clamp(16px, 5%, 32px);
   left: 50%;
   transform: translateX(-50%);
   padding: 10px;
@@ -1760,6 +1802,7 @@ html[data-reduced-motion='reduce'] .musicVisualizerCanvas {
   pointer-events: none;
 }
 
+
 .valueChangePopup.invert-content-order {
   flex-direction: row-reverse;
 }
@@ -1767,6 +1810,11 @@ html[data-reduced-motion='reduce'] .musicVisualizerCanvas {
 .valueChangePopup:has(.valueChangeCustomIcon) {
   width: max-content;
   white-space: nowrap;
+}
+
+.ftVideoPlayer:is(:fullscreen, [data-native-player-screen], .fullWindow) .valueChangePopup {
+  /* Leave room for the fullscreen title and the display cutout. */
+  top: calc(56px + var(--safe-area-inset-top, env(safe-area-inset-top, 0px)));
 }
 
 .valueChangeIcons {
@@ -2380,7 +2428,7 @@ html[data-reduced-motion='reduce'] .musicVisualizerCanvas {
   right: 5px;
 }
 
-.ftVideoPlayer:fullscreen :deep(.playerFullscreenTitleOverlay),
+.ftVideoPlayer:is(:fullscreen, [data-native-player-screen]) :deep(.playerFullscreenTitleOverlay),
 .ftVideoPlayer.fullWindow :deep(.playerFullscreenTitleOverlay) {
   display: block;
 }
@@ -2461,7 +2509,7 @@ html[data-reduced-motion='reduce'] .musicVisualizerCanvas {
   transition: none !important;
 }
 
-.ftVideoPlayer:fullscreen .fullscreenActions,
+.ftVideoPlayer:is(:fullscreen, [data-native-player-screen]) .fullscreenActions,
 .ftVideoPlayer.fullWindow .fullscreenActions {
   display: flex;
 }
@@ -2475,17 +2523,17 @@ html[data-reduced-motion='reduce'] .musicVisualizerCanvas {
   z-index: 5;
 }
 
-.ftVideoPlayer:has(:deep(.shaka-seek-bar-container:hover)) :is(
+.ftVideoPlayer:where(:not([data-native-player-screen])):has(:deep(.shaka-seek-bar-container:hover)) :is(
   .fullscreenActions:not(:has(:deep(.iconDropdown))),
   .skippedSegmentsWrapper
 ),
-  .ftVideoPlayer:has(:deep(.shaka-controls-button-panel > :is(.shaka-tooltip, .shaka-tooltip-status):is(:hover, :focus-visible, :active))) .fullscreenActions:not(:has(:deep(.iconDropdown))) {
+  .ftVideoPlayer:where(:not([data-native-player-screen])):has(:deep(.shaka-controls-button-panel > :is(.shaka-tooltip, .shaka-tooltip-status):is(:hover, :focus-visible, :active))) .fullscreenActions:not(:has(:deep(.iconDropdown))) {
   z-index: 0;
 }
 
-.ftVideoPlayer:fullscreen:has(:deep(.shaka-controls-container[shown='true'])) .fullscreenActions,
+.ftVideoPlayer:is(:fullscreen, [data-native-player-screen]):has(:deep(.shaka-controls-container[shown='true'])) .fullscreenActions,
 .ftVideoPlayer.fullWindow:has(:deep(.shaka-controls-container[shown='true'])) .fullscreenActions,
-.ftVideoPlayer.shortsPlayer:fullscreen .fullscreenActions,
+.ftVideoPlayer.shortsPlayer:is(:fullscreen, [data-native-player-screen]) .fullscreenActions,
 .ftVideoPlayer.shortsPlayer.fullWindow .fullscreenActions {
   opacity: 1;
   pointer-events: auto;
@@ -2493,14 +2541,14 @@ html[data-reduced-motion='reduce'] .musicVisualizerCanvas {
 
 /* Shaka's full-surface tap layers must stay below the app's fullscreen
    metadata trigger and action dock on touch devices. */
-:global(.capacitorTabs .ftVideoPlayer:is(:fullscreen, .fullWindow) .playerFullscreenTitleOverlay),
-:global(.capacitorTabs .ftVideoPlayer:is(:fullscreen, .fullWindow) .fullscreenActions) {
+:global(.capacitorTabs .ftVideoPlayer:is(:is(:fullscreen, [data-native-player-screen]), .fullWindow) .playerFullscreenTitleOverlay),
+:global(.capacitorTabs .ftVideoPlayer:is(:is(:fullscreen, [data-native-player-screen]), .fullWindow) .fullscreenActions) {
   z-index: 7;
   touch-action: manipulation;
 }
 
 /* Nested Shaka menus occupy the same corner as the phone action dock. */
-:global(.capacitorTabs .ftVideoPlayer:is(:fullscreen, .fullWindow):has(
+:global(.capacitorTabs .ftVideoPlayer:is(:is(:fullscreen, [data-native-player-screen]), .fullWindow):has(
   .shaka-settings-menu:not(.shaka-hidden),
   .shaka-sub-menu:not(.shaka-hidden)
 ) .fullscreenActions) {
@@ -2509,11 +2557,11 @@ html[data-reduced-motion='reduce'] .musicVisualizerCanvas {
 }
 
 /* SponsorBlock notices remain actionable above the mobile action dock. */
-:global(.capacitorTabs .ftVideoPlayer:is(:fullscreen, .fullWindow) .skippedSegmentsWrapper) {
+:global(.capacitorTabs .ftVideoPlayer:is(:is(:fullscreen, [data-native-player-screen]), .fullWindow) .skippedSegmentsWrapper) {
   z-index: 8;
 }
 
-:global(.capacitorTabs .ftVideoPlayer:is(:fullscreen, .fullWindow)) {
+:global(.capacitorTabs .ftVideoPlayer:is(:is(:fullscreen, [data-native-player-screen]), .fullWindow)) {
   --mobile-fullscreen-actions-block-end: calc(
     82px + var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px))
   );
@@ -2521,17 +2569,12 @@ html[data-reduced-motion='reduce'] .musicVisualizerCanvas {
   --mobile-fullscreen-overlay-gap: 8px;
 }
 
-:global(.capacitorTabs .ftVideoPlayer:is(:fullscreen, .fullWindow) > .fullscreenActions) {
+:global(.capacitorTabs .ftVideoPlayer:is(:is(:fullscreen, [data-native-player-screen]), .fullWindow) > .fullscreenActions) {
   inset-block-end: var(--mobile-fullscreen-actions-block-end);
 }
 
-:global(.capacitorTabs .ftVideoPlayer:is(:fullscreen, .fullWindow) > .fullscreenActions:focus-within) {
-  opacity: 1;
-  pointer-events: auto;
-}
-
 /* Keep SponsorBlock notices above the mobile action dock while it is visible. */
-:global(.capacitorTabs .ftVideoPlayer:is(:fullscreen, .fullWindow)[data-action-dock-visible='true'] > .skippedSegmentsWrapper) {
+:global(.capacitorTabs .ftVideoPlayer:is(:is(:fullscreen, [data-native-player-screen]), .fullWindow)[data-action-dock-visible='true'] > .skippedSegmentsWrapper) {
   bottom: calc(
     var(--mobile-fullscreen-actions-block-end) +
     var(--mobile-fullscreen-actions-block-size) +
@@ -3057,11 +3100,11 @@ html[data-reduced-motion='reduce'] .musicVisualizerCanvas {
 }
 
 .ftVideoPlayer.fullWindow .ambientFullscreenCanvas,
-.ftVideoPlayer:fullscreen:is(.fullscreenAmbientBarsVisible, .fullscreenDockLayoutOpen, .fullscreenMetadataOpen, .fullscreenTranscriptOpen, .fullscreenSponsorBlockOpen, .fullscreenLiveChatOpen, .fullscreenCommentsOpen, .fullscreenPlaylistOpen, .chaptersOverlayOpen) .ambientFullscreenCanvas {
+.ftVideoPlayer:is(:fullscreen, [data-native-player-screen]):is(.fullscreenAmbientBarsVisible, .fullscreenDockLayoutOpen, .fullscreenMetadataOpen, .fullscreenTranscriptOpen, .fullscreenSponsorBlockOpen, .fullscreenLiveChatOpen, .fullscreenCommentsOpen, .fullscreenPlaylistOpen, .chaptersOverlayOpen) .ambientFullscreenCanvas {
   opacity: 0.42;
 }
 
-.ftVideoPlayer:is(:fullscreen, .fullWindow) :deep(.shaka-controls-container) {
+.ftVideoPlayer:is(:is(:fullscreen, [data-native-player-screen]), .fullWindow) :deep(.shaka-controls-container) {
   inline-size: 100%;
   inset-inline: 0 auto;
 }
@@ -3178,29 +3221,29 @@ html[data-reduced-motion='reduce'] .musicVisualizerCanvas {
 }
 
 /* Keep the floating fullscreen actions next to the video instead of under the panel. */
-.ftVideoPlayer:fullscreen:is(.fullscreenDockLayoutOpen, .fullscreenMetadataOpen, .fullscreenTranscriptOpen, .fullscreenSponsorBlockOpen, .fullscreenLiveChatOpen, .fullscreenCommentsOpen, .fullscreenPlaylistOpen, .chaptersOverlayOpen) .fullscreenActions,
+.ftVideoPlayer:is(:fullscreen, [data-native-player-screen]):is(.fullscreenDockLayoutOpen, .fullscreenMetadataOpen, .fullscreenTranscriptOpen, .fullscreenSponsorBlockOpen, .fullscreenLiveChatOpen, .fullscreenCommentsOpen, .fullscreenPlaylistOpen, .chaptersOverlayOpen) .fullscreenActions,
 .ftVideoPlayer.fullWindow:is(.fullscreenDockLayoutOpen, .fullscreenMetadataOpen, .fullscreenTranscriptOpen, .fullscreenSponsorBlockOpen, .fullscreenLiveChatOpen, .fullscreenCommentsOpen, .fullscreenPlaylistOpen, .chaptersOverlayOpen) .fullscreenActions {
   inset-inline-end: calc(var(--side-panel-width) + 24px);
 }
 
 /* Keep SponsorBlock notices inside the video area when a dock is open. */
-.ftVideoPlayer:fullscreen:is(.fullscreenDockLayoutOpen, .fullscreenMetadataOpen, .fullscreenTranscriptOpen, .fullscreenSponsorBlockOpen, .fullscreenLiveChatOpen, .fullscreenCommentsOpen, .fullscreenPlaylistOpen, .chaptersOverlayOpen) .skippedSegmentsWrapper,
+.ftVideoPlayer:is(:fullscreen, [data-native-player-screen]):is(.fullscreenDockLayoutOpen, .fullscreenMetadataOpen, .fullscreenTranscriptOpen, .fullscreenSponsorBlockOpen, .fullscreenLiveChatOpen, .fullscreenCommentsOpen, .fullscreenPlaylistOpen, .chaptersOverlayOpen) .skippedSegmentsWrapper,
 .ftVideoPlayer.fullWindow:is(.fullscreenDockLayoutOpen, .fullscreenMetadataOpen, .fullscreenTranscriptOpen, .fullscreenSponsorBlockOpen, .fullscreenLiveChatOpen, .fullscreenCommentsOpen, .fullscreenPlaylistOpen, .chaptersOverlayOpen) .skippedSegmentsWrapper,
-.ftVideoPlayer:fullscreen:is(.fullscreenDockLayoutOpen, .fullscreenMetadataOpen, .fullscreenTranscriptOpen, .fullscreenSponsorBlockOpen, .fullscreenLiveChatOpen, .fullscreenCommentsOpen, .fullscreenPlaylistOpen, .chaptersOverlayOpen) .sponsorBlockSubmissionWrapper,
+.ftVideoPlayer:is(:fullscreen, [data-native-player-screen]):is(.fullscreenDockLayoutOpen, .fullscreenMetadataOpen, .fullscreenTranscriptOpen, .fullscreenSponsorBlockOpen, .fullscreenLiveChatOpen, .fullscreenCommentsOpen, .fullscreenPlaylistOpen, .chaptersOverlayOpen) .sponsorBlockSubmissionWrapper,
 .ftVideoPlayer.fullWindow:is(.fullscreenDockLayoutOpen, .fullscreenMetadataOpen, .fullscreenTranscriptOpen, .fullscreenSponsorBlockOpen, .fullscreenLiveChatOpen, .fullscreenCommentsOpen, .fullscreenPlaylistOpen, .chaptersOverlayOpen) .sponsorBlockSubmissionWrapper {
   inset-inline-end: calc(var(--side-panel-width) + 2%);
 }
 
-.ftVideoPlayer:fullscreen :deep(.shaka-fullscreen-button),
-.ftVideoPlayer:fullscreen :deep(.shaka-controls-button-panel > .shaka-play-button:first-child),
+.ftVideoPlayer:is(:fullscreen, [data-native-player-screen]) :deep(.shaka-fullscreen-button),
+.ftVideoPlayer:is(:fullscreen, [data-native-player-screen]) :deep(.shaka-controls-button-panel > .shaka-play-button:first-child),
 .ftVideoPlayer.fullWindow :deep(.shaka-fullscreen-button),
 .ftVideoPlayer.fullWindow :deep(.shaka-controls-button-panel > .shaka-play-button:first-child) {
   position: relative;
   overflow: visible;
 }
 
-.ftVideoPlayer:fullscreen :deep(.shaka-controls-button-panel > .shaka-play-button:first-child)::before,
-.ftVideoPlayer:fullscreen :deep(.shaka-fullscreen-button)::before,
+.ftVideoPlayer:is(:fullscreen, [data-native-player-screen]) :deep(.shaka-controls-button-panel > .shaka-play-button:first-child)::before,
+.ftVideoPlayer:is(:fullscreen, [data-native-player-screen]) :deep(.shaka-fullscreen-button)::before,
 .ftVideoPlayer.fullWindow :deep(.shaka-controls-button-panel > .shaka-play-button:first-child)::before,
 .ftVideoPlayer.fullWindow :deep(.shaka-fullscreen-button)::before {
   /*
@@ -3211,12 +3254,12 @@ html[data-reduced-motion='reduce'] .musicVisualizerCanvas {
   position: absolute;
 }
 
-.ftVideoPlayer:fullscreen :deep(.shaka-controls-button-panel > .shaka-play-button:first-child)::before,
+.ftVideoPlayer:is(:fullscreen, [data-native-player-screen]) :deep(.shaka-controls-button-panel > .shaka-play-button:first-child)::before,
 .ftVideoPlayer.fullWindow :deep(.shaka-controls-button-panel > .shaka-play-button:first-child)::before {
   inset: -8px -8px -8px -2vw;
 }
 
-.ftVideoPlayer:fullscreen :deep(.shaka-fullscreen-button)::before,
+.ftVideoPlayer:is(:fullscreen, [data-native-player-screen]) :deep(.shaka-fullscreen-button)::before,
 .ftVideoPlayer.fullWindow :deep(.shaka-fullscreen-button)::before {
   inset: -8px -2vw -8px -8px;
 }
@@ -3225,18 +3268,18 @@ html[data-reduced-motion='reduce'] .musicVisualizerCanvas {
   opacity: 1;
 }
 
-.ftVideoPlayer:is(:fullscreen, .fullWindow).playerPaused.hideVideoTitleWhenPaused
+.ftVideoPlayer:is(:is(:fullscreen, [data-native-player-screen]), .fullWindow).playerPaused.hideVideoTitleWhenPaused
 :deep(.playerFullscreenTitleOverlay) {
   transition-duration: 150ms, 150ms;
   transition-delay: 0s, 0s;
 }
 
-.ftVideoPlayer:is(:fullscreen, .fullWindow).playerPaused.hideFullscreenActionsWhenPaused
+.ftVideoPlayer:is(:is(:fullscreen, [data-native-player-screen]), .fullWindow).playerPaused.hideFullscreenActionsWhenPaused
 .fullscreenActions {
   transition-duration: 150ms, 250ms;
 }
 
-.ftVideoPlayer:is(:fullscreen, .fullWindow).playerPaused.hidePlayerControlsWhenPaused
+.ftVideoPlayer:is(:is(:fullscreen, [data-native-player-screen]), .fullWindow).playerPaused.hidePlayerControlsWhenPaused
   :is(
     :deep(.shaka-scrim-container),
     :deep(.shaka-controls-button-panel),
@@ -3248,21 +3291,21 @@ html[data-reduced-motion='reduce'] .musicVisualizerCanvas {
   transition-duration: 150ms;
 }
 
-.ftVideoPlayer:is(:fullscreen, .fullWindow).playerPaused:not(.pausedInterfaceRevealed).hideVideoTitleWhenPaused
+.ftVideoPlayer:is(:is(:fullscreen, [data-native-player-screen]), .fullWindow).playerPaused:not(.pausedInterfaceRevealed).hideVideoTitleWhenPaused
 :deep(.playerFullscreenTitleOverlay),
-.ftVideoPlayer:is(:fullscreen, .fullWindow).playerPaused:not(.pausedInterfaceRevealed).hideFullscreenActionsWhenPaused
+.ftVideoPlayer:is(:is(:fullscreen, [data-native-player-screen]), .fullWindow).playerPaused:not(.pausedInterfaceRevealed).hideFullscreenActionsWhenPaused
 .fullscreenActions,
-.ftVideoPlayer:is(:fullscreen, .fullWindow).playerPaused:not(.pausedInterfaceRevealed).hidePlayerControlsWhenPaused
+.ftVideoPlayer:is(:is(:fullscreen, [data-native-player-screen]), .fullWindow).playerPaused:not(.pausedInterfaceRevealed).hidePlayerControlsWhenPaused
 :deep(.shaka-scrim-container),
-.ftVideoPlayer:is(:fullscreen, .fullWindow).playerPaused:not(.pausedInterfaceRevealed).hidePlayerControlsWhenPaused
+.ftVideoPlayer:is(:is(:fullscreen, [data-native-player-screen]), .fullWindow).playerPaused:not(.pausedInterfaceRevealed).hidePlayerControlsWhenPaused
 :deep(.shaka-controls-button-panel),
-.ftVideoPlayer:is(:fullscreen, .fullWindow).playerPaused:not(.pausedInterfaceRevealed).hidePlayerControlsWhenPaused
+.ftVideoPlayer:is(:is(:fullscreen, [data-native-player-screen]), .fullWindow).playerPaused:not(.pausedInterfaceRevealed).hidePlayerControlsWhenPaused
 :deep(.shaka-seek-bar-container),
-.ftVideoPlayer:is(:fullscreen, .fullWindow).playerPaused:not(.pausedInterfaceRevealed).hidePlayerControlsWhenPaused
+.ftVideoPlayer:is(:is(:fullscreen, [data-native-player-screen]), .fullWindow).playerPaused:not(.pausedInterfaceRevealed).hidePlayerControlsWhenPaused
 :deep(.shaka-play-button-container),
-.ftVideoPlayer:is(:fullscreen, .fullWindow).playerPaused:not(.pausedInterfaceRevealed).hidePlayerControlsWhenPaused
+.ftVideoPlayer:is(:is(:fullscreen, [data-native-player-screen]), .fullWindow).playerPaused:not(.pausedInterfaceRevealed).hidePlayerControlsWhenPaused
 :deep(.shaka-fast-forward-container),
-.ftVideoPlayer:is(:fullscreen, .fullWindow).playerPaused:not(.pausedInterfaceRevealed).hidePlayerControlsWhenPaused
+.ftVideoPlayer:is(:is(:fullscreen, [data-native-player-screen]), .fullWindow).playerPaused:not(.pausedInterfaceRevealed).hidePlayerControlsWhenPaused
 :deep(.shaka-rewind-container) {
   opacity: 0;
   pointer-events: none;
@@ -3804,8 +3847,8 @@ html[data-reduced-motion='reduce'] .musicVisualizerCanvas {
   text-underline-offset: 3px;
 }
 
-.ftVideoPlayer:fullscreen :deep(.theatre-button),
-.ftVideoPlayer:fullscreen :deep(.full-window-button),
+.ftVideoPlayer:is(:fullscreen, [data-native-player-screen]) :deep(.theatre-button),
+.ftVideoPlayer:is(:fullscreen, [data-native-player-screen]) :deep(.full-window-button),
 .fullWindow :deep(.theatre-button),
 .theatreUnavailable :deep(.theatre-button) {
   display: none;
@@ -4274,17 +4317,17 @@ html[data-reduced-motion='reduce'] .musicVisualizerCanvas {
   aside instead of covering it. Kept at the end of the file so the
   higher-specificity .player rules follow the scroll mini player ones.
 */
-.ftVideoPlayer:fullscreen:is(.fullscreenDockLayoutOpen, .fullscreenMetadataOpen, .fullscreenTranscriptOpen, .fullscreenSponsorBlockOpen, .fullscreenLiveChatOpen, .fullscreenCommentsOpen, .fullscreenPlaylistOpen, .chaptersOverlayOpen) :is(.player, .ambientFullscreenCanvas),
+.ftVideoPlayer:is(:fullscreen, [data-native-player-screen]):is(.fullscreenDockLayoutOpen, .fullscreenMetadataOpen, .fullscreenTranscriptOpen, .fullscreenSponsorBlockOpen, .fullscreenLiveChatOpen, .fullscreenCommentsOpen, .fullscreenPlaylistOpen, .chaptersOverlayOpen) :is(.player, .ambientFullscreenCanvas),
 .ftVideoPlayer.fullWindow:is(.fullscreenDockLayoutOpen, .fullscreenMetadataOpen, .fullscreenTranscriptOpen, .fullscreenSponsorBlockOpen, .fullscreenLiveChatOpen, .fullscreenCommentsOpen, .fullscreenPlaylistOpen, .chaptersOverlayOpen) :is(.player, .ambientFullscreenCanvas) {
   inline-size: calc(100% - var(--side-panel-width));
 }
 
-.ftVideoPlayer:fullscreen:is(.fullscreenDockLayoutOpen, .fullscreenMetadataOpen, .fullscreenTranscriptOpen, .fullscreenSponsorBlockOpen, .fullscreenLiveChatOpen, .fullscreenCommentsOpen, .fullscreenPlaylistOpen, .chaptersOverlayOpen) :deep(.shaka-controls-container),
+.ftVideoPlayer:is(:fullscreen, [data-native-player-screen]):is(.fullscreenDockLayoutOpen, .fullscreenMetadataOpen, .fullscreenTranscriptOpen, .fullscreenSponsorBlockOpen, .fullscreenLiveChatOpen, .fullscreenCommentsOpen, .fullscreenPlaylistOpen, .chaptersOverlayOpen) :deep(.shaka-controls-container),
 .ftVideoPlayer.fullWindow:is(.fullscreenDockLayoutOpen, .fullscreenMetadataOpen, .fullscreenTranscriptOpen, .fullscreenSponsorBlockOpen, .fullscreenLiveChatOpen, .fullscreenCommentsOpen, .fullscreenPlaylistOpen, .chaptersOverlayOpen) :deep(.shaka-controls-container) {
   inline-size: calc(100% - var(--side-panel-width));
 }
 
-.ftVideoPlayer:fullscreen:is(.fullscreenDockLayoutOpen, .fullscreenMetadataOpen, .fullscreenTranscriptOpen, .fullscreenSponsorBlockOpen, .fullscreenLiveChatOpen, .fullscreenCommentsOpen, .fullscreenPlaylistOpen, .chaptersOverlayOpen) :is(
+.ftVideoPlayer:is(:fullscreen, [data-native-player-screen]):is(.fullscreenDockLayoutOpen, .fullscreenMetadataOpen, .fullscreenTranscriptOpen, .fullscreenSponsorBlockOpen, .fullscreenLiveChatOpen, .fullscreenCommentsOpen, .fullscreenPlaylistOpen, .chaptersOverlayOpen) :is(
   :deep(.shaka-spinner-container),
   .countdownOverlay,
   :deep(.videoAnnotations),
@@ -4311,7 +4354,7 @@ html[data-reduced-motion='reduce'] .musicVisualizerCanvas {
   transition: none;
 }
 
-.ftVideoPlayer.shortsPlayer:not(:fullscreen, .fullWindow) > .player {
+.ftVideoPlayer.shortsPlayer:not(:is(:fullscreen, [data-native-player-screen]), .fullWindow) > .player {
   position: absolute !important;
   inset: 0 !important;
   display: block;
@@ -4330,19 +4373,19 @@ html[data-reduced-motion='reduce'] .musicVisualizerCanvas {
   flex: none;
 }
 
-.ftVideoPlayer.shortsPlayer:is(:fullscreen, .fullWindow) > .player {
+.ftVideoPlayer.shortsPlayer:is(:is(:fullscreen, [data-native-player-screen]), .fullWindow) > .player {
   object-fit: contain;
 }
 
 /* Android draws fullscreen content behind the system bars. */
-:global(.capacitorTabs .ftVideoPlayer.shortsPlayer:is(:fullscreen, .fullWindow) .shortsTopControls) {
+:global(.capacitorTabs .ftVideoPlayer.shortsPlayer:is(:is(:fullscreen, [data-native-player-screen]), .fullWindow) .shortsTopControls) {
   padding-block-start: calc(var(--safe-area-inset-top, env(safe-area-inset-top, 0px)) + 16px);
 }
 
 /* On a phone the dock already contains the metadata. Reserving another
    metadata column squeezes the Shorts title into a one-character strip. */
 @media only screen and (width <= 680px) {
-  :global(.capacitorTabs .ftVideoPlayer.shortsPlayer:is(:fullscreen, .fullWindow):is(
+  :global(.capacitorTabs .ftVideoPlayer.shortsPlayer:is(:is(:fullscreen, [data-native-player-screen]), .fullWindow):is(
     .fullscreenDockLayoutOpen,
     .fullscreenMetadataOpen,
     .fullscreenTranscriptOpen,
@@ -4355,7 +4398,7 @@ html[data-reduced-motion='reduce'] .musicVisualizerCanvas {
     --shorts-metadata-min-width: 0;
   }
 
-  :global(.capacitorTabs .ftVideoPlayer.shortsPlayer:is(:fullscreen, .fullWindow):is(
+  :global(.capacitorTabs .ftVideoPlayer.shortsPlayer:is(:is(:fullscreen, [data-native-player-screen]), .fullWindow):is(
     .fullscreenDockLayoutOpen,
     .fullscreenMetadataOpen,
     .fullscreenTranscriptOpen,
@@ -4370,3 +4413,10 @@ html[data-reduced-motion='reduce'] .musicVisualizerCanvas {
 }
 
 /* stylelint-enable liberty/use-logical-spec */
+
+/* Touch can leave :hover on the last control tapped after the UI disappears. */
+@media (hover: none) {
+  :deep(.shaka-tooltips-on > :is(.shaka-tooltip, .shaka-tooltip-status):not(:focus-visible)::after) {
+    content: none;
+  }
+}

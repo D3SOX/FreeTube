@@ -45,15 +45,17 @@
         @click="closeSideNav"
       />
     </Transition>
+    <!-- Fixed mini players must stay outside the route's query container. -->
+    <div
+      id="cross-tab-mini-player-layer"
+      class="crossTabMiniPlayerLayer"
+      :inert="isAnyPromptOpen"
+    />
     <FtFlexBox
       class="flexBox routerView"
       role="main"
       :inert="isAnyPromptOpen"
     >
-      <div
-        id="cross-tab-mini-player-layer"
-        class="crossTabMiniPlayerLayer"
-      />
       <template v-if="usesLogicalTabs">
         <TabContent
           v-for="tab in tabContainers"
@@ -414,9 +416,10 @@ import { parseAutomaticDownloadRules } from './helpers/automaticDownloadRules'
 import { isAppHidden, setAndroidAppVisible } from './helpers/appVisibility.js'
 import { createAppShortcuts, getAppShortcutPath } from './helpers/appShortcuts'
 import { AppShortcuts } from '@capawesome/capacitor-app-shortcuts'
+import { playbackScreenWake } from './helpers/playbackScreenWake'
 import { FtIcon } from '@opentubex/icons'
 import { App as CapacitorApp } from '@capacitor/app'
-import { Capacitor, SystemBarType, SystemBars, SystemBarsStyle } from '@capacitor/core'
+import { Capacitor, SystemBars, SystemBarsStyle } from '@capacitor/core'
 import { computed, defineAsyncComponent, nextTick, onBeforeUnmount, onMounted, provide, ref, useId, useTemplateRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { routerKey, useRoute, useRouter } from 'vue-router'
@@ -466,7 +469,8 @@ import { copyToClipboard, openExternalLink, openInternalPath, shareLink, showApi
 import {
   exitAndroidApp,
   getAndroidHardwareKeyboardState,
-  setAndroidPictureInPictureDocumentState
+  setAndroidPictureInPictureDocumentState,
+  setAndroidSystemBarsBackground
 } from './helpers/androidUi'
 import { openNotificationSettings } from './helpers/capacitorUi'
 import { initializeCapacitorLiveReminderActions } from './helpers/liveReminders'
@@ -2516,12 +2520,16 @@ function updateTheme() {
 function updateSystemBarsStyle() {
   if (!Capacitor.isNativePlatform() || !Capacitor.isPluginAvailable('SystemBars')) return
 
-  const backgroundColor = getComputedStyle(document.body).backgroundColor
+  // Native video needs a transparent WebView; use the theme backdrop behind it.
+  const bodyStyle = getComputedStyle(document.body)
+  const backgroundColor = bodyStyle.getPropertyValue('--bg-color').trim() || bodyStyle.backgroundColor
   const usesDarkIcons = calculateColorLuminance(backgroundColor) === '#000000'
-  SystemBars.setStyle({
-    bar: SystemBarType.StatusBar,
-    style: usesDarkIcons ? SystemBarsStyle.Light : SystemBarsStyle.Dark
-  }).catch((error) => {
+  Promise.all([
+    setAndroidSystemBarsBackground(backgroundColor),
+    SystemBars.setStyle({
+      style: usesDarkIcons ? SystemBarsStyle.Light : SystemBarsStyle.Dark
+    })
+  ]).catch((error) => {
     console.error('Failed to update system bar style:', error)
   })
 }
@@ -4094,6 +4102,7 @@ async function enableCapacitorIntegrations() {
   let receivedAppState = false
   const appStateHandle = await CapacitorApp.addListener('appStateChange', ({ isActive }) => {
     receivedAppState = true
+    playbackScreenWake?.setAppActive(isActive)
     setAndroidAppVisible(isActive)
     if (shouldPauseAndroidPlaybackOnAppStateChange(
       isActive,
@@ -4103,7 +4112,10 @@ async function enableCapacitorIntegrations() {
     }
   })
   const appState = await CapacitorApp.getState()
-  if (!receivedAppState) setAndroidAppVisible(appState.isActive)
+  if (!receivedAppState) {
+    playbackScreenWake?.setAppActive(appState.isActive)
+    setAndroidAppVisible(appState.isActive)
+  }
   const launch = await CapacitorApp.getLaunchUrl()
   if (launch?.url) await handleYoutubeLink(launch.url)
 
@@ -4113,6 +4125,7 @@ async function enableCapacitorIntegrations() {
     backButtonHandle?.remove()
     urlHandle.remove()
     appStateHandle.remove()
+    playbackScreenWake?.setAppActive(false)
     setAndroidAppVisible(null)
     removeReminderActions()
     removeMediaActions()

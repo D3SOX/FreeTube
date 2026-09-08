@@ -46,6 +46,7 @@ public class MainActivity extends BridgeActivity {
         registerPlugin(AndroidUiPlugin.class);
         registerPlugin(AndroidStoragePlugin.class);
         registerPlugin(AndroidMediaSessionPlugin.class);
+        registerPlugin(AndroidPlaybackPlugin.class);
         registerPlugin(SubscriptionRefreshPlugin.class);
         registerPlugin(SabrHttpPlugin.class);
         super.onCreate(savedInstanceState);
@@ -57,6 +58,19 @@ public class MainActivity extends BridgeActivity {
         OpenTubeXNotificationChannels.createAll(this);
         inputManager = (InputManager) getSystemService(INPUT_SERVICE);
         inputManager.registerInputDeviceListener(inputDeviceListener, null);
+        getOnBackPressedDispatcher().addCallback(this, new androidx.activity.OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                if (AndroidPlaybackPlugin.handleBack()) return;
+                // Capacitor App owns ordinary navigation and app dismissal.
+                setEnabled(false);
+                try {
+                    getOnBackPressedDispatcher().onBackPressed();
+                } finally {
+                    setEnabled(true);
+                }
+            }
+        });
     }
 
     @Override
@@ -81,6 +95,7 @@ public class MainActivity extends BridgeActivity {
         Configuration newConfig
     ) {
         super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig);
+        AndroidPlaybackPlugin.pictureInPictureChanged(isInPictureInPictureMode);
         getBridge().triggerWindowJSEvent(
             "opentubex:android-pip",
             "{\"active\":" + isInPictureInPictureMode + "}"

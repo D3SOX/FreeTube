@@ -31,12 +31,14 @@ export function createAndroidMediaSessionState({
   metadata = null,
   positionState = null,
   actionHandlers = {},
+  nativeOwner = null,
 } = {}) {
   const duration = Math.max(0, finiteOr(positionState?.duration, 0))
   const position = Math.min(duration, Math.max(0, finiteOr(positionState?.position, 0)))
   const playbackRate = Math.max(0, finiteOr(positionState?.playbackRate, 1))
 
   return {
+    ...(typeof nativeOwner === 'string' && nativeOwner ? { nativeOwner } : {}),
     playbackState: ['playing', 'paused'].includes(playbackState) ? playbackState : 'none',
     title: typeof metadata?.title === 'string' ? metadata.title : '',
     artist: typeof metadata?.artist === 'string' ? metadata.artist : '',
@@ -55,7 +57,7 @@ export function updateAndroidMediaSession(state) {
 
   const payload = createAndroidMediaSessionState(state)
   const operation = payload.playbackState === 'none'
-    ? AndroidMediaSession.clear()
+    ? AndroidMediaSession.clear({ nativeOwner: payload.nativeOwner })
     : AndroidMediaSession.update({ state: payload })
   operation.catch(error => console.error('Failed to update Android media controls', error))
 }

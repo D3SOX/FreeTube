@@ -11,9 +11,9 @@ export function useMobileFullscreenGestures({
   isFullscreenMetadataShown,
   isFullscreenSwipeEnabled,
   isPlaybackEnded,
-  isPlaybackPaused,
   isPlayerSurfaceTarget,
   isScrollMiniPlayerActive,
+  seekOnDoubleTap,
   setFullscreenMetadata,
   setShowUiOnPaused,
   showOverlayControls,
@@ -27,13 +27,22 @@ export function useMobileFullscreenGestures({
       ? { '--mobile-fullscreen-swipe-offset': `${mobileFullscreenSwipeOffset.value}px` }
       : undefined
   ))
-  /** @type {{ pointerId: number, startX: number, startY: number, startTime: number, fullscreen: boolean, distance: number, sideDoubleTap: boolean, controlsShownAtStart: boolean, fullscreenSwipeEnabled: boolean } | null} */
+  /** @type {{ pointerId: number, startX: number, startY: number, startTime: number, fullscreen: boolean, distance: number, tapDirection: number, controlsShownAtStart: boolean, fullscreenSwipeEnabled: boolean, surfaceTap: boolean } | null} */
   let mobileFullscreenGesture = null
   /** @type {number | null} */
   let mobileFullscreenSettleTimer = null
   /** @type {number | null} */
   let mobileSurfaceTapTimer = null
+  /** @type {{ direction: number, time: number } | null} */
+  let lastMobileSideTap = null
+  /** @type {HTMLElement | null} */
+  let mobileSeekFeedback = null
+  /** @type {number | null} */
+  let mobileSeekFeedbackTimer = null
+  let mobileSeekSeconds = 0
+  const doubleTapWindow = 350
   let mobilePlayerSuppressClickUntil = 0
+  let mobileControlSuppressClickUntil = 0
   let mobileSurfaceSuppressTouchEndUntil = 0
   let mobileTitleSuppressClickUntil = 0
   /** @type {{ pointerId: number, startX: number, startY: number, startTime: number, blocked: boolean } | null} */
@@ -43,6 +52,10 @@ export function useMobileFullscreenGestures({
 
   function isFullscreenTitleTarget(target) {
     return target instanceof Element && target.closest('.playerFullscreenTitleOverlay') !== null
+  }
+
+  function isSwipeControlTarget(target) {
+    return target instanceof Element && target.closest('.shaka-controls-button-panel, .shaka-play-button') !== null
   }
 
   function startMobileFullscreenGesture(event) {
@@ -71,7 +84,15 @@ export function useMobileFullscreenGestures({
       return
     }
 
-    if (!isPlayerSurfaceTarget(event.target)) return
+    const surfaceTap = isPlayerSurfaceTarget(event.target)
+    if (!surfaceTap) {
+      clearTimeout(mobileSurfaceTapTimer)
+      mobileSurfaceTapTimer = null
+      lastMobileSideTap = null
+    }
+    if (!surfaceTap && !isSwipeControlTarget(event.target)) return
+    mobileControlSuppressClickUntil = 0
+    mobileSurfaceSuppressTouchEndUntil = 0
 
     const bounds = getContainer()?.getBoundingClientRect()
     const relativeX = bounds?.width > 0 ? (event.clientX - bounds.left) / bounds.width : 0.5
@@ -80,9 +101,10 @@ export function useMobileFullscreenGestures({
       startX: event.clientX,
       startY: event.clientY,
       startTime: performance.now(),
+      surfaceTap,
       fullscreen: isFullscreenActive(),
       distance: 0,
-      sideDoubleTap: relativeX <= 0.35 || relativeX >= 0.65,
+      tapDirection: relativeX <= 0.35 ? -1 : relativeX >= 0.65 ? 1 : 0,
       controlsShownAtStart: getControls()?.getControlsContainer().hasAttribute('shown') === true,
       fullscreenSwipeEnabled: isFullscreenSwipeEnabled(),
     }
@@ -102,6 +124,11 @@ export function useMobileFullscreenGestures({
 
     const deltaX = event.clientX - mobileFullscreenGesture.startX
     const deltaY = event.clientY - mobileFullscreenGesture.startY
+    if (Math.max(Math.abs(deltaX), Math.abs(deltaY)) >= 12) {
+      clearTimeout(mobileSurfaceTapTimer)
+      mobileSurfaceTapTimer = null
+      lastMobileSideTap = null
+    }
     if (!mobileFullscreenGesture.fullscreenSwipeEnabled) {
       if (Math.max(Math.abs(deltaX), Math.abs(deltaY)) >= 12) {
         mobileFullscreenGesture = null
@@ -165,6 +192,7 @@ export function useMobileFullscreenGestures({
     const gesture = mobileFullscreenGesture
     mobileFullscreenGesture = null
     if (!mobileFullscreenSwiping.value) {
+      if (!gesture.surfaceTap) return false
       const elapsed = performance.now() - gesture.startTime
       const distance = Math.hypot(
         event.clientX - gesture.startX,
@@ -173,13 +201,10 @@ export function useMobileFullscreenGestures({
       if (elapsed > 450 || distance > 12) return false
 
       mobilePlayerSuppressClickUntil = performance.now() + 350
-      const waitForDoubleTap = gesture.sideDoubleTap && !isPlaybackPaused()
-      if (!waitForDoubleTap) {
-        mobileSurfaceSuppressTouchEndUntil = performance.now() + 350
-        event.preventDefault()
-        event.stopImmediatePropagation()
-      }
-      queueMobilePlayerSurfaceTap(!gesture.controlsShownAtStart, waitForDoubleTap)
+      mobileSurfaceSuppressTouchEndUntil = performance.now() + 350
+      event.preventDefault()
+      event.stopImmediatePropagation()
+      queueMobilePlayerSurfaceTap(!gesture.controlsShownAtStart, gesture.tapDirection)
       return true
     }
 
@@ -191,6 +216,7 @@ export function useMobileFullscreenGestures({
     event.stopPropagation()
     mobilePlayerSuppressClickUntil = performance.now() + 350
     mobileSurfaceSuppressTouchEndUntil = performance.now() + 350
+    mobileControlSuppressClickUntil = performance.now() + 350
 
     const elapsed = Math.max(1, performance.now() - gesture.startTime)
     const shouldToggle = gesture.distance >= 64 ||
@@ -220,6 +246,9 @@ export function useMobileFullscreenGestures({
     }
     if (event && event.pointerId !== mobileFullscreenGesture?.pointerId) return false
 
+    clearTimeout(mobileSurfaceTapTimer)
+    mobileSurfaceTapTimer = null
+    lastMobileSideTap = null
     const wasActive = mobileFullscreenGesture !== null || mobileFullscreenSwiping.value
     mobileFullscreenGesture = null
     if (mobileFullscreenSwiping.value) settleMobileFullscreenGesture(false, false)
@@ -244,22 +273,65 @@ export function useMobileFullscreenGestures({
     }
   }
 
-  function queueMobilePlayerSurfaceTap(showControls, waitForDoubleTap) {
-    if (!waitForDoubleTap) {
+  function queueMobilePlayerSurfaceTap(showControls, direction) {
+    const controls = getControls()
+    clearTimeout(mobileSurfaceTapTimer)
+    mobileSurfaceTapTimer = null
+    if (controls?.anySettingsMenusAreOpen()) {
+      lastMobileSideTap = null
+      controls.hideSettingsMenus()
+      return
+    }
+
+    const seekDistance = controls?.getConfig().tapSeekDistance ?? 0
+    if (!direction || seekDistance <= 0) {
+      lastMobileSideTap = null
       applyMobilePlayerSurfaceTap(showControls)
       return
     }
 
-    if (mobileSurfaceTapTimer !== null) {
-      clearTimeout(mobileSurfaceTapTimer)
-      mobileSurfaceTapTimer = null
+    // Own both taps: Shaka requires visible controls before it starts counting
+    // side taps, which otherwise consumes the first tap just to show the UI.
+    const now = performance.now()
+    const doubleTap = lastMobileSideTap?.direction === direction &&
+      now - lastMobileSideTap.time <= doubleTapWindow
+    lastMobileSideTap = { direction, time: now }
+    if (doubleTap) {
+      showMobileSeekFeedback(seekOnDoubleTap(direction * seekDistance))
       return
     }
 
     mobileSurfaceTapTimer = window.setTimeout(() => {
       mobileSurfaceTapTimer = null
+      lastMobileSideTap = null
       applyMobilePlayerSurfaceTap(showControls)
-    }, 240)
+    }, doubleTapWindow)
+  }
+
+  function clearMobileSeekFeedback() {
+    clearTimeout(mobileSeekFeedbackTimer)
+    mobileSeekFeedbackTimer = null
+    if (mobileSeekFeedback) {
+      mobileSeekFeedback.style.opacity = '0'
+      const label = mobileSeekFeedback.querySelector('span')
+      if (label) label.textContent = '0s'
+    }
+    mobileSeekFeedback = null
+    mobileSeekSeconds = 0
+  }
+
+  function showMobileSeekFeedback(seconds) {
+    if (!seconds) return
+    const feedback = getContainer()?.querySelector(seconds < 0 ? '.shaka-rewind-container' : '.shaka-fast-forward-container')
+    if (!(feedback instanceof HTMLElement)) return
+    if (mobileSeekFeedback !== feedback) clearMobileSeekFeedback()
+    clearTimeout(mobileSeekFeedbackTimer)
+    mobileSeekFeedback = feedback
+    mobileSeekSeconds += seconds
+    const label = feedback.querySelector('span')
+    if (label) label.textContent = `${+mobileSeekSeconds.toFixed(2)}s`
+    feedback.style.opacity = '1'
+    mobileSeekFeedbackTimer = window.setTimeout(clearMobileSeekFeedback, 500)
   }
 
   function handleMobilePlayerTouchEnd(event) {
@@ -276,6 +348,12 @@ export function useMobileFullscreenGestures({
   }
 
   function handleMobilePlayerSurfaceClick(event) {
+    if (isCapacitorMobilePlayer() && isSwipeControlTarget(event.target) && performance.now() < mobileControlSuppressClickUntil) {
+      mobileControlSuppressClickUntil = 0
+      event.preventDefault()
+      event.stopImmediatePropagation()
+      return true
+    }
     if (!isCapacitorMobilePlayer() || !isPlayerSurfaceTarget(event.target)) return false
 
     event.preventDefault()
@@ -285,17 +363,11 @@ export function useMobileFullscreenGestures({
       return true
     }
     mobilePlayerSuppressClickUntil = 0
-    if (event.detail >= 2) {
-      clearTimeout(mobileSurfaceTapTimer)
-      mobileSurfaceTapTimer = null
-      return true
-    }
-
     const controlsContainer = getControls()?.getControlsContainer()
     const bounds = getContainer()?.getBoundingClientRect()
     const relativeX = bounds?.width > 0 ? (event.clientX - bounds.left) / bounds.width : 0.5
-    const waitForDoubleTap = !isPlaybackPaused() && (relativeX <= 0.35 || relativeX >= 0.65)
-    queueMobilePlayerSurfaceTap(controlsContainer?.hasAttribute('shown') !== true, waitForDoubleTap)
+    const direction = relativeX <= 0.35 ? -1 : relativeX >= 0.65 ? 1 : 0
+    queueMobilePlayerSurfaceTap(controlsContainer?.hasAttribute('shown') !== true, direction)
     return true
   }
 
@@ -309,6 +381,7 @@ export function useMobileFullscreenGestures({
   }
 
   onUnmounted(() => {
+    clearMobileSeekFeedback()
     clearTimeout(mobileFullscreenSettleTimer)
     clearTimeout(mobileSurfaceTapTimer)
     mobileFullscreenGesture = null

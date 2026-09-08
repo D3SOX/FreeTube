@@ -67,6 +67,7 @@
     "ci": "pnpm install --frozen-lockfile"
   },
   "dependencies": {
+    "@capacitor-community/keep-awake": "^8.0.1",
     "@capacitor/android": "^8.5.0",
     "@capacitor/app": "^8.1.1",
     "@capacitor/barcode-scanner": "^3.1.2",

@@ -172,7 +172,8 @@
 /* The player owns vertical touch movement on mobile so a short drag can enter
    or leave fullscreen without fighting page scrolling. The layout class lives
    on this component while the player is inside a child component. */
-.app.capacitorTabs :deep(.ftVideoPlayer.mobileFullscreenSwipeEnabled:not(.scrollMiniPlayer)) {
+.app.capacitorTabs :deep(.ftVideoPlayer.mobileFullscreenSwipeEnabled:not(.scrollMiniPlayer)),
+.app.capacitorTabs :deep(.ftVideoPlayer.mobileFullscreenSwipeEnabled:not(.scrollMiniPlayer) .ft-quick-playback-rate-bar) {
   touch-action: pan-x;
 }
 

@@ -15,6 +15,87 @@ function enableCapacitorMode(t) {
   })
 }
 
+test('coalesces rapid ownership changes and delivers changes made by listeners', async t => {
+  enableCapacitorMode(t)
+  const states = []
+  t.after(() => {
+    tabMediaCoordinator.unregister('coalesced-first')
+    tabMediaCoordinator.unregister('coalesced-second')
+    tabMediaCoordinator.setPresented(null)
+  })
+  tabMediaCoordinator.subscribeOwnership('coalesced-first', active => states.push(active))
+  tabMediaCoordinator.subscribeOwnership('coalesced-second', () => {})
+  tabMediaCoordinator.setPresented('coalesced-first')
+  await new Promise(resolve => setImmediate(resolve))
+  states.length = 0
+
+  tabMediaCoordinator.setMiniPlayer('coalesced-second', true)
+  tabMediaCoordinator.setMiniPlayer('coalesced-first', true)
+  tabMediaCoordinator.setMiniPlayer('coalesced-second', true)
+  await new Promise(resolve => setImmediate(resolve))
+  assert.deepEqual(states, [false])
+
+  let redirect = false
+  tabMediaCoordinator.subscribeOwnership('coalesced-second', active => {
+    if (!active && redirect) tabMediaCoordinator.setMiniPlayer('coalesced-second', true)
+  })
+  redirect = true
+  states.length = 0
+  tabMediaCoordinator.setMiniPlayer('coalesced-first', true)
+  await new Promise(resolve => setImmediate(resolve))
+  assert.deepEqual(states, [true, false])
+})
+
+test('native acquisition follows the presented tab and the detached mini player', async t => {
+  enableCapacitorMode(t)
+  const states = { first: [], second: [] }
+  t.after(() => {
+    tabMediaCoordinator.unregister('native-first')
+    tabMediaCoordinator.unregister('native-second')
+    tabMediaCoordinator.setPresented(null)
+  })
+  tabMediaCoordinator.setPresented('native-first')
+  tabMediaCoordinator.subscribeOwnership('native-first', active => states.first.push(active))
+  tabMediaCoordinator.subscribeOwnership('native-second', active => states.second.push(active))
+  assert.equal(states.first.at(-1), true)
+  assert.equal(states.second.at(-1), false)
+  tabMediaCoordinator.setMiniPlayer('native-first', true)
+  tabMediaCoordinator.setPresented('native-second')
+  await new Promise(resolve => setImmediate(resolve))
+  assert.equal(states.first.at(-1), true)
+  assert.equal(states.second.at(-1), false)
+  tabMediaCoordinator.setMiniPlayer('native-first', false)
+  await new Promise(resolve => setImmediate(resolve))
+  assert.equal(states.first.at(-1), false)
+  assert.equal(states.second.at(-1), true)
+})
+
+test('keeps the native playback owner across non-video tabs without a mini player', async t => {
+  enableCapacitorMode(t)
+  const notifications = []
+  const pauses = []
+  t.after(() => {
+    tabMediaCoordinator.unregister('background-native-video')
+    tabMediaCoordinator.setPresented(null)
+  })
+  tabMediaCoordinator.setPresented('background-native-video')
+  tabMediaCoordinator.subscribeOwnership('background-native-video', active => notifications.push(active))
+  tabMediaCoordinator.setNativeOwner('background-native-video', 'native-session')
+  tabMediaCoordinator.setActionHandlers('background-native-video', 'player', { pause: () => pauses.push(true) })
+  tabMediaCoordinator.setPlaybackState('background-native-video', 'playing')
+  await new Promise(resolve => setImmediate(resolve))
+  notifications.length = 0
+  tabMediaCoordinator.setPresented('history-without-video')
+  await new Promise(resolve => setImmediate(resolve))
+  assert.deepEqual(pauses, [])
+  assert.deepEqual(notifications, [])
+  tabMediaCoordinator.dispatchAction('pause')
+  assert.deepEqual(pauses, [true], 'Media actions still reach the background native session')
+  tabMediaCoordinator.setPresented('background-native-video')
+  await new Promise(resolve => setImmediate(resolve))
+  assert.deepEqual(notifications, [], 'Returning does not reload or reacquire the native player')
+})
+
 test('keeps Android media controls on a detached cross-tab mini player', async (t) => {
   enableCapacitorMode(t)
   const actions = []

@@ -12,6 +12,12 @@
   --scrollbar-color-hover: rgb(255 255 255 / 65%);
 }
 
+.chaptersContent {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+}
+
 .chapter {
   display: flex;
   flex: 0 0 auto;

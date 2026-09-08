@@ -212,6 +212,15 @@ test('parsing a saved rect round-trips it without consulting the viewport', () =
   assert.deepEqual(parseScrollMiniPlayerSavedRect(saved), SAVED_RECT)
 })
 
+test('saved mini-player placement round-trips either tucked side', () => {
+  for (const stashedSide of ['left', 'right']) {
+    const saved = { ...SAVED_RECT, stashedSide }
+    assert.deepEqual(parseScrollMiniPlayerSavedRect(serializeScrollMiniPlayerSavedRect(saved)), saved)
+  }
+  const invalid = parseScrollMiniPlayerSavedRect(JSON.stringify({ ...SAVED_RECT, stashedSide: 'middle' }))
+  assert.equal(invalid.stashedSide, undefined)
+})
+
 test('the vertical anchor is measured from the nearer edge', () => {
   stubViewport({ clientWidth: 1585 })
 

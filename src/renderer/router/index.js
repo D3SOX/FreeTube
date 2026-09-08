@@ -244,7 +244,9 @@ const router = createRouter({
   history: createWebHashHistory(),
   routes,
   scrollBehavior(to, from, savedPosition) {
-    if (process.env.IS_ELECTRON) {
+    // Logical tabs restore their own viewport after presenting the target.
+    // A delayed router reset would move a restored floating player back inline.
+    if (process.env.IS_ELECTRON || process.env.IS_CAPACITOR) {
       return false
     }
 

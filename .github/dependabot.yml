@@ -9,6 +9,7 @@ updates:
       - "PR: dependencies"
     open-pull-requests-limit: 15
     allow:
+      - dependency-name: "@capacitor-community/keep-awake"
       - dependency-name: "@capacitor/android"
       - dependency-name: "@capacitor/app"
       - dependency-name: "@capacitor/barcode-scanner"

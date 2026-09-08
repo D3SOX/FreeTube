@@ -1,6 +1,8 @@
 package org.opentubex.app;
 
 import android.content.Intent;
+import android.os.Handler;
+import android.os.Looper;
 
 import androidx.core.content.ContextCompat;
 
@@ -15,6 +17,7 @@ import java.lang.ref.WeakReference;
 @CapacitorPlugin(name = "AndroidMediaSession")
 public class AndroidMediaSessionPlugin extends Plugin {
     private static WeakReference<AndroidMediaSessionPlugin> activePlugin = new WeakReference<>(null);
+    private final Handler mainHandler = new Handler(Looper.getMainLooper());
 
     @Override
     public void load() {
@@ -38,17 +41,31 @@ public class AndroidMediaSessionPlugin extends Plugin {
             return;
         }
 
-        Intent intent = new Intent(getContext(), AndroidMediaSessionService.class)
-            .setAction(AndroidMediaSessionService.ACTION_UPDATE)
-            .putExtra(AndroidMediaSessionService.EXTRA_STATE, state.toString());
-        ContextCompat.startForegroundService(getContext(), intent);
-        call.resolve();
+        mainHandler.post(() -> {
+            if (!AndroidPlaybackPlugin.acceptsMediaOwner(state.optString("nativeOwner", ""))) {
+                call.resolve();
+                return;
+            }
+            Intent intent = new Intent(getContext(), AndroidMediaSessionService.class)
+                .setAction(AndroidMediaSessionService.ACTION_UPDATE)
+                .putExtra(AndroidMediaSessionService.EXTRA_STATE, state.toString());
+            try {
+                ContextCompat.startForegroundService(getContext(), intent);
+                call.resolve();
+            } catch (IllegalStateException | SecurityException error) {
+                call.reject("Android did not allow starting the playback service", error);
+            }
+        });
     }
 
     @PluginMethod
     public void clear(PluginCall call) {
-        getContext().stopService(new Intent(getContext(), AndroidMediaSessionService.class));
-        call.resolve();
+        mainHandler.post(() -> {
+            if (AndroidPlaybackPlugin.acceptsMediaOwner(call.getString("nativeOwner", ""))) {
+                getContext().stopService(new Intent(getContext(), AndroidMediaSessionService.class));
+            }
+            call.resolve();
+        });
     }
 
     static void emitAction(String action) {
@@ -59,6 +76,7 @@ public class AndroidMediaSessionPlugin extends Plugin {
         if (!AndroidMediaActions.isSupported(action)) {
             return;
         }
+        if (AndroidPlaybackPlugin.handleAction(action, seekTime, seekOffset)) return;
 
         AndroidMediaSessionPlugin plugin = activePlugin.get();
         if (plugin == null) {

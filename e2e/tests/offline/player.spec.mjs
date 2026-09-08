@@ -1235,13 +1235,20 @@ test('animates the fullscreen title when the Android status-bar inset changes', 
   await page.waitForTimeout(300)
 
   const shownTop = await title.evaluate(element => element.getBoundingClientRect().top)
-  await player.evaluate(element => element.style.setProperty('--safe-area-inset-top', '0px'))
-  await controls.evaluate(element => element.removeAttribute('shown'))
-  const immediateTop = await title.evaluate(element => element.getBoundingClientRect().top)
-  await page.waitForTimeout(75)
-  const transitioningTop = await title.evaluate(element => element.getBoundingClientRect().top)
-  await page.waitForTimeout(300)
-  const hiddenTop = await title.evaluate(element => element.getBoundingClientRect().top)
+  const { immediateTop, transitioningTop, hiddenTop } = await title.evaluate(element => {
+    element.closest('.ftVideoPlayer').style.setProperty('--safe-area-inset-top', '0px')
+    element.closest('.shaka-controls-container').removeAttribute('shown')
+    const immediateTop = element.getBoundingClientRect().top
+    const transition = element.getAnimations().find(animation => animation.transitionProperty === 'top')
+    if (!transition) throw new Error('The fullscreen title has no top transition')
+    // Sample the animation timeline directly so time spent between browser
+    // protocol calls cannot consume the transition on a busy CI worker.
+    transition.pause()
+    transition.currentTime = Number(transition.effect.getTiming().duration) * 0.3
+    const transitioningTop = element.getBoundingClientRect().top
+    transition.finish()
+    return { immediateTop, transitioningTop, hiddenTop: element.getBoundingClientRect().top }
+  })
 
   const totalMovement = Math.abs(hiddenTop - shownTop)
   expect(totalMovement).toBeGreaterThanOrEqual(30)
@@ -1368,6 +1375,69 @@ test.describe('scroll mini player', () => {
     expect(animations[1].position).toBe('relative')
     expect(animations[1].zIndex).toBe('150')
   })
+
+  for (const side of ['left', 'right']) {
+    test.describe(`tucked ${side}`, () => {
+      test.use({ seed: { settings: { ...PLAYER_SEED, uiScale: side === 'left' ? 100 : 125 } } })
+      test(`remembers mini player position tucked ${side} after reopening`, async ({ app, page }) => {
+        await openDemoVideo({ app, page })
+        let player = page.locator('.ftVideoPlayer')
+        await player.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight))
+        await expect(player).toHaveClass(/scrollMiniPlayer/)
+        await setWindowSize(app, page, { width: 480, height: 800 })
+        await expect(player).not.toHaveClass(/scrollMiniPlayerAnimating/)
+        const handle = player.locator('.scrollMiniDragHandle')
+        const bounds = await handle.boundingBox()
+        const targetX = side === 'left' ? -240 : 720
+        await handle.dispatchEvent('pointerdown', {
+          clientX: bounds.x + bounds.width / 2,
+          clientY: bounds.y + bounds.height / 2,
+          pointerId: 1,
+          pointerType: 'touch',
+          button: 0
+        })
+        await page.evaluate(targetX => {
+          for (const type of ['pointermove', 'pointerup']) {
+            window.dispatchEvent(new PointerEvent(type, {
+              clientX: targetX, clientY: 350, pointerId: 1, pointerType: 'touch'
+            }))
+          }
+        }, targetX)
+        await expect(player).toHaveClass(/scrollMiniPlayerStashed/)
+        await expect(player).not.toHaveClass(/scrollMiniPlayerAnimating/)
+        const position = await player.boundingBox()
+        await page.evaluate(() => window.scrollTo(0, 0))
+        await expect(player).not.toHaveClass(/scrollMiniPlayerStashed/)
+        await expect(player).not.toHaveClass(/scrollMiniPlayerAnimating/)
+        await player.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight))
+        await expect(player).toHaveClass(/scrollMiniPlayerStashed/)
+        await expect(player).not.toHaveClass(/scrollMiniPlayerAnimating/)
+        await expect.poll(async () => Math.round((await player.boundingBox()).y)).toBe(Math.round(position.y))
+
+        await page.evaluate(() => window.scrollTo(0, 0))
+        await page.getByRole('link', { name: 'Go to Subscriptions', exact: true }).click()
+        ;({ page } = await app.relaunch())
+        await setWindowSize(app, page, { width: 1100, height: 900 })
+        await openDemoVideo({ app, page })
+        player = page.locator('.ftVideoPlayer')
+        await player.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight))
+        await expect(player).toHaveClass(/scrollMiniPlayerStashed/)
+        await setWindowSize(app, page, { width: 480, height: 800 })
+        await expect(player).not.toHaveClass(/scrollMiniPlayerAnimating/)
+        await expect.poll(async () => Math.round((await player.boundingBox()).y)).toBe(Math.round(position.y))
+        const restored = await player.boundingBox()
+        expect(side === 'left' ? restored.x < 0 : restored.x + restored.width > await page.evaluate(() => window.innerWidth)).toBe(true)
+        await player.locator('.scrollMiniPointerLayer').dispatchEvent('pointerdown')
+        await expect(player).not.toHaveClass(/scrollMiniPlayerStashed/)
+        await page.evaluate(() => window.scrollTo(0, 0))
+        await expect(player).not.toHaveClass(/scrollMiniPlayer/)
+        await expect(player).not.toHaveClass(/scrollMiniPlayerAnimating/)
+        await player.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight))
+        await expect(player).toHaveClass(/scrollMiniPlayer/)
+        await expect(player).not.toHaveClass(/scrollMiniPlayerStashed/)
+      })
+    })
+  }
 
   test('restores a phone mini player by tapping its tucked sliver', async ({ app, page }) => {
     const video = await openDemoVideo({ app, page })

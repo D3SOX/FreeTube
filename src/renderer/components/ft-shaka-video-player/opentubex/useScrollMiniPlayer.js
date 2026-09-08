@@ -1,7 +1,7 @@
 import { computed, nextTick, ref, watch } from 'vue'
 
 import store from '../../../store/index'
-import { applyAnimationSpeed } from '../../../helpers/animationSpeed'
+import { applyAnimationSpeed, getAnimationSpeedMultiplier } from '../../../helpers/animationSpeed'
 import {
   hasCrossTabMiniPlayerOwner,
   isCrossTabMiniPlayerOwner,
@@ -152,7 +152,11 @@ export function useScrollMiniPlayer({ container, fullWindowEnabled, getUi, isAct
     if (scrollMiniPlayerActive.value) {
       // Resizing to the video's aspect ratio is not the user moving the player,
       // so it must not turn a temporarily clamped position into its anchor.
-      applyScrollMiniPlayerRect(scrollMiniPlayerRect.value, false, true)
+      if (scrollMiniPlayerStashed.value) {
+        handleScrollMiniWindowResize()
+      } else {
+        applyScrollMiniPlayerRect(scrollMiniPlayerRect.value, false, true)
+      }
     }
   }
 
@@ -443,13 +447,19 @@ export function useScrollMiniPlayer({ container, fullWindowEnabled, getUi, isAct
     scrollMiniResizeCorner.value = getResizeHandleCorner(clamped, insets)
 
     if (persist) {
-      // Drag and bounce frames can be interrupted, so only remember settled positions.
-      setSavedScrollMiniPlayerRect(clamped, isActiveTab.value ? 'scroll' : 'tab')
-      store.dispatch(
-        isActiveTab.value ? 'updateScrollMiniPlayerSavedRect' : 'updateCrossTabMiniPlayerSavedRect',
-        serializeScrollMiniPlayerSavedRect(clamped)
-      )
+      persistScrollMiniPlayerPosition(clamped)
     }
+  }
+
+  /** @param {import('../../../helpers/scrollMiniPlayer').ScrollMiniPlayerRect} rect */
+  function persistScrollMiniPlayerPosition(rect) {
+    // Save the visible restore position, never the offscreen tucked coordinates.
+    const savedRect = { ...rect, stashedSide: scrollMiniPlayerStashedSide.value ?? undefined }
+    setSavedScrollMiniPlayerRect(savedRect, isActiveTab.value ? 'scroll' : 'tab')
+    store.dispatch(
+      isActiveTab.value ? 'updateScrollMiniPlayerSavedRect' : 'updateCrossTabMiniPlayerSavedRect',
+      serializeScrollMiniPlayerSavedRect(savedRect)
+    )
   }
 
   function cancelScrollMiniPlayerBounce() {
@@ -459,8 +469,9 @@ export function useScrollMiniPlayer({ container, fullWindowEnabled, getUi, isAct
     scrollMiniBounceCancel = null
   }
 
-  function cancelScrollMiniPlayerLayoutAnimation() {
+  function cancelScrollMiniPlayerLayoutAnimation(replacingNative = false) {
     scrollMiniLayoutAnimationSequence++
+    if (!replacingNative) container.value?.dispatchEvent(new CustomEvent('native-player-transition', { detail: null }))
     scrollMiniLayoutAnimation?.cancel()
     scrollMiniLayoutAnimation = null
     scrollMiniPlayerAnimating.value = false
@@ -489,6 +500,22 @@ export function useScrollMiniPlayer({ container, fullWindowEnabled, getUi, isAct
       return
     }
 
+    const nativeMotion = new CustomEvent('native-player-transition', {
+      cancelable: true,
+      detail: {
+        from: previousRect,
+        to: nextRect,
+        duration: SCROLL_MINI_LAYOUT_ANIMATION_DURATION_MS / getAnimationSpeedMultiplier(store.getters.getAnimationSpeed),
+        finished: null
+      }
+    })
+    playerContainer.dispatchEvent(nativeMotion)
+    if (nativeMotion.defaultPrevented) {
+      await nativeMotion.detail.finished
+      if (scrollMiniLayoutAnimationSequence === sequence) scrollMiniPlayerAnimating.value = false
+      return
+    }
+
     const animation = applyAnimationSpeed(playerContainer.animate([
       {
         transform: `translate(${previousRect.left - nextRect.left}px, ${previousRect.top - nextRect.top}px) scale(${previousRect.width / nextRect.width}, ${previousRect.height / nextRect.height})`,
@@ -514,7 +541,7 @@ export function useScrollMiniPlayer({ container, fullWindowEnabled, getUi, isAct
 
   function animateScrollMiniPlayerRectChange(update) {
     const previousRect = container.value?.getBoundingClientRect()
-    cancelScrollMiniPlayerLayoutAnimation()
+    cancelScrollMiniPlayerLayoutAnimation(!!previousRect && !isReducedMotionEnabled())
     update()
 
     if (!previousRect || isReducedMotionEnabled()) return
@@ -639,7 +666,7 @@ export function useScrollMiniPlayer({ container, fullWindowEnabled, getUi, isAct
     lastKnownInlinePlayerHeight = layoutHeight
     scrollMiniPlaceholderHeight.value = placeholderHeight
 
-    cancelScrollMiniPlayerLayoutAnimation()
+    cancelScrollMiniPlayerLayoutAnimation(shouldAnimate)
     const animationSequence = scrollMiniLayoutAnimationSequence
     scrollMiniPlayerAnimating.value = previousRect !== null
 
@@ -674,6 +701,13 @@ export function useScrollMiniPlayer({ container, fullWindowEnabled, getUi, isAct
       false,
       true
     )
+    if (savedRect?.stashedSide) {
+      scrollMiniPlayerStashedSide.value = savedRect.stashedSide
+      scrollMiniPlayerRestoreRect = scrollMiniPlayerRect.value
+      scrollMiniPlayerRect.value = getStashedScrollMiniPlayerRect(
+        scrollMiniPlayerRestoreRect, savedRect.stashedSide, window.innerWidth, getViewportInsets()
+      )
+    }
   }
 
   /** @param {boolean} [animate] */
@@ -684,7 +718,7 @@ export function useScrollMiniPlayer({ container, fullWindowEnabled, getUi, isAct
     const shouldAnimate = animate && playerContainer !== null && !isReducedMotionEnabled()
     const previousRect = shouldAnimate ? playerContainer.getBoundingClientRect() : null
 
-    cancelScrollMiniPlayerLayoutAnimation()
+    cancelScrollMiniPlayerLayoutAnimation(shouldAnimate)
     const animationSequence = scrollMiniLayoutAnimationSequence
     scrollMiniPlayerAnimating.value = previousRect !== null
 
@@ -785,6 +819,11 @@ export function useScrollMiniPlayer({ container, fullWindowEnabled, getUi, isAct
     // Only a drag/resize is positioning the player; a volume session must not
     // block re-docking, since its pointer-up path never snaps.
     if (scrollMiniPointerSession?.type === 'drag' || scrollMiniPointerSession?.type === 'resize') return
+
+    if (scrollMiniPlayerStashed.value) {
+      handleScrollMiniWindowResize()
+      return
+    }
 
     cancelScrollMiniPlayerBounce()
     applyScrollMiniPlayerRect(
@@ -969,9 +1008,13 @@ export function useScrollMiniPlayer({ container, fullWindowEnabled, getUi, isAct
           )
         : null
       if (stashSide) {
-        scrollMiniPlayerRestoreRect = snapScrollMiniPlayerToEdge(currentRect, insets)
+        scrollMiniPlayerRestoreRect = {
+          ...snapScrollMiniPlayerToEdge({ ...currentRect, dock: stashSide }, insets),
+          ...getScrollMiniVerticalAnchor(currentRect, insets)
+        }
         animateScrollMiniPlayerRectChange(() => {
           scrollMiniPlayerStashedSide.value = stashSide
+          persistScrollMiniPlayerPosition(scrollMiniPlayerRestoreRect)
           scrollMiniPlayerRect.value = getStashedScrollMiniPlayerRect(
             currentRect,
             stashSide,

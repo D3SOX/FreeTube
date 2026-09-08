@@ -2102,3 +2102,78 @@ test('a save channel setting dropdown clears the fullscreen dock content', async
     }
   })).toEqual({ insideDock: true, onTop: true })
 })
+
+for (const scale of [1, 1.25]) {
+  test(`tablet tab touch highlight covers the close-button area at scale ${scale}`, async ({ app, page }) => {
+    await setWindowSize(app, page, { width: 1200, height: 850 })
+    await page.evaluate(scale => window.ftElectron.setZoomFactor(scale), scale)
+    await page.addStyleTag({ path: path.join(repoRoot, 'src/renderer/components/TabBar/CapacitorTabletTabBar.css') })
+    await page.evaluate(() => {
+      const bar = document.createElement('div')
+      bar.className = 'capacitorTabletTabBar'
+      bar.style.cssText = 'position:fixed;z-index:10000;top:120px;left:0;--side-nav-hover-color:rgb(50,60,70);--card-bg-color:rgb(20,25,30)'
+      const tab = document.createElement('div')
+      tab.className = 'capacitorTabletTab'
+      const target = document.createElement('button')
+      target.className = 'capacitorTabletTabTarget'
+      target.textContent = 'Subscriptions'
+      const close = document.createElement('button')
+      close.className = 'capacitorTabletTabClose'
+      close.textContent = '×'
+      tab.append(target, close)
+      bar.append(tab)
+      document.body.append(bar)
+    })
+    const cdp = await page.context().newCDPSession(page)
+    const tab = page.locator('.capacitorTabletTab')
+    const target = tab.locator('.capacitorTabletTabTarget')
+    try {
+      for (const roundness of [0, 1, 2]) {
+        await tab.evaluate((element, value) => element.style.setProperty('--ui-roundness', value), String(roundness))
+        await expect(tab).toHaveCSS('border-top-left-radius', `${6 * roundness}px`)
+        await expect(tab).toHaveCSS('border-top-right-radius', `${6 * roundness}px`)
+        await expect(tab).toHaveCSS('border-bottom-left-radius', '0px')
+        await expect(tab.locator('.capacitorTabletTabClose')).toHaveCSS('border-top-left-radius', `${4 * roundness}px`)
+      }
+      for (const selected of [false, true]) {
+        await tab.evaluate((element, selected) => element.classList.toggle('active', selected), selected)
+        const bounds = await target.boundingBox()
+        expect(await target.evaluate(element => {
+          const r = element.getBoundingClientRect()
+          return element.contains(document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2))
+        })).toBe(true)
+        await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: bounds.x + bounds.width / 2, y: bounds.y + bounds.height / 2 }] })
+        await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] })
+        expect(await target.evaluate(element => element.matches(':hover, :active'))).toBe(true)
+        await expect(tab).toHaveCSS('background-color', 'rgb(50, 60, 70)', { timeout: 1500 })
+        await expect(target).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)')
+        await expect(tab.locator('.capacitorTabletTabClose')).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)')
+        await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: 700, y: 400 }] })
+        await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] })
+        await expect(tab).toHaveCSS('background-color', selected ? 'rgb(20, 25, 30)' : 'rgba(0, 0, 0, 0)')
+        const close = tab.locator('.capacitorTabletTabClose')
+        const closeBounds = await close.boundingBox()
+        await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: closeBounds.x + closeBounds.width / 2, y: closeBounds.y + closeBounds.height / 2 }] })
+        await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] })
+        const colors = await close.evaluate(element => {
+          const style = getComputedStyle(element)
+          const probe = document.createElement('span')
+          probe.style.backgroundColor = 'color-mix(in srgb, var(--destructive-color) 25%, transparent)'
+          probe.style.color = style.getPropertyValue('--destructive-color')
+          element.append(probe)
+          const colors = { background: getComputedStyle(probe).backgroundColor, text: getComputedStyle(probe).color }
+          probe.remove()
+          return colors
+        })
+        await expect(close).toHaveCSS('background-color', colors.background)
+        await expect(close).toHaveCSS('color', colors.text)
+        await expect(tab).toHaveCSS('background-color', selected ? 'rgb(20, 25, 30)' : 'rgba(0, 0, 0, 0)')
+        await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: 700, y: 400 }] })
+        await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] })
+        await expect(close).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)')
+      }
+    } finally {
+      await cdp.detach()
+    }
+  })
+}

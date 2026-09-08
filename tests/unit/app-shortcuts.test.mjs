@@ -33,6 +33,7 @@ test('retained startup clicks and running-app clicks navigate and update localiz
   const paths = []
   const youtubeLinks = []
   const updates = []
+  const wakeStates = []
   let settingsOpen = true
   let updateLocale
   let stopped = false
@@ -61,6 +62,7 @@ test('retained startup clicks and running-app clicks navigate and update localiz
     initializeCapacitorLiveReminderActions: async () => () => {},
     addAndroidMediaSessionActionListener: async () => () => {},
     setAndroidAppVisible() {},
+    playbackScreenWake: { setAppActive: active => wakeStates.push(active) },
     store: {
       getters: {},
       dispatch: async action => {
@@ -86,6 +88,7 @@ test('retained startup clicks and running-app clicks navigate and update localiz
     handleYoutubeLink: url => { youtubeLinks.push(url) },
   })
   const cleanup = await enable()
+  assert.deepEqual(wakeStates, [true])
   assert.deepEqual(paths, ['/subscriptions'])
   for (const page of pages.slice(1)) {
     settingsOpen = true
@@ -100,6 +103,7 @@ test('retained startup clicks and running-app clicks navigate and update localiz
   updateLocale()
   assert.equal(updates[1][2].title, 'de-DE:History.History')
   cleanup()
+  assert.deepEqual(wakeStates, [true, false])
   assert.equal(stopped, true)
   assert.equal(listeners.size, 0)
 })
