@@ -441,7 +441,7 @@
         />
       </FtFlexBox>
       <FtFlexBox
-        v-if="USING_ELECTRON && screenshotMode === 'default_folder'"
+        v-if="(USING_ELECTRON || IS_CAPACITOR) && screenshotMode === 'default_folder'"
         class="screenshotFolderContainer"
       >
         <p class="screenshotFolderLabel">
@@ -622,6 +622,8 @@ import FtTooltip from '../FtTooltip/FtTooltip.vue'
 import FtSettingsSubpage from '../FtSettingsSubpage/FtSettingsSubpage.vue'
 
 import store from '../../store/index'
+import { chooseAndroidDirectory } from '../../helpers/androidStorage'
+import { showToast } from '../../helpers/utils'
 import { DEFAULT_QUICK_PLAYBACK_SPEED_BAR_OPTIONS } from '../../../constants'
 import { initializePlatformInfo, supportsAutoPictureInPictureMinimize } from '../../helpers/platform'
 import { AUTO_QUALITY_FALLBACK, playbackEngineSupportsAutoQuality } from '../../helpers/player/autoQuality'
@@ -1693,12 +1695,12 @@ async function handleUpdateScreenshotFormat(format) {
 
 const screenshotModeNames = computed(() => [
   t('Settings.Player Settings.Screenshot.Modes.Ask Path'),
-  ...process.env.IS_ELECTRON ? [t('Settings.Player Settings.Screenshot.Modes.Save To Folder')] : [],
+  ...(process.env.IS_ELECTRON || process.env.IS_CAPACITOR) ? [t('Settings.Player Settings.Screenshot.Modes.Save To Folder')] : [],
   t('Settings.Player Settings.Screenshot.Modes.Clipboard'),
 ])
 const screenshotModeValues = computed(() => [
   'prompt_folder',
-  ...process.env.IS_ELECTRON ? ['default_folder'] : [],
+  ...(process.env.IS_ELECTRON || process.env.IS_CAPACITOR) ? ['default_folder'] : [],
   'clipboard'
 ])
 
@@ -1725,10 +1727,16 @@ function updateScreenshotQuality(value) {
 /** @type {import('vue').ComputedRef<string>} */
 const screenshotFolder = computed(() => store.getters.getScreenshotFolderPath)
 
-function chooseScreenshotFolder() {
-  // only use with electron
+async function chooseScreenshotFolder() {
   if (process.env.IS_ELECTRON) {
     window.ftElectron.chooseDefaultFolder()
+  } else if (process.env.IS_CAPACITOR) {
+    try {
+      const path = await chooseAndroidDirectory()
+      if (path) await store.dispatch('updateScreenshotFolderPath', path)
+    } catch (error) {
+      showToast({ message: t('Screenshot Error', { error }), icon: ['fas', 'circle-exclamation'] })
+    }
   }
 }
 

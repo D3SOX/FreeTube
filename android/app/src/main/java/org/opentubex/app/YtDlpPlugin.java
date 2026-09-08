@@ -99,21 +99,6 @@ public final class YtDlpPlugin extends Plugin {
             return new JSONObject().put("ok", true);
         });
     }
-    @PluginMethod public void chooseFolder(PluginCall call) {
-        startActivityForResult(call, new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
-            .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION), "folderChosen");
-    }
-    @ActivityCallback private void folderChosen(PluginCall call, ActivityResult result) {
-        if (call == null) return;
-        try {
-            if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null) { call.resolve(new JSObject()); return; }
-            Uri uri = result.getData().getData();
-            if (uri == null) { call.resolve(new JSObject()); return; }
-            getContext().getContentResolver().takePersistableUriPermission(uri,
-                Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-            call.resolve(new JSObject().put("path", uri.toString()));
-        } catch (Exception error) { call.reject("Unable to use download folder", error); }
-    }
     @PluginMethod public void chooseCookies(PluginCall call) {
         startActivityForResult(call, new Intent(Intent.ACTION_OPEN_DOCUMENT).setType("*/*").addCategory(Intent.CATEGORY_OPENABLE), "cookiesChosen");
     }
