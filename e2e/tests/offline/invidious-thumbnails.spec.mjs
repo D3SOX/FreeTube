@@ -89,14 +89,21 @@ test('loads a channel with one author thumbnail', async ({ page }) => {
   await expect(page.locator('.toast', { hasText: 'Invidious API Error' })).toHaveCount(0)
 })
 
-test('configures subscription options before subscribing', async ({ page }) => {
+test('only offers subscription options while subscribed', async ({ page }) => {
   await page.route(`${INSTANCE_URL}/api/v1/channels/**`, route => route.fulfill({
     json: channelResponse()
   }))
   await openChannel(page)
 
   const channel = page.locator('.channelDetails:visible')
-  await channel.getByRole('button', { name: 'Subscription settings' }).click()
+  const subscribeButton = channel.locator('.subscribeButton')
+  const settingsArrow = channel.getByRole('button', { name: 'Subscription settings' })
+  await expect(subscribeButton).toHaveText('Subscribe')
+  await expect(settingsArrow).toHaveCount(0)
+  await expect(subscribeButton).not.toHaveClass(/hasProfileDropdownToggle/)
+  await subscribeButton.click()
+  await expect(subscribeButton).toContainText('Unsubscribe')
+  await settingsArrow.click()
   const dropdown = page.locator('body > .profileDropdown')
   const shorts = dropdown.getByRole('checkbox', { name: 'Shorts' })
   await expect(shorts).toHaveAttribute('aria-checked', 'true')
@@ -105,7 +112,6 @@ test('configures subscription options before subscribing', async ({ page }) => {
   const dailyLimit = dropdown.getByRole('combobox', { name: 'Videos per day' })
   await dailyLimit.click()
   await page.getByRole('option', { name: '2', exact: true }).click()
-  await channel.getByRole('button', { name: 'Subscribe', exact: true }).click()
 
   await expect(channel.getByRole('button', { name: 'Unsubscribe', exact: true })).toBeVisible()
   await expect.poll(() => page.evaluate(channelId => {
@@ -122,4 +128,28 @@ test('configures subscription options before subscribing', async ({ page }) => {
     feedTypes: ['videos', 'live', 'posts'],
     showMembersOnly: false
   })
+
+  await page.evaluate(async () => {
+    const store = document.querySelector('#app').__vue_app__.config.globalProperties.$store
+    await store.dispatch('updateUnsubscriptionPopupStatus', false)
+    await store.dispatch('createProfile', {
+      _id: 'empty-profile',
+      name: 'Empty Profile',
+      bgColor: '#000000',
+      textColor: '#FFFFFF',
+      subscriptions: []
+    })
+    await store.dispatch('updateActiveProfile', 'empty-profile')
+  })
+  await expect(settingsArrow).toHaveCount(0)
+  await expect(dropdown).toHaveCount(0)
+
+  await subscribeButton.click()
+  await expect(settingsArrow).toBeVisible()
+  await expect(dropdown).toBeVisible()
+  await dropdown.getByRole('checkbox', { name: 'Empty Profile', exact: true }).click()
+  await expect(subscribeButton).toHaveText('Subscribe')
+  await expect(settingsArrow).toHaveCount(0)
+  await expect(subscribeButton).not.toHaveClass(/hasProfileDropdownToggle/)
+  await expect(dropdown).toHaveCount(0)
 })
