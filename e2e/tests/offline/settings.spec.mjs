@@ -4608,6 +4608,7 @@ test.describe('sync settings', () => {
   })
 
   test('clears a sync error and enables credentials after disconnecting', async ({ page }) => {
+    let delayServerCheck = false
     let finishServerCheck
     let serverCheckStarted
     const serverCheckPending = new Promise((resolve) => {
@@ -4618,8 +4619,10 @@ test.describe('sync settings', () => {
     })
     await page.route('https://sync.d3sox.me/**', async (route) => {
       if (new URL(route.request().url()).pathname === '/health') {
-        serverCheckStarted()
-        await serverCheckPending
+        if (delayServerCheck) {
+          serverCheckStarted()
+          await serverCheckPending
+        }
         await route.fulfill({ status: 200, body: 'OK' })
       } else {
         await route.fulfill({ status: 500, body: 'Sync failed' })
@@ -4636,6 +4639,8 @@ test.describe('sync settings', () => {
 
     await expect(syncSection.getByLabel('Server URL')).toBeDisabled()
     await expect(syncSection.getByLabel('Username')).toBeDisabled()
+    // Sync may query optional capabilities before the post-disconnect check.
+    delayServerCheck = true
     await syncSection.getByRole('button', { name: 'Disconnect' }).click()
 
     try {
