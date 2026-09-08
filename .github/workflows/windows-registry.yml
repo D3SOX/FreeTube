@@ -42,12 +42,25 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           & .cache/registry-tests/Release/registry-tests.exe --overlay $dll.FullName 'Software\OpenTubeX\RegistryRegression'
           exit $LASTEXITCODE
+      - name: Check moving only the portable data folder preserves registry state
+        run: |
+          $dll = Get-ChildItem .cache/windows-interposer/*/version.dll | Select-Object -First 1
+          $data = Join-Path $dll.DirectoryName 'OpenTubeX-data'
+          if (!(Test-Path (Join-Path $data 'Registry.hiv') -PathType Leaf)) {
+            throw 'Portable registry hive is missing from OpenTubeX-data'
+          }
+          $directory = New-Item .cache/relocated-portable -ItemType Directory -Force
+          Copy-Item $dll.FullName (Join-Path $directory.FullName 'version.dll')
+          Copy-Item _scripts/windows-interposer/Config.yml (New-Item (Join-Path $directory.FullName '.interposer') -ItemType Directory -Force)
+          Copy-Item $data $directory.FullName -Recurse
+          & .cache/registry-tests/Release/registry-tests.exe --overlay (Join-Path $directory.FullName 'version.dll') 'Software\OpenTubeX\RegistryRegression'
+          exit $LASTEXITCODE
       - name: Check unavailable hive stays isolated
         run: |
           $directory = New-Item .cache/unavailable-hive -ItemType Directory -Force
           $dll = Get-ChildItem .cache/windows-interposer/*/version.dll | Select-Object -First 1
           Copy-Item $dll.FullName (Join-Path $directory.FullName 'version.dll')
-          New-Item (Join-Path $directory.FullName '.interposer/Registry.hiv') -ItemType Directory -Force
-          Copy-Item _scripts/windows-interposer/Config.yml (Join-Path $directory.FullName '.interposer/Config.yml')
+          New-Item (Join-Path $directory.FullName 'OpenTubeX-data/Registry.hiv') -ItemType Directory -Force
+          Copy-Item _scripts/windows-interposer/Config.yml (New-Item (Join-Path $directory.FullName '.interposer') -ItemType Directory -Force)
           & .cache/registry-tests/Release/registry-tests.exe --unavailable (Join-Path $directory.FullName 'version.dll') 'Software\OpenTubeX\RegistryRegression'
           exit $LASTEXITCODE

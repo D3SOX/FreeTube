@@ -284,7 +284,7 @@ void InstallRegistryHooks()
     if (!length || length >= ARRAYSIZE(file)) throw std::runtime_error("Cannot locate portable directory");
     std::wstring directory(file, length);
     directory.resize(directory.find_last_of(L'\\') + 1);
-    directory += L".interposer";
+    directory += L"OpenTubeX-data";
     hiveDirectory = std::move(directory);
     Hook("NtOpenKey", OpenKey, originalOpen);
     Hook("NtOpenKeyEx", OpenKeyEx, originalOpenEx);
