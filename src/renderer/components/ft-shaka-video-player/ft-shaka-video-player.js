@@ -1095,6 +1095,7 @@ export default defineComponent({
     }
 
     const hasLoaded = ref(false)
+    const hasPlaybackPosition = ref(false)
     const videoLayoutReady = ref(false)
     const annotationCurrentTime = ref(0)
     const annotationVideoAspectRatio = ref(null)
@@ -5922,6 +5923,7 @@ export default defineComponent({
     }
 
     function handlePlaying() {
+      hasPlaybackPosition.value = true
       // Chromium can briefly paint a video's poster across the compositor
       // surface while detaching it into native PiP on Windows. Once a real
       // frame is available the poster is no longer needed, so remove it before
@@ -6011,6 +6013,7 @@ export default defineComponent({
     }
 
     function handleSeeking() {
+      hasPlaybackPosition.value = true
       shortsEnded.value = false
       cancelSponsorBlockSkipSchedule()
       clearAbRepeatBoundarySchedule()
@@ -10228,6 +10231,7 @@ export default defineComponent({
       player.addEventListener('loading', () => {
         silenceSkipping.reset()
         hasLoaded.value = false
+        hasPlaybackPosition.value = false
         videoLayoutReady.value = false
         annotationVideoAspectRatio.value = null
         if (props.shortsPlayer) {
@@ -11002,6 +11006,7 @@ export default defineComponent({
 
     expose({
       hasLoaded,
+      hasPlaybackPosition,
 
       isPaused,
       play,
