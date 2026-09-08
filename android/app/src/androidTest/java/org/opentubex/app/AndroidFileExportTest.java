@@ -65,7 +65,7 @@ public class AndroidFileExportTest {
         do {
             android.view.accessibility.AccessibilityNodeInfo root = InstrumentationRegistry.getInstrumentation().getUiAutomation().getRootInActiveWindow();
             if (root != null) {
-                for (android.view.accessibility.AccessibilityNodeInfo node : root.findAccessibilityNodeInfosByText("Save")) {
+                for (android.view.accessibility.AccessibilityNodeInfo node : root.findAccessibilityNodeInfosByViewId("android:id/button1")) {
                     if (node.isClickable() && node.isEnabled() && node.performAction(android.view.accessibility.AccessibilityNodeInfo.ACTION_CLICK)) return;
                 }
             }
