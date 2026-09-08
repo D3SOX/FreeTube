@@ -27,6 +27,57 @@ import java.util.concurrent.atomic.AtomicReference;
 @RunWith(AndroidJUnit4.class)
 public class PullToRefreshLayoutTest {
     @Test
+    @androidx.test.filters.SdkSuppress(minSdkVersion = 29)
+    public void nativePlaybackKeepsChildOrderValidForAutofill() {
+        try (ActivityScenario<MainActivity> scenario = ActivityScenario.launch(MainActivity.class)) {
+            scenario.onActivity(activity -> {
+                PullToRefreshLayout host = new PullToRefreshLayout(activity, null);
+                WebView web = new WebView(activity);
+                host.addView(web, new ViewGroup.LayoutParams(-1, -1));
+                host.configure(web, true);
+                host.setRefreshing(true);
+                int size = View.MeasureSpec.makeMeasureSpec(600, View.MeasureSpec.EXACTLY);
+                host.measure(size, size);
+                host.layout(0, 0, 600, 600);
+                NativePlaybackEngine engine = new NativePlaybackEngine(activity,
+                    new DefaultDataSource.Factory(activity), state -> {});
+                NativePlaybackScreen screen = null;
+                try {
+                    assertValidChildOrder(host);
+                    screen = new NativePlaybackScreen(activity, engine, web, "en-US", action -> {});
+                    // Autofill traverses the original host even though it no longer draws.
+                    assertEquals(1, host.getChildCount());
+                    assertValidChildOrder(host);
+                    host.measure(size, size);
+                    host.layout(0, 0, 600, 600);
+                    assertValidChildOrder(host);
+                    screen.close();
+                    screen = null;
+                    assertEquals(2, host.getChildCount());
+                    assertValidChildOrder(host);
+                } finally {
+                    if (screen != null) screen.close();
+                    engine.release();
+                    host.removeView(web);
+                    web.destroy();
+                }
+            });
+        }
+    }
+
+    @android.annotation.TargetApi(29)
+    private static void assertValidChildOrder(ViewGroup host) {
+        boolean[] visited = new boolean[host.getChildCount()];
+        for (int position = 0; position < visited.length; position++) {
+            int child = host.getChildDrawingOrder(position);
+            assertTrue("autofill must not receive an invalid child index: " + child,
+                child >= 0 && child < visited.length);
+            assertFalse("each child must occur exactly once", visited[child]);
+            visited[child] = true;
+        }
+    }
+
+    @Test
     public void nativePullRequiresAnApprovedVerticalGestureAtThePageTop() throws Exception {
         try (ActivityScenario<MainActivity> scenario = ActivityScenario.launch(MainActivity.class)) {
             AtomicReference<PullToRefreshLayout> layoutRef = new AtomicReference<>();

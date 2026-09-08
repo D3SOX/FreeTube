@@ -91,6 +91,14 @@ public class PullToRefreshLayout extends SwipeRefreshLayout {
     }
 
     @Override
+    protected int getChildDrawingOrder(int childCount, int drawingPosition) {
+        // Autofill also queries this order on the empty host, outside dispatchDraw.
+        // AndroidX still caches the indicator's index from before WebView removal.
+        if (webView != null && webView.getParent() != this) return drawingPosition;
+        return super.getChildDrawingOrder(childCount, drawingPosition);
+    }
+
+    @Override
     protected boolean drawChild(android.graphics.Canvas canvas, android.view.View child, long drawingTime) {
         // Native playback draws the indicator last, above its separate video and controls.
         if (getParent() instanceof NativePlaybackScreen && child != webView) return false;
