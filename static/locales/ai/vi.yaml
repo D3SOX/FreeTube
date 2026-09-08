@@ -949,6 +949,7 @@ Settings:
     Mobile Device: 'Di động'
     Desktop Device: 'Máy tính'
     Open All Tabs: 'Mở tất cả thẻ'
+    Open All Tabs Confirmation: "Mở tất cả thẻ?"
   Proxy Settings:
     IP Block Recovery Script Path: Đường dẫn tập lệnh khôi phục khi bị chặn IP
     Select IP Block Recovery Script File: Chọn tệp tập lệnh khôi phục khi bị chặn IP

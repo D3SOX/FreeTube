@@ -930,6 +930,7 @@ Settings:
     Mobile Device: 'Dispositivo mobile'
     Desktop Device: 'Computer'
     Open All Tabs: 'Apri tutte le schede'
+    Open All Tabs Confirmation: "Aprire tutte le schede?"
   Proxy Settings:
     IP Block Recovery Script Path: Percorso dello script di ripristino dal blocco IP
     Select IP Block Recovery Script File: Seleziona file dello script di ripristino dal blocco IP

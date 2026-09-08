@@ -21,7 +21,6 @@ dependencies {
     implementation project(':capawesome-capacitor-app-shortcuts')
     implementation project(':capawesome-capacitor-clipboard')
     implementation project(':capawesome-capacitor-screen-orientation')
-    implementation project(':capawesome-capacitor-screenshot')
     implementation project(':capawesome-capacitor-settings-launcher')
     implementation project(':capawesome-capacitor-volume')
 

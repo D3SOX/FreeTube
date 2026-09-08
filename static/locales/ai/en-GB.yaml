@@ -911,6 +911,7 @@ Settings:
     Mobile Device: 'Mobile'
     Desktop Device: 'Desktop'
     Open All Tabs: 'Open all tabs'
+    Open All Tabs Confirmation: "Open all tabs?"
   Proxy Settings:
     IP Block Recovery Script Path: IP Block Recovery Script Path
     Select IP Block Recovery Script File: Select IP Block Recovery Script File

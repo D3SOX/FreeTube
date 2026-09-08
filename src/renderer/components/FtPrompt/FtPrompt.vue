@@ -61,7 +61,7 @@
               :text-color="optionButtonTextColor(index)"
               :background-color="optionButtonBackgroundColor(index)"
               :theme="index === 0 && isFirstOptionDestructive ? 'destructive' : ''"
-              :icon="index === 0 && isFirstOptionDestructive ? ['fas', 'trash'] : null"
+              :icon="optionIcons[index] ?? (index === 0 && isFirstOptionDestructive ? ['fas', 'trash'] : null)"
               @click="click(optionValues[index])"
             />
           </FtFlexBox>
@@ -96,6 +96,10 @@ const props = defineProps({
     default: () => []
   },
   optionValues: {
+    type: Array,
+    default: () => []
+  },
+  optionIcons: {
     type: Array,
     default: () => []
   },

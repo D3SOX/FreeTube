@@ -954,6 +954,7 @@ Settings:
     Mobile Device: 'Mobiililaite'
     Desktop Device: 'Tietokone'
     Open All Tabs: 'Avaa kaikki välilehdet'
+    Open All Tabs Confirmation: "Avataanko kaikki välilehdet?"
   Proxy Settings:
     IP Block Recovery Script Path: IP-eston palautuskomentosarjan polku
     Select IP Block Recovery Script File: Valitse IP-eston palautuskomentosarjatiedosto

@@ -12,7 +12,7 @@
         role="dialog"
         aria-modal="true"
         :aria-labelledby="titleId"
-        :inert="sessionToDelete !== null"
+        :inert="sessionToDelete !== null || sessionToOpen !== null"
         @keydown="handleDialogKeydown"
       >
         <header class="tabOrganizerHeader">
@@ -487,7 +487,7 @@
                       <button
                         type="button"
                         class="syncedSessionActionButton"
-                        @click="openOtherDeviceSession(activeOtherDeviceSession)"
+                        @click="sessionToOpen = activeOtherDeviceSession"
                       >
                         <FtIcon
                           :icon="['fas', 'folder-open']"
@@ -605,6 +605,16 @@
     </div>
   </Teleport>
   <FtPrompt
+    v-if="sessionToOpen"
+    :label="t('Settings.Sync Settings.Open All Tabs Confirmation')"
+    :extra-labels="[formatDeviceSessionLabel(sessionToOpen, t)]"
+    :option-names="[t('Settings.Sync Settings.Open All Tabs'), t('Cancel')]"
+    :option-values="['open', 'cancel']"
+    :option-icons="[['fas', 'folder-open'], ['fas', 'xmark']]"
+    autosize
+    @click="handleOpenSessionPrompt"
+  />
+  <FtPrompt
     v-if="sessionToDelete"
     :label="t('Delete')"
     :extra-labels="[formatDeviceSessionLabel(sessionToDelete, t)]"
@@ -653,6 +663,7 @@ const editingGroupName = ref('')
 const editingColorGroupId = ref(null)
 const failedTabAvatarUrls = ref({})
 const sessionToDelete = ref(null)
+const sessionToOpen = ref(null)
 const selectedOtherDeviceSessionKey = ref(null)
 const dialogRef = useTemplateRef('dialogRef')
 const searchRef = useTemplateRef('searchRef')
@@ -864,7 +875,11 @@ function selectOtherDeviceSessionAt(index, focus = false) {
   selectOtherDeviceSession(sessions[wrappedIndex], focus)
 }
 
-async function openOtherDeviceSession(session) {
+async function handleOpenSessionPrompt(option) {
+  const session = sessionToOpen.value
+  sessionToOpen.value = null
+  if (option !== 'open' || !session) return
+
   await store.dispatch('openSyncServerSession', session)
 }
 

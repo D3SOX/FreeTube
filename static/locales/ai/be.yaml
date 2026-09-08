@@ -977,6 +977,7 @@ Settings:
     Mobile Device: 'Мабільная прылада'
     Desktop Device: 'Камп’ютар'
     Open All Tabs: 'Адкрыць усе ўкладкі'
+    Open All Tabs Confirmation: "Адкрыць усе ўкладкі?"
   Proxy Settings:
     Proxy Username: Імя карыстальніка проксі
     Proxy Password: Пароль проксі

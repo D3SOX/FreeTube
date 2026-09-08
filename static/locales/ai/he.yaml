@@ -954,6 +954,7 @@ Settings:
     Mobile Device: 'נייד'
     Desktop Device: 'מחשב'
     Open All Tabs: 'פתיחת כל הכרטיסיות'
+    Open All Tabs Confirmation: "לפתוח את כל הכרטיסיות?"
   Proxy Settings:
     IP Block Recovery Script Path: נתיב לסקריפט התאוששות מחסימת IP
     Select IP Block Recovery Script File: בחירת קובץ סקריפט התאוששות מחסימת IP

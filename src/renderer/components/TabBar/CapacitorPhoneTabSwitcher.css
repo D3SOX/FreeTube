@@ -506,7 +506,7 @@
   -webkit-line-clamp: 2;
 }
 
-:global(.prompt:has(.capacitorPhoneDeletePrompt)) {
+:global(.prompt:has(.capacitorPhoneSessionPrompt)) {
   z-index: 1200;
 }
 

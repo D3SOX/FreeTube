@@ -523,6 +523,58 @@ for (const iconPack of ['material', 'remix']) {
   })
 }
 
+test('confirms opening all synced tabs in the phone organizer', async ({ app, page }, testInfo) => {
+  await setWindowSize(app, page, { width: 375, height: 760 })
+  await enablePhoneTabSwitcher(page)
+  await page.evaluate(() => {
+    const store = document.querySelector('#app').__vue_app__.config.globalProperties.$store
+    store.commit('setSyncServerEnabled', true)
+    store.commit('setSyncServerToken', 'e2e-token')
+    store.commit('setSyncServerPrivacyMode', 'enhanced')
+    store.commit('setSyncServerSyncSessions', true)
+    store.commit('setSyncServerSharedTabs', false)
+    store.commit('setSyncServerOtherDeviceSessions', [{
+      syncDeviceId: 'desktop-e2e',
+      syncPlatform: 'desktop',
+      sessionId: 'desktop-session',
+      tabs: [
+        { id: 'history', title: 'History', url: '/history' },
+        { id: 'playlists', title: 'Playlists', url: '/playlists' },
+      ],
+    }])
+  })
+  const tabIdsBefore = await page.evaluate(() => window.ftElectron.tabs.getState().then(state => state.tabs.map(tab => tab.id)))
+  await page.locator('.capacitorPhoneTabSwitcherButton').click()
+  const organizer = page.locator('.capacitorPhoneTabDialog')
+  await organizer.getByRole('tab', { name: 'Tabs from other devices' }).click()
+  const openAll = organizer.getByRole('button', { name: 'Open all tabs' })
+  const confirmation = page.getByRole('dialog', { name: 'Open all tabs?', exact: true })
+  for (const dismiss of ['cancel', 'escape', 'backdrop']) {
+    await openAll.click()
+    await expect(confirmation).toContainText('Desktop · 2 tabs')
+    await expect(organizer).toHaveAttribute('inert', '')
+    expect(await confirmation.evaluate(element => getComputedStyle(element.closest('.prompt')).zIndex)).toBe('1200')
+    if (dismiss === 'cancel') await confirmation.getByRole('button', { name: 'Cancel' }).click()
+    else if (dismiss === 'escape') await page.keyboard.press('Escape')
+    else await page.locator('.prompt').click({ position: { x: 5, y: 5 } })
+    await expect(confirmation).toHaveCount(0)
+    await expect(organizer).not.toHaveAttribute('inert')
+    await expect(openAll).toBeFocused()
+    expect(await page.evaluate(() => window.ftElectron.tabs.getState().then(state => state.tabs.map(tab => tab.id))))
+      .toEqual(tabIdsBefore)
+  }
+  await openAll.click()
+  await confirmation.screenshot({ path: testInfo.outputPath('open-tabs-confirmation-mobile.png') })
+  await confirmation.getByRole('button', { name: 'Open all tabs', exact: true }).click()
+  await expect(confirmation).toHaveCount(0)
+  await expect(organizer).toHaveCount(0)
+  await expect.poll(() => page.evaluate(() => window.ftElectron.tabs.getState().then(state => (
+    state.tabs.slice(-2).map(tab => tab.route.fullPath)
+  )))).toEqual(['/history', '/playlists'])
+  expect(await page.evaluate(() => window.ftElectron.tabs.getState().then(state => state.tabs.length)))
+    .toBe(tabIdsBefore.length + 2)
+})
+
 test('shows remote tab sets as tabs and confirms deletion in the phone organizer', async ({ app, page }) => {
   await setWindowSize(app, page, { width: 375, height: 760 })
   await page.evaluate(() => window.ftElectron.setZoomFactor(0.95))

@@ -954,6 +954,7 @@ Settings:
     Mobile Device: 'Mobiel'
     Desktop Device: 'Desktop'
     Open All Tabs: 'Alle tabbladen openen'
+    Open All Tabs Confirmation: "Alle tabbladen openen?"
   Proxy Settings:
     IP Block Recovery Script Path: Pad naar herstelscript voor IP-blokkade
     Select IP Block Recovery Script File: Herstelscript voor IP-blokkade selecteren

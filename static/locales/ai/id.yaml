@@ -949,6 +949,7 @@ Settings:
     Mobile Device: 'Seluler'
     Desktop Device: 'Desktop'
     Open All Tabs: 'Buka semua tab'
+    Open All Tabs Confirmation: "Buka semua tab?"
   Proxy Settings:
     IP Block Recovery Script Path: Jalur Skrip Pemulihan Blokir IP
     Select IP Block Recovery Script File: Pilih Berkas Skrip Pemulihan Blokir IP

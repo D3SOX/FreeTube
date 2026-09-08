@@ -973,6 +973,7 @@ Settings:
     Mobile Device: 'Mobil'
     Desktop Device: 'Computer'
     Open All Tabs: 'Åbn alle faner'
+    Open All Tabs Confirmation: "Åbn alle faner?"
   Proxy Settings:
     Proxy Username: Proxybrugernavn
     Proxy Password: Proxyadgangskode

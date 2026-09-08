@@ -24,7 +24,6 @@ updates:
       - dependency-name: "@capawesome/capacitor-app-shortcuts"
       - dependency-name: "@capawesome/capacitor-clipboard"
       - dependency-name: "@capawesome/capacitor-screen-orientation"
-      - dependency-name: "@capawesome/capacitor-screenshot"
       - dependency-name: "@capawesome/capacitor-settings-launcher"
       - dependency-name: "@capawesome/capacitor-volume"
       - dependency-name: "@hpke/core"

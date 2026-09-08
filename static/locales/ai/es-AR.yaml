@@ -1033,6 +1033,7 @@ Settings:
     Mobile Device: 'Celular'
     Desktop Device: 'Escritorio'
     Open All Tabs: 'Abrir todas las pestañas'
+    Open All Tabs Confirmation: "¿Abrir todas las pestañas?"
   Proxy Settings:
     Proxy Username: Nombre de Usuario del proxy
     Proxy Password: Contraseña del proxy

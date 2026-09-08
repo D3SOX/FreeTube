@@ -930,6 +930,7 @@ Settings:
     Mobile Device: 'モバイル'
     Desktop Device: 'デスクトップ'
     Open All Tabs: 'すべてのタブを開く'
+    Open All Tabs Confirmation: "すべてのタブを開きますか？"
   Proxy Settings:
     IP Block Recovery Script Path: IPブロック復旧スクリプトのパス
     Select IP Block Recovery Script File: IPブロック復旧スクリプトを選択

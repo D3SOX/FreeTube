@@ -934,6 +934,7 @@ Settings:
     Mobile Device: 'Mugikorra'
     Desktop Device: 'Mahaigaina'
     Open All Tabs: 'Ireki fitxa guztiak'
+    Open All Tabs Confirmation: "Fitxa guztiak ireki?"
   Proxy Settings:
     IP Block Recovery Script Path: IP blokeoa berreskuratzeko scriptaren bide-izena
     Select IP Block Recovery Script File: Hautatu IP blokeoa berreskuratzeko script-fitxategia

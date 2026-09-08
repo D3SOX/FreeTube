@@ -1252,6 +1252,7 @@ Settings:
     Mobile Device: 'Mòbil'
     Desktop Device: 'Ordinador'
     Open All Tabs: 'Obre totes les pestanyes'
+    Open All Tabs Confirmation: "Voleu obrir totes les pestanyes?"
   Proxy Settings:
     Proxy Warning: L'OpenTubeX no té cap servidor intermediari integrat, però es pot connectar a un d'extern, com ara Tor executant-se al vostre ordinador o un servidor intermediari SOCKS5 proporcionat per algunes VPN. Si l'activeu, assegureu-vos que el servidor intermediari o Tor estigui ben configurat; altrament, l'OpenTubeX no podrà obtenir dades.
     Proxy Username: Nom d'usuari del servidor intermediari

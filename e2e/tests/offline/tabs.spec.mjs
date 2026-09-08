@@ -2458,7 +2458,25 @@ test.describe('tab organizer', () => {
 
       await syncedSection.getByRole('tab', { name: 'Desktop · 2 tabs', exact: true }).click()
       await expect(syncedSection.locator('small')).toHaveText(['/history', '/playlists'])
-      await syncedSection.getByRole('button', { name: 'Open all tabs' }).click()
+      const tabIdsBefore = await page.evaluate(() => window.ftElectron.tabs.getState().then(state => state.tabs.map(tab => tab.id)))
+      const openAll = syncedSection.getByRole('button', { name: 'Open all tabs' })
+      const confirmation = page.getByRole('dialog', { name: 'Open all tabs?', exact: true })
+      for (const dismiss of ['cancel', 'escape', 'backdrop']) {
+        await openAll.click()
+        await expect(confirmation).toContainText('Desktop · 2 tabs')
+        await expect(organizer).toHaveAttribute('inert', '')
+        if (dismiss === 'cancel') await confirmation.getByRole('button', { name: 'Cancel' }).click()
+        else if (dismiss === 'escape') await page.keyboard.press('Escape')
+        else await page.locator('.prompt').click({ position: { x: 5, y: 5 } })
+        await expect(confirmation).toHaveCount(0)
+        await expect(organizer).not.toHaveAttribute('inert')
+        await expect(openAll).toBeFocused()
+        expect(await page.evaluate(() => window.ftElectron.tabs.getState().then(state => state.tabs.map(tab => tab.id))))
+          .toEqual(tabIdsBefore)
+      }
+      await openAll.click()
+      await confirmation.getByRole('button', { name: 'Open all tabs', exact: true }).click()
+      await expect(confirmation).toHaveCount(0)
       await expect.poll(() => page.evaluate(() => window.ftElectron.tabs.getState().then(state => (
         state.tabs.slice(-3).map(tab => tab.route.fullPath)
       )))).toEqual(['/subscriptions', '/history', '/playlists'])

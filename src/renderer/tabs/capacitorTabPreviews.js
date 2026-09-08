@@ -1,9 +1,9 @@
-import { Capacitor } from '@capacitor/core'
+import { Capacitor, registerPlugin } from '@capacitor/core'
 import { Filesystem } from '@capacitor/filesystem'
-import { Screenshot } from '@capawesome/capacitor-screenshot'
 import { shallowReactive, watch } from 'vue'
 import { canCaptureCapacitorTab, createCapacitorPreviewCache } from './capacitorPreviewCache.js'
 
+const AndroidUi = registerPlugin('AndroidUi')
 const cache = createCapacitorPreviewCache(capturePage, shallowReactive(new Map()))
 let captureCurrent = async () => {}
 
@@ -23,7 +23,7 @@ export async function captureBeforeTabOrganizer() {
 }
 
 export function initializeCapacitorTabPreviews(store) {
-  if (!process.env.IS_CAPACITOR || !Capacitor.isPluginAvailable('Screenshot')) return () => {}
+  if (!process.env.IS_CAPACITOR || !Capacitor.isPluginAvailable('AndroidUi')) return () => {}
   let timer
   const canCapture = () => canCaptureCapacitorTab(store.getters, document.visibilityState === 'visible') && !hasVisibleOverlay()
   captureCurrent = async () => {
@@ -88,7 +88,7 @@ async function capturePage() {
   const videos = [...document.querySelectorAll('.tabContent:not([inert]) video')]
     .map(video => ({ video, rect: video.getBoundingClientRect() }))
     .filter(({ rect }) => rect.width > 0 && rect.height > 0 && rect.bottom > top && rect.top < top + cropHeight)
-  const { uri } = await Screenshot.take()
+  const { uri } = await AndroidUi.takeScreenshot()
   try {
     const screenshot = new Image()
     screenshot.src = Capacitor.convertFileSrc(uri)
@@ -97,8 +97,8 @@ async function capturePage() {
     context.drawImage(screenshot, 0, top * screenshot.height / height,
       screenshot.width, cropHeight * screenshot.height / height,
       0, 0, canvas.width, canvas.height)
-    // Android WebView.draw omits hardware video surfaces. Composite readable
-    // frames; if the frame is unavailable or tainted, retain the card fallback.
+    // Hardware video surfaces can be separate from the window buffer. Composite
+    // readable frames; otherwise retain the card fallback.
     for (const { video, rect } of videos) {
       if (video.readyState < 2 || !video.videoWidth) return null
       const fit = Math.min(rect.width / video.videoWidth, rect.height / video.videoHeight)

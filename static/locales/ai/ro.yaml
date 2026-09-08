@@ -943,6 +943,7 @@ Settings:
     Mobile Device: 'Mobil'
     Desktop Device: 'Desktop'
     Open All Tabs: 'Deschide toate filele'
+    Open All Tabs Confirmation: "Deschideți toate filele?"
   Proxy Settings:
     Proxy Username: Nume de utilizator pentru proxy
     Proxy Password: Parolă pentru proxy

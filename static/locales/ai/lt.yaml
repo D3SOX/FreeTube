@@ -1183,6 +1183,7 @@ Settings:
     Mobile Device: 'Mobilusis įrenginys'
     Desktop Device: 'Kompiuteris'
     Open All Tabs: 'Atverti visas korteles'
+    Open All Tabs Confirmation: "Atverti visas korteles?"
   Proxy Settings:
     Proxy Warning: OpenTubeX neturi integruoto įgaliotojo serverio, tačiau gali prisijungti prie išorinio, pavyzdžiui, šiame kompiuteryje veikiančio Tor arba kai kurių VPN teikiamo SOCKS5 įgaliotojo serverio. Įjungę įsitikinkite, kad įgaliotasis serveris arba Tor tinkamai sukonfigūruotas, kitaip OpenTubeX negalės gauti duomenų.
     Proxy Username: Įgaliotojo serverio naudotojo vardas

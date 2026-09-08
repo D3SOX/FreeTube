@@ -934,6 +934,7 @@ Settings:
     Mobile Device: 'Мобилно устройство'
     Desktop Device: 'Настолен компютър'
     Open All Tabs: 'Отваряне на всички раздели'
+    Open All Tabs Confirmation: "Отваряне на всички раздели?"
   Proxy Settings:
     IP Block Recovery Script Path: Път до скрипта за възстановяване след блокиране на IP адреса
     Select IP Block Recovery Script File: Избор на файл със скрипт за възстановяване след блокиране на IP адреса

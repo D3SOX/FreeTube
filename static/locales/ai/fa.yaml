@@ -977,6 +977,7 @@ Settings:
     Mobile Device: 'تلفن همراه'
     Desktop Device: 'رایانه'
     Open All Tabs: 'باز کردن همهٔ زبانه‌ها'
+    Open All Tabs Confirmation: "همهٔ زبانه‌ها باز شوند؟"
   Proxy Settings:
     IP Block Recovery Script Path: مسیر اسکریپت بازیابی مسدودشدن IP
     Select IP Block Recovery Script File: انتخاب فایل اسکریپت بازیابی مسدودشدن IP
