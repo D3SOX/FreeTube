@@ -147,6 +147,7 @@ test('two windows persist both marks and delayed replies cannot overwrite newer 
   const makeWindow = (delayReply = false) => {
     const context = vm.createContext({
       ...seenVideos,
+      ANDROID_PROXY_SETTING_KEYS: [],
       DBSettingHandlers: {
         async mergeSeenVideos(entries) {
           const saved = await Settings.mergeSeenVideos(entries)

@@ -13,6 +13,7 @@ import {
 } from '../../../constants'
 import { DBProfileHandlers, DBSettingHandlers } from '../../../datastores/handlers/index'
 import { hashPassword } from '../../helpers/passwords'
+import { ANDROID_PROXY_SETTING_KEYS, configureAndroidProxy, readAndroidProxySettings } from '../../helpers/androidProxy'
 import { getTabNavigationService } from '../../tabs/TabNavigationService'
 import { getSystemLocale, showToast } from '../../helpers/utils'
 import { DEFAULT_THUMBNAIL_SIZE } from '../../constants/thumbnailSize'
@@ -972,7 +973,36 @@ function updateOrderedSetting(commit, settings, settingId, value) {
   })
 }
 
+let androidProxyUpdate = Promise.resolve()
+
 const customActions = {
+  ...Object.fromEntries(ANDROID_PROXY_SETTING_KEYS.filter(() => process.env.IS_CAPACITOR).map(settingId => [
+    defaultUpdaterId(settingId),
+    ({ commit, state }, value) => {
+      // Serialize across fields so a fast host/port edit cannot restore stale values.
+      androidProxyUpdate = androidProxyUpdate.then(async () => {
+        await configureAndroidProxy({ ...state, [settingId]: value })
+        // Native persistence is authoritative, including when the renderer's
+        // database cannot save its copy of the settings.
+        commit(defaultMutationId(settingId), value)
+        await DBSettingHandlers.upsert(settingId, value)
+      }).catch(() => {
+        showToast({
+          message: i18n.global.t('Settings.Proxy Settings["Error getting network information. Is your proxy configured properly?"]'),
+          icon: ['fas', 'circle-exclamation'],
+        })
+      })
+      return androidProxyUpdate
+    }
+  ])),
+  waitForAndroidProxySettings: () => androidProxyUpdate,
+  loadAndroidProxySettings: async ({ commit }) => {
+    const settings = await readAndroidProxySettings()
+    if (settings === null) return
+    for (const settingId of ANDROID_PROXY_SETTING_KEYS) {
+      commit(defaultMutationId(settingId), settings[settingId])
+    }
+  },
   async mergeSubscriptionSeenVideos({ commit, state, rootGetters }, entries) {
     const saved = await DBSettingHandlers.mergeSeenVideos(entries)
     // Another window's newer update may arrive before this request's reply.

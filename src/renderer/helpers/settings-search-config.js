@@ -183,6 +183,7 @@ export const SETTINGS_SEARCH_SOURCES = {
   }, {
     type: 'proxy',
     key: 'Settings.Proxy Settings',
+    capacitorSupported: true,
     electronOnly: true
   }, {
     type: 'experimental',

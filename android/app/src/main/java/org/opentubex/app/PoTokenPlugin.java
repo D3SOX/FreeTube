@@ -104,6 +104,7 @@ public class PoTokenPlugin extends Plugin {
         WebView webView;
         try {
             webView = new WebView(getContext());
+            AndroidProxy.protectWebView(webView);
         } catch (RuntimeException exception) {
             call.reject("Failed to prepare PO token generation", exception);
             requestQueue.complete();

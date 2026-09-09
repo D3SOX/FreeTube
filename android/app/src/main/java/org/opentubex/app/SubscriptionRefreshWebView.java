@@ -12,6 +12,7 @@ public final class SubscriptionRefreshWebView extends CapacitorWebView {
 
     public SubscriptionRefreshWebView(Context context, AttributeSet attributes) {
         super(context, attributes);
+        AndroidProxy.protectWebView(this);
     }
 
     @Override

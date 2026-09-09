@@ -3,7 +3,7 @@
     <GeneralSettings mode="providers" />
     <ExternalPlayerSettings v-if="USING_ELECTRON" />
     <ExternalSoftwareSettings v-if="USING_ELECTRON || IS_CAPACITOR" />
-    <ProxySettings v-if="USING_ELECTRON" />
+    <ProxySettings v-if="USING_ELECTRON || IS_CAPACITOR" />
     <ExperimentalSettings v-if="USING_ELECTRON" />
   </div>
 </template>

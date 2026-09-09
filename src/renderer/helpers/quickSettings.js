@@ -15,7 +15,7 @@ const CORE_QUICK_SETTINGS = [
   ['hideComments', 'content', 'Settings.Distraction Free Settings.Hide Comments', { control: 'toggle', icon: ['fas', 'comment'] }],
   ['currentLocale', 'language', 'Settings.General Settings.Locale Preference', { control: 'select', icon: ['fas', 'language'] }],
   ['region', 'language', 'Settings.General Settings.Region for Trending', { control: 'select', icon: ['fas', 'globe'] }],
-  ['useProxy', 'advanced', 'Settings.Proxy Settings.Enable Tor / Proxy', { control: 'toggle', electronOnly: true, icon: ['fas', 'globe'] }],
+  ['useProxy', 'advanced', 'Settings.Proxy Settings.Enable Tor / Proxy', { control: 'toggle', electronOnly: true, capacitorSupported: true, icon: ['fas', 'globe'] }],
 ]
 
 export const BASIC_QUICK_SETTING_DEFINITIONS = Object.freeze([
