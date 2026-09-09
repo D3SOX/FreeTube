@@ -30,4 +30,4 @@ onBeforeUnmount(() => {
 })
 </script>
 
-<style src="./FtConnectionStatus.css" />
+<style scoped src="./FtConnectionStatus.css" />
