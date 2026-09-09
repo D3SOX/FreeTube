@@ -1444,12 +1444,6 @@
             {{ repeatStatsTime }}
           </dd>
         </div>
-        <div>
-          <dt>{{ $t('Video.Player.Repeat Stats.Current Pass') }}</dt>
-          <dd class="repeatStatsPass">
-            {{ (repeatStats.repeats + 1).toLocaleString($i18n.locale) }}
-          </dd>
-        </div>
       </dl>
     </section>
   </div>

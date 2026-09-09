@@ -37,7 +37,6 @@ test('repeat stats count native loops and retain totals across pauses and toggle
   await toggleLoop(page)
   await expect(stats).toBeVisible()
   await expect(stats.locator('.repeatStatsCount')).toHaveText('0')
-  await expect(stats.locator('.repeatStatsPass')).toHaveText('1')
 
   await video.evaluate(element => { element.currentTime = element.duration - 1.5 })
   await expect.poll(() => video.evaluate(element => element.seeking)).toBe(false)
@@ -45,7 +44,6 @@ test('repeat stats count native loops and retain totals across pauses and toggle
   await video.evaluate(element => element.play())
   await expect(stats.locator('.repeatStatsCount')).toHaveText('1')
   await video.evaluate(element => element.pause())
-  await expect(stats.locator('.repeatStatsPass')).toHaveText('2')
   const spent = await stats.locator('.repeatStatsTime').textContent()
   expect(spent).not.toBe('0:00')
 
@@ -77,7 +75,6 @@ test('repeat stats count A-B boundaries, ignore range correction seeks, and rese
   await video.evaluate(element => element.play())
   await expect.poll(() => stats.locator('.repeatStatsCount').textContent()).toBe('2')
   await video.evaluate(element => element.pause())
-  await expect(stats.locator('.repeatStatsPass')).toHaveText('3')
 
   await video.evaluate(element => { element.currentTime = 15 })
   await expect.poll(() => video.evaluate(element => element.currentTime)).toBe(5)
@@ -86,7 +83,6 @@ test('repeat stats count A-B boundaries, ignore range correction seeks, and rese
   await page.keyboard.press('ArrowRight')
   await expect(stats.locator('.repeatStatsCount')).toHaveText('0')
   await expect(stats.locator('.repeatStatsTime')).toHaveText('0:00')
-  await expect(stats.locator('.repeatStatsPass')).toHaveText('1')
   await expect(stats).toContainText('0:06.1')
 })
 
