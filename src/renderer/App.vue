@@ -1219,7 +1219,15 @@ onMounted(async () => {
     })
   }
 
-  const settingsReady = store.dispatch('grabUserSettings').then(tutorialState => {
+  const settingsReady = store.dispatch('grabUserSettings').then(async tutorialState => {
+    if (isCapacitor) {
+      await store.dispatch('loadAndroidProxySettings').catch(() => {
+        showToast({
+          message: t('Settings.Proxy Settings["Error getting network information. Is your proxy configured properly?"]'),
+          icon: ['fas', 'circle-exclamation'],
+        })
+      })
+    }
     removeAndroidYtDlpSettingsListener = initializeAndroidYtDlp()
     return tutorialState
   })

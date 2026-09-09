@@ -109,7 +109,10 @@
         </p>
       </div>
     </template>
-    <FtFlexBox class="settingsFlexStart500px">
+    <FtFlexBox
+      v-if="!IS_CAPACITOR"
+      class="settingsFlexStart500px"
+    >
       <FtInput
         :placeholder="$t('Settings.Proxy Settings.IP Block Recovery Script Path')"
         :show-action-button="true"
@@ -140,10 +143,12 @@ import FtFlexBox from '../ft-flex-box/ft-flex-box.vue'
 
 import store from '../../store/index'
 import { getProxyTestUrl } from '../../helpers/proxy-test'
+import { capacitorHttpFetch } from '../../helpers/api/capacitor-http'
 
 import { debounce, showToast } from '../../helpers/utils'
 
 const { locale, t } = useI18n()
+const IS_CAPACITOR = !!process.env.IS_CAPACITOR
 
 const PROTOCOL_NAMES = [
   'HTTP',
@@ -209,7 +214,8 @@ const proxyTestUrl = computed(() => getProxyTestUrl(locale.value))
 
 /** @type {import('vue').ComputedRef<boolean>} */
 const areCredentialsSupported = computed(() => {
-  return proxyProtocol.value === 'http' || proxyProtocol.value === 'https'
+  return proxyProtocol.value === 'http' || proxyProtocol.value === 'https' ||
+    (IS_CAPACITOR && proxyProtocol.value === 'socks5')
 })
 
 /**
@@ -344,7 +350,12 @@ async function testProxy() {
   }
 
   try {
-    const response = await fetch(proxyTestUrl.value)
+    if (IS_CAPACITOR) {
+      await store.dispatch('waitForAndroidProxySettings')
+      if (!useProxy.value) return
+    }
+    const response = await (IS_CAPACITOR ? capacitorHttpFetch : fetch)(proxyTestUrl.value)
+    if (!response.ok) throw new Error('Proxy test request failed')
     const json = await response.json()
 
     proxyIp.value = json.ip

@@ -209,6 +209,7 @@ function isSettingsSearchMessageVisible(sectionType, path, options) {
   }
 
   if (sectionType === 'proxy') {
+    if (group === 'IP Block Recovery Script Path') return usingElectron
     if ([
       'Proxy Settings',
       'Enable Tor / Proxy',
@@ -218,7 +219,8 @@ function isSettingsSearchMessageVisible(sectionType, path, options) {
     }
     if (['Proxy Username', 'Proxy Password'].includes(group)) {
       return store.getters.getUseProxy &&
-        ['http', 'https'].includes(store.getters.getProxyProtocol)
+        (['http', 'https'].includes(store.getters.getProxyProtocol) ||
+          (isCapacitor && store.getters.getProxyProtocol === 'socks5'))
     }
     return store.getters.getUseProxy && [
       'Proxy Protocol',
