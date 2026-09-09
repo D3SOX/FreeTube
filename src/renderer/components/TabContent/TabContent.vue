@@ -59,7 +59,7 @@ const props = defineProps({
 const navigation = getTabNavigationService()
 const tabContentRef = useTemplateRef('tabContentRef')
 const isPresented = computed(() => store.getters.getPresentedTabId === props.tab.id)
-const shouldMount = computed(() => props.tab.loadState !== 'unloaded' && props.tab.loadState !== 'unloading')
+const shouldMount = computed(() => !props.tab.mountDeferred && props.tab.loadState !== 'unloaded' && props.tab.loadState !== 'unloading')
 const initialized = ref(shouldMount.value)
 const routerFacade = navigation.createRouterFacade(props.tab.id)
 // Main metadata snapshots replace the containing tab object frequently (title,
