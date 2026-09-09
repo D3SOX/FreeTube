@@ -27,7 +27,7 @@ export function createNetworkRecovery({ eventTarget, isOnline, onChange = () => 
   }
 
   function update() {
-    if (!online || [...origins.values()].some(origin => origin.failed)) publish('offline')
+    if (!online || [...origins.values()].some(entry => entry.failed)) publish('offline')
     else if (state === 'offline') publish('restored')
     else if (!state) publish('online')
   }
@@ -131,7 +131,7 @@ export function createNetworkRecovery({ eventTarget, isOnline, onChange = () => 
       if (origin.users === 0) {
         origins.delete(originKey)
         // Cancellation is not evidence of restored connectivity.
-        if (state === 'offline' && online && ![...origins.values()].some(origin => origin.failed)) publish('online')
+        if (state === 'offline' && online && ![...origins.values()].some(entry => entry.failed)) publish('online')
       }
     }
   }
@@ -195,7 +195,7 @@ export function withNetworkRecovery(input, init, task, options = {}) {
 export function installNetworkFetch({ verifyConnection, corsDisabled = false } = {}) {
   initializeNetworkRecovery()
   const fetch = window.fetch.bind(window)
-  window.fetch = (input, init) => withNetworkRecovery(input, init, async signal => {
+  window.fetch = async (input, init) => withNetworkRecovery(input, init, async signal => {
     // A fetch can stall while the OS still reports online. Bound the wait for
     // response headers; media response bodies keep their streaming behavior.
     const timeout = new AbortController()

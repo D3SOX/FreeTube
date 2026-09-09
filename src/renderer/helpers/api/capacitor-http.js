@@ -108,8 +108,8 @@ async function getRequestBody(input, init) {
  * @param {RequestInit & { nativeTimeoutMs?: number }} [init]
  * @returns {Promise<Response>}
  */
-export function capacitorHttpFetch(input, init = undefined) {
-  return withNetworkRecovery(input, init, signal => nativeHttpFetch(input, { ...init, signal }))
+export async function capacitorHttpFetch(input, init = undefined) {
+  return await withNetworkRecovery(input, init, signal => nativeHttpFetch(input, { ...init, signal }))
 }
 
 async function nativeHttpFetch(input, init) {

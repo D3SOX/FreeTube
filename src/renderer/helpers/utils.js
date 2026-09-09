@@ -408,7 +408,7 @@ export async function copyToClipboard(content, { messageOnSuccess = null, messag
   }
 }
 
-// API requests often fail together. Keep at most one error toast per lifetime.
+// API requests often fail together. Show at most one error toast every 10 seconds.
 let lastApiErrorToastAt = Number.NEGATIVE_INFINITY
 
 /**

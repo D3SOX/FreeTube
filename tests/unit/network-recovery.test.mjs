@@ -190,3 +190,15 @@ test('delegated subscription transport retains browser CORS classification', asy
   assert.equal(vm.runInContext('isRecoverableNetworkError(requestError)', app), false)
   assert.equal(app.recovery.state, 'online')
 })
+
+for (const transport of ['native', 'browser']) {
+  test(`${transport} fetch rejects malformed URLs asynchronously`, async t => {
+    const unexpectedRequest = () => assert.fail('malformed input must not reach the transport')
+    const app = await loadAppNetwork(t, unexpectedRequest, unexpectedRequest)
+    const fetch = transport === 'native' ? app.nativeFetch : app.window.fetch
+    let pending
+    assert.doesNotThrow(() => { pending = fetch('https://[') })
+    assert.equal(typeof pending.catch, 'function')
+    await assert.rejects(pending, { name: 'TypeError' })
+  })
+}
