@@ -1681,3 +1681,16 @@ Channels:
 Search Bar:
   Open Search Container: Отваряне на полето за търсене
   Search: Търсене
+Theme Discovery:
+  Discover Themes: "Откриване на теми"
+  Refresh: "Опресняване"
+  View on GitHub: "Преглед в GitHub"
+  Load Error: "Темите не можаха да се заредят. Опитайте да опресните."
+  Loading: "Зареждане…"
+  No Themes: "Няма намерени теми за инсталиране."
+  No Preview: "Екранната снимка не е налична"
+  Load More: "Зареждане на още"
+  Applied: "Приложена"
+  Apply Theme: "Прилагане на тема"
+  Install and Apply: "Инсталиране и прилагане"
+  Update and Apply: "Обновяване и прилагане"

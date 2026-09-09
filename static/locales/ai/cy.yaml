@@ -1690,3 +1690,16 @@ Channels:
 Search Bar:
   Open Search Container: Agor y blwch chwilio
   Search: Chwilio
+Theme Discovery:
+  Discover Themes: "Darganfod themâu"
+  Refresh: "Adnewyddu"
+  View on GitHub: "Gweld ar GitHub"
+  Load Error: "Methu llwytho themâu. Ceisiwch adnewyddu."
+  Loading: "Yn llwytho…"
+  No Themes: "Ni chanfuwyd themâu y gellir eu gosod."
+  No Preview: "Sgrinlun ddim ar gael"
+  Load More: "Llwytho rhagor"
+  Applied: "Wedi'i chymhwyso"
+  Apply Theme: "Cymhwyso thema"
+  Install and Apply: "Gosod a chymhwyso"
+  Update and Apply: "Diweddaru a chymhwyso"

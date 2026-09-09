@@ -1709,3 +1709,16 @@ Channels:
 Search Bar:
   Open Search Container: פתיחת שדה החיפוש
   Search: חיפוש
+Theme Discovery:
+  Discover Themes: "גילוי ערכות נושא"
+  Refresh: "רענון"
+  View on GitHub: "הצגה ב-GitHub"
+  Load Error: "לא ניתן לטעון ערכות נושא. כדאי לנסות לרענן."
+  Loading: "בטעינה…"
+  No Themes: "לא נמצאו ערכות נושא להתקנה."
+  No Preview: "צילום המסך אינו זמין"
+  Load More: "טעינת עוד"
+  Applied: "הוחלה"
+  Apply Theme: "החלת ערכת נושא"
+  Install and Apply: "התקנה והחלה"
+  Update and Apply: "עדכון והחלה"

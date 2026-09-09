@@ -99,6 +99,11 @@
     </FtFlexBox>
     <FtFlexBox class="customThemeActions">
       <FtButton
+        :label="t('Theme Discovery.Discover Themes')"
+        :icon="['fas', 'search']"
+        @click="showThemeDiscovery = true"
+      />
+      <FtButton
         :label="t('Settings.Theme Settings.Custom Theme.Create Custom Theme')"
         :icon="['fas', 'palette']"
         @click="openCustomThemeEditor(null)"
@@ -110,6 +115,10 @@
         @click="openCustomThemeEditor(selectedCustomThemeId)"
       />
     </FtFlexBox>
+    <ThemeDiscovery
+      :open="showThemeDiscovery"
+      @close="showThemeDiscovery = false"
+    />
     <CustomThemeEditor
       :open="showCustomThemeEditor"
       :theme-id="editingCustomThemeId"
@@ -385,6 +394,7 @@ import FtSliderGrid from './FtSliderGrid/FtSliderGrid.vue'
 import FtFlexBox from './ft-flex-box/ft-flex-box.vue'
 import FtButton from './FtButton/FtButton.vue'
 import FtPrompt from './FtPrompt/FtPrompt.vue'
+import ThemeDiscovery from './ThemeDiscovery.vue'
 import CustomThemeEditor from './CustomThemeEditor/CustomThemeEditor.vue'
 import QuickSettingsCustomizer from './QuickSettingsCustomizer/QuickSettingsCustomizer.vue'
 
@@ -546,6 +556,7 @@ function updateTabBarPosition(value) {
 const COLOR_VALUES = colors.map(color => color.name)
 const COLOR_SWATCHES = colors.map(color => color.value)
 const colorNames = useColorTranslations()
+const showThemeDiscovery = ref(false)
 const showCustomThemeEditor = ref(false)
 const editingCustomThemeId = ref(null)
 const systemFonts = ref([])

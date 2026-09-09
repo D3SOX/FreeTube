@@ -1700,3 +1700,16 @@ Channels:
 Search Bar:
   Open Search Container: Відкрити поле пошуку
   Search: Пошук
+Theme Discovery:
+  Discover Themes: "Знайти теми"
+  Refresh: "Оновити"
+  View on GitHub: "Переглянути на GitHub"
+  Load Error: "Не вдалося завантажити теми. Спробуйте оновити список."
+  Loading: "Завантаження…"
+  No Themes: "Тем для встановлення не знайдено."
+  No Preview: "Знімок екрана недоступний"
+  Load More: "Завантажити ще"
+  Applied: "Застосовано"
+  Apply Theme: "Застосувати тему"
+  Install and Apply: "Встановити й застосувати"
+  Update and Apply: "Оновити й застосувати"

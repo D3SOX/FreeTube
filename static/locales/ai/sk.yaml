@@ -1663,3 +1663,16 @@ Downloads:
     Subtitles Format: Titulky – {format}
 Channels:
   Load More Channels: "Načítať ďalšie kanály"
+Theme Discovery:
+  Discover Themes: "Objavovať motívy"
+  Refresh: "Obnoviť"
+  View on GitHub: "Zobraziť na GitHube"
+  Load Error: "Motívy sa nepodarilo načítať. Skúste obnoviť zoznam."
+  Loading: "Načítava sa…"
+  No Themes: "Nenašli sa žiadne motívy na inštaláciu."
+  No Preview: "Snímka obrazovky nie je dostupná"
+  Load More: "Načítať ďalšie"
+  Applied: "Použité"
+  Apply Theme: "Použiť motív"
+  Install and Apply: "Nainštalovať a použiť"
+  Update and Apply: "Aktualizovať a použiť"

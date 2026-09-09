@@ -1681,3 +1681,16 @@ Channels:
 Search Bar:
   Open Search Container: Öppna sökfältet
   Search: Sök
+Theme Discovery:
+  Discover Themes: "Upptäck teman"
+  Refresh: "Läs in igen"
+  View on GitHub: "Visa på GitHub"
+  Load Error: "Kunde inte läsa in teman. Försök att läsa in igen."
+  Loading: "Läser in…"
+  No Themes: "Inga installerbara teman hittades."
+  No Preview: "Skärmbild saknas"
+  Load More: "Läs in fler"
+  Applied: "Tillämpat"
+  Apply Theme: "Använd tema"
+  Install and Apply: "Installera och använd"
+  Update and Apply: "Uppdatera och använd"

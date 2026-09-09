@@ -1685,3 +1685,16 @@ Channels:
 Search Bar:
   Open Search Container: فتح مربع البحث
   Search: بحث
+Theme Discovery:
+  Discover Themes: "استكشاف السمات"
+  Refresh: "تحديث"
+  View on GitHub: "عرض على GitHub"
+  Load Error: "تعذر تحميل السمات. حاول التحديث."
+  Loading: "جارٍ التحميل…"
+  No Themes: "لم يتم العثور على سمات قابلة للتثبيت."
+  No Preview: "لقطة الشاشة غير متاحة"
+  Load More: "تحميل المزيد"
+  Applied: "مطبّقة"
+  Apply Theme: "تطبيق السمة"
+  Install and Apply: "تثبيت وتطبيق"
+  Update and Apply: "تحديث وتطبيق"

@@ -2257,3 +2257,16 @@ Downloads:
     Subtitles Format: Podnapisi - {format}
 Channels:
   Load More Channels: "Naloži več kanalov"
+Theme Discovery:
+  Discover Themes: "Odkrij teme"
+  Refresh: "Osveži"
+  View on GitHub: "Poglej na GitHubu"
+  Load Error: "Tem ni bilo mogoče naložiti. Poskusi osvežiti."
+  Loading: "Nalaganje…"
+  No Themes: "Ni najdenih tem za namestitev."
+  No Preview: "Posnetek zaslona ni na voljo"
+  Load More: "Naloži več"
+  Applied: "Uveljavljeno"
+  Apply Theme: "Uveljavi temo"
+  Install and Apply: "Namesti in uveljavi"
+  Update and Apply: "Posodobi in uveljavi"

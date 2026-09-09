@@ -1718,3 +1718,16 @@ Channels:
 Search Bar:
   Open Search Container: Zoekveld openen
   Search: Zoeken
+Theme Discovery:
+  Discover Themes: "Thema's ontdekken"
+  Refresh: "Vernieuwen"
+  View on GitHub: "Bekijken op GitHub"
+  Load Error: "Thema's konden niet worden geladen. Probeer te vernieuwen."
+  Loading: "Laden…"
+  No Themes: "Geen installeerbare thema's gevonden."
+  No Preview: "Schermafbeelding niet beschikbaar"
+  Load More: "Meer laden"
+  Applied: "Toegepast"
+  Apply Theme: "Thema toepassen"
+  Install and Apply: "Installeren en toepassen"
+  Update and Apply: "Bijwerken en toepassen"

@@ -1709,3 +1709,16 @@ Channels:
 Search Bar:
   Open Search Container: Deschide câmpul de căutare
   Search: Caută
+Theme Discovery:
+  Discover Themes: "Descoperă teme"
+  Refresh: "Reîncarcă"
+  View on GitHub: "Vezi pe GitHub"
+  Load Error: "Temele nu au putut fi încărcate. Încearcă să reîncarci."
+  Loading: "Se încarcă…"
+  No Themes: "Nu s-au găsit teme instalabile."
+  No Preview: "Captura de ecran nu este disponibilă"
+  Load More: "Încarcă mai multe"
+  Applied: "Aplicată"
+  Apply Theme: "Aplică tema"
+  Install and Apply: "Instalează și aplică"
+  Update and Apply: "Actualizează și aplică"

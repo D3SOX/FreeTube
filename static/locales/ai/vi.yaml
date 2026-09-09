@@ -1697,3 +1697,16 @@ Channels:
 Search Bar:
   Open Search Container: Mở ô tìm kiếm
   Search: Tìm kiếm
+Theme Discovery:
+  Discover Themes: "Khám phá giao diện"
+  Refresh: "Làm mới"
+  View on GitHub: "Xem trên GitHub"
+  Load Error: "Không thể tải giao diện. Hãy thử làm mới."
+  Loading: "Đang tải…"
+  No Themes: "Không tìm thấy giao diện có thể cài đặt."
+  No Preview: "Ảnh chụp màn hình không khả dụng"
+  Load More: "Tải thêm"
+  Applied: "Đã áp dụng"
+  Apply Theme: "Áp dụng giao diện"
+  Install and Apply: "Cài đặt và áp dụng"
+  Update and Apply: "Cập nhật và áp dụng"

@@ -2161,3 +2161,16 @@ Channels:
 Search Bar:
   Open Search Container: Atverti paieškos lauką
   Search: Ieškoti
+Theme Discovery:
+  Discover Themes: "Atrasti apipavidalinimus"
+  Refresh: "Įkelti iš naujo"
+  View on GitHub: "Peržiūrėti GitHub"
+  Load Error: "Nepavyko įkelti apipavidalinimų. Pabandykite įkelti iš naujo."
+  Loading: "Įkeliama…"
+  No Themes: "Nerasta įdiegiamų apipavidalinimų."
+  No Preview: "Ekrano kopija nepasiekiama"
+  Load More: "Įkelti daugiau"
+  Applied: "Pritaikyta"
+  Apply Theme: "Taikyti apipavidalinimą"
+  Install and Apply: "Įdiegti ir taikyti"
+  Update and Apply: "Atnaujinti ir taikyti"

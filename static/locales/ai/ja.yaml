@@ -1663,3 +1663,16 @@ Downloads:
     Subtitles Format: 字幕 - {format}
 Channels:
   Load More Channels: "チャンネルをさらに読み込む"
+Theme Discovery:
+  Discover Themes: "テーマを探す"
+  Refresh: "再読み込み"
+  View on GitHub: "GitHubで見る"
+  Load Error: "テーマを読み込めませんでした。再読み込みしてください。"
+  Loading: "読み込み中…"
+  No Themes: "インストールできるテーマが見つかりません。"
+  No Preview: "スクリーンショットを表示できません"
+  Load More: "さらに読み込む"
+  Applied: "適用済み"
+  Apply Theme: "テーマを適用"
+  Install and Apply: "インストールして適用"
+  Update and Apply: "更新して適用"

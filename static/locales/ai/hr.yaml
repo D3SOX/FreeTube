@@ -1685,3 +1685,16 @@ Channels:
 Search Bar:
   Open Search Container: Otvori polje za pretraživanje
   Search: Pretraži
+Theme Discovery:
+  Discover Themes: "Otkrij teme"
+  Refresh: "Osvježi"
+  View on GitHub: "Pogledaj na GitHubu"
+  Load Error: "Nije moguće učitati teme. Pokušaj osvježiti."
+  Loading: "Učitavanje…"
+  No Themes: "Nisu pronađene teme za instalaciju."
+  No Preview: "Snimka zaslona nije dostupna"
+  Load More: "Učitaj više"
+  Applied: "Primijenjeno"
+  Apply Theme: "Primijeni temu"
+  Install and Apply: "Instaliraj i primijeni"
+  Update and Apply: "Ažuriraj i primijeni"
