@@ -2397,7 +2397,7 @@ body .os-scrollbar {
 }
 
 /* Resolve the color on the thread so fullscreen docks can supply their palette. */
-:is(.openTubeXLight, .openTubeXDark, .hotPink) .comment.commentThread {
+:is(.openTubeXLight, .openTubeXDark) .comment.commentThread {
   --comment-thread-line-color: var(--tertiary-text-color);
 }
 

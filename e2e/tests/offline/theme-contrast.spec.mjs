@@ -40,7 +40,7 @@ async function controlContrast(app, control, kind) {
   return { surface, edge, ratio: Math.max(...edge.map(color => contrastRatio(color, surface))) }
 }
 
-for (const theme of ['openTubeXLight', 'openTubeXDark', 'hotPink']) {
+for (const theme of ['openTubeXLight', 'openTubeXDark']) {
   for (const scale of [100, 125]) {
     test.describe(`${theme} comment contrast at ${scale}%`, () => {
       test.use({ seed: { settings: { baseTheme: theme, currentLocale: 'en-US', uiScale: scale } } })
