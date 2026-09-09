@@ -202,7 +202,8 @@ test.describe('subscriptions feed from cache', () => {
       const videoId = new URL(route.request().url()).searchParams.get('v')
       requests.push(videoId)
       if (failRequests) {
-        await route.abort()
+        // Exercise a failed poll, not network recovery's transport retry loop.
+        await route.fulfill({ status: 503, body: 'Premiere metadata unavailable' })
         return
       }
       const player = {
@@ -245,7 +246,15 @@ test.describe('subscriptions feed from cache', () => {
     const premiere = page.locator('.ft-list-video').filter({ hasText: 'Upcoming premiere video' })
     await expect(premiere.locator('.viewCount')).toContainText('2.5k watching')
     failRequests = true
+    // Both polls must finish before advancing to the next interval. The existing
+    // view count alone cannot show whether the failed requests have settled.
+    const failedResponses = Promise.all(['aaaaaaaaaa3', 'aaaaaaaaaa4'].map(videoId =>
+      page.waitForResponse(response =>
+        response.url() === `https://www.youtube.com/watch?v=${videoId}` && response.status() === 503
+      ).then(response => response.finished())
+    ))
     await page.clock.fastForward(61_000)
+    await failedResponses
     await page.clock.runFor(200)
     await expect(premiere.locator('.viewCount')).toContainText('2.5k watching')
     await expect(premiere.locator('.videoDuration')).toHaveText('Premiere')

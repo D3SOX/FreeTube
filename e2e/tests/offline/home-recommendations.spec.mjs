@@ -150,7 +150,11 @@ async function mockCandidates(page) {
     }
   })
 
-  await page.route(/^https?:\/\//, route => route.abort())
+  // An unmocked endpoint is an HTTP error, not a disconnected server. A
+  // transport abort would pause this entire origin in network recovery.
+  await page.route(/^https?:\/\//, route => route.fulfill({
+    status: 404, contentType: 'application/json', body: JSON.stringify({ error: 'Unmocked endpoint' }),
+  }))
   await page.route('**/vi/**', route => route.fulfill({
     contentType: 'image/svg+xml',
     body: thumbnailSvg,
@@ -928,6 +932,11 @@ test.describe('local related discovery', () => {
   test.use({ seed: { settings: { ...settings, backendPreference: 'local' }, history: [historyEntry('jNQXAC9IVRw')] } })
   test('parses recorded YouTube related videos without fetching players or streams', async ({ app, page }) => {
     await mockWatchPage(app, page)
+    // This fixture covers related videos. Channel and search data are unavailable,
+    // but must not trigger an origin-wide outage that stalls the /next calls.
+    await page.route(/\/youtubei\/v1\/(?:browse|search)(?:\?|$)/, route => route.fulfill({
+      status: 404, contentType: 'application/json', body: JSON.stringify({ error: { code: 404, message: 'No discovery fixture' } }),
+    }))
     const requests = []
     page.on('request', request => requests.push(request.url()))
     await goTo(page, 'home')
