@@ -36,6 +36,7 @@ test('repeat stats count native loops and retain totals across pauses and toggle
   await expect(stats).toHaveCount(0)
   await toggleLoop(page)
   await expect(stats).toBeVisible()
+  await expect(stats.locator('dt').first()).toHaveText('Repeats')
   await expect(stats.locator('.repeatStatsCount')).toHaveText('0')
 
   await video.evaluate(element => { element.currentTime = element.duration - 1.5 })
@@ -43,6 +44,7 @@ test('repeat stats count native loops and retain totals across pauses and toggle
   await expect(stats.locator('.repeatStatsCount')).toHaveText('0')
   await video.evaluate(element => element.play())
   await expect(stats.locator('.repeatStatsCount')).toHaveText('1')
+  await expect(stats.locator('dt').first()).toHaveText('Repeat')
   await video.evaluate(element => element.pause())
   const spent = await stats.locator('.repeatStatsTime').textContent()
   expect(spent).not.toBe('0:00')

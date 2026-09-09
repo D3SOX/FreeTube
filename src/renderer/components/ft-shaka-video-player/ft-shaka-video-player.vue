@@ -1434,7 +1434,7 @@
       </span>
       <dl class="repeatStatsValues">
         <div>
-          <dt>{{ $t('Video.Player.Repeat Stats.Repeats') }}</dt>
+          <dt>{{ $t('Video.Player.Repeat Stats.Repeats', {}, repeatStats.repeats) }}</dt>
           <dd class="repeatStatsCount">
             {{ repeatStats.repeats.toLocaleString($i18n.locale) }}
           </dd>
