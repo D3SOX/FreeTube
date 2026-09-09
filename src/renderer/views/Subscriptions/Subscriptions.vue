@@ -568,7 +568,9 @@ const refreshingFeedTab = computed(() => {
 
 const currentTabRefreshing = computed(() => {
   if (currentTab.value === 'new') {
-    return refreshingFeedTab.value !== null
+    return newFeedView.value === 'tabbed'
+      ? refreshingFeedTab.value === currentNewFeedTab.value
+      : refreshingFeedTab.value !== null
   }
 
   const currentFeedTab = currentTab.value === 'community' ? 'posts' : currentTab.value
