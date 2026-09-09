@@ -162,6 +162,7 @@
       />
       <FtIconButton
         v-if="dropdownOptions.length > 0"
+        class="optionsButton"
         :icon="['fas', 'ellipsis-v']"
         :title="$t('Video.More Options')"
         theme="base-no-default"
