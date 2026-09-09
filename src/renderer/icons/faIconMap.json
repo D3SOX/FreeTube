@@ -207,6 +207,10 @@
     "ri": "file-download-line",
     "material": "download-2-outline"
   },
+  "file-export": {
+    "ri": "file-transfer-line",
+    "material": "file-export-outline"
+  },
   "file-image": {
     "ri": "file-image-line",
     "material": "image-outline"

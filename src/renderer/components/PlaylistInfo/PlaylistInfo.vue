@@ -203,7 +203,7 @@
           <FtIconButton
             v-if="exportPlaylistButtonVisible"
             :title="$t('User Playlists.Export Playlist')"
-            :icon="['fas', 'file-arrow-down']"
+            :icon="['fas', 'file-export']"
             theme="secondary"
             @click="showExportPrompt = true"
           />
