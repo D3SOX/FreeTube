@@ -1419,7 +1419,8 @@
     </Teleport>
     <!-- eslint-enable vue/html-indent -->
     <section
-      v-if="repeatStats.active && !hideRepeatStats && !fullWindowEnabled && !isFullscreen"
+      v-if="repeatStats.active && !hideRepeatStats && !fullWindowEnabled && !isFullscreen &&
+        !scrollMiniPlayerActive && !scrollMiniPlayerDetached"
       class="repeatStats"
       :aria-label="$t('Video.Player.Repeat Stats.Repeat Stats')"
     >

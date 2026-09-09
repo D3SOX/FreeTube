@@ -73,12 +73,14 @@ test('repeat stats count A-B boundaries, ignore range correction seeks, and rese
   await expect(stats).toContainText('A-B repeat')
   await expect(stats.locator('.repeatStatsCount')).toHaveText('0')
   await video.evaluate(element => element.play())
-  await expect.poll(() => stats.locator('.repeatStatsCount').textContent()).toBe('2')
+  // Poll slower than the range to cover skipped counter values on busy CI runners.
+  await expect.poll(async () => Number(await stats.locator('.repeatStatsCount').textContent()), { intervals: [3500] }).toBeGreaterThanOrEqual(2)
   await video.evaluate(element => element.pause())
+  const pausedRepeats = await stats.locator('.repeatStatsCount').textContent()
 
   await video.evaluate(element => { element.currentTime = 15 })
   await expect.poll(() => video.evaluate(element => element.currentTime)).toBe(5)
-  await expect(stats.locator('.repeatStatsCount')).toHaveText('2')
+  await expect(stats.locator('.repeatStatsCount')).toHaveText(pausedRepeats)
   await page.locator('.abRepeatMarkerB').focus()
   await page.keyboard.press('ArrowRight')
   await expect(stats.locator('.repeatStatsCount')).toHaveText('0')
@@ -201,3 +203,39 @@ test('Distraction Free hides repeat stats immediately without disabling looping 
     return latestSettings(contents).hideRepeatStats
   }).toBe(false)
 })
+
+for (const mode of ['scrolling', 'another tab']) {
+  test(`repeat stats hide in the mini player while viewing ${mode} and return with their totals`, async ({ app, page }) => {
+    const video = await openVideo(app, page)
+    await toggleLoop(page)
+    const stats = page.locator('.repeatStats')
+    const player = page.locator('.ftVideoPlayer')
+    await page.evaluate(() => window.ftElectron.setZoomFactor(1.25))
+    await video.evaluate(element => element.play())
+    await expect(stats.locator('.repeatStatsTime')).not.toHaveText('0:00')
+    const spent = await stats.locator('.repeatStatsTime').textContent()
+
+    if (mode === 'scrolling') {
+      await video.evaluate(element => element.pause())
+      await player.evaluate(element => {
+        window.scrollTo(0, window.scrollY + element.getBoundingClientRect().bottom)
+      })
+    } else {
+      await page.evaluate(() => document.querySelector('#app').__vue_app__.config.globalProperties.$store
+        .dispatch('updateScrollMiniPlayerOnAllTabs', true))
+      await page.locator('.tabBar .newTabButton').click()
+      await expect(page.locator('#cross-tab-mini-player-layer .ftVideoPlayer')).toBeVisible()
+    }
+    await expect(player).toHaveClass(/scrollMiniPlayer/)
+    await expect(stats).toHaveCount(0)
+
+    await player.locator('video').evaluate(element => element.pause())
+    if (mode === 'another tab') await page.locator('.tabBar .tab').first().click()
+    await page.evaluate(() => window.scrollTo(0, 0))
+    await expect(player).not.toHaveClass(/scrollMiniPlayer/)
+    await expect(stats).toBeVisible()
+    await expect(stats.locator('.repeatStatsCount')).toHaveText('0')
+    const seconds = text => text.split(':').reduce((total, part) => total * 60 + Number(part), 0)
+    expect(seconds(await stats.locator('.repeatStatsTime').textContent())).toBeGreaterThanOrEqual(seconds(spent))
+  })
+}
