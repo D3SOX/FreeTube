@@ -22,6 +22,9 @@
 
 .promptCard {
   animation: prompt-card-enter 150ms ease-out;
+
+  /* Keep the gradient anchored to the card when the entry transform ends. */
+  background-attachment: scroll;
   overflow-y: auto;
   max-block-size: 95%;
   box-shadow: 0 12px 40px rgb(0 0 0 / 38%);

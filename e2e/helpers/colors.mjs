@@ -1,12 +1,14 @@
-export async function sampleColors(app, region, points) {
+export async function sampleColors(app, region, points, { finishAnimations = true } = {}) {
   const { page } = app
   await region.scrollIntoViewIfNeeded()
-  await page.evaluate(async () => {
-    document.getAnimations().forEach(animation => {
-      if (animation.effect.getComputedTiming().iterations !== Infinity) animation.finish()
-    })
+  await page.evaluate(async finishAnimations => {
+    if (finishAnimations) {
+      document.getAnimations().forEach(animation => {
+        if (animation.effect.getComputedTiming().iterations !== Infinity) animation.finish()
+      })
+    }
     await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))
-  })
+  }, finishAnimations)
   const origin = await region.evaluate(element => { const { x, y } = element.getBoundingClientRect(); return { x, y } })
   const viewport = await page.evaluate(() => ({ width: innerWidth, height: innerHeight }))
   // Capture Electron's actual zoomed framebuffer; Playwright's screenshot

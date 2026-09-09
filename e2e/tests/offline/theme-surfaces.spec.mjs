@@ -1,7 +1,12 @@
-import { test, expect, goTo } from '../../helpers/app.mjs'
+import { test, expect, goTo, setPlayerFullscreen } from '../../helpers/app.mjs'
 import { sampleColors } from '../../helpers/colors.mjs'
 import { openMockedVideo, waitForPlayback } from '../../helpers/player.mjs'
 import { mockPlayableWatchPage, watchViewHandle } from '../../helpers/watch.mjs'
+
+function maxColorDifference(actual, reference) {
+  return Math.max(...actual.flatMap((color, point) =>
+    color.map((value, channel) => Math.abs(value - reference[point][channel]))))
+}
 
 async function expectContinuousBackground(app, region, points) {
   const colors = await sampleColors(app, region, points)
@@ -25,8 +30,7 @@ async function expectDescriptionBackground(app, region, points) {
     })
     try {
       const reference = await sampleColors(app, region, points)
-      return Math.max(...actual.flatMap((color, point) =>
-        color.map((value, channel) => Math.abs(value - reference[point][channel]))))
+      return maxColorDifference(actual, reference)
     } finally {
       await style.evaluate(element => element.remove())
     }
@@ -38,6 +42,27 @@ async function attachThemeScreenshot(app, testInfo, name) {
   const base64 = await app.electronApp.evaluate(async ({ BrowserWindow }) =>
     (await BrowserWindow.getAllWindows()[0].webContents.capturePage()).toPNG().toString('base64'))
   await testInfo.attach(name, { body: Buffer.from(base64, 'base64'), contentType: 'image/png' })
+}
+
+async function expectPanelOwnsBackground(app, card, points) {
+  // Compare identical pixels before and after removing the nested background
+  // so the panel gradient or video behind it cannot be mistaken for a seam.
+  const actual = await sampleColors(app, card, points)
+  const originalStyle = await card.getAttribute('style')
+  await card.evaluate(element => {
+    element.style.setProperty('background', 'transparent', 'important')
+    element.style.setProperty('backdrop-filter', 'none', 'important')
+  })
+  try {
+    const reference = await sampleColors(app, card, points)
+    const difference = maxColorDifference(actual, reference)
+    expect.soft(difference, `Panel card pixels: ${JSON.stringify({ actual, reference })}`).toBeLessThanOrEqual(2)
+  } finally {
+    await card.evaluate((element, style) => {
+      if (style === null) element.removeAttribute('style')
+      else element.setAttribute('style', style)
+    }, originalStyle)
+  }
 }
 
 for (const theme of ['openTubeXLight', 'openTubeXDark']) {
@@ -68,6 +93,33 @@ for (const theme of ['openTubeXLight', 'openTubeXDark']) {
         // Sample the empty gutter on both sides of the header's bottom edge.
         await expectContinuousBackground(app, header, [[5, height - 4], [5, height + 4]])
         await attachThemeScreenshot(app, testInfo, `${theme} subscription header at ${scale}%`)
+      })
+
+      test('search filter background does not flash when its opening animation ends', async ({ app, page }) => {
+        await page.addStyleTag({ content: '.promptCard { animation-play-state: paused !important; }' })
+        await page.locator('.navFilterButton').click()
+        const dialog = page.getByRole('dialog', { name: 'Search Filters' })
+        await expect(dialog).toBeVisible()
+        await dialog.evaluate(element => {
+          const animation = element.getAnimations().find(animation => animation.animationName?.startsWith('prompt-card-enter'))
+          if (!animation) throw new Error('Missing prompt opening animation')
+          // Sample just before the transform is removed, with effectively
+          // identical geometry and opacity to the settled dialog.
+          animation.currentTime = animation.effect.getComputedTiming().duration - 0.001
+          element.closest('.prompt').getAnimations().forEach(animation => animation.finish())
+        })
+        await expect(dialog).not.toHaveCSS('transform', 'none')
+        const points = await dialog.evaluate(element => {
+          const { width, height } = element.getBoundingClientRect()
+          return [[4, 16], [width / 2, 4], [width - 4, height / 2], [4, height - 16]]
+        })
+        const opening = await sampleColors(app, dialog, points, { finishAnimations: false })
+        const settled = await sampleColors(app, dialog, points)
+        await expect(dialog).toHaveCSS('transform', 'none')
+        const difference = maxColorDifference(opening, settled)
+        expect(difference, `Opening and settled backgrounds: ${JSON.stringify({ opening, settled })}`).toBeLessThanOrEqual(2)
+        await page.getByRole('button', { name: 'Close', exact: true }).click()
+        await expect(dialog).toBeHidden()
       })
 
       test('description controls and fades blend into their card', async ({ app, page }, testInfo) => {
@@ -112,6 +164,75 @@ for (const theme of ['openTubeXLight', 'openTubeXDark']) {
           [width - 60, -26], [width - 60, -12], [width - 60, height / 2], [width - 60, height + 5]
         ])
         await attachThemeScreenshot(app, testInfo, `${theme} description footer at ${scale}%`)
+      })
+
+      test('Shorts video information blends into its panel', async ({ app, page }, testInfo) => {
+        await mockPlayableWatchPage(app, page, { captionCueSettings: 'align:center' })
+        await openMockedVideo(page)
+        const view = await watchViewHandle(page)
+        await view.evaluate(async component => {
+          component.isLoading = true
+          await component.$nextTick()
+          component.isShort = true
+          component.videoDescription = 'A short description.'
+          component.videoDescriptionHtml = ''
+          component.videoTags = ['shorts', 'theme']
+          component.shortsMetadataOpen = true
+          component.isLoading = false
+          await component.$nextTick()
+        })
+        await waitForPlayback(page)
+        await page.locator('.ftVideoPlayer video').evaluate(video => video.pause())
+        const panel = page.locator('.shortsAuxPanel')
+        await expect(panel).toHaveClass(/shortsAuxPanelOpen/)
+        await page.mouse.move(0, 0)
+        for (const selector of ['.watchVideoInfo', '.videoDescription']) {
+          const card = panel.locator(selector)
+          await expect(card).toBeVisible()
+          const height = await card.evaluate(element => element.getBoundingClientRect().height)
+          // Compare the empty gutter immediately across each section boundary,
+          // skipping the header's intentional one-pixel separator.
+          await expectContinuousBackground(app, card, [[5, -4], [5, 4]])
+          await expectContinuousBackground(app, card, [[5, height - 4], [5, height + 4]])
+        }
+        await attachThemeScreenshot(app, testInfo, `${theme} Shorts information at ${scale}%`)
+
+        await setPlayerFullscreen(page, true)
+        const fullscreenPanel = page.locator('.fullscreenMetadataOverlay.open')
+        await expect(fullscreenPanel).toBeVisible()
+        for (const selector of ['.watchVideoInfo', '.videoDescription']) {
+          await expectPanelOwnsBackground(app, fullscreenPanel.locator(selector), [[5, 4], [5, 40]])
+        }
+        await attachThemeScreenshot(app, testInfo, `${theme} fullscreen information at ${scale}%`)
+
+        await view.evaluate(component => component.toggleTranscript())
+        const transcript = page.locator('.fullscreenTranscriptOverlay.open .watchVideoTranscript')
+        await expect(transcript).toBeVisible()
+        await expectPanelOwnsBackground(app, transcript, [[5, 80], [5, 160]])
+        await setPlayerFullscreen(page, false)
+        const shortsTranscript = panel.locator('.watchVideoTranscript')
+        await expect(shortsTranscript).toBeVisible()
+        await expectPanelOwnsBackground(app, shortsTranscript, [[5, 80], [5, 160]])
+      })
+
+      test('Shorts comments blend into their panel and fullscreen overlay', async ({ app, page }) => {
+        await mockPlayableWatchPage(app, page)
+        await openMockedVideo(page)
+        const view = await watchViewHandle(page)
+        await view.evaluate(async component => {
+          component.isShort = true
+          await component.$nextTick()
+          component.toggleShortsComments()
+        })
+        await page.locator('.ftVideoPlayer video').evaluate(video => video.pause())
+        const comments = page.locator('.shortsCommentsPanel .fullscreenCommentCard')
+        await expect(comments).toBeVisible()
+        await expectPanelOwnsBackground(app, comments, [[5, 80], [5, 160]])
+        await setPlayerFullscreen(page, true)
+        await page.locator('.fullscreenCommentsToggle').click({ force: true })
+        const fullscreenComments = page.locator('.fullscreenCommentsOverlay.open .fullscreenCommentCard')
+        await expect(fullscreenComments).toBeVisible()
+        await expectPanelOwnsBackground(app, fullscreenComments, [[5, 80], [5, 160]])
       })
 
       test('other feed headers and channel panels blend into their cards', async ({ app, page }, testInfo) => {

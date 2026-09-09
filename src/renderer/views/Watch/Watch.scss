@@ -895,6 +895,8 @@
 
     .shortsAuxPanel {
       flex-direction: column;
+      // Paint one gradient across the header, contents and unused panel space.
+      background-image: var(--card-bg-image);
     }
 
     .shortsAuxPanelHeader {
@@ -935,6 +937,8 @@
       margin-inline: 0;
       border-radius: 0;
       box-shadow: none;
+      background: transparent;
+      backdrop-filter: none;
     }
 
     .shortsAuxPanelTarget :deep(.watchVideoTranscript) {

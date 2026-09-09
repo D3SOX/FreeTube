@@ -2904,7 +2904,8 @@ html[data-reduced-motion='reduce'] .musicVisualizerCanvas {
   max-inline-size: 100%;
   margin: 0;
   color: #fff;
-  background-color: transparent;
+  background: transparent;
+  backdrop-filter: none;
   border-radius: 0;
   box-shadow: none;
 }
@@ -3035,7 +3036,8 @@ html[data-reduced-motion='reduce'] .musicVisualizerCanvas {
   margin: 0;
   overflow: hidden;
   color: #fff;
-  background-color: transparent;
+  background: transparent;
+  backdrop-filter: none;
   border-radius: 0;
   box-shadow: none;
 }

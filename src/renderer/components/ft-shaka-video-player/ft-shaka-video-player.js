@@ -4548,7 +4548,7 @@ export default defineComponent({
             // the issue is clearly on the FreeTube side as shaka-player's demo page works fine and they show up all the time for the legacy formats.
             // As I have spent way too much time debugging it and still cannot make sense of it, we'll stick with FreeTube's own chapter markers for now.
             chapters: 'transparent',
-            played: 'var(--primary-color)'
+            played: 'var(--seekbar-played-color, var(--primary-color))'
           },
           showAudioCodec: false,
           // Paused media needs a visible way to resume on both desktop and touch devices.

@@ -1,5 +1,7 @@
 import { test, expect, goToSettingsSection } from '../../helpers/app.mjs'
 import { sampleColors } from '../../helpers/colors.mjs'
+import { openMockedVideo } from '../../helpers/player.mjs'
+import { mockPlayableWatchPage } from '../../helpers/watch.mjs'
 
 function contrastRatio(first, second) {
   const luminance = rgb => rgb.map(value => value / 255)
@@ -42,6 +44,60 @@ for (const theme of ['openTubeXLight', 'openTubeXDark']) {
   for (const scale of [100, 125]) {
     test.describe(`${theme} control contrast at ${scale}%`, () => {
       test.use({ seed: { settings: { baseTheme: theme, currentLocale: 'en-US', uiScale: scale } } })
+
+      test('seekbar progress stays neutral and SponsorBlock categories remain visible', async ({ app, page }) => {
+        await mockPlayableWatchPage(app, page)
+        const categories = ['sponsor', 'selfpromo', 'interaction', 'intro', 'outro', 'preview', 'hook', 'music_offtopic', 'filler', 'poi_highlight']
+        await page.route('**/api/skipSegments/**', route => route.fulfill({
+          json: [{
+            videoID: 'jNQXAC9IVRw',
+            segments: categories.map((category, index) => ({
+              UUID: `seekbar-${category}`,
+              category,
+              actionType: category === 'poi_highlight' ? 'poi' : 'skip',
+              segment: [index * 2 + 1, index * 2 + (category === 'poi_highlight' ? 1 : 2)],
+              videoDuration: 30,
+              votes: 1,
+              locked: 0,
+              description: ''
+            }))
+          }]
+        }))
+        await page.evaluate(() => {
+          document.querySelector('#app').__vue_app__.config.globalProperties.$store.commit('setUseSponsorBlock', true)
+        })
+        await openMockedVideo(page)
+        const player = page.locator('.ftVideoPlayer')
+        await player.locator('video').evaluate(video => {
+          video.pause()
+          video.currentTime = 24
+          video.dispatchEvent(new Event('timeupdate'))
+        })
+        await player.hover()
+        const bar = player.locator('.shaka-seek-bar-container')
+        await expect(bar.locator('.sponsorBlockMarker')).toHaveCount(categories.length)
+        await expect.poll(() => bar.locator('.shaka-seek-bar').inputValue()).toBe('24')
+        const points = await bar.evaluate(element => {
+          const rect = element.getBoundingClientRect()
+          return [
+            [rect.width * 0.75, rect.height / 2],
+            [rect.width * 0.95, rect.height / 2],
+            ...Array.from(element.querySelectorAll('.sponsorBlockMarker'), marker => {
+              const bounds = marker.getBoundingClientRect()
+              return [bounds.x - rect.x + bounds.width / 2, bounds.y - rect.y + bounds.height / 2]
+            })
+          ]
+        })
+        const [played, unplayed, ...markers] = await sampleColors(app, bar, points)
+        expect(Math.max(...played) - Math.min(...played), `neutral progress: ${played}`).toBeLessThanOrEqual(2)
+        expect(Math.min(...played), `soft white progress: ${played}`).toBeGreaterThanOrEqual(200)
+        expect(Math.max(...played), `retain marker colors: ${played}`).toBeLessThanOrEqual(235)
+        expect(Math.max(...played.map((value, index) => Math.abs(value - unplayed[index])))).toBeGreaterThanOrEqual(20)
+        for (const [index, marker] of markers.entries()) {
+          expect(Math.max(...marker.map((value, channel) => Math.abs(value - played[channel]))),
+            `${categories[index]} marker: ${marker}, progress: ${played}`).toBeGreaterThanOrEqual(20)
+        }
+      })
 
       test('toggle track and thumb remain distinct in both states', async ({ app, page, attachScreenshot }) => {
         await goToSettingsSection(page, 'general')
