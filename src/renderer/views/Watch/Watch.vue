@@ -100,6 +100,7 @@
           :storyboard-src="videoStoryboardSrc"
           :annotations="videoAnnotations"
           :hide-annotations="hideEndScreenAnnotations"
+          :end-screen-recommendations="endScreenRecommendations"
           :format="activeFormat"
           :thumbnail="thumbnail"
           :video-id="videoId"

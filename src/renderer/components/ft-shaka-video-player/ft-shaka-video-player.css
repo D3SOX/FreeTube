@@ -652,6 +652,100 @@ html[data-reduced-motion='reduce'] .musicVisualizerCanvas {
   transition: inset-inline-end 250ms ease;
 }
 
+.endedScreen {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  container-type: size;
+  pointer-events: none;
+}
+
+.endedPoster {
+  position: absolute;
+  z-index: 0;
+  pointer-events: none;
+  inset: 0;
+  background: #000;
+}
+
+.endedPoster img {
+  opacity: 0.35;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: contain;
+}
+
+.endedRecommendations {
+  position: absolute;
+  inset: 12% 8% 22%;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+  gap: clamp(6px, 1.5cqw, 16px);
+  align-content: center;
+}
+
+.endedRecommendation {
+  position: relative;
+  min-inline-size: 0;
+  min-block-size: 0;
+  overflow: hidden;
+  border-radius: calc(6px * var(--ui-roundness));
+  background: #000;
+  color: #fff;
+  text-decoration: none;
+  pointer-events: auto;
+}
+
+.endedRecommendation img {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+}
+
+.endedRecommendation .blur {
+  filter: blur(20px);
+}
+
+.endedRecommendationTitle {
+  --ended-title-padding: clamp(3px, 0.75cqw, 10px);
+
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline: 0;
+  overflow: hidden;
+  padding: var(--ended-title-padding);
+  background: linear-gradient(to bottom, rgb(0 0 0 / 88%), transparent);
+  font-size: clamp(8px, 1.55cqw, 20px);
+  font-weight: 600;
+  line-height: 1.2;
+  text-shadow: 0 1px 2px #000;
+}
+
+.endedRecommendationTitleText {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.endedRecommendation:hover,
+.endedRecommendation:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+@container (width < 500px) {
+  .endedRecommendations {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .endedRecommendation:nth-child(n + 5) {
+    display: none;
+  }
+}
+
 .autoplayCountdownOverlay {
   position: absolute;
   z-index: 13;
@@ -856,6 +950,10 @@ html[data-reduced-motion='reduce'] .musicVisualizerCanvas {
   width: 100%;
   height: 100%;
   pointer-events: none;
+}
+
+.endedPoster ~ .vrCanvas {
+  visibility: hidden;
 }
 
 /*
@@ -4322,6 +4420,7 @@ html[data-reduced-motion='reduce'] .musicVisualizerCanvas {
 .ftVideoPlayer.presentationModeChanging .player,
 .ftVideoPlayer.presentationModeChanging :deep(.shaka-controls-container),
 .ftVideoPlayer.presentationModeChanging :deep(.shaka-spinner-container),
+.ftVideoPlayer.presentationModeChanging .endedScreen,
 .ftVideoPlayer.presentationModeChanging .countdownPoster,
 .ftVideoPlayer.presentationModeChanging .countdownOverlay,
 .ftVideoPlayer.presentationModeChanging :deep(.videoAnnotations),
@@ -4348,6 +4447,8 @@ html[data-reduced-motion='reduce'] .musicVisualizerCanvas {
 
 .ftVideoPlayer:is(:fullscreen, [data-native-player-screen]):is(.fullscreenDockLayoutOpen, .fullscreenMetadataOpen, .fullscreenTranscriptOpen, .fullscreenSponsorBlockOpen, .fullscreenLiveChatOpen, .fullscreenCommentsOpen, .fullscreenPlaylistOpen, .chaptersOverlayOpen) :is(
   :deep(.shaka-spinner-container),
+  .endedPoster,
+  .endedScreen,
   .countdownPoster,
   .countdownOverlay,
   :deep(.videoAnnotations),
@@ -4356,6 +4457,8 @@ html[data-reduced-motion='reduce'] .musicVisualizerCanvas {
 ),
   .ftVideoPlayer.fullWindow:is(.fullscreenDockLayoutOpen, .fullscreenMetadataOpen, .fullscreenTranscriptOpen, .fullscreenSponsorBlockOpen, .fullscreenLiveChatOpen, .fullscreenCommentsOpen, .fullscreenPlaylistOpen, .chaptersOverlayOpen) :is(
   :deep(.shaka-spinner-container),
+  .endedPoster,
+  .endedScreen,
   .countdownPoster,
   .countdownOverlay,
   :deep(.videoAnnotations),
