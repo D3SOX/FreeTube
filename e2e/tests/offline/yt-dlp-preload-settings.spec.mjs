@@ -37,19 +37,19 @@ test.describe('yt-dlp playback preloading', () => {
     await expect(segmentSlider).toBeEnabled()
     await expect(countSlider).toBeDisabled()
     await expect(countSlider).toHaveValue('2')
-    await expect(countSlider).toHaveAttribute('min', '1')
+    await expect(countSlider).toHaveAttribute('min', '0')
     await expect(countSlider).toHaveAttribute('max', '10')
     await expect(concurrencySlider).toHaveValue('2')
     await expect(concurrencySlider).toHaveAttribute('min', '1')
-    await expect(concurrencySlider).toHaveAttribute('max', '8')
+    await expect(concurrencySlider).toHaveAttribute('max', '32')
     await expect(concurrencySlider).toBeDisabled()
 
     await toggleLabel.click()
     await expect(toggle).toBeChecked()
     await expect(countSlider).toBeEnabled()
     await expect(concurrencySlider).toBeEnabled()
-    await countSlider.fill('4')
-    await concurrencySlider.fill('6')
+    await countSlider.fill('0')
+    await concurrencySlider.fill('32')
 
     await expect.poll(async () => {
       const settings = latestSettings(
@@ -60,12 +60,12 @@ test.describe('yt-dlp playback preloading', () => {
         count: settings.ytDlpPreloadCount,
         concurrency: settings.ytDlpPreloadConcurrency
       }
-    }).toEqual({ enabled: true, count: 4, concurrency: 6 })
+    }).toEqual({ enabled: true, count: 0, concurrency: 32 })
 
     const relaunched = await app.relaunch()
     const reloaded = await openYtDlpStreamingSettings(relaunched.page)
     await expect(reloaded.toggle).toBeChecked()
-    await expect(reloaded.countSlider).toHaveValue('4')
-    await expect(reloaded.concurrencySlider).toHaveValue('6')
+    await expect(reloaded.countSlider).toHaveValue('0')
+    await expect(reloaded.concurrencySlider).toHaveValue('32')
   })
 })

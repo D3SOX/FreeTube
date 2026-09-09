@@ -75,6 +75,8 @@ test('normalizes the number of upcoming yt-dlp videos to preload', () => {
 test('normalizes the number of concurrent yt-dlp preloads', () => {
   assert.equal(normalizeYtDlpPreloadConcurrency(3), 3)
   assert.equal(normalizeYtDlpPreloadConcurrency('4'), 4)
+  assert.equal(normalizeYtDlpPreloadConcurrency(32), 32)
+  assert.equal(normalizeYtDlpPreloadConcurrency(33), 32)
   assert.equal(normalizeYtDlpPreloadConcurrency(0), DEFAULT_YT_DLP_PRELOAD_CONCURRENCY)
   assert.equal(normalizeYtDlpPreloadConcurrency(-1), DEFAULT_YT_DLP_PRELOAD_CONCURRENCY)
   assert.equal(normalizeYtDlpPreloadConcurrency(1.5), DEFAULT_YT_DLP_PRELOAD_CONCURRENCY)
@@ -128,6 +130,21 @@ test('does not fall back to recommendations at the end of a playlist', () => {
     playlistVideos: [],
     recommendedVideos: [video('recommend01')],
   }), [])
+})
+
+test('selects no upcoming videos when the preload count is zero', () => {
+  for (const candidates of [
+    { queuedVideos: [video('queue000001')], playlistVideos: [video('list0000001')] },
+    { queuedVideos: [], playlistVideos: [video('list0000001')] },
+    { queuedVideos: [], playlistVideos: null },
+  ]) {
+    assert.deepEqual(selectYtDlpPreloadVideoIds({
+      currentVideoId: 'current00001',
+      limit: 0,
+      recommendedVideos: [video('recommend01')],
+      ...candidates,
+    }), [])
+  }
 })
 
 test('preloads unique videos with bounded concurrency and reports failures', async () => {
@@ -229,18 +246,18 @@ test('raises the shared preload concurrency limit when configured', async () => 
   })
 
   const firstRun = preloadYtDlpPlaybackSources(
-    ['first00001', 'first00002', 'first00003'],
-    { concurrency: 4, loadSource }
+    Array.from({ length: 20 }, (_, index) => `first${index}`),
+    { concurrency: 32, loadSource }
   )
   const secondRun = preloadYtDlpPlaybackSources(
-    ['second0001', 'second0002', 'second0003'],
-    { concurrency: 4, loadSource }
+    Array.from({ length: 20 }, (_, index) => `second${index}`),
+    { concurrency: 32, loadSource }
   )
 
   await new Promise(resolve => setImmediate(resolve))
-  assert.equal(active, 4)
+  const initiallyActive = active
 
-  for (let completed = 0; completed < 6; completed++) {
+  for (let completed = 0; completed < 40; completed++) {
     const release = releases.shift()
     assert.ok(release)
     release()
@@ -248,7 +265,8 @@ test('raises the shared preload concurrency limit when configured', async () => 
   }
 
   await Promise.all([firstRun, secondRun])
-  assert.equal(peakActive, 4)
+  assert.equal(initiallyActive, 32)
+  assert.equal(peakActive, 32)
 })
 
 test('reports sources that cannot be cached as preload failures', async () => {
