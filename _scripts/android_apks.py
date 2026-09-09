@@ -42,7 +42,7 @@ def inspect_apk(path, abi):
     return sizes
 
 
-def prepare(source, destination, *, release=False, max_abi_mib=65, max_universal_mib=200):
+def prepare(source, destination, *, release=False, max_abi_mib=75, max_universal_mib=215):
     metadata = json.loads((source / "output-metadata.json").read_text())
     package = "org.opentubex.app" + ("" if release else ".nightly")
     if metadata["applicationId"] != package:
@@ -105,7 +105,7 @@ if __name__ == "__main__":
     parser.add_argument("source", type=Path)
     parser.add_argument("destination", type=Path)
     parser.add_argument("--release", action="store_true")
-    parser.add_argument("--max-abi-mib", type=float, default=65)
-    parser.add_argument("--max-universal-mib", type=float, default=200)
+    parser.add_argument("--max-abi-mib", type=float, default=75)
+    parser.add_argument("--max-universal-mib", type=float, default=215)
     args = parser.parse_args()
     print(prepare(**vars(args)), end="")

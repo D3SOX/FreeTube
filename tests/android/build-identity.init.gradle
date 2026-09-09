@@ -1,5 +1,5 @@
 // Run with: ./android/gradlew -p android -I ../tests/android/build-identity.init.gradle verifyBuildIdentity
-// Repeat with -PtestBuildType=nightly to check optimized nightly instrumentation.
+// Repeat with -PtestBuildType=nightly to check nightly instrumentation.
 gradle.projectsEvaluated {
     def app = gradle.rootProject.project(':app')
     def variants = app.android.applicationVariants
@@ -24,9 +24,11 @@ gradle.projectsEvaluated {
                 }
                 println "Verified ${variant.applicationId}: ${entry.label}, isolated from production"
             }
-            def nightly = variants.find { it.name == 'nightly' }
-            assert nightly.buildType.minifyEnabled
-            assert nightly.buildType.shrinkResources
+            for (name in ['release', 'nightly']) {
+                def variant = variants.find { it.name == name }
+                assert !variant.buildType.minifyEnabled : "${name} must preserve runtime-discovered code"
+                assert !variant.buildType.shrinkResources : "${name} must preserve runtime-discovered resources"
+            }
         }
     }
 }

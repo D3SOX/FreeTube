@@ -1,0 +1,47 @@
+diff --git a/android/src/main/java/com/capacitorjs/barcodescanner/OSBarcodePlugin.kt b/android/src/main/java/com/capacitorjs/barcodescanner/OSBarcodePlugin.kt
+index 7edf5e879e7154ade586ed3f8018b4a3ab8d2562..e8a602c77deed3307dde97d6de72107ea89f69e1 100644
+--- a/android/src/main/java/com/capacitorjs/barcodescanner/OSBarcodePlugin.kt
++++ b/android/src/main/java/com/capacitorjs/barcodescanner/OSBarcodePlugin.kt
+@@ -2,6 +2,8 @@ package com.capacitorjs.barcodescanner
+ 
+ import android.content.Intent
+ import androidx.activity.result.ActivityResult
++import androidx.camera.lifecycle.ProcessCameraProvider
++import androidx.core.content.ContextCompat
+ import com.getcapacitor.JSObject
+ import com.getcapacitor.Plugin
+ import com.getcapacitor.PluginCall
+@@ -10,6 +12,7 @@ import com.getcapacitor.annotation.ActivityCallback
+ import com.getcapacitor.annotation.CapacitorPlugin
+ import com.outsystems.plugins.barcode.controller.OSBARCController
+ import com.outsystems.plugins.barcode.model.OSBARCScanParameters
++import com.outsystems.plugins.barcode.model.OSBARCError
+ import com.outsystems.plugins.barcode.model.OSBARCScanResult
+ import com.outsystems.plugins.barcode.model.OSBARCScannerHint
+ import com.outsystems.plugins.barcode.view.OSBARCScannerActivity
+@@ -59,7 +62,24 @@ class CapacitorBarcodeScannerPlugin : Plugin() {
+         val scanIntent = Intent(activity, OSBARCScannerActivity::class.java)
+                 .putExtra("SCAN_PARAMETERS", parameters)
+ 
+-        startActivityForResult(call, scanIntent, "handleScanResult")
++        // The scanner activity calls Future.get() while creating its view.
++        // Wait asynchronously here so slow CameraX startup cannot block the UI.
++        val scanActivity = activity
++        val cameraProvider = ProcessCameraProvider.getInstance(scanActivity)
++        cameraProvider.addListener({
++            if (scanActivity.isFinishing || scanActivity.isDestroyed) {
++                val error = OSBARCError.SCAN_CANCELLED_ERROR
++                call.reject(error.description, formatErrorCode(error.code))
++                return@addListener
++            }
++            try {
++                cameraProvider.get()
++                startActivityForResult(call, scanIntent, "handleScanResult")
++            } catch (exception: Exception) {
++                val error = OSBARCError.SCANNING_GENERAL_ERROR
++                call.reject(error.description, formatErrorCode(error.code), exception)
++            }
++        }, ContextCompat.getMainExecutor(scanActivity))
+     }
+ 
+     @ActivityCallback
