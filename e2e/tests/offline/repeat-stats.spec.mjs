@@ -239,3 +239,31 @@ for (const mode of ['scrolling', 'another tab']) {
     expect(seconds(await stats.locator('.repeatStatsTime').textContent())).toBeGreaterThanOrEqual(seconds(spent))
   })
 }
+
+test('repeat stats ignore seeks to point B at the media end and count natural playback', async ({ app, page }) => {
+  const video = await openVideo(app, page)
+  await video.evaluate(element => { element.currentTime = 5 })
+  await expect.poll(() => video.evaluate(element => element.seeking)).toBe(false)
+  await page.keyboard.press('Shift+A')
+  await video.evaluate(element => { element.currentTime = element.duration })
+  await expect.poll(() => video.evaluate(element => element.seeking)).toBe(false)
+  await page.keyboard.press('Shift+B')
+  const stats = page.locator('.repeatStats')
+  await expect(stats.locator('.repeatStatsCount')).toHaveText('0')
+  await video.evaluate(element => { element.currentTime = 5 })
+  await expect.poll(() => video.evaluate(element => element.seeking)).toBe(false)
+
+  for (const playing of [false, true]) {
+    if (playing) await video.evaluate(element => element.play())
+    await video.evaluate(element => { element.currentTime = element.duration })
+    await expect.poll(() => video.evaluate(element => !element.seeking && element.currentTime < 6)).toBe(true)
+    await video.evaluate(element => element.pause())
+    await expect(stats.locator('.repeatStatsCount')).toHaveText('0')
+  }
+
+  await video.evaluate(element => { element.currentTime = element.duration - 0.5 })
+  await expect.poll(() => video.evaluate(element => element.seeking)).toBe(false)
+  await video.evaluate(element => element.play())
+  await expect(stats.locator('.repeatStatsCount')).toHaveText('1')
+  await video.evaluate(element => element.pause())
+})

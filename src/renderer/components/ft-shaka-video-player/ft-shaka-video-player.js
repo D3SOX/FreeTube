@@ -6149,7 +6149,10 @@ export default defineComponent({
 
     function handleEnded() {
       if (abRepeatEnabled.value && hasValidAbRepeatRange()) {
-        repeatAbRangeFromStart(true)
+        // Seeking to the media end can queue ended after seeked has returned
+        // playback to A. Only count a natural arrival that is still at B.
+        repeatAbRangeFromStart(!video.value.seeking &&
+          video.value.currentTime >= abRepeatEnd.value - AB_REPEAT_BOUNDARY_TOLERANCE_SECONDS)
         video.value.play()
         return
       }
