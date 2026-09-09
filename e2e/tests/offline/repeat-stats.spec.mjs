@@ -8,7 +8,7 @@ test.use({
     settings: {
       videoPlaybackEngine: 'built-in',
       ytDlpPlaybackEngineDefaultMigration: true,
-      baseTheme: 'openTubeXDark',
+      baseTheme: 'dark',
       useCustomShortsPlayer: true,
       loopShorts: true,
     }
