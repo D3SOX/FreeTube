@@ -25,6 +25,7 @@ const WATCH_ROUTE = { path: '/watch/video', fullPath: '/watch/video', query: {} 
 
 function createStore (session, presentedTabId = session.activeTabId) {
   let runtime = toRuntimeTabState(session, presentedTabId)
+  const subscribers = new Set()
   const getters = {
     getLandingPage: 'home',
     getTabById: tabId => runtime.tabs.find(tab => tab.id === tabId),
@@ -47,10 +48,16 @@ function createStore (session, presentedTabId = session.activeTabId) {
     get runtime () { return runtime },
     getters,
     state,
+    subscribe(callback) {
+      subscribers.add(callback)
+      return () => subscribers.delete(callback)
+    },
     commit (type, payload) {
       if (type === 'setTabsState') runtime = payload
       else if (type === 'setPresentedTab') runtime.presentedTabId = payload
+      else if (type === 'setRememberTabNavigationHistory') getters.getRememberTabNavigationHistory = payload
       else throw new Error(`Unexpected mutation: ${type}`)
+      for (const subscriber of subscribers) subscriber({ type, payload })
     }
   }
 }
@@ -400,4 +407,54 @@ for (const action of ['closeTab', 'unloadTab']) {
       assert.equal(store.getters.getActiveTabId, 'tab-b')
     })
   }
+}
+
+for (const rememberHistory of [true, false, undefined]) {
+  test(`mobile navigation history persistence honors ${rememberHistory ?? 'the default'}`, async () => {
+    const history = [HOME_ROUTE, WATCH_ROUTE, { path: '/history', fullPath: '/history' }]
+      .map((route, index) => ({ route, title: route.fullPath, scroll: { left: 0, top: index * 100 } }))
+    const tab = { ...createCapacitorTab(WATCH_ROUTE, 'Video', 'tab-a'), history, historyIndex: 1 }
+    let saved = { tabs: [tab], closedTabs: [{ ...tab, id: 'closed-tab' }], activeTabId: tab.id }
+    const previousStorage = globalThis.localStorage
+    globalThis.localStorage = {
+      getItem: () => JSON.stringify(saved),
+      setItem: (_key, value) => { saved = JSON.parse(value) },
+    }
+    const store = createStore(createLoadedSession())
+    store.getters.getRememberTabNavigationHistory = rememberHistory
+    const router = createRouter()
+    router.afterEach = () => () => {}
+    const navigation = createNavigation(store, true)
+    navigation.projectRoute = async route => { router.currentRoute.value = route }
+    navigation.restoreScroll = () => {}
+    const service = new CapacitorTabService(router, store, navigation)
+    try {
+      await service.initialize(HOME_ROUTE)
+      for (const restored of [store.getters.getActiveTab, store.getters.getClosedTabs[0]]) {
+        assert.equal(restored.history.length, rememberHistory === true ? 3 : 1)
+        assert.equal(restored.historyIndex, rememberHistory === true ? 1 : 0)
+        assert.equal(restored.route.fullPath, WATCH_ROUTE.fullPath)
+      }
+      for (const persisted of [...saved.tabs, ...saved.closedTabs]) {
+        assert.equal(Object.hasOwn(persisted, 'history'), rememberHistory === true)
+        assert.equal(Object.hasOwn(persisted, 'historyIndex'), rememberHistory === true)
+      }
+      if (rememberHistory === true) {
+        assert.equal(store.getters.getActiveTab.history[1].scroll.top, 100)
+        store.commit('setRememberTabNavigationHistory', false)
+        for (const persisted of [...saved.tabs, ...saved.closedTabs]) {
+          assert.equal(Object.hasOwn(persisted, 'history'), false)
+          assert.equal(Object.hasOwn(persisted, 'historyIndex'), false)
+        }
+        // Turning persistence off must leave in-session back/forward navigation intact.
+        assert.equal(store.getters.getActiveTab.history.length, 3)
+        store.commit('setRememberTabNavigationHistory', true)
+        assert.equal(saved.tabs[0].history.length, 3)
+        assert.equal(saved.closedTabs[0].history.length, 3)
+      }
+    } finally {
+      service.dispose()
+      globalThis.localStorage = previousStorage
+    }
+  })
 }

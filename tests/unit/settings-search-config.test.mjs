@@ -325,3 +325,18 @@ for (const [platform, usingElectron, isCapacitor] of [
     }
   })
 }
+
+for (const [platform, usingElectron, isCapacitor] of [
+  ['desktop', true, false], ['mobile', false, true], ['web', false, false],
+]) {
+  test(`${platform} privacy search matches navigation history setting visibility`, () => {
+    const entries = createSettingsSearchIndex({
+      sections: [{ type: 'privacy', title: 'Privacy', description: '' }],
+      tm: path => getAtPath(locale, path),
+      store: { getters: {} },
+      usingElectron,
+      isCapacitor,
+    }).get('privacy')
+    assert.equal(entries.some(({ label }) => label === 'Remember Tab Navigation History'), usingElectron || isCapacitor)
+  })
+}

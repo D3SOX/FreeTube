@@ -63,3 +63,26 @@ test('mobile startup waits for saved settings before restoring tabs', async () =
   await tabsReady
   assert.equal(restored, true)
 })
+
+const privacySource = await readFile(new URL('../../src/renderer/components/PrivacySettings.vue', import.meta.url), 'utf8')
+const historyToggle = [...privacySource.matchAll(/<FtToggleSwitch\s[\s\S]*?\/>/g)]
+  .map(([template]) => template)
+  .find(template => template.includes('setting-key="rememberTabNavigationHistory"'))
+assert.ok(historyToggle)
+for (const [platform, USING_ELECTRON, IS_CAPACITOR] of [
+  ['desktop', true, false], ['mobile', false, true], ['web', false, false],
+]) {
+  test(`${platform} exposes navigation history persistence only with logical tabs`, async () => {
+    const app = createSSRApp({
+      render: compile(historyToggle),
+      setup: () => ({ USING_ELECTRON, IS_CAPACITOR, rememberTabNavigationHistory: false, updateRememberTabNavigationHistory: () => {} }),
+    })
+    app.config.globalProperties.$t = key => key
+    app.component('FtToggleSwitch', {
+      inheritAttrs: false,
+      setup: (_props, { attrs }) => () => h('button', { 'data-setting': attrs['setting-key'] }),
+    })
+    const html = await renderToString(app)
+    assert.equal(html.includes('data-setting="rememberTabNavigationHistory"'), USING_ELECTRON || IS_CAPACITOR)
+  })
+}

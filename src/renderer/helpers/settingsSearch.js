@@ -120,7 +120,7 @@ function isSettingsSearchMessageVisible(sectionType, path, options) {
     if (group === 'Minimize to system tray') {
       return usingElectron && !isMac && !isLinuxWayland
     }
-    if (['New Tab Position', 'Tab Close Focus', 'Startup Behavior'].includes(group)) {
+    if (['New Tab Position', 'Tab Close Focus', 'Startup Behavior', 'Remember Tab Navigation History'].includes(group)) {
       return usingElectron || isCapacitor
     }
     if ([

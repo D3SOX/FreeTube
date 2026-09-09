@@ -20,6 +20,7 @@ const STORAGE_KEY = 'opentubex-capacitor-tabs'
 const PERSISTED_MUTATIONS = new Set([
   'setHistoryEntryScroll',
   'setPresentedTab',
+  'setRememberTabNavigationHistory',
   'setTabContentTitle',
   'setTabNavigation',
   'setTabsState'
@@ -62,7 +63,9 @@ export class CapacitorTabService {
       : Date.now()
     let session = restoreCapacitorTabSession(
       persisted,
-      initialRoute
+      initialRoute,
+      undefined,
+      this.store.getters.getRememberTabNavigationHistory === true
     )
     for (const tab of session.tabs) {
       if (tab.id === session.activeTabId || startupBehavior === 'loadAllTabs') {
@@ -375,7 +378,10 @@ export class CapacitorTabService {
   persist() {
     try {
       this.sessionUpdatedAt = Date.now()
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(toPersistedSession(this.currentSession())))
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(toPersistedSession(
+        this.currentSession(),
+        this.store.getters.getRememberTabNavigationHistory === true
+      )))
     } catch (error) {
       console.error('Failed to persist Capacitor tabs:', error)
     }
@@ -401,15 +407,14 @@ function findReplacementTabId(tabs, tabId, focus) {
   return preferred?.id ?? fallback?.id ?? null
 }
 
-function toPersistedSession(session) {
+function toPersistedSession(session, rememberHistory) {
   const serializeTab = (tab, includeLoadState) => ({
     id: tab.id,
     title: tab.title,
     isPinned: tab.isPinned,
     placementOpenerTabId: tab.placementOpenerTabId,
     route: tab.route,
-    history: tab.history,
-    historyIndex: tab.historyIndex,
+    ...(rememberHistory && { history: tab.history, historyIndex: tab.historyIndex }),
     ...(includeLoadState && { isUnloaded: tab.loadState === 'unloaded' })
   })
 

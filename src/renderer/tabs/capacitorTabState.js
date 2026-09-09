@@ -24,7 +24,7 @@ export function createCapacitorTab(route, title = '', id = window.crypto.randomU
   }
 }
 
-export function restoreCapacitorTabSession(value, currentRoute, createId = () => window.crypto.randomUUID()) {
+export function restoreCapacitorTabSession(value, currentRoute, createId = () => window.crypto.randomUUID(), rememberHistory = true) {
   const seenIds = new Set()
   const tabs = Array.isArray(value?.tabs)
     ? value.tabs
@@ -33,7 +33,7 @@ export function restoreCapacitorTabSession(value, currentRoute, createId = () =>
           seenIds.add(tab.id)
           return true
         })
-        .map(normalizeRestoredTab)
+        .map(tab => normalizeRestoredTab(tab, rememberHistory))
     : []
 
   const closedTabIds = new Set()
@@ -45,7 +45,7 @@ export function restoreCapacitorTabSession(value, currentRoute, createId = () =>
           return true
         })
         .slice(-MAX_CLOSED_CAPACITOR_TABS)
-        .map(normalizePersistedTab)
+        .map(tab => normalizePersistedTab(tab, rememberHistory))
     : []
 
   if (tabs.length === 0) {
@@ -290,12 +290,12 @@ function isValidPersistedTab(tab) {
     typeof tab.route === 'object'
 }
 
-function normalizePersistedTab(tab) {
+function normalizePersistedTab(tab, rememberHistory = true) {
   const route = normalizeRoute(tab.route)
   const title = typeof tab.title === 'string' && tab.title.length > 0
     ? tab.title
     : route.fullPath
-  const history = Array.isArray(tab.history) && tab.history.length > 0
+  const history = rememberHistory && Array.isArray(tab.history) && tab.history.length > 0
     ? tab.history.map(entry => ({
         route: cloneRoute(entry?.route),
         title: typeof entry?.title === 'string' ? entry.title : entry?.route?.fullPath || '/',
@@ -333,8 +333,8 @@ function normalizePersistedTab(tab) {
   }
 }
 
-function normalizeRestoredTab(tab) {
-  const normalized = normalizePersistedTab(tab)
+function normalizeRestoredTab(tab, rememberHistory) {
+  const normalized = normalizePersistedTab(tab, rememberHistory)
   if (normalized.loadState === 'unloaded') return normalized
 
   return {
