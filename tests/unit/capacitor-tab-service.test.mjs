@@ -250,3 +250,154 @@ test('uses tab actions on Android WebViews without Array.toReversed', async () =
     Array.prototype.toReversed = toReversed
   }
 })
+
+function createThreeTabSession() {
+  let session = createLoadedSession()
+  for (const id of ['tab-b', 'tab-c']) {
+    session = addCapacitorTab(session, createCapacitorTab(WATCH_ROUTE, id, id), false)
+    session = completeCapacitorTabMount(session, id, 1)
+  }
+  return activateCapacitorTab(session, 'tab-b')
+}
+
+for (const position of ['end', 'afterCurrent', 'afterCurrentInOrder']) {
+  test(`mobile creates background tabs with position ${position}`, async () => {
+    const store = createStore(createThreeTabSession())
+    store.getters.getNewTabPosition = position
+    const service = new CapacitorTabService(createRouter(), store, createNavigation(store, true))
+    const first = await service.createTab(WATCH_ROUTE, '', false)
+    const second = await service.createTab(WATCH_ROUTE, '', false)
+    const expected = position === 'end'
+      ? ['tab-a', 'tab-b', 'tab-c', first, second]
+      : ['tab-a', 'tab-b', ...(position === 'afterCurrent' ? [second, first] : [first, second]), 'tab-c']
+    assert.deepEqual(store.getters.getTabs.map(tab => tab.id), expected)
+    assert.equal(store.getters.getActiveTabId, 'tab-b')
+  })
+}
+
+for (const action of ['closeTab', 'unloadTab']) {
+  for (const focus of ['previousTab', 'nextTab']) {
+    test(`mobile ${action} respects ${focus}`, async () => {
+      const store = createStore(createThreeTabSession())
+      store.getters.getTabCloseFocus = focus
+      const service = new CapacitorTabService(createRouter(), store, createNavigation(store, true))
+      assert.equal(await service[action]('tab-b'), true)
+      assert.equal(store.getters.getActiveTabId, focus === 'previousTab' ? 'tab-a' : 'tab-c')
+    })
+  }
+}
+
+for (const behavior of ['loadAllTabs', 'restoreTabLoadState', 'loadLastActiveTab', 'emptySession']) {
+  test(`mobile startup applies ${behavior}`, async () => {
+    const session = unloadCapacitorTab(createThreeTabSession(), 'tab-c')
+    const persisted = {
+      ...session,
+      tabs: session.tabs.map(({ loadState, ...tab }) => ({ ...tab, isUnloaded: loadState === 'unloaded' })),
+    }
+    const previousStorage = globalThis.localStorage
+    let saved
+    globalThis.localStorage = {
+      getItem: () => JSON.stringify(saved ?? persisted),
+      setItem: (_key, value) => { saved = JSON.parse(value) },
+    }
+    const store = createStore(createLoadedSession())
+    store.getters.getStartupBehavior = behavior
+    store.getters.getLandingPage = 'subscriptions'
+    store.subscribe = () => () => {}
+    const router = createRouter()
+    router.afterEach = () => () => {}
+    const navigation = createNavigation(store, true)
+    navigation.projectRoute = async route => { router.currentRoute.value = route }
+    navigation.restoreScroll = () => {}
+    const service = new CapacitorTabService(router, store, navigation)
+    try {
+      await service.initialize({ path: '/', fullPath: '/' })
+      if (behavior === 'emptySession') {
+        assert.equal(store.getters.getTabs.length, 1)
+        assert.equal(store.getters.getActiveTab.route.fullPath, '/subscriptions')
+        assert.equal(store.getters.getClosedTabs.length, 0)
+      } else {
+        assert.equal(store.getters.getActiveTabId, 'tab-b')
+        assert.deepEqual(store.getters.getTabs.map(tab => tab.loadState), {
+          loadAllTabs: ['mounting', 'mounting', 'mounting'],
+          restoreTabLoadState: ['mounting', 'mounting', 'unloaded'],
+          loadLastActiveTab: ['unloaded', 'mounting', 'unloaded'],
+        }[behavior])
+        assert.deepEqual(saved.tabs.map(tab => tab.isUnloaded), store.getters.getTabs.map(tab => tab.isUnloaded))
+        store.getters.getNewTabPosition = 'afterCurrentInOrder'
+        const first = await service.createTab(WATCH_ROUTE, '', false)
+        const second = await service.createTab(WATCH_ROUTE, '', false)
+        service.persist()
+        service.dispose()
+        await service.initialize(HOME_ROUTE)
+        const third = await service.createTab(WATCH_ROUTE, '', false)
+        assert.deepEqual(store.getters.getTabs.map(tab => tab.id), ['tab-a', 'tab-b', first, second, third, 'tab-c'])
+      }
+    } finally {
+      service.dispose()
+      globalThis.localStorage = previousStorage
+    }
+  })
+}
+
+for (const position of ['afterCurrent', 'afterCurrentInOrder']) {
+  test(`mobile ${position} keeps new tabs after the pinned group`, async () => {
+    const store = createStore(createThreeTabSession())
+    store.getters.getNewTabPosition = position
+    const service = new CapacitorTabService(createRouter(), store, createNavigation(store, true))
+    service.setPinned('tab-a', true)
+    service.setPinned('tab-b', true)
+    await service.activateTab('tab-a')
+    const first = await service.createTab(WATCH_ROUTE, '', false)
+    const second = await service.createTab(WATCH_ROUTE, '', false)
+    assert.deepEqual(store.getters.getTabs.map(tab => tab.id), [
+      'tab-a', 'tab-b', ...(position === 'afterCurrent' ? [second, first] : [first, second]), 'tab-c',
+    ])
+  })
+}
+
+test('mobile starts a new opened-order group after manually moving tabs', async () => {
+  const store = createStore(createThreeTabSession())
+  store.getters.getNewTabPosition = 'afterCurrentInOrder'
+  const service = new CapacitorTabService(createRouter(), store, createNavigation(store, true))
+  const first = await service.createTab(WATCH_ROUTE, '', false)
+  const second = await service.createTab(WATCH_ROUTE, '', false)
+  service.moveTab(first, 4)
+  const third = await service.createTab(WATCH_ROUTE, '', false)
+  assert.deepEqual(store.getters.getTabs.map(tab => tab.id), ['tab-a', 'tab-b', third, second, 'tab-c', first])
+})
+
+test('mobile duplicates tabs using the configured new-tab position', async () => {
+  const store = createStore(createThreeTabSession())
+  store.getters.getNewTabPosition = 'afterCurrent'
+  const service = new CapacitorTabService(createRouter(), store, createNavigation(store, true))
+  const duplicate = await service.duplicateTab('tab-b')
+  assert.deepEqual(store.getters.getTabs.map(tab => tab.id), ['tab-a', 'tab-b', duplicate, 'tab-c'])
+  assert.equal(store.getters.getActiveTabId, duplicate)
+})
+
+for (const focus of ['previousTab', 'nextTab']) {
+  test(`mobile ${focus} falls back to an already loaded tab on the other side`, async () => {
+    const preferred = focus === 'previousTab' ? 'tab-a' : 'tab-c'
+    const fallback = focus === 'previousTab' ? 'tab-c' : 'tab-a'
+    const store = createStore(unloadCapacitorTab(createThreeTabSession(), preferred))
+    store.getters.getTabCloseFocus = focus
+    const service = new CapacitorTabService(createRouter(), store, createNavigation(store, true))
+    assert.equal(await service.closeTab('tab-b'), true)
+    assert.equal(store.getters.getActiveTabId, fallback)
+  })
+}
+
+for (const action of ['closeTab', 'unloadTab']) {
+  for (const focus of ['previousTab', 'nextTab']) {
+    test(`mobile ${action} with ${focus} selects the nearest unloaded neighbor`, async () => {
+      const activeTabId = focus === 'previousTab' ? 'tab-c' : 'tab-a'
+      const session = activateCapacitorTab(unloadCapacitorTab(createThreeTabSession(), 'tab-b'), activeTabId)
+      const store = createStore(session)
+      store.getters.getTabCloseFocus = focus
+      const service = new CapacitorTabService(createRouter(), store, createNavigation(store, true))
+      assert.equal(await service[action](activeTabId), true)
+      assert.equal(store.getters.getActiveTabId, 'tab-b')
+    })
+  }
+}

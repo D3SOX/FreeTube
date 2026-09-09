@@ -120,11 +120,11 @@ function isSettingsSearchMessageVisible(sectionType, path, options) {
     if (group === 'Minimize to system tray') {
       return usingElectron && !isMac && !isLinuxWayland
     }
+    if (['New Tab Position', 'Tab Close Focus', 'Startup Behavior'].includes(group)) {
+      return usingElectron || isCapacitor
+    }
     if ([
       'Open Deep Links In New Window',
-      'New Tab Position',
-      'Tab Close Focus',
-      'Startup Behavior',
       'Confirm Before',
       'Confirmation Options',
       'Stream Extraction Method'

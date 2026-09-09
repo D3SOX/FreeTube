@@ -128,7 +128,7 @@
         @change="updateLandingPage"
       />
       <FtSelect
-        v-if="mode === 'general' && USING_ELECTRON"
+        v-if="mode === 'general' && (USING_ELECTRON || IS_CAPACITOR)"
         :placeholder="t('Settings.General Settings.New Tab Position.New Tab Position')"
         :value="newTabPosition"
         setting-key="newTabPosition"
@@ -138,7 +138,7 @@
         @change="updateNewTabPosition"
       />
       <FtSelect
-        v-if="mode === 'general' && USING_ELECTRON"
+        v-if="mode === 'general' && (USING_ELECTRON || IS_CAPACITOR)"
         :placeholder="t('Settings.General Settings.Tab Close Focus.Tab Close Focus')"
         :value="tabCloseFocus"
         setting-key="tabCloseFocus"
@@ -148,7 +148,7 @@
         @change="updateTabCloseFocus"
       />
       <FtSelect
-        v-if="mode === 'general' && USING_ELECTRON"
+        v-if="mode === 'general' && (USING_ELECTRON || IS_CAPACITOR)"
         :placeholder="t('Settings.General Settings.Startup Behavior.Startup Behavior')"
         :value="startupBehavior"
         setting-key="startupBehavior"
