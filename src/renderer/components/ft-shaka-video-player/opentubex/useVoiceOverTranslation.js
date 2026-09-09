@@ -1,4 +1,5 @@
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
+import { requestVoiceOverTranslation } from '../../../helpers/voiceOverTranslation.js'
 
 const MAX_VIDEO_DURATION_SECONDS = 4 * 60 * 60
 const MIN_POLL_DELAY_SECONDS = 5
@@ -273,7 +274,7 @@ export function useVoiceOverTranslation({
     }
 
     try {
-      const result = await window.ftElectron.requestVoiceOverTranslation({
+      const result = await requestVoiceOverTranslation({
         videoId: videoId.value,
         duration,
         responseLanguage: responseLanguage.value

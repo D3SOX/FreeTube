@@ -17,7 +17,7 @@
           />
         </button>
         <FtIconButton
-          class="navIconButton"
+          class="navIconButton navBackButton"
           :disabled="isArrowBackwardDisabled"
           :class="{ arrowDisabled: isArrowBackwardDisabled }"
           :icon="['fas', 'arrow-left']"
@@ -31,7 +31,7 @@
           @click="historyBack"
         />
         <FtIconButton
-          class="navIconButton"
+          class="navIconButton navForwardButton"
           :disabled="isArrowForwardDisabled"
           :class="{ arrowDisabled: isArrowForwardDisabled }"
           :icon="['fas', 'arrow-right']"
@@ -324,7 +324,7 @@ const showDownloadsButton = computed(() => (
   !(settingsWindowMinimized.value && settingsWindowView.value === 'downloads')
 ))
 const showSettingsButton = computed(() => (
-  isElectron &&
+  (isElectron || process.env.IS_CAPACITOR) &&
   moveSettingsToAppHeader.value &&
   !(settingsWindowMinimized.value && !['about', 'downloads'].includes(settingsWindowView.value))
 ))

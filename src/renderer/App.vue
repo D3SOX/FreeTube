@@ -515,7 +515,8 @@ import {
 import { translateWindowTitle } from './helpers/strings'
 import { formatTabTitle } from './tabs/tabTitle'
 import { normalizeScrollbarThumbWidth } from './constants/scrollbar'
-import { DEFAULT_APP_FONT, getAppFontFamily } from './helpers/appFont'
+import { getAppFontFamily } from './helpers/appFont'
+import { createCapacitorUiScale } from './helpers/capacitorUiScale'
 import { usesCapacitorTabletLayout } from './helpers/capacitorLayout'
 import { getTabAccentColor } from './constants/tabColors'
 import { getThumbnailListStyles } from './constants/thumbnailSize'
@@ -2478,6 +2479,10 @@ function clearSubscriptionTabAutoRefreshTimer(tab) {
 
 /** @type {import('vue').ComputedRef<string>} */
 const baseTheme = computed(() => store.getters.getBaseTheme)
+const capacitorUiScale = isCapacitor ? createCapacitorUiScale(window, document) : null
+watch(() => store.getters.getUiScale, value => capacitorUiScale?.setScale(value), { immediate: true })
+onBeforeUnmount(() => capacitorUiScale?.dispose())
+
 const appFont = computed(() => store.getters.getAppFont)
 let removeCustomThemeListener = () => {}
 const systemColorScheme = window.matchMedia('(prefers-color-scheme: dark)')
@@ -2545,7 +2550,7 @@ function updateSystemBarsStyle() {
 function updateAppFont() {
   document.body.style.setProperty(
     '--app-font-family',
-    getAppFontFamily(isCapacitor ? DEFAULT_APP_FONT : appFont.value)
+    getAppFontFamily(appFont.value)
   )
 }
 

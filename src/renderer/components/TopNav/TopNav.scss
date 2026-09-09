@@ -52,6 +52,45 @@
   }
 }
 
+// Keep optional header actions reachable on phones, including enlarged UI.
+@container top-nav (width < 400px) {
+  .app.capacitorTabs .navForwardButton {
+    display: none;
+  }
+
+  // Keep the enabled direction and its history menu reachable at the start of history.
+  .app.capacitorTabs .navBackButton.arrowDisabled:has(+ .navForwardButton:not(.arrowDisabled)) {
+    display: none;
+  }
+
+  .app.capacitorTabs .navBackButton.arrowDisabled + .navForwardButton:not(.arrowDisabled) {
+    display: block;
+  }
+
+  .app.capacitorTabs .downloadsButton,
+  .app.capacitorTabs .settingsButton,
+  .app.capacitorTabs .minimizedUtilityButton {
+    margin-inline-end: 0;
+  }
+}
+
+@container top-nav (width < 370px) {
+  .app.capacitorTabs .side .logo {
+    display: none;
+  }
+}
+
+@container top-nav (width < 300px) {
+  .app.capacitorTabs .side {
+    gap: 0;
+    margin-inline: 0;
+  }
+
+  .app.capacitorTabs .navButton {
+    padding: 8px;
+  }
+}
+
 /* Only the top tab bar sits above the navigation. */
 .app.topTabs .topNav {
   inset-block-start: calc(var(--app-safe-area-inset-top, 0px) + var(--top-tab-bar-height, 32px));

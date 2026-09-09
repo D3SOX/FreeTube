@@ -102,3 +102,12 @@ test('falls back to defaults only when the stored value is invalid', () => {
   assert.deepEqual(normalizeQuickSettings(null), DEFAULT_QUICK_SETTINGS)
   assert.deepEqual(normalizeQuickSettings([]), [])
 })
+
+
+test('UI Scale is available in Android quick settings while proxy remains desktop-only', () => {
+  const android = createQuickSettingSections(key => key, false, true).flatMap(section => section.settings)
+  assert.ok(android.some(setting => setting.id === 'uiScale'))
+  assert.ok(!android.some(setting => setting.id === 'useProxy'))
+  const web = createQuickSettingSections(key => key, false).flatMap(section => section.settings)
+  assert.ok(!web.some(setting => setting.id === 'uiScale'))
+})

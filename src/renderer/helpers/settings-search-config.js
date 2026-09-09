@@ -127,7 +127,8 @@ export const SETTINGS_SEARCH_SOURCES = {
     type: 'player',
     key: 'Settings.Player Settings',
     include: new Set(['Voice-over Translation']),
-    electronOnly: true
+    electronOnly: true,
+    capacitorSupported: true
   }],
   privacy: [{
     type: 'privacy',

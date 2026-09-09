@@ -3,7 +3,7 @@ const CORE_QUICK_SETTINGS = [
   ['systemLightTheme', 'appearance', 'Settings.Theme Settings.Light Theme', { control: 'select', icon: ['fas', 'sun'] }],
   ['systemDarkTheme', 'appearance', 'Settings.Theme Settings.Dark Theme', { control: 'select', icon: ['fas', 'moon'] }],
   ['mainColor', 'appearance', 'Settings.Theme Settings.Main Color Theme.Main Color Theme', { control: 'select', icon: ['fas', 'palette'] }],
-  ['uiScale', 'appearance', 'Settings.Theme Settings.UI Scale', { control: 'slider', electronOnly: true, icon: ['fas', 'sliders-h'] }],
+  ['uiScale', 'appearance', 'Settings.Theme Settings.UI Scale', { control: 'slider', electronOnly: true, capacitorSupported: true, icon: ['fas', 'sliders-h'] }],
   ['thumbnailSize', 'appearance', 'Settings.Theme Settings.Thumbnail Size', { control: 'slider', icon: ['fas', 'photo-film'] }],
   ['defaultQuality', 'playback', 'Settings.Player Settings.Default Quality.Default Quality', { control: 'select', icon: ['fas', 'photo-film'] }],
   ['defaultPlayback', 'playback', 'Settings.Player Settings.Default Playback Rate', { control: 'slider', icon: ['fas', 'gauge-high'] }],
@@ -138,9 +138,9 @@ const SECTION_DEFINITIONS = Object.freeze({
   }),
 })
 
-export function createQuickSettingCatalog(t, usingElectron) {
+export function createQuickSettingCatalog(t, usingElectron, isCapacitor = false) {
   return QUICK_SETTING_DEFINITIONS
-    .filter(definition => !definition.electronOnly || usingElectron)
+    .filter(definition => !definition.electronOnly || usingElectron || (isCapacitor && definition.capacitorSupported))
     .map(definition => ({
       ...definition,
       // eslint-disable-next-line @intlify/vue-i18n/no-dynamic-keys
@@ -148,10 +148,10 @@ export function createQuickSettingCatalog(t, usingElectron) {
     }))
 }
 
-export function createQuickSettingSections(t, usingElectron) {
+export function createQuickSettingSections(t, usingElectron, isCapacitor = false) {
   const sections = new Map()
 
-  for (const definition of createQuickSettingCatalog(t, usingElectron)) {
+  for (const definition of createQuickSettingCatalog(t, usingElectron, isCapacitor)) {
     if (!sections.has(definition.section)) {
       const sectionDefinition = SECTION_DEFINITIONS[definition.section]
       sections.set(definition.section, {

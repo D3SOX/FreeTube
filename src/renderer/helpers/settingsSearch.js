@@ -51,7 +51,7 @@ export function findSettingsSearchTab(match) {
 }
 
 function getSettingsSearchSourceValues(source, options) {
-  if (source.electronOnly && !options.usingElectron && !(options.isCapacitor && ['external-software', 'download', 'yt-dlp-streaming'].includes(source.type))) return []
+  if (source.electronOnly && !options.usingElectron && !(options.isCapacitor && (source.capacitorSupported || ['external-software', 'download', 'yt-dlp-streaming'].includes(source.type)))) return []
   return flattenSettingsSearchMessageValues(
     options.tm(source.key),
     SETTINGS_SEARCH_SELECT_GROUP_LABELS[source.type],
@@ -287,7 +287,7 @@ function isSettingsSearchMessageVisible(sectionType, path, options) {
   }
 
   if (sectionType === 'theme') {
-    if (isCapacitor && ['Font', 'Show Progress as Notification'].includes(group)) {
+    if (isCapacitor && group === 'Show Progress as Notification') {
       return false
     }
     if (group === 'Custom Theme' && item === 'Edit Custom Theme') {
@@ -302,7 +302,7 @@ function isSettingsSearchMessageVisible(sectionType, path, options) {
     if (group === 'Light Theme' || group === 'Dark Theme') {
       return store.getters.getBaseTheme === 'system'
     }
-    if (group === 'Move Downloads to App Header') {
+    if (['Move Downloads to App Header', 'Move Settings to App Header', 'UI Scale'].includes(group)) {
       return usingElectron || isCapacitor
     }
     if (['Use Fixed Tab Width', 'Show Tab Icons', 'Tab Width'].includes(group)) {
@@ -310,11 +310,9 @@ function isSettingsSearchMessageVisible(sectionType, path, options) {
     }
     if ([
       'Disable Smooth Scrolling',
-      'Move Settings to App Header',
       'Show Tab Previews',
       'Tab Layout',
-      'Load Missing Tab Icons',
-      'UI Scale'
+      'Load Missing Tab Icons'
     ].includes(group)) {
       return usingElectron && (
         group !== 'Load Missing Tab Icons' || store.getters.getShowTabIcons

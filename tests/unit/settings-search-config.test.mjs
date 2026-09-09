@@ -150,7 +150,9 @@ test('shared settings search index includes only settings available on this plat
   assert.ok(mobileValues.some(({ label }) => label === 'Mobile layout'))
   assert.ok(mobileValues.some(({ label }) => label === 'Use Fixed Tab Width in Horizontal Mode'))
   assert.ok(mobileValues.some(({ label }) => label === 'Show Tab Icons'))
-  assert.ok(!mobileValues.some(({ label }) => label === 'App Font'))
+  assert.ok(mobileValues.some(({ label }) => label === locale.Settings['Theme Settings'].Font['App Font']))
+  assert.ok(mobileValues.some(({ label }) => label === locale.Settings['Theme Settings']['Move Settings to App Header']))
+  assert.ok(mobileValues.some(({ label }) => label === locale.Settings['Theme Settings']['UI Scale']))
   assert.ok(!mobileValues.some(({ label }) => label === 'Show progress as notification'))
 })
 
@@ -340,3 +342,15 @@ for (const [platform, usingElectron, isCapacitor] of [
     assert.equal(entries.some(({ label }) => label === 'Remember Tab Navigation History'), usingElectron || isCapacitor)
   })
 }
+
+test('voice-over settings are searchable on Android and Electron, but not the web build', () => {
+  for (const [usingElectron, isCapacitor] of [[true, false], [false, true], [false, false]]) {
+    const entries = createSettingsSearchIndex({
+      sections: [{ type: 'add-ons', title: 'Add-ons', description: '' }],
+      tm: path => getAtPath(locale, path),
+      store: { getters: { getUseVoiceOverTranslation: true } },
+      usingElectron, isCapacitor,
+    }).get('add-ons')
+    assert.equal(entries.some(({ label }) => label === locale.Settings['Player Settings']['Voice-over Translation'].Enable), usingElectron || isCapacitor)
+  }
+})
