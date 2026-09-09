@@ -58,10 +58,11 @@ test('publishes all architecture APKs alongside the existing desktop artifacts',
   assert.equal(uploads.length, names.length, 'Each APK must have its own artifact, with no report artifact')
   const uploadedNames = []
   for (const upload of uploads) {
-    assert.equal(upload.with.archive, false, 'APK downloads must not be wrapped in a ZIP')
+    assert.equal(upload.with.archive, undefined, 'APK downloads must use the default ZIP artifact archive')
     assert.equal(upload.with['if-no-files-found'], 'error')
     const path = upload.with.path.replace('${{ steps.apk.outputs.version }}', version)
-    const name = path.split('/').pop()
+    const name = upload.with.name.replace('${{ steps.apk.outputs.version }}', version)
+    assert.equal(path.split('/').pop(), name)
     uploadedNames.push(name)
     const artifact = join(directory, 'artifacts', name)
     await mkdir(artifact)

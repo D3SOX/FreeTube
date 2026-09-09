@@ -482,36 +482,36 @@ jobs:
     - name: Upload Android arm64-v8a APK
       uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
       with:
+        name: opentubex-${{ steps.apk.outputs.version }}-android-arm64-v8a.apk
         path: android-apks/opentubex-${{ steps.apk.outputs.version }}-android-arm64-v8a.apk
-        archive: false
         if-no-files-found: error
 
     - name: Upload Android armeabi-v7a APK
       uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
       with:
+        name: opentubex-${{ steps.apk.outputs.version }}-android-armeabi-v7a.apk
         path: android-apks/opentubex-${{ steps.apk.outputs.version }}-android-armeabi-v7a.apk
-        archive: false
         if-no-files-found: error
 
     - name: Upload Android x86 APK
       uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
       with:
+        name: opentubex-${{ steps.apk.outputs.version }}-android-x86.apk
         path: android-apks/opentubex-${{ steps.apk.outputs.version }}-android-x86.apk
-        archive: false
         if-no-files-found: error
 
     - name: Upload Android x86_64 APK
       uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
       with:
+        name: opentubex-${{ steps.apk.outputs.version }}-android-x86_64.apk
         path: android-apks/opentubex-${{ steps.apk.outputs.version }}-android-x86_64.apk
-        archive: false
         if-no-files-found: error
 
     - name: Upload Android universal APK
       uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
       with:
+        name: opentubex-${{ steps.apk.outputs.version }}-android-universal.apk
         path: android-apks/opentubex-${{ steps.apk.outputs.version }}-android-universal.apk
-        archive: false
         if-no-files-found: error
 
   publish-nightly:
