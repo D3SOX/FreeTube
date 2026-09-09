@@ -167,22 +167,6 @@
     <h4
       class="groupTitle"
     >
-      {{ t('Settings.Distraction Free Settings.Sections.Side Bar') }}
-    </h4>
-    <div class="switchColumnGrid">
-      <div class="switchColumn">
-        <FtToggleSwitch
-          :label="t('Settings.Distraction Free Settings.Hide Active Subscriptions')"
-          :compact="true"
-          :default-value="hideActiveSubscriptions"
-          setting-key="hideActiveSubscriptions"
-          @change="updateHideActiveSubscriptions"
-        />
-      </div>
-    </div>
-    <h4
-      class="groupTitle"
-    >
       {{ t('Settings.Distraction Free Settings.Sections.Subscriptions Page') }}
     </h4>
     <div class="switchColumnGrid">
@@ -527,16 +511,6 @@ const hideLiveChatReplay = computed(() => store.getters.getHideLiveChatReplay)
  */
 function updateHideLiveChatReplay(value) {
   store.dispatch('updateHideLiveChatReplay', value)
-}
-
-/** @type {import('vue').ComputedRef<boolean>} */
-const hideActiveSubscriptions = computed(() => store.getters.getHideActiveSubscriptions)
-
-/**
- * @param {boolean} value
- */
-function updateHideActiveSubscriptions(value) {
-  store.dispatch('updateHideActiveSubscriptions', value)
 }
 
 /** @type {import('vue').ComputedRef<boolean>} */

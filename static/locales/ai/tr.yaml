@@ -244,6 +244,7 @@ Settings:
     Swipe to refresh: Yenilemek için kaydır
     Blur Thumbnails: Küçük resimleri bulanıklaştır
     Navigation:
+      Show Active Subscriptions: Etkin abonelikleri göster
       Navigation: Gezinme
       Customize Navigation: Gezinmeyi özelleştir
       Add Item: Öğe ekle

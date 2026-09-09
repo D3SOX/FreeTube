@@ -332,6 +332,7 @@ Settings:
     Swipe to refresh: 스와이프하여 새로고침
     Blur Thumbnails: 썸네일 흐리게 표시
     Navigation:
+      Show Active Subscriptions: 활성 구독 표시
       Navigation: 탐색
       Customize Navigation: 탐색 맞춤 설정
       Add Item: 항목 추가

@@ -163,12 +163,6 @@
       </li>
     </ul>
     <p
-      v-else
-      class="emptyState"
-    >
-      {{ t('Settings.No Settings Found') }}
-    </p>
-    <p
       class="reorderStatus"
       role="status"
       aria-live="polite"
@@ -176,6 +170,14 @@
     >
       {{ reorderStatus }}
     </p>
+    <div class="fixedNavigationOptions">
+      <FtToggleSwitch
+        :label="t('Settings.General Settings.Navigation.Show Active Subscriptions')"
+        :compact="true"
+        :default-value="!hideActiveSubscriptions"
+        @change="store.dispatch('updateHideActiveSubscriptions', !$event)"
+      />
+    </div>
   </FtSettingsSubpage>
 </template>
 
@@ -188,6 +190,7 @@ import { useRoute, useRouter } from 'vue-router'
 import FtButton from '../FtButton/FtButton.vue'
 import FtSettingsSubpage from '../FtSettingsSubpage/FtSettingsSubpage.vue'
 import FtSyncedSettingIndicator from '../FtSyncedSettingIndicator/FtSyncedSettingIndicator.vue'
+import FtToggleSwitch from '../FtToggleSwitch/FtToggleSwitch.vue'
 
 import store from '../../store/index'
 import { clampOverlayScrollTop } from '../../helpers/overlayScrollbars'
@@ -219,6 +222,7 @@ const catalog = computed(() => NAVIGATION_ITEM_DEFINITIONS
   })))
 const catalogById = computed(() => new Map(catalog.value.map(item => [item.id, item])))
 const navigationItems = computed(() => store.getters.getNavigationItems)
+const hideActiveSubscriptions = computed(() => store.getters.getHideActiveSubscriptions)
 const isDefaultNavigation = computed(() => (
   navigationItems.value.length === DEFAULT_NAVIGATION_ITEMS.length &&
   navigationItems.value.every((id, index) => id === DEFAULT_NAVIGATION_ITEMS[index])
@@ -460,16 +464,30 @@ function resetItems() {
   padding: 0;
 }
 
-.selectedItem {
+.selectedItem,
+.fixedNavigationOptions {
   align-items: center;
   background: var(--card-bg-color);
   border: 1px solid var(--divider-color);
   border-radius: calc(6px * var(--ui-roundness));
+  min-block-size: 56px;
+  user-select: none;
+}
+
+.selectedItem {
   display: grid;
   grid-template-columns: 44px 24px minmax(0, 1fr) auto;
-  min-block-size: 56px;
   position: relative;
-  user-select: none;
+}
+
+.fixedNavigationOptions {
+  box-sizing: border-box;
+  display: flex;
+  inline-size: 100%;
+  margin-block-start: 8px;
+  margin-inline: auto;
+  max-inline-size: 720px;
+  padding-inline: 12px;
 }
 
 .selectedItem.dragging {
@@ -555,9 +573,4 @@ function resetItems() {
   white-space: nowrap;
 }
 
-.emptyState {
-  color: var(--secondary-text-color);
-  margin-block: 24px;
-  text-align: center;
-}
 </style>
