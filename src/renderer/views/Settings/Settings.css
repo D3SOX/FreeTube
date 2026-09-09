@@ -215,7 +215,7 @@
 .settingsHeaderButton:hover,
 .settingsHeaderButton:focus-visible,
 .settingsHeaderButton.active {
-  color: var(--primary-text-color);
+  color: var(--side-nav-hover-text-color);
   background: var(--side-nav-hover-color);
 }
 

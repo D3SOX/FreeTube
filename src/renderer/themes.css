@@ -353,18 +353,23 @@ it can be safely elided. This looks quite pleasant on this theme. */
 }
 
 .hotPink {
+  --toggle-track-color: #ddd;
+  --toggle-thumb-color: #fff;
+  --toggle-checked-thumb-color: #fff;
+  --toggle-thumb-outline-color: #000;
+  --slider-track-color: #fff;
   --primary-text-color: #ffff;
   --secondary-text-color: #ffff;
   --tertiary-text-color: #ffff;
   --title-color: #000;
-  --bg-color: #ff008a;
+  --bg-color: #dd197f;
   --favorite-icon-color: #6eaa73;
   --card-bg-color: #de1c85;
   --secondary-card-bg-color: rgb(0 0 0 / 75%);
   --scrollbar-color: #fff;
   --scrollbar-color-hover: #c0f6ff;
   --scrollbar-text-color-hover: #000;
-  --side-nav-color: #ee1e90;
+  --side-nav-color: #dd197f;
   --side-nav-hover-color: #fff;
   --side-nav-hover-text-color: #000;
   --side-nav-active-color: #959595;
@@ -383,8 +388,8 @@ it can be safely elided. This looks quite pleasant on this theme. */
   --text-with-main-color: #fff !important;
   --text-with-accent-color: #fff !important;
   --accent-color: #000 !important;
-  --accent-color-hover: #808080 !important;
-  --accent-color-active: #6a739a !important;
+  --accent-color-hover: #000 !important;
+  --accent-color-active: #000 !important;
   --accent-color-light: #000 !important;
   --accent-color-visited: #000 !important;
   --accent-color-opacity1: rgb(0 0 0 / 4%) !important;
@@ -2389,6 +2394,11 @@ body .os-scrollbar {
   --logo-pressed-color: var(--accent-color-active);
   --logo-icon: url('../../_icons/iconWhiteSmall.svg');
   --logo-text: url('../../_icons/textWhiteSmall.svg');
+}
+
+/* Resolve the color on the thread so fullscreen docks can supply their palette. */
+:is(.openTubeXLight, .openTubeXDark) .comment.commentThread {
+  --comment-thread-line-color: var(--tertiary-text-color);
 }
 
 .openTubeXLight {

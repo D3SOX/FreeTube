@@ -1,4 +1,4 @@
-import { test, expect, goToSettingsSection } from '../../helpers/app.mjs'
+import { test, expect, goToSettingsSection, setPlayerFullscreen } from '../../helpers/app.mjs'
 import { sampleColors } from '../../helpers/colors.mjs'
 import { openMockedVideo } from '../../helpers/player.mjs'
 import { mockPlayableWatchPage } from '../../helpers/watch.mjs'
@@ -42,11 +42,55 @@ async function controlContrast(app, control, kind) {
 
 for (const theme of ['openTubeXLight', 'openTubeXDark']) {
   for (const scale of [100, 125]) {
+    test.describe(`${theme} comment contrast at ${scale}%`, () => {
+      test.use({ seed: { settings: { baseTheme: theme, currentLocale: 'en-US', uiScale: scale } } })
+
+      for (const fullscreen of [false, true]) {
+        test(`comment thread lines and reply connectors remain visible in ${fullscreen ? 'fullscreen' : 'watch page'}`, async ({ app, page, attachScreenshot }) => {
+          await mockPlayableWatchPage(app, page)
+          await openMockedVideo(page)
+          if (fullscreen) {
+            await setPlayerFullscreen(page, true)
+            await page.locator('.fullscreenCommentsToggle').click({ force: true })
+            await expect(page.locator('.fullscreenCommentsOverlay.open')).toBeVisible()
+          }
+          const thread = page.locator('.commentThread').first()
+          const connector = thread.locator('.commentReplyConnector').first()
+
+          for (const [element, pseudo] of [[thread, '::before'], [connector, null]]) {
+            if (!pseudo) {
+              await thread.locator(':scope > .commentReplyRootToggle button').click()
+            }
+            await expect(element).toBeVisible()
+            await page.mouse.move(0, 0)
+            await element.scrollIntoViewIfNeeded()
+            const points = await element.evaluate((element, pseudo) => {
+              const style = getComputedStyle(element, pseudo)
+              const x = pseudo ? parseFloat(style.insetInlineStart) : 0
+              const y = pseudo ? parseFloat(style.insetBlockStart) + 10 : 3
+              return [[x - 4, y], ...[-0.5, 0.5, 1.5].map(offset => [x + offset, y])]
+            }, pseudo)
+            const [surface, ...edge] = await sampleColors(app, element, points)
+            const ratio = Math.max(...edge.map(color => contrastRatio(color, surface)))
+            expect.soft(ratio, `${pseudo ? 'thread' : 'reply connector'} ${JSON.stringify({ surface, edge })}`).toBeGreaterThanOrEqual(3)
+          }
+          await attachScreenshot(`${theme} comment thread contrast at ${scale}% ${fullscreen ? 'fullscreen' : 'watch page'}`)
+        })
+      }
+    })
+  }
+}
+
+for (const theme of ['openTubeXLight', 'openTubeXDark']) {
+  for (const scale of [100, 125]) {
     test.describe(`${theme} control contrast at ${scale}%`, () => {
       test.use({ seed: { settings: { baseTheme: theme, currentLocale: 'en-US', uiScale: scale } } })
 
       test('seekbar progress stays neutral and SponsorBlock categories remain visible', async ({ app, page }) => {
         await mockPlayableWatchPage(app, page)
+        // An aborted label lookup would queue later SponsorBlock requests behind
+        // network recovery. A 404 is the API's normal "no labels" response.
+        await page.route('**/api/videoLabels/**', route => route.fulfill({ status: 404 }))
         const categories = ['sponsor', 'selfpromo', 'interaction', 'intro', 'outro', 'preview', 'hook', 'music_offtopic', 'filler', 'poi_highlight']
         await page.route('**/api/skipSegments/**', route => route.fulfill({
           json: [{
@@ -154,4 +198,96 @@ for (const theme of ['openTubeXLight', 'openTubeXDark']) {
       })
     })
   }
+}
+
+for (const scale of [100, 125]) {
+  test.describe(`hotPink contrast at ${scale}%`, () => {
+    test.use({ seed: { settings: { baseTheme: 'hotPink', currentLocale: 'en-US', uiScale: scale } } })
+
+    test('toggle thumbs remain distinct in both states', async ({ app, page }) => {
+      await goToSettingsSection(page, 'general')
+      const toggle = page.getByRole('checkbox', { name: 'Keep relative timestamps updated' })
+      const tracks = []
+      const thumbs = []
+      for (const checked of [true, false]) {
+        if (await toggle.isChecked() !== checked) await toggle.locator('..').locator('.switch-label').click()
+        await expect(toggle).toBeChecked({ checked })
+        const contrast = await switchContrast(app, toggle.locator('..').locator('.switch-label'), checked)
+        tracks.push(contrast.track)
+        thumbs.push(contrast.thumb)
+        const label = toggle.locator('..').locator('.switch-label')
+        const height = await label.evaluate(element => element.getBoundingClientRect().height)
+        // The outline separates the white thumb from the light off track.
+        // Sample its vertical edge where it crosses the track.
+        const edge = await sampleColors(app, label, [-0.5, 0.5, 1.5].map(offset => [
+          (checked ? 21 : 24) + offset, height / 2
+        ]))
+        const thumbRatio = Math.max(contrast.thumbRatio, ...edge.map(color => contrastRatio(color, contrast.track)))
+        expect.soft(contrast.trackRatio, `track and background ${JSON.stringify(contrast)}`).toBeGreaterThanOrEqual(3)
+        expect.soft(thumbRatio, `thumb boundary and track ${JSON.stringify({ contrast, edge })}`).toBeGreaterThanOrEqual(3)
+        expect.soft(contrast.thumbSurfaceRatio, `thumb and background ${JSON.stringify(contrast)}`).toBeGreaterThanOrEqual(3)
+      }
+      expect(contrastRatio(...tracks), 'on and off tracks').toBeGreaterThanOrEqual(3)
+      expect(thumbs[0], 'thumb color stays consistent').toEqual(thumbs[1])
+    })
+
+    test('settings category titles and descriptions remain readable in every state', async ({ page }) => {
+      await goToSettingsSection(page, 'theme')
+      const pageColors = await page.locator('body').evaluate(element => {
+        const style = getComputedStyle(element)
+        const rgb = color => color.match(/[\d.]+/g).slice(0, 3).map(Number)
+        return { foreground: rgb(style.color), background: rgb(style.backgroundColor) }
+      })
+      expect.soft(contrastRatio(pageColors.foreground, pageColors.background), 'page text').toBeGreaterThanOrEqual(4.5)
+      const category = page.locator('.settingsMenu .title[data-section="playback"]')
+      const selected = page.locator('.settingsMenu .title.active')
+      for (const state of ['normal', 'selected', 'hover', 'focus']) {
+        const button = state === 'selected' ? selected : category
+        if (state === 'hover') await button.hover()
+        if (state === 'focus') {
+          await page.mouse.move(0, 0)
+          await page.keyboard.press('Tab')
+          await button.focus()
+        }
+        const colors = await button.evaluate(element => {
+          const rgb = color => color.match(/[\d.]+/g).slice(0, 3).map(Number)
+          const style = getComputedStyle(element)
+          const background = style.backgroundColor === 'rgba(0, 0, 0, 0)'
+            ? getComputedStyle(element.closest('.settingsMenu')).backgroundColor
+            : style.backgroundColor
+          return {
+            background: rgb(background),
+            title: rgb(getComputedStyle(element.querySelector('.titleText')).color),
+            description: rgb(getComputedStyle(element.querySelector('.titleDescription')).color)
+          }
+        })
+        for (const part of ['title', 'description']) {
+          expect.soft(contrastRatio(colors[part], colors.background), `${state} ${part} ${JSON.stringify(colors)}`).toBeGreaterThanOrEqual(4.5)
+        }
+      }
+    })
+
+    test('slider tracks and hovered header controls remain visible', async ({ app, page }) => {
+      await goToSettingsSection(page, 'theme')
+      const input = page.getByRole('slider', { name: /UI Roundness/ })
+      const slider = await controlContrast(app, input, 'slider')
+      expect.soft(slider.ratio, `slider ${JSON.stringify(slider)}`).toBeGreaterThanOrEqual(3)
+      const points = await input.evaluate(element => {
+        const rect = element.getBoundingClientRect()
+        const fraction = (Number(element.value) - Number(element.min)) / (Number(element.max) - Number(element.min))
+        return [[1 + fraction * (rect.width - 2), rect.height / 2], [rect.width * 0.85, rect.height / 2]]
+      })
+      const [thumb, track] = await sampleColors(app, input, points)
+      expect.soft(contrastRatio(thumb, track), `slider thumb ${JSON.stringify({ thumb, track })}`).toBeGreaterThanOrEqual(3)
+      const button = page.getByRole('button', { name: 'Show performance impact indicators', exact: true })
+      if (await button.getAttribute('aria-pressed') === 'true') await button.click()
+      await button.hover()
+      const colors = await button.evaluate(element => {
+        const style = getComputedStyle(element)
+        const rgb = color => color.match(/[\d.]+/g).slice(0, 3).map(Number)
+        return { foreground: rgb(style.color), background: rgb(style.backgroundColor) }
+      })
+      expect.soft(contrastRatio(colors.foreground, colors.background), `header hover ${JSON.stringify(colors)}`).toBeGreaterThanOrEqual(3)
+    })
+  })
 }
