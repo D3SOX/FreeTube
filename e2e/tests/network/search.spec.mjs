@@ -135,11 +135,25 @@ test.describe('search', () => {
     await page.locator(sel.searchInput).press('Enter')
     await expect(page.locator('.ft-list-video').first()).toBeVisible({ timeout: 30_000 })
 
+    await page.evaluate(async () => {
+      const store = document.querySelector('#app').__vue_app__.config.globalProperties.$store
+      await store.dispatch('updateUiScale', 95)
+    })
+
+    // Keep the animation running while subsequent real pointer clicks land.
+    await page.addStyleTag({
+      content: `
+      ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) {
+        animation-duration: 60s !important;
+      }
+    `
+    })
     await page.evaluate(() => {
       window.__viewTransitionSnapshots = []
       const startViewTransition = document.startViewTransition.bind(document)
       document.startViewTransition = (update) => {
         const snapshot = {
+          finished: false,
           sourceName: document.querySelector('.ft-list-video .thumbnailImage')?.style.viewTransitionName
         }
         window.__viewTransitionSnapshots.push(snapshot)
@@ -151,6 +165,7 @@ test.describe('search', () => {
           () => { snapshot.ready = true },
           error => { snapshot.readyError = String(error) }
         )
+        transition.finished.then(() => { snapshot.finished = true })
         return transition
       }
     })
@@ -164,15 +179,27 @@ test.describe('search', () => {
     expect(await page.evaluate(() => window.__viewTransitionSnapshots[0])).toEqual({
       sourceName: 'new-tab-thumbnail-morph',
       targetName: 'new-tab-thumbnail-morph',
-      ready: true
+      ready: true,
+      finished: false
     })
+
+    for (const index of [1, 2]) {
+      expect(await page.evaluate(index => window.__viewTransitionSnapshots[index - 1].finished, index)).toBe(false)
+      const video = page.locator('.ft-list-video').nth(index)
+      const link = video.locator(index === 1 ? '.title' : '.thumbnailLink')
+      const box = await link.boundingBox()
+      // Do not let locator.click wait for the animation overlay to disappear.
+      await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2, { button: 'middle' })
+      await expect(page.locator(sel.tabs)).toHaveCount(index + 2, { timeout: 3000 })
+      await expect.poll(() => page.evaluate(index => window.__viewTransitionSnapshots[index]?.ready, index)).toBe(true)
+    }
 
     await page.evaluate(() => {
       document.documentElement.dataset.reducedMotion = 'reduce'
     })
     await page.locator('.ft-list-video .title').nth(1).click({ button: 'middle' })
-    await expect(page.locator(sel.tabs)).toHaveCount(3)
-    expect(await page.evaluate(() => window.__viewTransitionSnapshots)).toHaveLength(1)
+    await expect(page.locator(sel.tabs)).toHaveCount(5)
+    expect(await page.evaluate(() => window.__viewTransitionSnapshots)).toHaveLength(3)
 
     await page.locator(sel.tabs).nth(1).click()
     await expect(page).toHaveURL(/#\/watch\//)
