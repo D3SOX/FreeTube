@@ -1165,7 +1165,7 @@ export default defineComponent({
       return Number.isFinite(volume) ? Math.min(1, Math.max(0, volume)) : 0.1
     })
     const voiceOverTranslationAvailable = computed(() => {
-      return process.env.IS_ELECTRON &&
+      return (process.env.IS_ELECTRON || process.env.IS_CAPACITOR) &&
         useVoiceOverTranslationSetting.value &&
         props.videoId !== '' &&
         !isLive.value

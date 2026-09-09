@@ -216,8 +216,8 @@
                     <FtSlider
                       :label="t('Settings.Theme Settings.UI Scale')"
                       :default-value="uiScale"
-                      :min-value="50"
-                      :max-value="300"
+                      :min-value="IS_CAPACITOR ? CAPACITOR_UI_SCALE_MIN : 50"
+                      :max-value="IS_CAPACITOR ? CAPACITOR_UI_SCALE_MAX : 300"
                       :step="5"
                       value-extension="%"
                       @change="updateUiScale"
@@ -390,6 +390,7 @@
 </template>
 
 <script setup>
+import { CAPACITOR_UI_SCALE_MIN, CAPACITOR_UI_SCALE_MAX } from '../../helpers/capacitorUiScale'
 import { FtIcon } from '@opentubex/icons'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, useId, useTemplateRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -427,6 +428,7 @@ import { getThemeClassification, hasFixedThemeColors } from '../../../appearance
 
 const { locale, t } = useI18n()
 const id = useId()
+const IS_CAPACITOR = !!process.env.IS_CAPACITOR
 const USING_ELECTRON = process.env.IS_ELECTRON
 const systemColorScheme = window.matchMedia('(prefers-color-scheme: dark)')
 const systemUsesDarkTheme = ref(systemColorScheme.matches)
@@ -554,13 +556,13 @@ const showDownloadsShortcut = computed(() => (
   !store.getters.getMoveDownloadsToAppHeader
 ))
 const showSettingsShortcut = computed(() => (
-  !USING_ELECTRON || !store.getters.getMoveSettingsToAppHeader
+  !(USING_ELECTRON || process.env.IS_CAPACITOR) || !store.getters.getMoveSettingsToAppHeader
 ))
 
 const quickSettings = computed(() => store.getters.getQuickSettings)
-const quickSettingCatalog = computed(() => createQuickSettingCatalog(t, USING_ELECTRON))
+const quickSettingCatalog = computed(() => createQuickSettingCatalog(t, USING_ELECTRON, process.env.IS_CAPACITOR))
 const quickSettingSectionDefinitions = computed(() => new Map(
-  createQuickSettingSections(t, USING_ELECTRON).map(section => [section.id, section])
+  createQuickSettingSections(t, USING_ELECTRON, process.env.IS_CAPACITOR).map(section => [section.id, section])
 ))
 const orderedQuickSettingSections = computed(() => {
   const catalogById = new Map(quickSettingCatalog.value.map(setting => [setting.id, setting]))

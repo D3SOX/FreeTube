@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 
-import { isAllowedTranslationAudioUrl } from '../../src/main/voiceOverTranslationUrls.js'
+import { isAllowedTranslationAudioUrl } from '../../src/voiceOverTranslationUrls.js'
 
 test('allows trusted Yandex voice-over delivery hosts', () => {
   const trustedHosts = [

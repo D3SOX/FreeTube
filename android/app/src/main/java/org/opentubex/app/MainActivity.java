@@ -51,7 +51,10 @@ public class MainActivity extends BridgeActivity {
         registerPlugin(AndroidPlaybackPlugin.class);
         registerPlugin(SubscriptionRefreshPlugin.class);
         registerPlugin(SabrHttpPlugin.class);
+        registerPlugin(VoiceOverHttpPlugin.class);
         super.onCreate(savedInstanceState);
+        // Honor viewport widths larger than the device for UI scales below 100%.
+        getBridge().getWebView().getSettings().setUseWideViewPort(true);
         // Capacitor falls back to addJavascriptInterface when the modern,
         // top-frame-only bridge is unavailable. Fail closed instead of
         // exposing native plugins to untrusted subframes.

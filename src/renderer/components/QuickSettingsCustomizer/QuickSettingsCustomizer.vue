@@ -195,7 +195,7 @@ const settingPickerId = `quick-setting-picker-${useId().replaceAll(':', '')}`
 const settingPickerAnchorRef = useTemplateRef('settingPickerAnchorRef')
 const settingPickerRef = useTemplateRef('settingPickerRef')
 
-const catalog = computed(() => createQuickSettingCatalog(t, process.env.IS_ELECTRON))
+const catalog = computed(() => createQuickSettingCatalog(t, process.env.IS_ELECTRON, process.env.IS_CAPACITOR))
 const catalogById = computed(() => new Map(catalog.value.map(setting => [setting.id, setting])))
 const quickSettings = computed(() => store.getters.getQuickSettings)
 const isDefaultQuickSettings = computed(() => (

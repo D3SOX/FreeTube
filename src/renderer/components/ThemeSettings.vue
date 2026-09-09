@@ -62,7 +62,6 @@
     </FtFlexBox>
     <FtFlexBox class="themeSelectRow">
       <FtSelect
-        v-if="!IS_CAPACITOR"
         :placeholder="t('Settings.Theme Settings.Font.App Font')"
         :value="appFont"
         setting-key="appFont"
@@ -227,7 +226,7 @@
           @change="updateHideHeaderLogo"
         />
         <FtToggleSwitch
-          v-if="usingElectron"
+          v-if="usingElectron || IS_CAPACITOR"
           :label="$t('Settings.Theme Settings.Move Settings to App Header')"
           compact
           :default-value="moveSettingsToAppHeader"
@@ -304,11 +303,11 @@
     </template>
     <FtSliderGrid>
       <FtSlider
-        v-if="usingElectron"
+        v-if="usingElectron || IS_CAPACITOR"
         :label="$t('Settings.Theme Settings.UI Scale')"
         :default-value="uiScale"
-        :min-value="50"
-        :max-value="300"
+        :min-value="IS_CAPACITOR ? CAPACITOR_UI_SCALE_MIN : 50"
+        :max-value="IS_CAPACITOR ? CAPACITOR_UI_SCALE_MAX : 300"
         :step="5"
         value-extension="%"
         @change="updateUiScale"
@@ -435,6 +434,7 @@ import {
 import { getMissingTabAvatarTabs, loadMissingTabAvatars } from '../helpers/loadTabAvatars'
 import { showToast } from '../helpers/utils'
 import { ICON_PACKS } from '../icons/iconPackState'
+import { CAPACITOR_UI_SCALE_MIN, CAPACITOR_UI_SCALE_MAX } from '../helpers/capacitorUiScale'
 import { DEFAULT_APP_FONT, normalizeAppFont, SYSTEM_APP_FONT } from '../helpers/appFont'
 
 const { locale, t } = useI18n()
@@ -567,7 +567,7 @@ const fontValues = computed(() => [
   DEFAULT_APP_FONT,
   SYSTEM_APP_FONT,
   ...[...new Set([
-    appFont.value,
+    ...IS_CAPACITOR ? [] : [appFont.value],
     ...systemFonts.value
   ])]
     .filter(font => font !== DEFAULT_APP_FONT && font !== SYSTEM_APP_FONT)
@@ -584,7 +584,7 @@ function updateAppFont(value) {
 }
 
 async function loadSystemFonts() {
-  if (systemFontsPromise !== null) return
+  if (IS_CAPACITOR || systemFontsPromise !== null) return
 
   const fontRequest = process.env.IS_ELECTRON
     ? window.ftElectron.getSystemFonts()
