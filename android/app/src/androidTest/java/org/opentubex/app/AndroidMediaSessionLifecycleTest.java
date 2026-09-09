@@ -22,6 +22,27 @@ import java.util.Arrays;
 
 @RunWith(AndroidJUnit4.class)
 public class AndroidMediaSessionLifecycleTest {
+    @Test public void finalPositionUpdateAfterClearDoesNotCrashTheProcess() {
+        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        try (ActivityScenario<MainActivity> scenario = ActivityScenario.launch(MainActivity.class)) {
+            scenario.onActivity(activity -> {
+                activity.getBridge().getWebView().loadUrl("about:blank");
+                // ended clears the notification; the final timeupdate can still
+                // request foreground startup before Android delivers that clear.
+                context.startService(new Intent(context, AndroidMediaSessionService.class)
+                    .setAction(AndroidMediaSessionService.ACTION_UPDATE)
+                    .putExtra(AndroidMediaSessionService.EXTRA_STATE, "{\"playbackState\":\"none\"}"));
+                ContextCompat.startForegroundService(context, new Intent(context, AndroidMediaSessionService.class)
+                    .setAction(AndroidMediaSessionService.ACTION_UPDATE)
+                    .putExtra(AndroidMediaSessionService.EXTRA_STATE,
+                        "{\"title\":\"Final position regression\",\"playbackState\":\"paused\"}"));
+            });
+            awaitForeground(context);
+            SystemClock.sleep(10000);
+            assertTrue("A newer playback request must survive the earlier clear", hasForegroundNotification(context));
+        }
+    }
+
     @Test public void activityTeardownAfterUpdateDoesNotCrashTheProcess() throws Exception {
         assertActivityTeardown(false);
     }

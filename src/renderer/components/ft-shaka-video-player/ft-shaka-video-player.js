@@ -6096,7 +6096,7 @@ export default defineComponent({
 
       tabMediaCoordinator.setPlaybackState(
         mediaTabId,
-        mediaSessionStopped ? 'none' : 'paused'
+        mediaSessionStopped || video.value?.ended ? 'none' : 'paused'
       )
 
       if (process.env.IS_ELECTRON && window.ftElectron?.tabs?.setPlaybackState) {
@@ -6199,11 +6199,17 @@ export default defineComponent({
       // Re-evaluate auto-PiP now that PiP is actually allowed (the video was possibly
       // in a hidden tab / scrolled out of view while still loading).
       updateAutoPip()
+      handleVideoResize()
+      videoLayoutReady.value = true
+    }
+
+    function handleVideoResize() {
       updateAnnotationVideoAspectRatio()
       updateScrollMiniVideoAspectRatio()
       updateScrollMiniPlayer()
-      videoLayoutReady.value = true
 
+      // Native dimensions can arrive after canplay, including when fullscreen
+      // was entered while waiting for the first media segment.
       if (isActiveTab.value && isNativeFullscreenActive()) {
         setFullscreenOrientation(
           true,
@@ -6364,7 +6370,7 @@ export default defineComponent({
           position: Math.min(videoElement.duration, Math.max(0, videoElement.currentTime)),
           playbackRate: videoElement.playbackRate,
         },
-        mediaSessionStopped ? 'none' : videoElement.paused ? 'paused' : 'playing'
+        mediaSessionStopped || videoElement.ended ? 'none' : videoElement.paused ? 'paused' : 'playing'
       )
     }
 
@@ -11517,6 +11523,7 @@ export default defineComponent({
       handlePause,
       syncPlayPauseControlIcons,
       handleCanPlay,
+      handleVideoResize,
       handleEnded,
       handleSeeking,
       handleAbRepeatSeeked,

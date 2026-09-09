@@ -220,6 +220,7 @@ export function createAndroidNativeScreen({ element, container, getController, g
       controlsHeight: controlBounds.height,
       videoVisible: visible,
       controlsVisible: visible && controlBounds.width > 0 && controlBounds.height > 0 &&
+        !container.querySelector('.endedScreen') &&
         !container.classList.contains('scrollMiniPlayer') && sharedControls?.hasAttribute('shown') === true &&
         (!centerElement || container.contains(centerElement)),
       menus: menus.map(({ x, y, width, height, pageScroll = false }) => ({ x, y: pageScroll ? nativeY(y) : y, width, height, pageScroll })),

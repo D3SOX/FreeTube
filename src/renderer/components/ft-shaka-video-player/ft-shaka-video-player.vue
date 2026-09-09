@@ -143,6 +143,7 @@
         @seeking="handleSeeking"
         @seeked="handleAbRepeatSeeked"
         @canplay="handleCanPlay"
+        @resize="handleVideoResize"
         @volumechange="updateVolume"
         @timeupdate="handleTimeupdate"
         @ratechange="syncMediaSessionPosition"
