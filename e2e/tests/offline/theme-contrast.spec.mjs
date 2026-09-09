@@ -86,7 +86,7 @@ for (const theme of ['openTubeXLight', 'openTubeXDark']) {
     test.describe(`${theme} control contrast at ${scale}%`, () => {
       test.use({ seed: { settings: { baseTheme: theme, currentLocale: 'en-US', uiScale: scale } } })
 
-      test('seekbar progress stays neutral and SponsorBlock categories remain visible', async ({ app, page }) => {
+      test('seekbar progress keeps a subtle teal tint and SponsorBlock categories remain visible', async ({ app, page }) => {
         await mockPlayableWatchPage(app, page)
         // An aborted label lookup would queue later SponsorBlock requests behind
         // network recovery. A 404 is the API's normal "no labels" response.
@@ -133,8 +133,9 @@ for (const theme of ['openTubeXLight', 'openTubeXDark']) {
           ]
         })
         const [played, unplayed, ...markers] = await sampleColors(app, bar, points)
-        expect(Math.max(...played) - Math.min(...played), `neutral progress: ${played}`).toBeLessThanOrEqual(2)
-        expect(Math.min(...played), `soft white progress: ${played}`).toBeGreaterThanOrEqual(200)
+        expect(played[1] - played[0], `teal progress: ${played}`).toBeGreaterThanOrEqual(10)
+        expect(played[2] - played[0], `teal progress: ${played}`).toBeGreaterThanOrEqual(8)
+        expect(Math.min(...played), `soft teal progress: ${played}`).toBeGreaterThanOrEqual(190)
         expect(Math.max(...played), `retain marker colors: ${played}`).toBeLessThanOrEqual(235)
         expect(Math.max(...played.map((value, index) => Math.abs(value - unplayed[index])))).toBeGreaterThanOrEqual(20)
         for (const [index, marker] of markers.entries()) {
