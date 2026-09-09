@@ -797,8 +797,6 @@ Settings:
     Show Video Title: Kuva video pealkiri
     Show Bottom Right Actions Dock: Kuva all paremal toiminguriba
     Paused Interface Hide Delay: Liidese peitmise viivitus pausi ajal
-    Add: Lisa
-    Remove: Eemalda
   Data Settings:
     Data And Storage: Andmed ja salvestusruum
     Profile Directory: Profiilikaust
@@ -966,8 +964,6 @@ Settings:
     Unlocking: Avamine…
   Search Settings: Otsingu seaded
   No Settings Found: Seadeid ei leitud
-  Experimental Settings:
-    Disable Hardware Acceleration: Keela riistvarakiirendus
 Tutorial:
   Skip: Jäta vahele
   Next: Edasi
@@ -1014,7 +1010,6 @@ Profile:
   Use Initial: Kasuta esitähte
   The selected image could not be loaded: Valitud pilti ei õnnestunud laadida
   Theme Color: Kujunduse värv
-  Go To Profile Manager: Ava profiilihaldur
 Channel:
   Subscription settings: Tellimuse seaded
   Failed to save subscription settings: Kanali seadeid ei õnnestunud salvestada
@@ -1250,9 +1245,6 @@ Video:
       UpvoteSegment: Anna poolthääl
       DownvoteSegment: Anna vastuhääl
       VoteFailed: SponsorBlocki hääle saatmine nurjus.
-  Station: Jaam
-  Playlist:
-    Unavailable videos are hidden: 1 kättesaamatu video on peidetud | {count} kättesaamatut videot on peidetud
 Playlist:
   Playlist Already Preloaded: "Kõik esitusloendi videod on juba eellaaditud"
   Playlist Preload Progress: "Videote eellaadimine: {completed}/{requested}"
@@ -1262,7 +1254,6 @@ Playlist:
   Playlist Preload Complete: "Eellaaditud videoid: {count}."
   Playlist Preload Partial: "Eellaaditi {preloaded}/{requested} videot. {failed} eellaadimine nurjus."
   Playlist Preload Pagination Failed: "Tervet esitusloendit ei saanud laadida, seega eellaadimine tühistati."
-  Unavailable videos are hidden: Kättesaamatud videod on peidetud
 Change Format:
   Local Video File: Kohalik videofail
   Local Audio File: Kohalik helifail
@@ -1498,8 +1489,6 @@ Tooltips:
     Scroll Speed: Muudab hiireratta ja puuteplaadi kerimisliigutuste vahemaad.
     Use Fixed Tab Width: Annab horisontaalsel vaheleheribal igale vahelehele pealkirjast sõltumata sama laiuse.
     Use Grid Player Menu: Paigutab videopleieri seadete menüü ridade loendi asemel paanide ruudustikuna.
-  Experimental Settings:
-    Disable Hardware Acceleration: Keelab GPU riistvarakiirenduse. Võib lahendada graafikaprobleeme, kuid tõenäoliselt vähendab jõudlust.
 The playlist is at the beginning. Enable loop to continue playing: Esitusloend on alguses. Esitamise jätkamiseks luba kordus
 External link opening has been disabled in Settings → Privacy: Väliste linkide avamine on jaotises Seaded → Privaatsus keelatud
 KeyboardShortcutPrompt:
@@ -1676,9 +1665,6 @@ Downloads:
     Subtitles Format: Subtiitrid - {format}
 Channels:
   Load More Channels: "Laadi rohkem kanaleid"
-Search Bar:
-  Open Search Container: Ava otsinguväli
-  Search: Otsi
 Theme Discovery:
   Discover Themes: "Avasta teemasid"
   Refresh: "Värskenda"

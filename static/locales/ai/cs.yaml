@@ -964,8 +964,6 @@ Settings:
     Unlocking: Odemykání…
   Search Settings: Hledat v nastavení
   No Settings Found: Nebyla nalezena žádná nastavení
-  Experimental Settings:
-    Disable Hardware Acceleration: Zakázat hardwarovou akceleraci
 Tutorial:
   Skip: Přeskočit
   Next: Další
@@ -1245,8 +1243,6 @@ Video:
       UpvoteSegment: Hlasovat pro
       DownvoteSegment: Hlasovat proti
       VoteFailed: Hlas pro SponsorBlock se nepodařilo odeslat.
-  Playlist:
-    Unavailable videos are hidden: 1 nedostupné video je skryté | {count} nedostupná videa jsou skrytá | {count} nedostupných videí je skryto
 Playlist:
   Playlist Already Preloaded: "Všechna videa v playlistu jsou již přednačtena"
   Playlist Preload Progress: "Přednačítání videí: {completed} z {requested}"
@@ -1256,7 +1252,6 @@ Playlist:
   Playlist Preload Complete: "Přednačtená videa: {count}."
   Playlist Preload Partial: "Přednačteno {preloaded} z {requested} videí. {failed} se nepodařilo přednačíst."
   Playlist Preload Pagination Failed: "Celý playlist se nepodařilo načíst, přednačítání bylo zrušeno."
-  Unavailable videos are hidden: Nedostupná videa jsou skrytá
 Change Format:
   Local Video File: Místní soubor videa
   Local Audio File: Místní zvukový soubor
@@ -1492,8 +1487,6 @@ Tooltips:
     Scroll Speed: Mění vzdálenost posunu kolečkem myši a gesty kolečka touchpadu.
     Use Fixed Tab Width: Nastaví všem kartám na vodorovném panelu stejnou šířku místo šířky podle názvu.
     Use Grid Player Menu: Uspořádá nabídku nastavení přehrávače videa do mřížky dlaždic místo seznamu řádků.
-  Experimental Settings:
-    Disable Hardware Acceleration: Zakáže hardwarovou akceleraci GPU. Může vyřešit grafické problémy, ale pravděpodobně sníží výkon.
 The playlist is at the beginning. Enable loop to continue playing: Playlist je na začátku. Chcete-li pokračovat v přehrávání, zapněte opakování
 External link opening has been disabled in Settings → Privacy: Otevírání externích odkazů bylo zakázáno v Nastavení → Soukromí
 KeyboardShortcutPrompt:
