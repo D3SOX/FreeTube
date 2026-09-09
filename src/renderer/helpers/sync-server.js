@@ -43,10 +43,12 @@ const MAX_ENCRYPTED_SYNC_TIMEOUT_MS = 5 * 60 * 1000
 const DEFAULT_CHANNEL_AVATAR = 'https://yt3.googleusercontent.com/ytc/default'
 const YOUTUBE_VIDEO_THUMBNAIL_REGEX = /^https?:\/\/i\.ytimg\.com\/vi(?:_webp)?\//
 
-function syncServerFetch(input, init) {
+function syncServerFetch(input, init, timeoutMs) {
   return process.env.IS_CAPACITOR
     ? capacitorHttpFetch(input, {
         ...init,
+        // Encrypted transfers may outlast the native client's 30-second default.
+        nativeTimeoutMs: timeoutMs,
         headers: applySyncServerUserAgent(Object.fromEntries(new Headers(init.headers))),
       })
     : fetch(input, init)
@@ -118,7 +120,7 @@ export class SyncServerClient {
         headers,
         body: options.body == null ? undefined : JSON.stringify(options.body),
         signal: controller.signal,
-      })
+      }, timeoutMs)
       const text = await response.text()
 
       if (!response.ok) {
