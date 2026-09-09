@@ -67,6 +67,7 @@ const TAB_PREVIEW_CAPTURE_STYLE_ID = 'opentubex-tab-preview-capture-style'
 const TAB_PREVIEW_CAPTURE_CLASS = 'opentubex-tab-preview-capturing'
 const TAB_PREVIEW_CACHE_DIR_NAME = 'tab-previews'
 const TAB_TRANSFER_MOUNT_TIMEOUT_MS = 8000
+const STARTUP_TAB_MOUNT_DELAY_MS = 50
 const RAPID_TAB_CREATION_BATCH_DELAY_MS = 40
 const RAPID_TAB_CREATION_BATCH_MAX_DELAY_MS = 100
 const transferringTabIds = new Set()
@@ -94,6 +95,7 @@ let tabPreviewCacheMaintenance = Promise.resolve()
  * @property {boolean} isPlaying
  * @property {boolean} isPinned
  * @property {boolean} isLoading
+ * @property {boolean} mountDeferred
  * @property {Set<string>} loadingSources
  * @property {string | null} color
  * @property {string | null} previewDataUrl
@@ -784,6 +786,9 @@ export class TabManager {
     this._deferredStartupWatchTabIds = new Set()
     this._startupPriorityTabId = null
     this._startupPriorityLoadingObserved = false
+    this._startupMountQueue = new Set()
+    this._startupMountTimer = null
+    this._startupMountRunning = false
     // While a batch runs, state broadcasts and session writes are collapsed into
     // a single one that is emitted once the batch finishes (see runBatched).
     this._batchDepth = 0
@@ -811,6 +816,8 @@ export class TabManager {
     this._installWindowOpenHandler()
 
     browserWindow.on('closed', () => {
+      clearTimeout(this._startupMountTimer)
+      this._startupMountQueue.clear()
       if (this._rapidTabCreationBatch) {
         clearTimeout(this._rapidTabCreationBatch.timeoutId)
         this._rapidTabCreationBatch.resolve()
@@ -1034,6 +1041,10 @@ export class TabManager {
    * @param {number} preferredIndex
    */
   _insertTabEntry(tabId, tabInfo, preferredIndex) {
+    if (!tabInfo.isPinned && preferredIndex >= this.tabs.size) {
+      this.tabs.set(tabId, tabInfo)
+      return
+    }
     const entries = Array.from(this.tabs.entries())
     const pinnedCount = entries.filter(([, tab]) => tab.isPinned).length
     let insertIndex = Math.max(0, Math.min(preferredIndex, entries.length))
@@ -1078,7 +1089,8 @@ export class TabManager {
       groupId = null,
       openerTabId = this.activeTabId,
       _preferredIndex = null,
-      _deferUpdates = false
+      _deferUpdates = false,
+      _deferMount = false
     } = options
 
     // Only trusted callers (session restore, transfers) supply an id; renderer
@@ -1123,6 +1135,7 @@ export class TabManager {
       previewCapturePromise: null,
       skipSilence: skipSilence === true,
       loadState: startsUnloaded ? 'unloaded' : 'mounting',
+      mountDeferred: shouldMount && !makeActive && _deferMount,
       preloadInBackground: Boolean(preloadInBackground),
       pendingActivation: false,
       mountRevision: shouldMount ? 1 : 0,
@@ -1154,6 +1167,7 @@ export class TabManager {
     }
 
     this._insertTabEntry(id, tabInfo, preferredIndex)
+    if (tabInfo.mountDeferred) this._startupMountQueue.add(id)
 
     if (makeActive) {
       if (this.activeTabId == null) {
@@ -1296,10 +1310,14 @@ export class TabManager {
     if (
       previousActiveId === tabId &&
       tab.pendingActivation !== true &&
-      tab.loadState !== 'unloaded'
+      tab.loadState !== 'unloaded' &&
+      !tab.mountDeferred
     ) {
       return
     }
+
+    tab.mountDeferred = false
+    this._startupMountQueue.delete(tabId)
 
     const outgoingTabId = this.presentedTabId ?? previousActiveId
     if (outgoingTabId && outgoingTabId !== tabId) {
@@ -1452,6 +1470,7 @@ export class TabManager {
       ) {
         this.presentedTabId = null
       }
+      this._scheduleStartupMount()
       this._finalizeDeferredDisposals(tabId)
     }
 
@@ -1478,6 +1497,7 @@ export class TabManager {
       this._resolveInitialPresentation()
     }
 
+    this._scheduleStartupMount()
     this._finalizeDeferredDisposals(tabId)
 
     const tab = this.tabs.get(tabId)
@@ -2549,6 +2569,8 @@ export class TabManager {
     const tab = this.tabs.get(tabId)
     if (!tab) return
 
+    tab.mountDeferred = false
+    this._startupMountQueue.delete(tabId)
     tab.loadState = 'mounting'
     tab.preloadInBackground = tab.id !== this.activeTabId
     tab.mountRevision += 1
@@ -2559,15 +2581,18 @@ export class TabManager {
 
   /**
    * @param {string} tabId
+   * @param {boolean} [deferMount]
    * @returns {boolean}
    */
-  loadTab(tabId) {
+  loadTab(tabId, deferMount = false) {
     const tab = this.tabs.get(tabId)
     if (!tab || tab.loadState !== 'unloaded') {
       return false
     }
 
     tab.loadState = 'mounting'
+    tab.mountDeferred = deferMount
+    if (deferMount) this._startupMountQueue.add(tabId)
     tab.preloadInBackground = true
     tab.mountRevision += 1
     this._setTabLoadingSource(tab, TAB_LOADING_SOURCE_MOUNT, true)
@@ -2641,6 +2666,9 @@ export class TabManager {
     }
 
     tab.loadState = 'unloaded'
+    tab.mountDeferred = false
+    this._startupMountQueue.delete(tabId)
+    this._resolveTabMountWaiters(tabId, tab.mountRevision, false)
     tab.preloadInBackground = false
     tab.pendingActivation = false
     tab.isPlaying = false
@@ -2940,11 +2968,49 @@ export class TabManager {
     // one session write rather than waking the shared renderer for every tab.
     this.runBatched(() => {
       for (const tabId of tabIds) {
-        this.loadTab(tabId)
+        this.loadTab(tabId, true)
       }
     }).catch(error => {
       console.error('Failed to resume deferred startup watch tabs:', error)
     })
+    this._scheduleStartupMount()
+  }
+
+  _scheduleStartupMount() {
+    if (
+      this._startupMountRunning || this._startupMountTimer != null ||
+      this._startupMountQueue.size === 0 || this.browserWindow.isDestroyed()
+    ) return
+
+    // Yield between mounts so input and paint can run on slower CPUs. Waiting
+    // for mount acknowledgement also prevents a slow page from piling up work.
+    this._startupMountTimer = setTimeout(async () => {
+      this._startupMountTimer = null
+      this._startupMountRunning = true
+      try {
+        const active = this.tabs.get(this.activeTabId)
+        if (active?.loadState === 'mounting') {
+          await this.waitForTabMount(active.id, active.mountRevision)
+        }
+        if (this.browserWindow.isDestroyed()) return
+
+        for (const tabId of this._startupMountQueue) {
+          this._startupMountQueue.delete(tabId)
+          const tab = this.tabs.get(tabId)
+          if (!tab?.mountDeferred || tab.loadState !== 'mounting') continue
+
+          tab.mountDeferred = false
+          this._broadcastStateUpdate()
+          await this.waitForTabMount(tabId, tab.mountRevision)
+          break
+        }
+      } catch (error) {
+        console.error('Failed to mount restored background tab:', error)
+      } finally {
+        this._startupMountRunning = false
+        this._scheduleStartupMount()
+      }
+    }, STARTUP_TAB_MOUNT_DELAY_MS)
   }
 
   /**
@@ -2976,6 +3042,7 @@ export class TabManager {
         isActive: tab.id === this.activeTabId,
         isActivatable: this._isTabActivatable(tab),
         isUnloaded: tab.loadState === 'unloaded',
+        mountDeferred: tab.mountDeferred === true,
         isLoading: this._getTabLoadingState(tab),
         isPlaying: tab.isPlaying || false,
         skipSilence: tab.skipSilence === true,
@@ -3381,73 +3448,86 @@ export class TabManager {
       const prioritizeActiveWatchTab = activeTabData != null &&
         TabManager.getRouteFromUrl(activeTabData.url).path.startsWith('/watch/')
       const deferredStartupWatchTabIds = new Set()
-
+      const avatars = new Map()
       for (const tabData of sessionData.tabs) {
-        const makeActive = tabData.id === sessionData.activeTabId
-        const hasSavedTitle = typeof tabData.title === 'string' && tabData.title.trim().length > 0
-        const previewFileName = normalizeTabPreviewFileName(tabData.previewFileName)
-        const avatarFileName = normalizeTabPreviewFileName(tabData.avatarFileName)
-        const avatarDataUrl = await this._loadTabPreviewDataUrl(avatarFileName)
-        const loadInBackground = loadInactiveTabs || (restoreTabLoadState && tabData.isUnloaded === false)
-        const deferForActiveWatchTab = prioritizeActiveWatchTab &&
-          !makeActive &&
-          loadInBackground &&
-          TabManager.getRouteFromUrl(tabData.url).path.startsWith('/watch/')
-        const restoreAsUnloaded = deferForActiveWatchTab || (!loadInactiveTabs && !makeActive && (
-          (restoreTabLoadState && tabData.isUnloaded === true) ||
-          (!loadInBackground && hasSavedTitle)
-        ))
-
-        const tab = this.createTab({
-          id: typeof tabData.id === 'string' ? tabData.id : undefined,
-          // Strip here as well to heal sessions persisted before the strip on save existed
-          url: TabManager.stripOneTimeTimestampFromUrl(tabData.url),
-          title: hasSavedTitle ? tabData.title : undefined,
-          avatarDataUrl,
-          avatarFileName: avatarDataUrl == null ? null : avatarFileName,
-          isPinned: tabData.isPinned === true,
-          color: tabData.color,
-          groupId: tabData.groupId,
-          // Legacy sessions did not persist this field and must retain the old
-          // disabled behavior instead of inheriting the new-tab default.
-          skipSilence: tabData.skipSilence === true,
-          // Preview images are only needed when the switcher asks for them.
-          // Keep the cache reference and let getTabPreview load it on demand
-          // instead of serially reading every restored tab before first paint.
-          previewCapturedAt: previewFileName != null && Number.isFinite(tabData.previewCapturedAt)
-            ? tabData.previewCapturedAt
-            : 0,
-          previewFileName,
-          history: restoreNavigationHistory ? tabData.history : null,
-          historyIndex: restoreNavigationHistory ? tabData.historyIndex : null,
-          persistHistory: restoreNavigationHistory,
-          makeActive,
-          openPosition: 'end',
-          openerTabId: typeof tabData.placementOpenerTabId === 'string'
-            ? tabData.placementOpenerTabId
-            : null,
-          lazyLoad: restoreAsUnloaded,
-          preloadInBackground: loadInBackground && !makeActive && !deferForActiveWatchTab
-        })
-        if (deferForActiveWatchTab) {
-          deferredStartupWatchTabIds.add(tab.id)
+        const fileName = normalizeTabPreviewFileName(tabData.avatarFileName)
+        if (fileName != null && !avatars.has(fileName)) {
+          avatars.set(fileName, this._loadTabPreviewDataUrl(fileName))
         }
       }
+      await Promise.all([...avatars].map(async ([fileName, data]) => {
+        avatars.set(fileName, await data)
+      }))
 
-      if (deferredStartupWatchTabIds.size > 0) {
-        this._deferredStartupWatchTabIds = deferredStartupWatchTabIds
-        this._startupPriorityTabId = this.activeTabId
-        this._startupPriorityLoadingObserved = false
-      }
+      await this.runBatched(() => {
+        for (const tabData of sessionData.tabs) {
+          const makeActive = tabData.id === sessionData.activeTabId
+          const hasSavedTitle = typeof tabData.title === 'string' && tabData.title.trim().length > 0
+          const previewFileName = normalizeTabPreviewFileName(tabData.previewFileName)
+          const avatarFileName = normalizeTabPreviewFileName(tabData.avatarFileName)
+          const avatarDataUrl = avatars.get(avatarFileName) ?? null
+          const loadInBackground = loadInactiveTabs || (restoreTabLoadState && tabData.isUnloaded === false)
+          const deferForActiveWatchTab = prioritizeActiveWatchTab &&
+            !makeActive &&
+            loadInBackground &&
+            TabManager.getRouteFromUrl(tabData.url).path.startsWith('/watch/')
+          const restoreAsUnloaded = deferForActiveWatchTab || (!loadInactiveTabs && !makeActive && (
+            (restoreTabLoadState && tabData.isUnloaded === true) ||
+            (!loadInBackground && hasSavedTitle)
+          ))
 
-      restoreTabPlacementOpeners(this.tabs, sessionData.tabs)
-
-      if (!this.activeTabId) {
-        const firstTabId = this.tabs.keys().next().value
-        if (firstTabId) {
-          this.activateTab(firstTabId)
+          const tab = this.createTab({
+            id: typeof tabData.id === 'string' ? tabData.id : undefined,
+            // Strip here as well to heal sessions persisted before the strip on save existed
+            url: TabManager.stripOneTimeTimestampFromUrl(tabData.url),
+            title: hasSavedTitle ? tabData.title : undefined,
+            avatarDataUrl,
+            avatarFileName: avatarDataUrl == null ? null : avatarFileName,
+            isPinned: tabData.isPinned === true,
+            color: tabData.color,
+            groupId: tabData.groupId,
+            // Legacy sessions did not persist this field and must retain the old
+            // disabled behavior instead of inheriting the new-tab default.
+            skipSilence: tabData.skipSilence === true,
+            // Preview images are only needed when the switcher asks for them.
+            // Keep the cache reference and let getTabPreview load it on demand
+            // instead of serially reading every restored tab before first paint.
+            previewCapturedAt: previewFileName != null && Number.isFinite(tabData.previewCapturedAt)
+              ? tabData.previewCapturedAt
+              : 0,
+            previewFileName,
+            history: restoreNavigationHistory ? tabData.history : null,
+            historyIndex: restoreNavigationHistory ? tabData.historyIndex : null,
+            persistHistory: restoreNavigationHistory,
+            makeActive,
+            openPosition: 'end',
+            openerTabId: typeof tabData.placementOpenerTabId === 'string'
+              ? tabData.placementOpenerTabId
+              : null,
+            lazyLoad: restoreAsUnloaded,
+            _deferMount: !makeActive,
+            preloadInBackground: loadInBackground && !makeActive && !deferForActiveWatchTab
+          })
+          if (deferForActiveWatchTab) {
+            deferredStartupWatchTabIds.add(tab.id)
+          }
         }
-      }
+
+        if (deferredStartupWatchTabIds.size > 0) {
+          this._deferredStartupWatchTabIds = deferredStartupWatchTabIds
+          this._startupPriorityTabId = this.activeTabId
+          this._startupPriorityLoadingObserved = false
+        }
+
+        restoreTabPlacementOpeners(this.tabs, sessionData.tabs)
+
+        if (!this.activeTabId) {
+          const firstTabId = this.tabs.keys().next().value
+          if (firstTabId) {
+            this.activateTab(firstTabId)
+          }
+        }
+      })
 
       return this.tabs.size > 0
     } finally {
