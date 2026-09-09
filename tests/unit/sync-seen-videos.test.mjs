@@ -22,10 +22,10 @@ async function settingsFixture(history = []) {
   return { db, Settings }
 }
 
-function cacheFixture(applied = true) {
+function cacheFixture(applied = true, logger = console) {
   const recorded = []
   const context = vm.createContext({
-    console,
+    console: logger,
     ...seenVideos,
     DBSubscriptionCacheHandlers: {
       updateVideosByChannelId: async () => applied,
@@ -264,4 +264,46 @@ test('cache filtering uses the same capped mark set as persistence and sync', ()
   const result = seenVideos.applySubscriptionSeenVideosToCache(cache, marks)
   assert.equal(result.channel.videos[0].isNewInSubscriptionFeed, true)
   assert.equal(result.channel.videos[1].isNewInSubscriptionFeed, false)
+})
+
+
+test('seen mark persistence uses the history index instead of scanning unrelated history', async () => {
+  const { db, Settings } = await settingsFixture([
+    { videoId: 'watched', isWatched: true },
+    { videoId: 'unrelated', isWatched: true },
+  ])
+  await db.history.ensureIndexAsync({ fieldName: 'videoId' })
+  db.history.getAllData = () => { throw new Error('Unexpected full-history scan') }
+  const saved = await Settings.mergeSeenVideos([
+    { videoId: 'watched', seenAt: 2000 }, { videoId: 'keep', seenAt: 1000 },
+  ])
+  assert.deepEqual(JSON.parse(saved).map(mark => mark.videoId), ['keep'])
+})
+
+test('individual and bulk UI marking handle failed seen-mark persistence', async () => {
+  const failure = new Error('Seen-mark persistence failed')
+  const logged = []
+  for (const bulk of [false, true]) {
+    const fixture = cacheFixture(true, { error: error => logged.push(error) })
+    fixture.context.dispatch = async () => { throw failure }
+    await assert.doesNotReject(() => bulk
+      ? fixture.actions.markSubscriptionEntriesAsSeen(fixture.context, {
+        tabs: ['videos', 'shorts', 'live'], channelIds: ['channel'],
+      })
+      : fixture.actions.markSubscriptionVideoAsSeen(fixture.context, 'videoCache'))
+  }
+  assert.deepEqual(logged, [failure, failure])
+})
+
+test('failed seen-mark persistence stops sync before uploading stale state', async () => {
+  const failure = new Error('Seen-mark persistence failed')
+  let uploads = 0
+  await assert.rejects(seenVideos.syncSubscriptionSeenVideos({
+    getSeenVideos: async () => [],
+    putSeenVideos: async () => { uploads++ },
+  }, {
+    state: { settings: { subscriptionSeenVideos: '[]' } },
+    dispatch: async () => { throw failure },
+  }), failure)
+  assert.equal(uploads, 0)
 })

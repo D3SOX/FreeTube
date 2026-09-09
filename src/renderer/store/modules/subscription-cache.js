@@ -289,7 +289,9 @@ const actions = {
     // render, so all cards leave together regardless of feed size.
     commit('markSubscriptionEntriesAsSeenInCache', (await runSubscriptionCacheWrites(writes))
       .filter(cacheEntry => cacheEntry != null))
-    if (seenVideos.length > 0) await dispatch('mergeSubscriptionSeenVideos', seenVideos)
+    if (seenVideos.length > 0) {
+      await dispatch('mergeSubscriptionSeenVideos', seenVideos).catch(error => console.error(error))
+    }
   },
 
   async markSubscriptionVideoAsSeen({ commit, dispatch, state }, videoId) {
@@ -338,7 +340,9 @@ const actions = {
       }
     }
     await runSubscriptionCacheWrites(writes)
-    if (seenVideos.length > 0) await dispatch('mergeSubscriptionSeenVideos', seenVideos)
+    if (seenVideos.length > 0) {
+      await dispatch('mergeSubscriptionSeenVideos', seenVideos).catch(error => console.error(error))
+    }
   },
 
   async markSubscriptionPostAsSeen({ commit, state }, postId) {

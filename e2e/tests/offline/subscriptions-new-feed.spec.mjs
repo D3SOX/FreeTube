@@ -475,7 +475,14 @@ test.describe('new subscriptions feed', () => {
     await page.evaluate(async ({ channelId, videos }) => {
       const store = document.querySelector('#app').__vue_app__.config.globalProperties.$store
       await store.dispatch('updateSubscriptionVideosCacheByChannel', { channelId, videos, timestamp: new Date() })
-    }, { channelId: CHANNEL_ID, videos: [video('fetched-later', 'Fetched after sync', now, { isNewInSubscriptionFeed: true })] })
+    }, {
+      channelId: CHANNEL_ID,
+      videos: [
+        video('fetched-later', 'Fetched after sync', now, { isNewInSubscriptionFeed: true }),
+        video('fetched-unseen', 'Fetched unseen video', now, { isNewInSubscriptionFeed: true })
+      ]
+    })
+    await expect(page.getByText('Fetched unseen video', { exact: true })).toBeVisible()
     await expect(page.getByText('Fetched after sync', { exact: true })).toHaveCount(0)
     expect(uploads).toContain('history')
     expect(uploads).toContain('seenVideos')
@@ -486,6 +493,7 @@ test.describe('new subscriptions feed', () => {
     await goTo(relaunched.page, 'subscriptions')
     await relaunched.page.locator('[data-subscription-feed-tab="all"]').click()
     await expect(relaunched.page.getByText('New community post', { exact: true })).toBeVisible()
+    await expect(relaunched.page.getByText('Fetched unseen video', { exact: true })).toBeVisible()
     await expect(relaunched.page.getByText('Fetched after sync', { exact: true })).toHaveCount(0)
     expect(await relaunched.page.evaluate(() => {
       const store = document.querySelector('#app').__vue_app__.config.globalProperties.$store

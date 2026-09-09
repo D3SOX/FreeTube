@@ -4,7 +4,7 @@ import { PlaylistVideoAddResult } from '../../constants'
 import { hasReachedWatchedThreshold, migrateLegacyHistoryRecord } from '../../history'
 import { resolveSearchHistoryEntry } from '../../search-history'
 import { createRecommendationStore } from '../recommendations'
-import { mergeSubscriptionSeenVideos } from '../../subscriptionSeenVideos'
+import { mergeSubscriptionSeenVideos, parseSubscriptionSeenVideos } from '../../subscriptionSeenVideos'
 
 const recommendations = createRecommendationStore(db.recommendations)
 
@@ -18,17 +18,27 @@ class Settings {
     // marks inside it so concurrent windows cannot replace each other's marks.
     this.pendingSeenVideosUpdate = this.pendingSeenVideosUpdate.catch(() => {}).then(async () => {
       const saved = await db.settings.findOneAsync({ _id: 'subscriptionSeenVideos' })
-      const history = await db.history.findAsync({}, {
-        videoId: 1,
-        isWatched: 1,
-        isLive: 1,
-        isUpcoming: 1,
-        premiereTimestamp: 1,
-        watchProgress: 1,
-        lengthSeconds: 1,
-      })
-      const historyById = Object.fromEntries(history.map(entry => [entry.videoId, entry]))
-      const value = JSON.stringify(mergeSubscriptionSeenVideos(saved?.value, entries, historyById))
+      const local = parseSubscriptionSeenVideos(saved?.value)
+      const incoming = parseSubscriptionSeenVideos(entries)
+      const videoIds = [...new Set([...local, ...incoming].map(entry => entry.videoId))]
+      await db.history.ensureIndexAsync({ fieldName: 'videoId' })
+      const historyById = {}
+      // NeDB checks each candidate against every ID in $in. Small indexed
+      // batches avoid quadratic work when merging thousands of seen marks.
+      const batchSize = 250
+      for (let index = 0; index < videoIds.length; index += batchSize) {
+        const history = await db.history.findAsync({ videoId: { $in: videoIds.slice(index, index + batchSize) } }, {
+          videoId: 1,
+          isWatched: 1,
+          isLive: 1,
+          isUpcoming: 1,
+          premiereTimestamp: 1,
+          watchProgress: 1,
+          lengthSeconds: 1,
+        })
+        for (const entry of history) historyById[entry.videoId] = entry
+      }
+      const value = JSON.stringify(mergeSubscriptionSeenVideos(local, incoming, historyById))
       if (value !== saved?.value) await this.upsert('subscriptionSeenVideos', value)
       return value
     })
