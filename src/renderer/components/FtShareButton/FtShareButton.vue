@@ -35,7 +35,7 @@
       <div class="buttons">
         <FtButton
           v-if="isCapacitor"
-          class="action nativeShare"
+          class="action"
           aria-describedby="youtubeShareImage"
           :icon="['fas', 'share-alt']"
           :label="t('Share.Share Link')"
@@ -88,7 +88,7 @@
         <div class="buttons">
           <FtButton
             v-if="isCapacitor"
-            class="action nativeShare"
+            class="action"
             aria-describedby="invidiousShare"
             :icon="['fas', 'share-alt']"
             :label="t('Share.Share Link')"
