@@ -1,15 +1,20 @@
 package org.opentubex.app;
 
+import android.accessibilityservice.AccessibilityServiceInfo;
 import android.app.Activity;
 import android.app.Instrumentation;
 import android.app.NotificationManager;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.pm.ShortcutManager;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.accessibility.AccessibilityNodeInfo;
 import android.webkit.WebView;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import java.io.File;
 import java.nio.file.Files;
@@ -61,6 +66,14 @@ public class OptimizedApkInstrumentation extends Instrumentation {
                 resultCode = Activity.RESULT_OK;
                 return;
             }
+
+            // WebView detects fullscreen support from WebChromeClient overrides,
+            // including the empty onHideCustomView method that R8 can remove.
+            check("true".equals(evaluate(web, "document.fullscreenEnabled")), "WebView advertises fullscreen support");
+            checkLauncherShortcuts(web);
+            report("Launcher shortcuts passed");
+            checkPluginCallbacks(web, permission);
+            report("Plugin callbacks passed");
 
             JSONObject info = call(web, "YtDlp", "info", new JSONObject());
             for (String binary : new String[] { "ytDlp", "ffmpeg", "ffprobe" }) {
@@ -120,6 +133,10 @@ public class OptimizedApkInstrumentation extends Instrumentation {
             evaluate(web, "window.optimizedScan = 'pending'; Capacitor.nativePromise('CapacitorBarcodeScanner', 'scanBarcode', " +
                 "{hint: 0, cameraDirection: 1, scanOrientation: 3, scanButton: false, android: {scanningLibrary: 'zxing'}})" +
                 ".then(() => window.optimizedScan = 'scanned', error => window.optimizedScan = error.code)");
+            if (getTargetContext().checkSelfPermission(android.Manifest.permission.CAMERA)
+                    != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                clickPermissionAllow();
+            }
             long scannerDeadline = SystemClock.elapsedRealtime() + 15000;
             AtomicReference<Boolean> scannerReady = new AtomicReference<>(false);
             do {
@@ -131,7 +148,7 @@ public class OptimizedApkInstrumentation extends Instrumentation {
             check(scannerReady.get(), "Native QR scanner opens and receives focus");
             sendKeyDownUpSync(KeyEvent.KEYCODE_BACK);
             await(web, "window.optimizedScan === 'OS-PLUG-BARC-0006'");
-            result.putString("stream", "\nOK (5 checks: bridge, runtimes, playback, worker, scanner)\n");
+            result.putString("stream", "\nOK (7 checks: bridge, shortcuts, callbacks, runtimes, playback, worker, scanner)\n");
             resultCode = Activity.RESULT_OK;
         } catch (Throwable failure) {
             result.putString("stream", "\nFAILURE\n" + android.util.Log.getStackTraceString(failure));
@@ -144,6 +161,125 @@ public class OptimizedApkInstrumentation extends Instrumentation {
             converted.delete();
             finish(resultCode, result);
         }
+    }
+
+    private void checkLauncherShortcuts(WebView web) throws Exception {
+        // These names come from the renderer, so Java resource references in
+        // this test would hide a resource-shrinking regression.
+        String[] pages = { "subscriptions", "userplaylists", "history", "downloads" };
+        String[] icons = { "subscriptions", "playlists", "history", "downloads" };
+        JSONArray shortcuts = new JSONArray();
+        for (int index = 0; index < pages.length; index++) {
+            shortcuts.put(new JSONObject().put("id", pages[index]).put("title", pages[index])
+                .put("androidIcon", "ic_shortcut_" + icons[index]));
+        }
+        ShortcutManager manager = getTargetContext().getSystemService(ShortcutManager.class);
+        var previous = manager.getDynamicShortcuts();
+        try {
+            call(web, "AppShortcuts", "set", new JSONObject().put("shortcuts", shortcuts));
+            var registered = manager.getDynamicShortcuts();
+            for (int index = 0; index < pages.length; index++) {
+                String page = pages[index];
+                check(registered.stream().anyMatch(shortcut -> shortcut.getId().equals(page)),
+                    "Launcher shortcut is registered: " + page);
+                int resource = getTargetContext().getResources().getIdentifier("ic_shortcut_" + icons[index],
+                    "drawable", getTargetContext().getPackageName());
+                check(resource != 0 && getTargetContext().getDrawable(resource) != null,
+                    "Launcher shortcut icon survives resource shrinking: " + page);
+            }
+        } finally { manager.setDynamicShortcuts(previous); }
+    }
+
+    private void checkPluginCallbacks(WebView web, String permission) throws Exception {
+        // A permission check alone does not exercise the reflected result callback.
+        if (!permission.equals("granted")) {
+            beginCall(web, "LocalNotifications", "requestPermissions", new JSONObject());
+            clickPermissionAllow();
+            check(finishCall(web, "LocalNotifications.requestPermissions").getString("display").equals("granted"),
+                "Notification permission callback survives shrinking");
+        }
+        JSONObject notification = new JSONObject().put("id", 91218).put("title", "Optimized notification test")
+            .put("body", "Resource and callback check").put("channelId", "live-reminders")
+            .put("foreground", true).put("isExactNotification", false);
+        JSONObject notifications = new JSONObject().put("notifications", new JSONArray().put(notification));
+        try {
+            call(web, "LocalNotifications", "schedule", notifications);
+            NotificationManager manager = getTargetContext().getSystemService(NotificationManager.class);
+            long deadline = SystemClock.elapsedRealtime() + 5000;
+            android.app.Notification delivered = null;
+            do {
+                for (var active : manager.getActiveNotifications()) {
+                    if (active.getId() == 91218) delivered = active.getNotification();
+                }
+                if (delivered != null) break;
+                Thread.sleep(100);
+            } while (SystemClock.elapsedRealtime() < deadline);
+            check(delivered != null, "Local notification is delivered");
+            int expectedIcon = getTargetContext().getResources().getIdentifier("ic_stat_opentubex", "drawable",
+                getTargetContext().getPackageName());
+            check(expectedIcon != 0 && delivered.getSmallIcon().getResId() == expectedIcon,
+                "Notification uses its configured icon after shrinking");
+        } finally {
+            call(web, "LocalNotifications", "cancel", notifications);
+            call(web, "LocalNotifications", "removeDeliveredNotifications", notifications);
+        }
+
+        // Return a cancelled picker result through Android and Capacitor's real
+        // activity-result dispatch, without depending on a document provider UI.
+        checkCancelledPicker(web, "AndroidStorage", "chooseDirectory", new JSONObject(), Intent.ACTION_OPEN_DOCUMENT_TREE);
+        JSONObject saved = checkCancelledPicker(web, "AndroidStorage", "saveFile", new JSONObject()
+            .put("fileName", "optimized-test.txt").put("data", "dGVzdA=="), Intent.ACTION_CREATE_DOCUMENT);
+        check(!saved.getBoolean("saved"), "Cancelled export resolves without saving");
+        checkCancelledPicker(web, "YtDlp", "chooseCookies", new JSONObject(), Intent.ACTION_OPEN_DOCUMENT);
+
+        // Fail before network access, inside the separate BotGuard WebView.
+        // Its @JavascriptInterface rejection must reach the original plugin call.
+        beginCall(web, "PoToken", "generate", new JSONObject().put("videoId", "optimized-test")
+            .put("sessionContext", "{}").put("initialAttestationData", "{\"R\":{}}")
+            .put("ytConfig", "{}"));
+        await(web, "window.optimizedResult !== null");
+        check(new JSONObject(evaluate(web, "window.optimizedResult")).optString("error")
+            .contains("Failed to get BotGuard challenge"), "PO-token JavaScript rejection survives shrinking");
+    }
+
+    private JSONObject checkCancelledPicker(WebView web, String plugin, String method, JSONObject options,
+                                            String action) throws Exception {
+        IntentFilter filter = new IntentFilter(action);
+        if (!action.equals(Intent.ACTION_OPEN_DOCUMENT_TREE)) {
+            filter.addCategory(Intent.CATEGORY_OPENABLE);
+            filter.addDataType("*/*");
+        }
+        ActivityMonitor monitor = addMonitor(filter, new ActivityResult(Activity.RESULT_CANCELED, null), true);
+        try {
+            JSONObject result = call(web, plugin, method, options);
+            check(monitor.getHits() == 1, plugin + "." + method + " launches the picker");
+            return result;
+        } finally { removeMonitor(monitor); }
+    }
+
+    private void clickPermissionAllow() throws Exception {
+        var automation = getUiAutomation();
+        AccessibilityServiceInfo original = automation.getServiceInfo();
+        AccessibilityServiceInfo info = automation.getServiceInfo();
+        info.flags |= AccessibilityServiceInfo.FLAG_REPORT_VIEW_IDS;
+        automation.setServiceInfo(info);
+        try {
+            long deadline = SystemClock.elapsedRealtime() + 10000;
+            do {
+                AccessibilityNodeInfo root = automation.getRootInActiveWindow();
+                if (root != null) {
+                    for (String controller : new String[] { "com.android.permissioncontroller", "com.google.android.permissioncontroller" }) {
+                        for (String id : new String[] { "permission_allow_button", "permission_allow_foreground_only_button" }) {
+                            for (var button : root.findAccessibilityNodeInfosByViewId(controller + ":id/" + id)) {
+                                if (button.performAction(AccessibilityNodeInfo.ACTION_CLICK)) return;
+                            }
+                        }
+                    }
+                }
+                Thread.sleep(100);
+            } while (SystemClock.elapsedRealtime() < deadline);
+            throw new AssertionError("Permission dialog opens");
+        } finally { automation.setServiceInfo(original); }
     }
 
     private void report(String message) {
@@ -172,12 +308,20 @@ public class OptimizedApkInstrumentation extends Instrumentation {
     }
 
     private JSONObject call(WebView web, String plugin, String method, JSONObject options) throws Exception {
+        beginCall(web, plugin, method, options);
+        return finishCall(web, plugin + "." + method);
+    }
+
+    private void beginCall(WebView web, String plugin, String method, JSONObject options) throws Exception {
         evaluate(web, "window.optimizedResult = null; Capacitor.nativePromise(" + JSONObject.quote(plugin) + "," +
             JSONObject.quote(method) + "," + options + ").then(value => window.optimizedResult = {value: value || {}}," +
             "error => window.optimizedResult = {error: String(error)})");
+    }
+
+    private JSONObject finishCall(WebView web, String description) throws Exception {
         await(web, "window.optimizedResult !== null");
         JSONObject result = new JSONObject(evaluate(web, "window.optimizedResult"));
-        check(!result.has("error"), plugin + "." + method + ": " + result);
+        check(!result.has("error"), description + ": " + result);
         return result.getJSONObject("value");
     }
 

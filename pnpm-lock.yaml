@@ -11,6 +11,7 @@ overrides:
 
 patchedDependencies:
   '@capacitor/android@8.5.1': 12c2128338ac622453e4a18693e731185c696f8870f9b9a5f4e86c49e948501b
+  '@capacitor/barcode-scanner@3.1.2': b4c45d0161b7a4f0e708d232e3d2067f01a39f1ffb5497b5c3c7f4df318c50f3
   '@capawesome/capacitor-app-shortcuts@8.0.2': 2581c86d60ce7892c0b3136523994591d24ee7313bbc5fc9b4ad1c710719c70a
   '@capawesome/capacitor-clipboard@0.1.2': 729c6071cbf0e196e2212b015677cdd162c287dca48137c24250c0d056c9fd5b
   shaka-player@5.1.12: 17d85e267c8958999207ce9d6c29a2ddf18734d0499fb30870ac8a55d90303fa
@@ -35,7 +36,7 @@ importers:
         version: 8.1.1(@capacitor/core@8.5.1)
       '@capacitor/barcode-scanner':
         specifier: ^3.1.2
-        version: 3.1.2(@capacitor/core@8.5.1)
+        version: 3.1.2(patch_hash=b4c45d0161b7a4f0e708d232e3d2067f01a39f1ffb5497b5c3c7f4df318c50f3)(@capacitor/core@8.5.1)
       '@capacitor/browser':
         specifier: ^8.0.4
         version: 8.0.4(@capacitor/core@8.5.1)
@@ -6351,7 +6352,7 @@ snapshots:
     dependencies:
       '@capacitor/core': 8.5.1
 
-  '@capacitor/barcode-scanner@3.1.2(@capacitor/core@8.5.1)':
+  '@capacitor/barcode-scanner@3.1.2(patch_hash=b4c45d0161b7a4f0e708d232e3d2067f01a39f1ffb5497b5c3c7f4df318c50f3)(@capacitor/core@8.5.1)':
     dependencies:
       '@capacitor/core': 8.5.1
       html5-qrcode: 2.3.8

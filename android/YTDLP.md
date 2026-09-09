@@ -34,7 +34,7 @@ For a single-ABI test APK, add `-PtestAbi=arm64-v8a`. Local builds without this 
 
 The Gradle transform in `trim-runtime.gradle` removes `usr/lib/quickjs/libquickjs.a` from the bundled Python archives. This static library is used to link executables, while Android runs the separately bundled `libqjs.so`. The transform preserves the other files and Unix symlinks and leaves the downloaded AAR intact. FFmpeg remains at 0.18.1.
 
-To test the optimized nightly variant, use `:app:assembleNightly :app:assembleNightlyAndroidTest -PtestBuildType=nightly -PtestAbi=x86_64` with an x86_64 emulator. This selects a framework-only smoke runner that checks the Capacitor bridge, Python/QuickJS/FFmpeg, local native playback, a WorkManager notification and native QR scanner cancellation. It avoids AndroidX Test's references to Kotlin methods that the production shrinker can remove. Test APKs built for debug must not be mixed with an optimized app.
+To test the nightly variant, use `:app:assembleNightly :app:assembleNightlyAndroidTest -PtestBuildType=nightly -PtestAbi=x86_64` with an x86_64 emulator. This selects a framework-only smoke runner that checks the Capacitor bridge and WebView fullscreen support, launcher shortcuts and their icons, notification permissions and delivery, file-picker callbacks, PO-token error delivery, Python/QuickJS/FFmpeg, local native playback, a WorkManager notification and native QR scanner cancellation. It exercises the packaged app through its JavaScript bridge without adding references to its implementation classes. Test APKs built for debug must not be mixed with a nightly app.
 
 After installing `android/app/build/outputs/apk/nightly/app-nightly.apk` and `android/app/build/outputs/apk/androidTest/nightly/app-nightly-androidTest.apk`, grant camera and notification permissions on the test emulator and run:
 
@@ -45,7 +45,7 @@ adb -s DEVICE shell am instrument --user 0 -w \
   org.opentubex.app.nightly.test/org.opentubex.app.OptimizedApkInstrumentation
 ```
 
-Expect `OK (5 checks: bridge, runtimes, playback, worker, scanner)`. Check the output because ADB can exit successfully after an instrumentation failure. Run the packaging tests with `python3 -m unittest discover -s tests/android`.
+Expect `OK (7 checks: bridge, shortcuts, callbacks, runtimes, playback, worker, scanner)`. To also exercise permission dialogs and callbacks, revoke `android.permission.CAMERA` or, on Android 13 or newer, `android.permission.POST_NOTIFICATIONS` on the test emulator before running; the runner grants them through the dialogs. Check the output because ADB can exit successfully after an instrumentation failure. Run the packaging tests with `python3 -m unittest discover -s tests/android`.
 
 ### Playback cache across APK replacement
 

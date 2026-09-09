@@ -92,12 +92,13 @@ android {
             signingConfig signingConfigs.nightly
         }
         release {
-            minifyEnabled true
-            shrinkResources true
+            // Capacitor and its plugins discover code and resources at runtime.
+            // Preserve them without maintaining an incomplete set of keep rules.
+            minifyEnabled false
+            shrinkResources false
             if (releaseSigningConfigured) {
                 signingConfig signingConfigs.production
             }
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         nightly {
             initWith release
@@ -145,6 +146,9 @@ dependencies {
     if (project.findProperty('testBuildType') != 'nightly') {
         androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
         androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
+        // Match the barcode plugin to control CameraX initialization in tests.
+        androidTestImplementation "androidx.camera:camera-camera2:1.5.1"
+        androidTestImplementation "androidx.camera:camera-lifecycle:1.5.1"
     }
     implementation project(':capacitor-cordova-android-plugins')
 }

@@ -283,11 +283,11 @@ export function createAndroidNativeScreen({ element, container, getController, g
     setOpen(true)
     const sequence = presentationSequence
     try {
-      await attach()
-      // Android rotation captures the current window. Wait until the native
-      // screen has drawn the fullscreen WebView, so that snapshot contains no
-      // inline page controls and needs only the final orientation resize.
-      if (open && presentationSequence === sequence) document.dispatchEvent(new Event('fullscreenchange'))
+      const attaching = attach()
+      // Queue rotation with native fullscreen, before waiting for its first
+      // frame. Waiting here presents portrait fullscreen before rotating it.
+      document.dispatchEvent(new Event('fullscreenchange'))
+      await attaching
     } catch (error) {
       if (presentationSequence === sequence) setOpen(false)
       throw error

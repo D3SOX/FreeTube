@@ -20,6 +20,7 @@ minimumReleaseAgeExclude:
 
 patchedDependencies:
   '@capacitor/android@8.5.1': patches/@capacitor__android@8.5.1.patch
+  '@capacitor/barcode-scanner@3.1.2': patches/@capacitor__barcode-scanner@3.1.2.patch
   '@capawesome/capacitor-app-shortcuts@8.0.2': patches/@capawesome__capacitor-app-shortcuts@8.0.2.patch
   '@capawesome/capacitor-clipboard@0.1.2': patches/@capawesome__capacitor-clipboard@0.1.2.patch
   shaka-player@5.1.12: patches/shaka-player@5.1.12.patch
