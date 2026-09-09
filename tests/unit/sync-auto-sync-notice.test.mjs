@@ -1,5 +1,7 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
+import { readFileSync } from 'node:fs'
+import vm from 'node:vm'
 import { dismissAutoSyncNotice, shouldShowAutoSyncNotice } from '../../src/renderer/helpers/sync-auto-sync-notice.js'
 
 const settings = {
@@ -39,4 +41,13 @@ test('enabling automatic sync retires an undismissed notice', () => {
   assert.equal(shouldShowAutoSyncNotice('0.34.0', settings, storage), true)
   assert.equal(shouldShowAutoSyncNotice('0.34.0', { ...settings, syncServerAutoSync: true }, storage), false)
   assert.equal(shouldShowAutoSyncNotice('0.34.0', settings, storage), false)
+})
+
+test('unavailable local storage does not interrupt startup or dismissal', () => {
+  const context = vm.createContext({ console: { error() {} } })
+  Object.defineProperty(context, 'localStorage', { get() { throw new Error('Storage unavailable') } })
+  const source = readFileSync(new URL('../../src/renderer/helpers/sync-auto-sync-notice.js', import.meta.url), 'utf8')
+  vm.runInContext(source.replaceAll('export function', 'function'), context)
+  assert.equal(context.shouldShowAutoSyncNotice('0.34.0', settings), false)
+  assert.doesNotThrow(() => context.dismissAutoSyncNotice())
 })

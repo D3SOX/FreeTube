@@ -807,7 +807,8 @@ Settings:
     Import playlists formats: 'Desteklenen biçimler: OpenTubeX / FreeTube (.db)'
     Import search history formats: 'Desteklenen biçimler: OpenTubeX / FreeTube (.db), YouTube Takeout (.json)'
   Sync Settings:
-    Previous Auto Sync Notice: "Otomatik eşitleme kapalı. Önceki bir sürüm, veri kaybını önlemek için bunu devre dışı bırakmış olabilir. Yeniden etkinleştirmek için eşitleme ayarlarını açın."
+    Previous Auto Sync Notice: "Otomatik eşitleme kapalı. Önceki bir sürüm, veri kaybını önlemek için bunu devre dışı bırakmış olabilir."
+    Enable Automatic Sync: "Otomatik eşitlemeyi etkinleştir"
     Destructive Sync Blocked: "Veri kaybını önlemek için eşitleme durduruldu. Otomatik eşitleme kapalı. Silinecek öğeleri incelemek için eşitleme ayarlarını açın."
     Turn Flashlight On: El fenerini aç
     Turn Flashlight Off: El fenerini kapat

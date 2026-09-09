@@ -910,7 +910,8 @@ Settings:
     Import playlists formats: 'Formatos compatibles: OpenTubeX / FreeTube (.db)'
     Import search history formats: 'Formatos compatibles: OpenTubeX / FreeTube (.db), YouTube Takeout (.json)'
   Sync Settings:
-    Previous Auto Sync Notice: "La sincronización automática está desactivada. Una versión anterior puede haberla desactivado para evitar la pérdida de datos. Abrí la configuración de sincronización para volver a activarla."
+    Previous Auto Sync Notice: "La sincronización automática está desactivada. Una versión anterior puede haberla desactivado para evitar la pérdida de datos."
+    Enable Automatic Sync: "Activar sincronización automática"
     Destructive Sync Blocked: "La sincronización se detuvo para evitar la pérdida de datos. La sincronización automática está desactivada. Abrí los ajustes de sincronización para revisar las eliminaciones."
     Turn Flashlight On: Encender la linterna
     Turn Flashlight Off: Apagar la linterna

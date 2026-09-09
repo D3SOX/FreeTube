@@ -831,7 +831,8 @@ Settings:
     Import playlists formats: 'Ondersteunde indelingen: OpenTubeX / FreeTube (.db)'
     Import search history formats: 'Ondersteunde indelingen: OpenTubeX / FreeTube (.db), YouTube Takeout (.json)'
   Sync Settings:
-    Previous Auto Sync Notice: "Automatische synchronisatie is uitgeschakeld. Een eerdere versie heeft deze mogelijk uitgeschakeld om gegevensverlies te voorkomen. Open de synchronisatie-instellingen om deze weer in te schakelen."
+    Previous Auto Sync Notice: "Automatische synchronisatie is uitgeschakeld. Een eerdere versie heeft deze mogelijk uitgeschakeld om gegevensverlies te voorkomen."
+    Enable Automatic Sync: "Automatische synchronisatie inschakelen"
     Destructive Sync Blocked: "Synchronisatie is gestopt om gegevensverlies te voorkomen. Automatische synchronisatie is uitgeschakeld. Open de synchronisatie-instellingen om de verwijderingen te bekijken."
     Turn Flashlight On: Zaklamp inschakelen
     Turn Flashlight Off: Zaklamp uitschakelen

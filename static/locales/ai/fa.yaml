@@ -854,7 +854,8 @@ Settings:
     Import playlists formats: 'قالب‌های پشتیبانی‌شده: OpenTubeX / FreeTube (.db)'
     Import search history formats: 'قالب‌های پشتیبانی‌شده: OpenTubeX / FreeTube (.db)، YouTube Takeout (.json)'
   Sync Settings:
-    Previous Auto Sync Notice: "همگام‌سازی خودکار خاموش است. ممکن است نسخه‌ای پیشین برای جلوگیری از ازدست‌رفتن داده‌ها آن را غیرفعال کرده باشد. برای فعال‌کردن دوباره، تنظیمات همگام‌سازی را باز کنید."
+    Previous Auto Sync Notice: "همگام‌سازی خودکار خاموش است. ممکن است نسخه‌ای پیشین برای جلوگیری از ازدست‌رفتن داده‌ها آن را غیرفعال کرده باشد."
+    Enable Automatic Sync: "فعال‌کردن همگام‌سازی خودکار"
     Destructive Sync Blocked: "همگام‌سازی برای جلوگیری از ازدست‌رفتن داده‌ها متوقف شد. همگام‌سازی خودکار خاموش است. برای بررسی حذف‌ها، تنظیمات همگام‌سازی را باز کنید."
     Turn Flashlight On: روشن کردن چراغ‌قوه
     Turn Flashlight Off: خاموش کردن چراغ‌قوه

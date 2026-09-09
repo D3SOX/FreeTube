@@ -807,7 +807,8 @@ Settings:
     Import playlists formats: 'Toetatud vormingud: OpenTubeX / FreeTube (.db)'
     Import search history formats: 'Toetatud vormingud: OpenTubeX / FreeTube (.db), YouTube Takeout (.json)'
   Sync Settings:
-    Previous Auto Sync Notice: "Automaatne sünkroonimine on välja lülitatud. Varasem versioon võis selle andmekao vältimiseks välja lülitada. Selle uuesti lubamiseks ava sünkroonimise seaded."
+    Previous Auto Sync Notice: "Automaatne sünkroonimine on välja lülitatud. Varasem versioon võis selle andmekao vältimiseks välja lülitada."
+    Enable Automatic Sync: "Luba automaatne sünkroonimine"
     Destructive Sync Blocked: "Sünkroonimine peatati andmekao vältimiseks. Automaatne sünkroonimine on välja lülitatud. Kustutamiste ülevaatamiseks ava sünkroonimise seaded."
     Turn Flashlight On: Lülita taskulamp sisse
     Turn Flashlight Off: Lülita taskulamp välja

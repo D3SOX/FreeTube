@@ -1348,10 +1348,23 @@ onMounted(async () => {
         time: Infinity,
         dismissible: false,
         icon: ['fas', 'sync'],
+        verticalButtons: true,
         buttons: [{
           label: t('Dismiss'),
           icon: ['fas', 'xmark'],
           action: dismissAutoSyncNotice,
+        }, {
+          label: t('Settings.Sync Settings.Enable Automatic Sync'),
+          icon: ['fas', 'sync'],
+          primary: true,
+          action: async () => {
+            try {
+              await store.dispatch('setSyncServerAutoSync', true)
+              dismissAutoSyncNotice()
+            } catch (error) {
+              showToast({ message: error.message })
+            }
+          },
         }],
       })
     }

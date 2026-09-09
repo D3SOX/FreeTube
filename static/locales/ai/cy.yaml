@@ -811,7 +811,8 @@ Settings:
     Import playlists formats: 'Fformatau a gynhelir: OpenTubeX / FreeTube (.db)'
     Import search history formats: 'Fformatau a gynhelir: OpenTubeX / FreeTube (.db), YouTube Takeout (.json)'
   Sync Settings:
-    Previous Auto Sync Notice: "Mae cysoni awtomatig wedi'i ddiffodd. Efallai bod fersiwn gynharach wedi'i analluogi i atal colli data. Agorwch y gosodiadau cysoni i'w alluogi eto."
+    Previous Auto Sync Notice: "Mae cysoni awtomatig wedi'i ddiffodd. Efallai bod fersiwn gynharach wedi'i analluogi i atal colli data."
+    Enable Automatic Sync: "Galluogi cysoni awtomatig"
     Destructive Sync Blocked: "Ataliwyd cysoni i atal colli data. Mae cysoni awtomatig wedi'i ddiffodd. Agorwch osodiadau cysoni i adolygu'r dileadau."
     Turn Flashlight On: Troi’r fflachlamp ymlaen
     Turn Flashlight Off: Diffodd y fflachlamp

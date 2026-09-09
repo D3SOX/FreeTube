@@ -807,7 +807,8 @@ Settings:
     Import playlists formats: '支持的格式：OpenTubeX / FreeTube (.db)'
     Import search history formats: '支持的格式：OpenTubeX / FreeTube (.db)、YouTube Takeout (.json)'
   Sync Settings:
-    Previous Auto Sync Notice: "自动同步已关闭。较早的版本可能为防止数据丢失而将其禁用。请打开同步设置以重新启用。"
+    Previous Auto Sync Notice: "自动同步已关闭。较早的版本可能为防止数据丢失而将其禁用。"
+    Enable Automatic Sync: "启用自动同步"
     Destructive Sync Blocked: "为防止数据丢失，同步已停止。自动同步已关闭。请打开同步设置查看将要删除的项目。"
     Turn Flashlight On: 打开手电筒
     Turn Flashlight Off: 关闭手电筒

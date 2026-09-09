@@ -807,7 +807,8 @@ Settings:
     Import playlists formats: "Mentrezhioù skoret: OpenTubeX / FreeTube (.db)"
     Import search history formats: "Mentrezhioù skoret: OpenTubeX / FreeTube (.db), YouTube Takeout (.json)"
   Sync Settings:
-    Previous Auto Sync Notice: "Diweredekaet eo ar c'hengerc'hañ emgefreek. Ur stumm koshoc'h en deus marteze e ziweredekaet evit mirout ouzh koll roadennoù. Digorit arventennoù ar c'hengerc'hañ evit e weredekaat en-dro."
+    Previous Auto Sync Notice: "Diweredekaet eo ar c'hengerc'hañ emgefreek. Ur stumm koshoc'h en deus marteze e ziweredekaet evit mirout ouzh koll roadennoù."
+    Enable Automatic Sync: "Gweredekaat ar c'hengerc'hañ emgefreek"
     Destructive Sync Blocked: "Paouezet eo bet ar goubredañ evit mirout ouzh koll roadennoù. Diweredekaet eo ar c'houbredañ emgefreek. Digorit arventennoù ar c'houbredañ evit gwiriañ an dilamadurioù."
     Turn Flashlight On: Enaouiñ al lamp-tredan
     Turn Flashlight Off: Lazhañ al lamp-tredan

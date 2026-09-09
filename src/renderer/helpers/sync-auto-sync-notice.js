@@ -2,8 +2,9 @@ const STORAGE_KEY = 'opentubex.sync-auto-sync-notice'
 
 // Evaluate eligibility only on the first launch containing this notice. A new
 // installation must not become eligible once it saves its first app version.
-export function shouldShowAutoSyncNotice(lastUsedVersion, settings, storage = localStorage) {
+export function shouldShowAutoSyncNotice(lastUsedVersion, settings, storage) {
   try {
+    storage ??= localStorage
     const state = storage.getItem(STORAGE_KEY)
     if (state === 'done') return false
     const eligible = Boolean(lastUsedVersion) && settings.syncServerEnabled &&
@@ -21,8 +22,9 @@ export function shouldShowAutoSyncNotice(lastUsedVersion, settings, storage = lo
   }
 }
 
-export function dismissAutoSyncNotice(storage = localStorage) {
+export function dismissAutoSyncNotice(storage) {
   try {
+    storage ??= localStorage
     storage.setItem(STORAGE_KEY, 'done')
   } catch (error) {
     console.error('Failed to dismiss the automatic sync notice', error)

@@ -30,7 +30,7 @@ for (const lastUsedVersion of [null, '0.34.0']) {
       const notification = page.locator('.toast', { hasText: 'An earlier version may have disabled it' })
       if (lastUsedVersion) {
         await expect(notification).toBeVisible()
-        await expect(notification.getByRole('button')).toHaveCount(1)
+        await expect(notification.getByRole('button')).toHaveCount(2)
         await page.reload()
         await waitForAppReady(page)
         await expect(notification).toBeVisible()
@@ -43,6 +43,21 @@ for (const lastUsedVersion of [null, '0.34.0']) {
       const sync = await goToSettingsSection(page, 'sync')
       await expect(sync.getByRole('checkbox', { name: 'Sync automatically after changes and every five minutes', exact: true })).not.toBeChecked()
     })
+
+    if (lastUsedVersion) {
+      test('enables automatic sync from the notice and remembers the choice', async ({ page }) => {
+        const notification = page.locator('.toast', { hasText: 'An earlier version may have disabled it' })
+        await notification.getByRole('button', { name: 'Enable automatic sync', exact: true }).click()
+        await expect(notification).toHaveCount(0)
+        const sync = await goToSettingsSection(page, 'sync')
+        await expect(sync.getByRole('checkbox', { name: 'Sync automatically after changes and every five minutes', exact: true })).toBeChecked()
+        await page.reload()
+        await waitForAppReady(page)
+        await expect(notification).toHaveCount(0)
+        const reloadedSync = await goToSettingsSection(page, 'sync')
+        await expect(reloadedSync.getByRole('checkbox', { name: 'Sync automatically after changes and every five minutes', exact: true })).toBeChecked()
+      })
+    }
   })
 }
 

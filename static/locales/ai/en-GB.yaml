@@ -788,7 +788,8 @@ Settings:
     Import playlists formats: 'Supported formats: OpenTubeX / FreeTube (.db)'
     Import search history formats: 'Supported formats: OpenTubeX / FreeTube (.db), YouTube Takeout (.json)'
   Sync Settings:
-    Previous Auto Sync Notice: "Automatic sync is off. An earlier version may have disabled it to prevent data loss. Open Sync settings to enable it again."
+    Previous Auto Sync Notice: "Automatic sync is off. An earlier version may have disabled it to prevent data loss."
+    Enable Automatic Sync: "Enable automatic sync"
     Destructive Sync Blocked: "Sync stopped to prevent data loss. Automatic sync is off. Open Sync settings to review the deletions."
     Turn Flashlight On: Turn torch on
     Turn Flashlight Off: Turn torch off

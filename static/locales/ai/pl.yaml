@@ -352,7 +352,8 @@ Settings:
     Open Profile Directory: Otwórz katalog profilu
     Invalid JSON row, skipping item: Nieprawidłowy JSON w wierszu {row}. Element zostanie pominięty
   Sync Settings:
-    Previous Auto Sync Notice: "Automatyczna synchronizacja jest wyłączona. Wcześniejsza wersja mogła ją wyłączyć, aby zapobiec utracie danych. Otwórz ustawienia synchronizacji, aby włączyć ją ponownie."
+    Previous Auto Sync Notice: "Automatyczna synchronizacja jest wyłączona. Wcześniejsza wersja mogła ją wyłączyć, aby zapobiec utracie danych."
+    Enable Automatic Sync: "Włącz automatyczną synchronizację"
     Destructive Sync Blocked: "Synchronizacja została zatrzymana, aby zapobiec utracie danych. Automatyczna synchronizacja jest wyłączona. Otwórz ustawienia synchronizacji, aby sprawdzić usuwane elementy."
     Turn Flashlight On: Włącz latarkę
     Turn Flashlight Off: Wyłącz latarkę

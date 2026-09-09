@@ -1060,7 +1060,8 @@ Settings:
     Import playlists formats: 'Palaikomi formatai: OpenTubeX / FreeTube (.db)'
     Import search history formats: 'Palaikomi formatai: OpenTubeX / FreeTube (.db), YouTube Takeout (.json)'
   Sync Settings:
-    Previous Auto Sync Notice: "Automatinis sinchronizavimas išjungtas. Ankstesnė versija galėjo jį išjungti, kad išvengtų duomenų praradimo. Atverkite sinchronizavimo nustatymus, kad vėl jį įjungtumėte."
+    Previous Auto Sync Notice: "Automatinis sinchronizavimas išjungtas. Ankstesnė versija galėjo jį išjungti, kad išvengtų duomenų praradimo."
+    Enable Automatic Sync: "Įjungti automatinį sinchronizavimą"
     Destructive Sync Blocked: "Sinchronizavimas sustabdytas siekiant išvengti duomenų praradimo. Automatinis sinchronizavimas išjungtas. Atverkite sinchronizavimo nuostatas ir peržiūrėkite trynimus."
     Turn Flashlight On: Įjungti žibintuvėlį
     Turn Flashlight Off: Išjungti žibintuvėlį

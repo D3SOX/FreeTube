@@ -831,7 +831,8 @@ Settings:
     Import playlists formats: 'תבניות נתמכות: OpenTubeX / FreeTube (.db)'
     Import search history formats: 'תבניות נתמכות: OpenTubeX / FreeTube (.db), YouTube Takeout (.json)'
   Sync Settings:
-    Previous Auto Sync Notice: "הסנכרון האוטומטי כבוי. ייתכן שגרסה קודמת השביתה אותו כדי למנוע אובדן נתונים. יש לפתוח את הגדרות הסנכרון כדי להפעיל אותו מחדש."
+    Previous Auto Sync Notice: "הסנכרון האוטומטי כבוי. ייתכן שגרסה קודמת השביתה אותו כדי למנוע אובדן נתונים."
+    Enable Automatic Sync: "הפעלת סנכרון אוטומטי"
     Destructive Sync Blocked: "הסנכרון נעצר כדי למנוע אובדן נתונים. הסנכרון האוטומטי כבוי. יש לפתוח את הגדרות הסנכרון כדי לבדוק את המחיקות."
     Turn Flashlight On: הפעלת הפנס
     Turn Flashlight Off: כיבוי הפנס
