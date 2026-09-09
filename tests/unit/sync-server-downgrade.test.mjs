@@ -28,6 +28,8 @@ const storeSource = await readFile(new URL('../../src/renderer/store/modules/syn
 function fixture (overrides = {}, { encrypted = false, respond } = {}) {
   const requests = []
   const commits = []
+  const notifications = []
+  const dispatched = []
   const settings = {
     syncServerEnabled: true,
     syncServerUrl: 'https://sync.example',
@@ -38,11 +40,17 @@ function fixture (overrides = {}, { encrypted = false, respond } = {}) {
     syncServerPrivacySalt: Buffer.alloc(16, 2).toString('base64'),
     syncServerSnapshot: '{}',
     syncServerAutoSync: true,
+    syncServerResumeAutoSync: false,
     syncServerSyncSubscriptions: true,
     ...overrides,
   }
   const common = {
     ...errors,
+    showToast: options => notifications.push(options),
+    showToastOnAllTabs: (message, time, icon, buttonAction) => notifications.push({
+      message, time, icon, buttonAction, broadcast: true,
+    }),
+    i18n: { global: { t: key => key } },
     ...privacy,
     syncSubscriptionSeenVideos,
     isRecentSync,
@@ -101,6 +109,8 @@ function fixture (overrides = {}, { encrypted = false, respond } = {}) {
       store.exports.mutations[action]?.(store.exports.state, value)
     },
     dispatch: async (action, value) => {
+      dispatched.push([action, value])
+      if (action === 'setSyncServerAutoSync') return store.exports.actions.setSyncServerAutoSync(context, value)
       if (action === 'mergeSubscriptionSeenVideos') {
         settings.subscriptionSeenVideos = JSON.stringify(mergeSubscriptionSeenVideos(settings.subscriptionSeenVideos, value))
       }
@@ -113,7 +123,7 @@ function fixture (overrides = {}, { encrypted = false, respond } = {}) {
       if (action === 'syncWithSyncServer') return store.exports.actions.syncWithSyncServer(context, value)
     },
   }
-  return { settings, requests, commits, context, actions: store.exports.actions, Client: helper.exports.SyncServerClient }
+  return { settings, requests, commits, notifications, dispatched, context, actions: store.exports.actions, Client: helper.exports.SyncServerClient }
 }
 
 for (const [method, args, path, verb] of [
@@ -358,3 +368,82 @@ for (const overrides of [
     assert.equal(f.requests.some(request => request.url.includes('playback_speeds_in_settings')), false)
   })
 }
+
+
+test('blocked background sync notifies the user and links to sync settings', async () => {
+  const f = fixture({
+    syncServerPrivacyMode: 'legacy',
+    syncServerPrivacyKey: '',
+    syncServerSnapshot: JSON.stringify({ subscriptions: ['private-channel'] }),
+  })
+
+  await assert.rejects(f.actions.syncWithSyncServer(f.context), errors.SyncServerDataLossError)
+
+  assert.equal(f.settings.syncServerAutoSync, false)
+  assert.equal(f.notifications.length, 1)
+  const notification = f.notifications[0]
+  assert.equal(notification.message, 'Settings.Sync Settings.Destructive Sync Blocked')
+  assert.equal(notification.broadcast, true)
+  assert.equal(notification.buttonAction, 'open-sync-settings')
+  assert.equal(f.requests.some(({ method }) => method === 'DELETE'), false)
+})
+
+
+test('manual sync can present its confirmation without a duplicate notification', async () => {
+  const f = fixture({
+    syncServerPrivacyMode: 'legacy',
+    syncServerPrivacyKey: '',
+    syncServerSnapshot: JSON.stringify({ subscriptions: ['private-channel'] }),
+  })
+  await assert.rejects(f.actions.syncWithSyncServer(f.context, { notifyDataLoss: false }), errors.SyncServerDataLossError)
+  assert.equal(f.settings.syncServerAutoSync, false)
+  assert.equal(f.notifications.length, 0)
+})
+
+
+for (const previouslyEnabled of [true, false]) {
+  test(`successful confirmation restores automatic sync only when previously enabled: ${previouslyEnabled}`, async () => {
+    const f = fixture({
+      syncServerPrivacyMode: 'legacy', syncServerPrivacyKey: '',
+      syncServerAutoSync: previouslyEnabled,
+      syncServerSnapshot: JSON.stringify({ subscriptions: ['private-channel'] }),
+    })
+    // Cancel and retry must not overwrite the remembered preference with false.
+    for (let attempt = 0; attempt < 2; attempt++) {
+      await assert.rejects(f.actions.syncWithSyncServer(f.context), errors.SyncServerDataLossError)
+      assert.equal(f.settings.syncServerAutoSync, false)
+    }
+    await f.actions.syncWithSyncServer(f.context, { allowDataLoss: true })
+    assert.equal(f.settings.syncServerAutoSync, previouslyEnabled)
+    assert.equal(f.settings.syncServerResumeAutoSync, false)
+  })
+}
+
+test('remembers paused automatic sync across restart and resumes only after success', async () => {
+  const f = fixture({
+    syncServerPrivacyMode: 'legacy', syncServerPrivacyKey: '',
+    syncServerSnapshot: JSON.stringify({ subscriptions: ['private-channel'] }),
+  })
+  await assert.rejects(f.actions.syncWithSyncServer(f.context), errors.SyncServerDataLossError)
+  let fail = true
+  const restarted = fixture(structuredClone(f.settings), {
+    respond: () => fail ? new Response('Offline', { status: 503 }) : undefined,
+  })
+  await assert.rejects(restarted.actions.syncWithSyncServer(restarted.context, { allowDataLoss: true }))
+  assert.equal(restarted.settings.syncServerAutoSync, false)
+  fail = false
+  await restarted.actions.syncWithSyncServer(restarted.context, { allowDataLoss: true })
+  assert.equal(restarted.settings.syncServerAutoSync, true)
+  assert.equal(restarted.settings.syncServerResumeAutoSync, false)
+})
+
+test('an explicit automatic-sync choice clears a pending resume', async () => {
+  const f = fixture({
+    syncServerPrivacyMode: 'legacy', syncServerPrivacyKey: '',
+    syncServerAutoSync: false, syncServerResumeAutoSync: true,
+  })
+  await f.actions.setSyncServerAutoSync(f.context, false)
+  await f.actions.syncWithSyncServer(f.context)
+  assert.equal(f.settings.syncServerAutoSync, false)
+  assert.equal(f.settings.syncServerResumeAutoSync, false)
+})

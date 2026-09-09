@@ -811,6 +811,7 @@ Settings:
     Import playlists formats: 'Поддържани формати: OpenTubeX / FreeTube (.db)'
     Import search history formats: 'Поддържани формати: OpenTubeX / FreeTube (.db), YouTube Takeout (.json)'
   Sync Settings:
+    Destructive Sync Blocked: "Синхронизирането е спряно, за да се предотврати загуба на данни. Автоматичното синхронизиране е изключено. Отворете настройките за синхронизиране, за да прегледате изтриванията."
     Turn Flashlight On: Включване на фенерчето
     Turn Flashlight Off: Изключване на фенерчето
     Devices: "Устройства"

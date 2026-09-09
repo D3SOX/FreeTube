@@ -1444,6 +1444,7 @@ Settings:
     Import search history formats: 'Supported formats: OpenTubeX / FreeTube (.db), YouTube Takeout (.json)'
     Manage Subscriptions: Manage Subscriptions
   Sync Settings:
+    Destructive Sync Blocked: "Sync stopped to prevent data loss. Automatic sync is off. Open Sync settings to review the deletions."
     Turn Flashlight On: Turn flashlight on
     Turn Flashlight Off: Turn flashlight off
     Sync Settings: Sync

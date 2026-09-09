@@ -22,7 +22,7 @@ export class SyncServerCancelledError extends Error {
 }
 
 export class SyncServerDataLossError extends Error {
-  constructor(collection, deleted, previous) {
+  constructor(collection, deleted, previous, items) {
     super(
       `Sync stopped because it would delete ${deleted} of ${previous} previously synced ${collection} items`
     )
@@ -30,6 +30,7 @@ export class SyncServerDataLossError extends Error {
     this.collection = collection
     this.deleted = deleted
     this.previous = previous
+    this.items = items
   }
 }
 

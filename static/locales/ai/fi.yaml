@@ -831,6 +831,7 @@ Settings:
     Import playlists formats: 'Tuetut muodot: OpenTubeX / FreeTube (.db)'
     Import search history formats: 'Tuetut muodot: OpenTubeX / FreeTube (.db), YouTube Takeout (.json)'
   Sync Settings:
+    Destructive Sync Blocked: "Synkronointi pysäytettiin tietojen menetyksen estämiseksi. Automaattinen synkronointi on pois käytöstä. Tarkista poistot avaamalla synkronointiasetukset."
     Turn Flashlight On: Sytytä taskulamppu
     Turn Flashlight Off: Sammuta taskulamppu
     Devices: "Laitteet"

@@ -1010,6 +1010,7 @@ Settings:
     Import playlists formats: 'Støtta format: OpenTubeX / FreeTube (.db)'
     Import search history formats: 'Støtta format: OpenTubeX / FreeTube (.db), YouTube Takeout (.json)'
   Sync Settings:
+    Destructive Sync Blocked: "Synkroniseringa er stoppa for å hindre tap av data. Automatisk synkronisering er slått av. Opne synkroniseringsinnstillingane for å sjå gjennom slettingane."
     Turn Flashlight On: Slå på lommelykta
     Turn Flashlight Off: Slå av lommelykta
     Devices: "Einingar"

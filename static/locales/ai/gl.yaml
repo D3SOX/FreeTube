@@ -826,6 +826,7 @@ Settings:
     Import playlists formats: 'Formatos compatibles: OpenTubeX / FreeTube (.db)'
     Import search history formats: 'Formatos compatibles: OpenTubeX / FreeTube (.db), YouTube Takeout (.json)'
   Sync Settings:
+    Destructive Sync Blocked: "A sincronización detívose para evitar a perda de datos. A sincronización automática está desactivada. Abre a configuración de sincronización para revisar as eliminacións."
     Turn Flashlight On: Acender a lanterna
     Turn Flashlight Off: Apagar a lanterna
     Devices: "Dispositivos"

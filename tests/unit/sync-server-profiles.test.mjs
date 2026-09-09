@@ -4,11 +4,12 @@ import test from 'node:test'
 import vm from 'node:vm'
 
 import { MAIN_PROFILE_ID } from '../../src/constants.js'
+import { SyncServerDataLossError } from '../../src/renderer/helpers/sync-server-errors.js'
 import * as profileSync from '../../src/renderer/helpers/profile-sync.js'
 
 // Run the real sync code, replacing webpack imports with its profile dependencies.
 const source = await readFile(new URL('../../src/renderer/helpers/sync-server.js', import.meta.url), 'utf8')
-const context = vm.createContext({ MAIN_PROFILE_ID, ...profileSync })
+const context = vm.createContext({ MAIN_PROFILE_ID, SyncServerDataLossError, ...profileSync })
 vm.runInContext(source
   .replace(/^import[\s\S]*? from ['"][^'"]+['"]\n/gm, '')
   .replace(/^export \{[\s\S]*?\}\n/gm, '')
@@ -67,5 +68,32 @@ for (const colors of [
       bg_color: colors.bg_color ?? '#000000',
       text_color: colors.text_color ?? '#FFFFFF',
     }]])
+  })
+}
+
+
+for (const deletedFrom of ['server', 'device']) {
+  test(`destructive profile sync identifies the profile deleted from the ${deletedFrom}`, async () => {
+    const profile = { _id: 'profile-1', name: 'Music', subscriptions: [] }
+    const store = {
+      state: { profiles: { profileList: [
+        { _id: MAIN_PROFILE_ID, subscriptions: [] },
+        ...(deletedFrom === 'server' ? [profile] : []),
+      ] } },
+      dispatch: async () => assert.fail('Must not change local data before confirmation'),
+    }
+    const client = {
+      getSubscriptionGroups: async () => deletedFrom === 'server' ? [] : [{
+        group: { id: 'remote-1', local_id: profile._id, title: profile.name }, channels: [],
+      }],
+    }
+    await assert.rejects(context.syncProfiles(client, store, {
+      'profile-1': { remoteId: 'remote-1', metadata: { title: 'Old name' }, channels: [] },
+    }), error => {
+      assert.ok(error instanceof SyncServerDataLossError)
+      assert.equal(error.deleted, 1)
+      assert.deepEqual(structuredClone(error.items), [{ id: 'profile-1', name: 'Music' }])
+      return true
+    })
   })
 }

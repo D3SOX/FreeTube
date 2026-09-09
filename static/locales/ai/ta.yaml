@@ -830,6 +830,7 @@ Settings:
     Import playlists formats: 'ஆதரிக்கப்படும் வடிவங்கள்: OpenTubeX / FreeTube (.db)'
     Import search history formats: 'ஆதரிக்கப்படும் வடிவங்கள்: OpenTubeX / FreeTube (.db), YouTube Takeout (.json)'
   Sync Settings:
+    Destructive Sync Blocked: "தரவு இழப்பைத் தடுக்க ஒத்திசைவு நிறுத்தப்பட்டது. தானியங்கி ஒத்திசைவு முடக்கப்பட்டுள்ளது. நீக்கங்களைச் சரிபார்க்க ஒத்திசைவு அமைப்புகளைத் திறக்கவும்."
     Turn Flashlight On: கைவிளக்கை இயக்கு
     Turn Flashlight Off: கைவிளக்கை அணை
     Devices: "சாதனங்கள்"

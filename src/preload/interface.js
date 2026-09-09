@@ -689,9 +689,10 @@ export default {
    * @param {string} message
    * @param {number | null} time
    * @param {[string, string] | null} icon
+   * @param {'open-sync-settings' | null} buttonAction
    */
-  showToastOnAllTabs: (message, time, icon = null) => {
-    ipcRenderer.send(IpcChannels.SHOW_TOAST, message, time, icon)
+  showToastOnAllTabs: (message, time, icon = null, buttonAction = null) => {
+    ipcRenderer.send(IpcChannels.SHOW_TOAST, message, time, icon, buttonAction)
   },
 
   liveReminder: {
@@ -881,12 +882,12 @@ export default {
   },
 
   /**
-   * @param {(message: string, time: number | null, icon: [string, string] | null) => void} handler
+   * @param {(message: string, time: number | null, icon: [string, string] | null, buttonAction: 'open-sync-settings' | null) => void} handler
    * @returns {() => void}
    */
   handleShowToast: (handler) => {
-    const listener = (_, message, time, icon) => {
-      handler(message, time, icon)
+    const listener = (_, message, time, icon, buttonAction) => {
+      handler(message, time, icon, buttonAction)
     }
 
     ipcRenderer.on(IpcChannels.SHOW_TOAST, listener)

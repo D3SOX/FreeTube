@@ -826,6 +826,7 @@ Settings:
     Import playlists formats: 'التنسيقات المدعومة: OpenTubeX / FreeTube (.db)'
     Import search history formats: 'التنسيقات المدعومة: OpenTubeX / FreeTube (.db)، YouTube Takeout (.json)'
   Sync Settings:
+    Destructive Sync Blocked: "توقفت المزامنة لمنع فقدان البيانات. المزامنة التلقائية معطلة. افتح إعدادات المزامنة لمراجعة عمليات الحذف."
     Turn Flashlight On: تشغيل المصباح
     Turn Flashlight Off: إيقاف المصباح
     Devices: "الأجهزة"

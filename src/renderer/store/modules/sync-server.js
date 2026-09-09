@@ -1,3 +1,5 @@
+import i18n from '../../i18n/index'
+import { showToastOnAllTabs } from '../../helpers/utils'
 import { isAppHidden } from '../../helpers/appVisibility.js'
 import {
   SyncServerClient,
@@ -141,7 +143,7 @@ function assertEncryptionSupported(supported, required) {
   }
 }
 
-async function runSync(context, { allowDataLoss = false } = {}) {
+async function runSync(context, { allowDataLoss = false, notifyDataLoss = true } = {}) {
   const { commit, dispatch, rootGetters, rootState } = context
   const settings = rootState.settings
   const encrypted = requiresEncryptedSync(settings)
@@ -437,6 +439,9 @@ async function runSync(context, { allowDataLoss = false } = {}) {
         dispatch('updateSyncServerLastSyncAt', lastSyncAt, { root: true }),
       ])
     })
+    if (settings.syncServerResumeAutoSync) {
+      await dispatch('setSyncServerAutoSync', true)
+    }
     commit('setSyncServerLastResult', result)
     commit('setSyncServerProgress', null)
     commit('setSyncServerStatus', 'success')
@@ -449,7 +454,20 @@ async function runSync(context, { allowDataLoss = false } = {}) {
       return null
     }
     if (error instanceof SyncServerDataLossError) {
-      await dispatch('setSyncServerAutoSync', false)
+      if (settings.syncServerAutoSync) {
+        await dispatch('updateSyncServerResumeAutoSync', true, { root: true })
+      }
+      // Pause without treating it as the user's choice to disable automatic sync.
+      await dispatch('updateSyncServerAutoSync', false, { root: true })
+      await dispatch('stopSyncServerAutoSync')
+      if (notifyDataLoss) {
+        showToastOnAllTabs(
+          i18n.global.t('Settings.Sync Settings.Destructive Sync Blocked'),
+          15000,
+          ['fas', 'triangle-exclamation'],
+          'open-sync-settings'
+        )
+      }
     }
     commit('setSyncServerProgress', null)
     if (isSessionExpiredError(error)) {
@@ -580,6 +598,7 @@ const actions = {
     await dispatch('updateSyncServerUsername', trimmedUsername, { root: true })
     await dispatch('updateSyncServerDeviceId', deviceId, { root: true })
     await dispatch('updateSyncServerDeviceName', deviceName, { root: true })
+    await dispatch('updateSyncServerResumeAutoSync', false, { root: true })
     await dispatch('updateSyncServerSnapshot', '{}', { root: true })
     await dispatch('updateSyncServerLastSyncAt', 0, { root: true })
     await dispatch('updateSyncServerPrivacyMode', 'enhanced', { root: true })
@@ -687,6 +706,9 @@ const actions = {
 
       // Keep writes to the shared settings datastore ordered. In particular,
       // the URL must be committed before the token enables the initial sync.
+      if (!sameAccount) {
+        await updateWhileEnabled('updateSyncServerResumeAutoSync', false)
+      }
       await updateWhileEnabled('updateSyncServerUrl', normalizedUrl)
       await updateWhileEnabled('updateSyncServerUsername', trimmedUsername)
       await updateWhileEnabled('updateSyncServerDeviceId', deviceId)
@@ -736,6 +758,7 @@ const actions = {
   async disconnectSyncServer({ commit, dispatch }) {
     await dispatch('stopSyncServerAutoSync')
     await dispatch('updateSyncServerUsername', '', { root: true })
+    await dispatch('updateSyncServerResumeAutoSync', false, { root: true })
     await dispatch('updateSyncServerSnapshot', '{}', { root: true })
     await dispatch('updateSyncServerLastSyncAt', 0, { root: true })
     await dispatch('updateSyncServerPrivacyMode', 'unknown', { root: true })
@@ -961,6 +984,7 @@ const actions = {
   },
 
   async setSyncServerAutoSync({ dispatch }, enabled) {
+    await dispatch('updateSyncServerResumeAutoSync', false, { root: true })
     await dispatch('updateSyncServerAutoSync', enabled, { root: true })
     await dispatch(enabled ? 'startSyncServerAutoSync' : 'stopSyncServerAutoSync')
   },

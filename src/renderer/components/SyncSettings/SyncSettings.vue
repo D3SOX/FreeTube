@@ -299,6 +299,7 @@
         v-if="dataLossWarning"
         :label="t('Settings.Sync Settings.Data Loss Confirmation')"
         theme="readable-width"
+        fixed-layout
         @click="dataLossWarning = null"
       >
         <div class="deleteAccountContent">
@@ -309,6 +310,17 @@
               collection: dataLossWarning.collection,
             }) }}
           </p>
+          <ul class="dataLossItems">
+            <li
+              v-for="item in dataLossWarning.items"
+              :key="item.id"
+            >
+              <bdi>{{ item.name }}</bdi>
+              <small v-if="item.name !== item.id">{{ item.id }}</small>
+            </li>
+          </ul>
+        </div>
+        <template #footer>
           <FtFlexBox class="actions">
             <FtButton
               :label="t('Settings.Sync Settings.Confirm Data Loss')"
@@ -322,7 +334,7 @@
               @click="dataLossWarning = null"
             />
           </FtFlexBox>
-        </div>
+        </template>
       </FtPrompt>
       <FtPrompt
         v-if="showPasswordPrompt"
@@ -703,7 +715,7 @@ async function syncNow() {
   if (busy.value) return
   localError.value = ''
   try {
-    const result = await store.dispatch('syncWithSyncServer')
+    const result = await store.dispatch('syncWithSyncServer', { notifyDataLoss: false })
     if (result !== null) {
       showToast({ message: t('Settings.Sync Settings.Sync completed'), icon: ['fas', 'sync'] })
     }

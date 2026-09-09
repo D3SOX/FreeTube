@@ -166,3 +166,18 @@
 .passwordForm p {
   margin: 0;
 }
+
+.dataLossItems {
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+  padding-inline-start: 1.5rem;
+}
+
+.dataLossItems li {
+  margin-block: 0.5rem;
+}
+
+.dataLossItems small {
+  color: var(--secondary-text-color);
+  display: block;
+}

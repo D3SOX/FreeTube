@@ -807,6 +807,7 @@ Settings:
     Import playlists formats: '対応形式: OpenTubeX / FreeTube（.db）'
     Import search history formats: '対応形式: OpenTubeX / FreeTube（.db）、YouTube Takeout（.json）'
   Sync Settings:
+    Destructive Sync Blocked: "データの損失を防ぐため同期を停止しました。自動同期はオフになっています。同期設定を開いて削除内容を確認してください。"
     Turn Flashlight On: ライトをオンにする
     Turn Flashlight Off: ライトをオフにする
     Devices: "デバイス"
