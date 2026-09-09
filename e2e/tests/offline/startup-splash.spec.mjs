@@ -185,8 +185,10 @@ test.describe('startup splash with a system-selected OpenTubeX theme', () => {
 test.describe('slow initial route', () => {
   test.use({ seed: { settings: { landingPage: 'history' } } })
 
-  for (const fails of [false, true]) {
-    test(`keeps the splash closed until the initial route chunk ${fails ? 'fails' : 'loads'}`, async ({ page }) => {
+  for (const outcome of ['loads', 'fails', 'stalls']) {
+    test(outcome === 'stalls'
+      ? 'releases the app when the initial route chunk stalls'
+      : `keeps the splash closed until the initial route chunk ${outcome}`, async ({ page }) => {
       const dist = new URL('../../../dist-e2e/', import.meta.url)
       const chunks = await Promise.all((await readdir(dist)).filter(name => /^\d+\.js$/.test(name)).map(async name => ({
         name, source: await readFile(new URL(name, dist), 'utf8')
@@ -197,7 +199,7 @@ test.describe('slow initial route', () => {
       const gate = new Promise(resolve => { releaseChunks = resolve })
       await page.route(`**/${historyChunk}`, async route => {
         await gate
-        if (fails) await route.abort('failed')
+        if (outcome === 'fails') await route.abort('failed')
         else await route.continue()
       })
       try {
@@ -209,10 +211,11 @@ test.describe('slow initial route', () => {
         await page.waitForTimeout(850)
         await expect(page.locator('#startup-splash')).toBeVisible()
         await expect(page.locator('#startup-splash')).not.toHaveAttribute('data-revealing')
-        releaseChunks()
-        await expect(page.locator('#startup-splash')).toHaveCount(0)
+        if (outcome !== 'stalls') releaseChunks()
+        await expect(page.locator('#startup-splash')).toHaveCount(0, { timeout: 8000 })
         await expect(page.locator('#app')).not.toHaveAttribute('inert')
-        if (!fails) await expect(page.locator('.tabContent[aria-hidden="false"] > .routerView')).toBeVisible()
+        releaseChunks()
+        if (outcome !== 'fails') await expect(page.locator('.tabContent[aria-hidden="false"] > .routerView')).toBeVisible()
       } finally {
         releaseChunks()
         await page.unrouteAll({ behavior: 'wait' })

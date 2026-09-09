@@ -1517,6 +1517,8 @@ watch([activeTabId, selectionRevision], ([tabId, revision]) => {
   }
 }, { immediate: true })
 
+const STARTUP_PRELOAD_TIMEOUT_MS = 5000
+
 watch([
   dataReady,
   presentedTabId,
@@ -1525,15 +1527,24 @@ watch([
 ], async ([ready, presented, loadState, fullPath], _, onCleanup) => {
   if (!isElectron || !ready || (!presented && loadState !== 'unloaded') || !document.getElementById('startup-splash')) return
   let cancelled = false
-  onCleanup(() => { cancelled = true })
+  let preloadTimeout
+  onCleanup(() => {
+    cancelled = true
+    clearTimeout(preloadTimeout)
+  })
   if (presented && fullPath) {
     try {
       // Tab presentation acknowledges its container before an async route has
-      // loaded. Keep the splash until that route can render real content.
-      await preloadResolvedRoute(router.resolve(fullPath))
+      // loaded. Wait for its content, but expose the shell if the chunk stalls.
+      await Promise.race([
+        preloadResolvedRoute(router.resolve(fullPath)),
+        new Promise(resolve => { preloadTimeout = setTimeout(resolve, STARTUP_PRELOAD_TIMEOUT_MS) })
+      ])
     } catch (error) {
       // A failed route must still expose the shell so navigation can recover.
       console.error('Failed to load the startup route', error)
+    } finally {
+      clearTimeout(preloadTimeout)
     }
   }
   await nextTick()
