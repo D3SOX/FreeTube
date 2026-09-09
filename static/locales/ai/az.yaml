@@ -377,6 +377,7 @@ Settings:
     Light Theme: Açıq mövzu
     Dark Theme: Tünd mövzu
     Custom Theme:
+      Share Restrictions Prompt: "Təsvirlər Markdown daxil olmaqla ən çox 500 simvoldan ibarət ola bilər. Yalnız GitHub-da yerləşdirilən keçidlərə və şəkillərə, o cümlədən buraya birbaşa yüklənənlərə icazə verilir. Bot xarici keçidləri və şəkilləri silir, uzun təsvirləri qısaldır və dəyişiklikləri şərhdə izah edir."
       Import from Clipboard: Buferdən idxal et
       Invalid Clipboard Theme: Buferdə düzgün mövzu yoxdur. Mövzunun JSON mətnini köçürün və yenidən cəhd edin.
       Create Custom Theme: Fərdi mövzu yarat
@@ -387,11 +388,8 @@ Settings:
       Import Theme: Mövzunu idxal et
       Export Theme: Mövzunu ixrac et
       Share Theme: Mövzunu paylaş
-      Share Description Heading: Açıqlama
       Share Description Prompt: Mövzunu və istifadə etməzdən əvvəl bilinməli məqamları təsvir edin.
-      Share Screenshots Heading: Ekran görüntüləri
       Share Screenshots Prompt: Bir və ya bir neçə ekran görüntüsünü buraya sürükləyib buraxın. Botun şəxsi məlumatlarınız olmadan nümunə məzmunla üç önizləmə əlavə etməsi üçün bu bölməni boş saxlayın.
-      Share Code Summary: Mövzunun JSON mətni
       Delete Theme: Mövzunu sil
       Delete Theme Confirmation: “{name}” silinsin? Bu geri alına bilməz.
       Save and Apply: Saxla və tətbiq et
