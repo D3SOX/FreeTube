@@ -106,7 +106,6 @@ let tabPreviewCacheMaintenance = Promise.resolve()
  * @property {boolean} skipSilence
  * @property {TabLoadState} loadState
  * @property {boolean} preloadInBackground
- * @property {boolean} pendingActivation
  * @property {number} mountRevision
  * @property {number} refreshKey
  * @property {number} syncedNavigationRevision
@@ -1137,7 +1136,6 @@ export class TabManager {
       loadState: startsUnloaded ? 'unloaded' : 'mounting',
       mountDeferred: shouldMount && !makeActive && _deferMount,
       preloadInBackground: Boolean(preloadInBackground),
-      pendingActivation: false,
       mountRevision: shouldMount ? 1 : 0,
       refreshKey: 0,
       syncedNavigationRevision: 0,
@@ -1170,24 +1168,12 @@ export class TabManager {
     if (tabInfo.mountDeferred) this._startupMountQueue.add(id)
 
     if (makeActive) {
-      if (this.activeTabId == null) {
-        this.activateTab(id)
-      } else {
-        // Match the current completion-order behavior: newly-created active tabs
-        // join the strip immediately but become selected when their first mount
-        // reports ready.
-        tabInfo.pendingActivation = true
-        tabInfo.preloadInBackground = true
-        if (!_deferUpdates) {
-          this._broadcastStateUpdate()
-          this._saveSession()
-        }
-      }
-    } else {
-      if (!_deferUpdates) {
-        this._broadcastStateUpdate()
-        this._saveSession()
-      }
+      // Select immediately; the renderer keeps the outgoing content visible
+      // until this tab mounts. Mount completion must not steal a later selection.
+      this.activateTab(id)
+    } else if (!_deferUpdates) {
+      this._broadcastStateUpdate()
+      this._saveSession()
     }
 
     return tabInfo
@@ -1205,7 +1191,7 @@ export class TabManager {
       ? options
       : { ...options, route: await TabManager.getStoredLandingRoute() }
 
-    const canBatchRapidCreation = this.activeTabId != null
+    const canBatchRapidCreation = this.activeTabId != null && tabOptions.makeActive === false
     const deferUpdates = canBatchRapidCreation && this._rapidTabCreationBatch != null
     const tab = this.createTab({ ...tabOptions, openPosition, _deferUpdates: deferUpdates })
     if (canBatchRapidCreation) {
@@ -1216,9 +1202,9 @@ export class TabManager {
   }
 
   /**
-   * Publish the first tab in a burst immediately, then coalesce additional tab
-   * creations into one renderer snapshot and session write. The maximum delay
-   * keeps a held shortcut from postponing updates indefinitely.
+   * Publish the first background tab in a burst immediately, then coalesce
+   * additional creations into one renderer snapshot and session write. The
+   * maximum delay keeps continuous creation from postponing updates indefinitely.
    * @param {boolean} updatesDeferred
    * @returns {Promise<void>}
    */
@@ -1309,7 +1295,6 @@ export class TabManager {
     const previousActiveId = this.activeTabId
     if (
       previousActiveId === tabId &&
-      tab.pendingActivation !== true &&
       tab.loadState !== 'unloaded' &&
       !tab.mountDeferred
     ) {
@@ -1344,7 +1329,6 @@ export class TabManager {
       this._startupPriorityLoadingObserved = false
     }
 
-    tab.pendingActivation = false
     tab.preloadInBackground = false
     tab.lastActiveAt = Date.now()
     this.activeTabId = tabId
@@ -1430,11 +1414,7 @@ export class TabManager {
     this._setTabLoadingSource(tab, TAB_LOADING_SOURCE_MOUNT, false)
     this._resolveTabMountWaiters(tabId, mountRevision, true)
 
-    if (tab.pendingActivation) {
-      this.activateTab(tabId)
-    } else {
-      this._broadcastStateUpdate()
-    }
+    this._broadcastStateUpdate()
   }
 
   /**
@@ -1450,7 +1430,6 @@ export class TabManager {
 
     tab.loadState = 'unloaded'
     tab.preloadInBackground = false
-    tab.pendingActivation = false
     this._setTabLoadingSource(tab, TAB_LOADING_SOURCE_MOUNT, false)
     this._resolveTabMountWaiters(tabId, mountRevision, false)
     if (tabId === this._startupPriorityTabId) {
@@ -2670,7 +2649,6 @@ export class TabManager {
     this._startupMountQueue.delete(tabId)
     this._resolveTabMountWaiters(tabId, tab.mountRevision, false)
     tab.preloadInBackground = false
-    tab.pendingActivation = false
     tab.isPlaying = false
     tab.loadingSources = new Set()
     tab.isLoading = false
@@ -2854,7 +2832,6 @@ export class TabManager {
       skipSilence: snapshot.skipSilence === true,
       loadState: 'mounting',
       preloadInBackground: true,
-      pendingActivation: false,
       mountRevision: 1,
       refreshKey: 0,
       syncedNavigationRevision: Number.isInteger(snapshot.syncedNavigationRevision)
@@ -3051,7 +3028,6 @@ export class TabManager {
         groupId: tab.groupId,
         loadState: tab.loadState,
         preloadInBackground: tab.preloadInBackground,
-        pendingActivation: tab.pendingActivation,
         mountRevision: tab.mountRevision,
         refreshKey: tab.refreshKey,
         syncedNavigationRevision: tab.syncedNavigationRevision
