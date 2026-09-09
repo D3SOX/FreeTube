@@ -106,11 +106,13 @@ function fixture (overrides = {}, { encrypted = false, respond } = {}) {
     state: store.exports.state,
     commit: (action, value) => {
       commits.push([action, value])
+      if (action === 'setSyncServerEnabled') settings.syncServerEnabled = value
       store.exports.mutations[action]?.(store.exports.state, value)
     },
     dispatch: async (action, value) => {
       dispatched.push([action, value])
       if (action === 'setSyncServerAutoSync') return store.exports.actions.setSyncServerAutoSync(context, value)
+      if (action === 'applySyncServerEnabled') return store.exports.actions.applySyncServerEnabled(context, value)
       if (action === 'mergeSubscriptionSeenVideos') {
         settings.subscriptionSeenVideos = JSON.stringify(mergeSubscriptionSeenVideos(settings.subscriptionSeenVideos, value))
       }
@@ -446,4 +448,19 @@ test('an explicit automatic-sync choice clears a pending resume', async () => {
   await f.actions.syncWithSyncServer(f.context)
   assert.equal(f.settings.syncServerAutoSync, false)
   assert.equal(f.settings.syncServerResumeAutoSync, false)
+})
+
+test('disabling sync clears recovery before a later manual sync succeeds', async () => {
+  const f = fixture({
+    syncServerPrivacyMode: 'legacy', syncServerPrivacyKey: '',
+    syncServerSnapshot: JSON.stringify({ subscriptions: ['private-channel'] }),
+  })
+  await assert.rejects(f.actions.syncWithSyncServer(f.context), errors.SyncServerDataLossError)
+  assert.equal(f.settings.syncServerResumeAutoSync, true)
+  await f.actions.setSyncServerEnabled(f.context, false)
+  assert.equal(f.settings.syncServerEnabled, false)
+  assert.equal(f.settings.syncServerResumeAutoSync, false)
+  await f.actions.setSyncServerEnabled(f.context, true)
+  await f.actions.syncWithSyncServer(f.context, { allowDataLoss: true })
+  assert.equal(f.settings.syncServerAutoSync, false)
 })

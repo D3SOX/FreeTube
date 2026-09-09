@@ -534,7 +534,7 @@ import {
   setLastUsedVersion,
   setTutorialAudience,
 } from './helpers/tutorialState'
-import { dismissAutoSyncNotice, shouldShowAutoSyncNotice } from './helpers/sync-auto-sync-notice'
+import { dismissAutoSyncNotice, shouldShowAutoSyncNotice, showAutoSyncNoticeOnce } from './helpers/sync-auto-sync-notice'
 import { invalidateAllYtDlpPlaybackSources } from './helpers/player/ytDlpPlayback'
 import { getTabNavigationService } from './tabs/TabNavigationService'
 import { initializeCapacitorTabPreviews } from './tabs/capacitorTabPreviews'
@@ -1343,29 +1343,37 @@ onMounted(async () => {
 
     await nextTick()
     if (showAutoSyncNotice) {
-      showToast({
-        message: t('Settings.Sync Settings.Previous Auto Sync Notice'),
-        time: Infinity,
-        dismissible: false,
-        icon: ['fas', 'sync'],
-        verticalButtons: true,
-        buttons: [{
-          label: t('Dismiss'),
-          icon: ['fas', 'xmark'],
-          action: dismissAutoSyncNotice,
-        }, {
-          label: t('Settings.Sync Settings.Enable Automatic Sync'),
+      showAutoSyncNoticeOnce(release => {
+        const dismissNotice = () => {
+          dismissAutoSyncNotice()
+          release()
+        }
+        showToast({
+          message: t('Settings.Sync Settings.Previous Auto Sync Notice'),
+          time: Infinity,
+          dismissible: false,
           icon: ['fas', 'sync'],
-          primary: true,
-          action: async () => {
-            try {
-              await store.dispatch('setSyncServerAutoSync', true)
-              dismissAutoSyncNotice()
-            } catch (error) {
-              showToast({ message: error.message })
-            }
-          },
-        }],
+          verticalButtons: true,
+          buttons: [{
+            label: t('Dismiss'),
+            icon: ['fas', 'xmark'],
+            action: dismissNotice,
+          }, {
+            label: t('Settings.Sync Settings.Enable Automatic Sync'),
+            icon: ['fas', 'sync'],
+            primary: true,
+            action: async () => {
+              try {
+                await store.dispatch('setSyncServerAutoSync', true)
+                dismissNotice()
+              } catch (error) {
+                showToast({ message: error.message })
+              } finally {
+                release()
+              }
+            },
+          }],
+        })
       })
     }
     scheduleUtilityRoutePreload()

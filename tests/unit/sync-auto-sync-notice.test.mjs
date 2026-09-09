@@ -47,7 +47,7 @@ test('unavailable local storage does not interrupt startup or dismissal', () => 
   const context = vm.createContext({ console: { error() {} } })
   Object.defineProperty(context, 'localStorage', { get() { throw new Error('Storage unavailable') } })
   const source = readFileSync(new URL('../../src/renderer/helpers/sync-auto-sync-notice.js', import.meta.url), 'utf8')
-  vm.runInContext(source.replaceAll('export function', 'function'), context)
+  vm.runInContext(source.replace(/^export /gm, ''), context)
   assert.equal(context.shouldShowAutoSyncNotice('0.34.0', settings), false)
   assert.doesNotThrow(() => context.dismissAutoSyncNotice())
 })

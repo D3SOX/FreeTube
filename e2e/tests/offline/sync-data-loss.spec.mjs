@@ -45,6 +45,25 @@ for (const lastUsedVersion of [null, '0.34.0']) {
     })
 
     if (lastUsedVersion) {
+      test('only one window shows the pending notice', async ({ app, page }) => {
+        const notice = target => target.locator('.toast', { hasText: 'An earlier version may have disabled it' })
+        await expect(notice(page)).toBeVisible()
+        const otherWindow = await openNewWindowFromTabBar(app, page)
+        await waitForAppReady(otherWindow)
+        await expect(notice(otherWindow)).toHaveCount(0)
+        // Reload both renderers together: the pending notice must survive,
+        // with exactly one renderer owning it after startup.
+        await Promise.all([page.reload(), otherWindow.reload()])
+        await Promise.all([waitForAppReady(page), waitForAppReady(otherWindow)])
+        await expect.poll(async () => (await notice(page).count()) + (await notice(otherWindow).count())).toBe(1)
+        const owner = await notice(page).count() ? page : otherWindow
+        await notice(owner).getByRole('button', { name: 'Dismiss', exact: true }).click()
+        await Promise.all([page.reload(), otherWindow.reload()])
+        await Promise.all([waitForAppReady(page), waitForAppReady(otherWindow)])
+        await expect(notice(page)).toHaveCount(0)
+        await expect(notice(otherWindow)).toHaveCount(0)
+      })
+
       test('enables automatic sync from the notice and remembers the choice', async ({ page }) => {
         const notification = page.locator('.toast', { hasText: 'An earlier version may have disabled it' })
         await notification.getByRole('button', { name: 'Enable automatic sync', exact: true }).click()

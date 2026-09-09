@@ -30,3 +30,24 @@ export function dismissAutoSyncNotice(storage) {
     console.error('Failed to dismiss the automatic sync notice', error)
   }
 }
+
+// Keep the lock until the notice is handled. Closing or reloading its renderer
+// releases the lock automatically, leaving an undismissed notice for next time.
+export async function showAutoSyncNoticeOnce(showNotice) {
+  const show = () => {
+    // Another window may have dismissed it since startup checked eligibility.
+    if (localStorage.getItem(STORAGE_KEY) === 'done') return
+    return new Promise(resolve => showNotice(resolve))
+  }
+  try {
+    if (navigator.locks) {
+      await navigator.locks.request(STORAGE_KEY, { ifAvailable: true }, lock => {
+        if (lock) return show()
+      })
+    } else {
+      await show()
+    }
+  } catch (error) {
+    console.error('Failed to show the automatic sync notice', error)
+  }
+}

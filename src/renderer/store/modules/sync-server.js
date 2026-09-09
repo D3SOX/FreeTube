@@ -993,6 +993,7 @@ const actions = {
     if (!enabled) {
       cancelActiveSyncClients()
       await dispatch('stopSyncServerAutoSync')
+      await dispatch('updateSyncServerResumeAutoSync', false, { root: true })
       commit('setSyncServerProgress', null)
       commit('setSyncServerError', '')
       commit('setSyncServerStatus', 'idle')
