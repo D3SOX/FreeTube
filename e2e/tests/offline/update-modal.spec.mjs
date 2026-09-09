@@ -168,3 +168,48 @@ test('skipped updates keep a heading per release', async ({ page, attachScreensh
   ])
   await attachScreenshot('update prompt with skipped releases')
 })
+
+test('changelog images preserve their aspect ratio at phone and desktop widths', async ({ page }) => {
+  const imageUrl = 'https://example.com/release-screenshot.svg'
+  await page.route(imageUrl, route => route.fulfill({
+    contentType: 'image/svg+xml',
+    body: '<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900"><rect width="1600" height="900" fill="teal"/></svg>'
+  }))
+  const notes = [
+    `<img src="${imageUrl}" alt="Height only" height="450">`,
+    `<img src="${imageUrl}" alt="Both dimensions" width="800" height="450">`,
+    `<img src="${imageUrl}" alt="Width only" width="800">`,
+    `![Markdown image](${imageUrl})`
+  ].join('\n\n')
+  await showUpdatePrompt(page, [
+    release(`OpenTubeX ${newestUpdateVersion}`, `v${newestUpdateVersion}-beta`, notes)
+  ])
+
+  const images = page.locator('.changeLogText img')
+  await expect(images).toHaveCount(4)
+  await images.evaluateAll(elements => Promise.all(elements.map(image => image.decode())))
+
+  for (const scale of [1, 1.25]) {
+    await page.evaluate(value => window.ftElectron.setZoomFactor(value), scale)
+    for (const viewport of [{ width: 375, height: 800 }, { width: 800, height: 375 }, { width: 1280, height: 900 }]) {
+      await page.setViewportSize(viewport)
+      for (const image of await images.all()) {
+        const dimensions = await image.evaluate(element => {
+          const { width, height } = element.getBoundingClientRect()
+          const container = element.closest('.changeLogText')
+          const style = getComputedStyle(container)
+          return {
+            width,
+            height,
+            expectedHeight: width * element.naturalHeight / element.naturalWidth,
+            availableWidth: container.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight)
+          }
+        })
+        const context = `${await image.getAttribute('alt')}, ${viewport.width}px, ${scale * 100}% scale`
+        expect(dimensions.width, context).toBeGreaterThan(0)
+        expect(dimensions.width, context).toBeLessThanOrEqual(dimensions.availableWidth + 1)
+        expect.soft(Math.abs(dimensions.height - dimensions.expectedHeight), context).toBeLessThanOrEqual(1)
+      }
+    }
+  }
+})
