@@ -1093,6 +1093,7 @@ Settings:
     Import playlists formats: 'Podprte oblike: OpenTubeX / FreeTube (.db)'
     Import search history formats: 'Podprte oblike: OpenTubeX / FreeTube (.db), YouTube Takeout (.json)'
   Sync Settings:
+    Previous Auto Sync Notice: "Samodejna sinhronizacija je izklopljena. Prejšnja različica jo je morda izklopila, da bi preprečila izgubo podatkov. Odprite nastavitve sinhronizacije, da jo znova vklopite."
     Destructive Sync Blocked: "Sinhronizacija je bila ustavljena, da se prepreči izguba podatkov. Samodejna sinhronizacija je izklopljena. Odprite nastavitve sinhronizacije in preglejte brisanja."
     Turn Flashlight On: Vklopi svetilko
     Turn Flashlight Off: Izklopi svetilko

@@ -820,6 +820,7 @@ Settings:
     Import playlists formats: 'Formate acceptate: OpenTubeX / FreeTube (.db)'
     Import search history formats: 'Formate acceptate: OpenTubeX / FreeTube (.db), YouTube Takeout (.json)'
   Sync Settings:
+    Previous Auto Sync Notice: "Sincronizarea automată este dezactivată. Este posibil ca o versiune anterioară să o fi dezactivat pentru a preveni pierderea datelor. Deschideți setările de sincronizare pentru a o reactiva."
     Destructive Sync Blocked: "Sincronizarea a fost oprită pentru a preveni pierderea datelor. Sincronizarea automată este dezactivată. Deschideți setările de sincronizare pentru a verifica ștergerile."
     Turn Flashlight On: Aprinde lanterna
     Turn Flashlight Off: Stinge lanterna

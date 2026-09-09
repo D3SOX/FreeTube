@@ -1395,6 +1395,7 @@ Settings:
     Subtitles Enabled: Untertitel aktiviert
     Volume: Lautstärke
   Sync Settings:
+    Previous Auto Sync Notice: "Die automatische Synchronisierung ist ausgeschaltet. Eine frühere Version hat sie möglicherweise deaktiviert, um Datenverlust zu verhindern. Du kannst sie in den Synchronisierungseinstellungen wieder einschalten."
     Destructive Sync Blocked: "Die Synchronisierung wurde gestoppt, um Datenverlust zu verhindern. Die automatische Synchronisierung ist ausgeschaltet. Prüfe die Löschungen in den Synchronisierungseinstellungen."
     Turn Flashlight On: Taschenlampe einschalten
     Turn Flashlight Off: Taschenlampe ausschalten

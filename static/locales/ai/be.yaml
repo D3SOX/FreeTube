@@ -854,6 +854,7 @@ Settings:
     Import playlists formats: 'Фарматы, якія падтрымліваюцца: OpenTubeX / FreeTube (.db)'
     Import search history formats: 'Фарматы, якія падтрымліваюцца: OpenTubeX / FreeTube (.db), YouTube Takeout (.json)'
   Sync Settings:
+    Previous Auto Sync Notice: "Аўтаматычная сінхранізацыя выключана. Ранейшая версія магла адключыць яе, каб прадухіліць страту даных. Адкрыйце налады сінхранізацыі, каб уключыць яе зноў."
     Destructive Sync Blocked: "Сінхранізацыя спынена, каб прадухіліць страту даных. Аўтаматычная сінхранізацыя выключана. Адкрыйце налады сінхранізацыі, каб праверыць выдаленні."
     Turn Flashlight On: Уключыць ліхтарык
     Turn Flashlight Off: Выключыць ліхтарык

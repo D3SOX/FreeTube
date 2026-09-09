@@ -10,6 +10,42 @@ const profiles = Array.from({ length: 16 }, (_, index) => ({
   subscriptions: []
 }))
 
+for (const lastUsedVersion of [null, '0.34.0']) {
+  test.describe(`automatic sync notice with saved version ${lastUsedVersion}`, () => {
+    test.use({
+      showTutorial: Boolean(lastUsedVersion),
+      seed: {
+        settings: {
+          lastUsedVersion,
+          uiScale: 125,
+          syncServerEnabled: true,
+          syncServerToken: 'test-token',
+          syncServerUrl: 'https://sync.example',
+          syncServerAutoSync: false,
+        }
+      }
+    })
+
+    test('only existing users see the notice and dismissal survives reload', async ({ page }) => {
+      const notification = page.locator('.toast', { hasText: 'An earlier version may have disabled it' })
+      if (lastUsedVersion) {
+        await expect(notification).toBeVisible()
+        await expect(notification.getByRole('button')).toHaveCount(1)
+        await page.reload()
+        await waitForAppReady(page)
+        await expect(notification).toBeVisible()
+        await notification.getByRole('button', { name: 'Dismiss', exact: true }).click()
+      }
+      await expect(notification).toHaveCount(0)
+      await page.reload()
+      await waitForAppReady(page)
+      await expect(notification).toHaveCount(0)
+      const sync = await goToSettingsSection(page, 'sync')
+      await expect(sync.getByRole('checkbox', { name: 'Sync automatically after changes and every five minutes', exact: true })).not.toBeChecked()
+    })
+  })
+}
+
 for (const uiScale of [95, 125]) {
   test.describe(`destructive sync at ${uiScale}% UI scale`, () => {
     test.use({

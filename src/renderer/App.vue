@@ -534,6 +534,7 @@ import {
   setLastUsedVersion,
   setTutorialAudience,
 } from './helpers/tutorialState'
+import { dismissAutoSyncNotice, shouldShowAutoSyncNotice } from './helpers/sync-auto-sync-notice'
 import { invalidateAllYtDlpPlaybackSources } from './helpers/player/ytDlpPlayback'
 import { getTabNavigationService } from './tabs/TabNavigationService'
 import { initializeCapacitorTabPreviews } from './tabs/capacitorTabPreviews'
@@ -1258,6 +1259,7 @@ onMounted(async () => {
     tabsReady,
   ])
   const lastUsedVersion = getLastUsedVersion(tutorialState.lastUsedVersion)
+  const showAutoSyncNotice = shouldShowAutoSyncNotice(lastUsedVersion, store.state.settings)
   if (tutorialState.landingPageToInitialize !== null) {
     await store.dispatch('updateLandingPage', tutorialState.landingPageToInitialize)
   }
@@ -1340,6 +1342,19 @@ onMounted(async () => {
     }
 
     await nextTick()
+    if (showAutoSyncNotice) {
+      showToast({
+        message: t('Settings.Sync Settings.Previous Auto Sync Notice'),
+        time: Infinity,
+        dismissible: false,
+        icon: ['fas', 'sync'],
+        buttons: [{
+          label: t('Dismiss'),
+          icon: ['fas', 'xmark'],
+          action: dismissAutoSyncNotice,
+        }],
+      })
+    }
     scheduleUtilityRoutePreload()
     if (isCapacitor) {
       capacitorPullToRefreshSetup = initializeCapacitorPullToRefresh()
