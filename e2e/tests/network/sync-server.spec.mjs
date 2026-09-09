@@ -908,7 +908,13 @@ test.describe('OpenTubeX sync server', () => {
 
     const syncSection = await goToSettingsSection(page, 'sync')
     const serverUrlInput = syncSection.getByLabel('Server URL')
-    await page.route('https://not-a-sync-server.invalid/**', route => route.abort())
+    // A connection abort waits for network recovery; an HTTP error rejects
+    // this endpoint immediately because it is not a sync server.
+    await page.route('https://not-a-sync-server.invalid/**', route => route.fulfill({
+      status: 404,
+      contentType: 'text/plain',
+      body: 'Not found'
+    }))
     await serverUrlInput.fill('https://not-a-sync-server.invalid')
     await serverUrlInput.press('Tab')
     await expect(syncSection.getByText(/Unable to connect to this sync server/)).toBeVisible()

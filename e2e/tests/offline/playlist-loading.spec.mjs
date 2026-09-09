@@ -1,10 +1,14 @@
 import { test, expect, goTo, sel } from '../../helpers/app.mjs'
+import { fulfillVisualFixture } from '../../helpers/visual-fixtures.mjs'
 
 test.use({
   seed: {
     settings: {
       backendPreference: 'invidious',
       backendFallback: false,
+      // Suggestions would contact the fake instance and block playlist requests
+      // while network recovery waits for that unrelated request to succeed.
+      enableSearchSuggestions: false,
       defaultInvidiousInstance: 'https://invidious.test',
       generalAutoLoadMorePaginatedItemsEnabled: true
     }
@@ -57,6 +61,7 @@ async function openPlaylistTab(page, route) {
 }
 
 test('loads an Invidious Mix response from the playlist endpoint', async ({ page, attachScreenshot }) => {
+  await page.route('https://invidious.test/vi/**', route => fulfillVisualFixture(route, 'video-thumbnail'))
   const playlistId = 'RDnGusAJYHcjo'
   const errors = []
   page.on('console', message => {

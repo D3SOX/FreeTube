@@ -742,7 +742,7 @@ test.describe('settings', () => {
     await expectDownloadQueueSettingsAlignment(page)
   })
 
-  test('hides the redundant Privacy heading and keeps the original Distraction Free headings', async ({ page }) => {
+  test('hides the redundant Privacy heading and keeps the Distraction Free group headings', async ({ page }) => {
     const privacy = await goToSettingsSection(page, 'privacy')
     const mainPrivacySection = privacy.locator('.settingsSection').first()
     const privacyHeading = mainPrivacySection.locator('.sectionTitle')
@@ -755,7 +755,6 @@ test.describe('settings', () => {
     await expect(focus.locator('h4.groupTitle')).toHaveText([
       'General',
       'Visible While Paused in Full Window / Full Screen',
-      'Side bar',
       'Subscriptions page',
       'Channel Page',
       'Watch Page'
