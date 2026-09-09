@@ -2391,6 +2391,11 @@ body .os-scrollbar {
   --logo-text: url('../../_icons/textWhiteSmall.svg');
 }
 
+/* Resolve the color on the thread so fullscreen docks can supply their palette. */
+:is(.openTubeXLight, .openTubeXDark) .comment.commentThread {
+  --comment-thread-line-color: var(--tertiary-text-color);
+}
+
 .openTubeXLight {
   --toggle-track-color: #b7c9c5;
   --toggle-checked-track-color: #8cbaae;

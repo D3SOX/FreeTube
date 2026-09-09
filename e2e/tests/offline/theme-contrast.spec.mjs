@@ -1,4 +1,4 @@
-import { test, expect, goToSettingsSection } from '../../helpers/app.mjs'
+import { test, expect, goToSettingsSection, setPlayerFullscreen } from '../../helpers/app.mjs'
 import { sampleColors } from '../../helpers/colors.mjs'
 import { openMockedVideo } from '../../helpers/player.mjs'
 import { mockPlayableWatchPage } from '../../helpers/watch.mjs'
@@ -44,6 +44,39 @@ for (const theme of ['openTubeXLight', 'openTubeXDark']) {
   for (const scale of [100, 125]) {
     test.describe(`${theme} control contrast at ${scale}%`, () => {
       test.use({ seed: { settings: { baseTheme: theme, currentLocale: 'en-US', uiScale: scale } } })
+
+      for (const fullscreen of [false, true]) {
+        test(`comment thread lines and reply connectors remain visible in ${fullscreen ? 'fullscreen' : 'watch page'}`, async ({ app, page, attachScreenshot }) => {
+          await mockPlayableWatchPage(app, page)
+          await openMockedVideo(page)
+          if (fullscreen) {
+            await setPlayerFullscreen(page, true)
+            await page.locator('.fullscreenCommentsToggle').click({ force: true })
+            await expect(page.locator('.fullscreenCommentsOverlay.open')).toBeVisible()
+          }
+          const thread = page.locator('.commentThread').first()
+          const connector = thread.locator('.commentReplyConnector').first()
+
+          for (const [element, pseudo] of [[thread, '::before'], [connector, null]]) {
+            if (!pseudo) {
+              await thread.locator(':scope > .commentReplyRootToggle button').click()
+            }
+            await expect(element).toBeVisible()
+            await page.mouse.move(0, 0)
+            await element.scrollIntoViewIfNeeded()
+            const points = await element.evaluate((element, pseudo) => {
+              const style = getComputedStyle(element, pseudo)
+              const x = pseudo ? parseFloat(style.insetInlineStart) : 0
+              const y = pseudo ? parseFloat(style.insetBlockStart) + 10 : 3
+              return [[x - 4, y], ...[-0.5, 0.5, 1.5].map(offset => [x + offset, y])]
+            }, pseudo)
+            const [surface, ...edge] = await sampleColors(app, element, points)
+            const ratio = Math.max(...edge.map(color => contrastRatio(color, surface)))
+            expect.soft(ratio, `${pseudo ? 'thread' : 'reply connector'} ${JSON.stringify({ surface, edge })}`).toBeGreaterThanOrEqual(3)
+          }
+          await attachScreenshot(`${theme} comment thread contrast at ${scale}% ${fullscreen ? 'fullscreen' : 'watch page'}`)
+        })
+      }
 
       test('seekbar progress stays neutral and SponsorBlock categories remain visible', async ({ app, page }) => {
         await mockPlayableWatchPage(app, page)
