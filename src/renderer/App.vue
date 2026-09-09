@@ -462,6 +462,7 @@ import {
 } from './helpers/mobileLinkActions'
 import { startProgressBarOperation } from './helpers/progressBar'
 import { initializePlatformInfo, isLinuxWayland } from './helpers/platform'
+import { revealStartupSplash, updateStartupSplashLabel } from './helpers/startupSplash'
 import {
   shouldShowProgressStartToast,
   shouldUseProgressToast,
@@ -1280,6 +1281,8 @@ onMounted(async () => {
   })
   updateTheme()
 
+  if (isElectron) updateStartupSplashLabel(t('Theme Discovery.Loading'))
+
   if (defaultInvidiousInstance.value === '') {
     await store.dispatch('setRandomCurrentInvidiousInstance')
   }
@@ -1513,6 +1516,40 @@ watch([activeTabId, selectionRevision], ([tabId, revision]) => {
     navigation.requestPresentation(tabId, revision)
   }
 }, { immediate: true })
+
+const STARTUP_PRELOAD_TIMEOUT_MS = 5000
+
+watch([
+  dataReady,
+  presentedTabId,
+  () => store.getters.getActiveTab?.loadState,
+  () => store.getters.getTabById(presentedTabId.value)?.route.fullPath,
+], async ([ready, presented, loadState, fullPath], _, onCleanup) => {
+  if (!isElectron || !ready || (!presented && loadState !== 'unloaded') || !document.getElementById('startup-splash')) return
+  let cancelled = false
+  let preloadTimeout
+  onCleanup(() => {
+    cancelled = true
+    clearTimeout(preloadTimeout)
+  })
+  if (presented && fullPath) {
+    try {
+      // Tab presentation acknowledges its container before an async route has
+      // loaded. Wait for its content, but expose the shell if the chunk stalls.
+      await Promise.race([
+        preloadResolvedRoute(router.resolve(fullPath)),
+        new Promise(resolve => { preloadTimeout = setTimeout(resolve, STARTUP_PRELOAD_TIMEOUT_MS) })
+      ])
+    } catch (error) {
+      // A failed route must still expose the shell so navigation can recover.
+      console.error('Failed to load the startup route', error)
+    } finally {
+      clearTimeout(preloadTimeout)
+    }
+  }
+  await nextTick()
+  if (!cancelled) revealStartupSplash()
+}, { flush: 'post' })
 
 watch(presentedTabId, async (tabId, previousTabId) => {
   if (!isElectron || tabId === previousTabId) {

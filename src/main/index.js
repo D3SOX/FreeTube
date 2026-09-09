@@ -2631,17 +2631,23 @@ function runApp() {
     } = { }) {
     // Syncing new window background to theme choice.
     const windowBackground = await baseHandlers.settings._findOne('baseTheme').then(async (setting) => {
-      if (!setting) {
-        return nativeTheme.shouldUseDarkColors ? '#0f0f0f' : '#f1f1f1'
+      let theme = setting?.value ?? 'system'
+      if (theme === 'system') {
+        const classification = nativeTheme.shouldUseDarkColors ? 'dark' : 'light'
+        const selected = await baseHandlers.settings._findOne(
+          classification === 'dark' ? 'systemDarkTheme' : 'systemLightTheme'
+        )
+        const customThemes = isCustomThemeValue(selected?.value) ? await loadCustomThemes() : []
+        theme = resolveSystemTheme(selected?.value, classification, customThemes)
       }
 
       // Determine window color to be shown (shown most prominently during initial app load)
       // Uses the --bg-color for each corresponding theme
-      if (isCustomThemeValue(setting.value)) {
-        return (await getSelectedCustomTheme(setting.value))?.colors.background ??
+      if (isCustomThemeValue(theme)) {
+        return (await getSelectedCustomTheme(theme))?.colors.background ??
           (nativeTheme.shouldUseDarkColors ? '#0f0f0f' : '#f1f1f1')
       }
-      switch (setting.value) {
+      switch (theme) {
         case 'dark':
           return '#0f0f0f'
         case 'light':
@@ -2656,10 +2662,10 @@ function runApp() {
           return '#282a36'
         case 'catppuccin-mocha':
           return '#1e1e2e'
-        case 'pastel-pink':
-          return '#ffd1dc'
-        case 'hot-pink':
-          return '#de1c85'
+        case 'pastelPink':
+          return '#ffeadd'
+        case 'hotPink':
+          return '#ff008a'
         case 'nordic':
           return '#2b2f3a'
         case 'solarized-dark':
@@ -2733,9 +2739,7 @@ function runApp() {
     }
 
     const newWindow = new BrowserWindow({
-      // Always wait for the shared renderer's first logical presentation. Even
-      // explicitly requested windows otherwise expose a blank shell while the
-      // initial container is mounting.
+      // The initial HTML paints a splash before the shared renderer boots.
       show: false,
       backgroundColor: windowBackground,
       icon: process.env.NODE_ENV === 'development'
@@ -2746,6 +2750,10 @@ function runApp() {
       webPreferences: {
         webSecurity: false,
         backgroundThrottling: false,
+        additionalArguments: [
+          `--startup-background=${windowBackground}`,
+          `--startup-dark=${nativeTheme.shouldUseDarkColors}`
+        ],
         preload: process.env.NODE_ENV === 'development'
           ? path.resolve(__dirname, '../../dist/preload.js')
           : path.resolve(__dirname, 'preload.js')
@@ -2915,7 +2923,12 @@ function runApp() {
       setMenu()
     }
 
+    let startupWindowShown = false
     const showWindow = () => {
+      // A later load/presentation callback must not resurface a window the user
+      // already minimized or hid while its splash was visible.
+      if (newWindow.isDestroyed() || startupWindowShown) return
+      startupWindowShown = true
       if (newWindow.isVisible()) {
         // only open the dev tools if they aren't already open
         if (process.env.NODE_ENV === 'development' && !newWindow.webContents.isDevToolsOpened()) {
@@ -2936,6 +2949,9 @@ function runApp() {
         newWindow.webContents.openDevTools({ activate: false })
       }
     }
+
+    newWindow.once('ready-to-show', showWindow)
+    newWindow.webContents.ipc.once(IpcChannels.STARTUP_SPLASH_READY, showWindow)
 
     // Initialize tabs - try to restore session or create initial tab
     const initializeTabs = async () => {

@@ -1,0 +1,95 @@
+.startupSplash {
+  /* Keep the initial palette throughout startup: the renderer applies its
+     default theme before the saved settings have finished loading. */
+  --splash-background: var(--startup-background, #0f0f0f);
+  --splash-foreground: var(--startup-foreground, #eee);
+  --splash-shadow: color-mix(in srgb, var(--splash-background) 78%, #000);
+  --splash-face: color-mix(in srgb, var(--splash-background) 94%, var(--splash-foreground));
+  --splash-highlight: color-mix(in srgb, var(--splash-background) 85%, var(--splash-foreground));
+
+  position: fixed;
+  z-index: 2147483647;
+  inset: 0;
+  overflow: clip;
+  color: var(--splash-foreground);
+  font-family: system-ui, sans-serif;
+  direction: ltr;
+}
+
+.startupCurtain {
+  position: absolute;
+  inset-block: 0;
+  inline-size: calc(50% + 0.5px);
+  background-color: var(--splash-background);
+  background-image:
+    linear-gradient(to bottom, var(--splash-shadow), transparent 24px),
+    linear-gradient(90deg, var(--splash-shadow) 0%, var(--splash-background) 12%, var(--splash-face) 32%, var(--splash-highlight) 49%, var(--splash-face) 64%, var(--splash-background) 85%, var(--splash-shadow) 100%);
+  background-size: 100% 100%, 20% 100%;
+  background-repeat: no-repeat, repeat-x;
+}
+
+.startupCurtainLeft {
+  inset-inline-start: 0;
+}
+
+.startupCurtainRight {
+  inset-inline-end: 0;
+}
+
+.startupFabric {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+}
+
+.startupLogo {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-start: 50%;
+  inline-size: 104px;
+  block-size: 104px;
+  transform: translate(-50%, -50%);
+}
+
+.startupLogo svg {
+  inline-size: 100%;
+  block-size: 100%;
+}
+
+.startupLabel {
+  position: absolute;
+  inset-block-end: 22px;
+  inline-size: 100%;
+  text-align: center;
+  color: var(--splash-foreground);
+  font-size: 12px;
+}
+
+.startupTrack {
+  position: absolute;
+  inset-block-end: 0;
+  inline-size: 100%;
+  block-size: 3px;
+  overflow: clip;
+  background: color-mix(in srgb, var(--splash-foreground) 20%, var(--splash-background));
+}
+
+.startupProgress {
+  inline-size: 200%;
+  block-size: 100%;
+  background: linear-gradient(to right, var(--splash-foreground) 0 16%, transparent 16% 50%, var(--splash-foreground) 50% 66%, transparent 66% 100%);
+  animation: startup-progress 1.4s linear infinite;
+}
+
+@keyframes startup-progress {
+  from { transform: translateX(-50%); }
+  to { transform: translateX(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .startupProgress {
+    animation: none;
+    transform: translateX(-35%);
+  }
+}
