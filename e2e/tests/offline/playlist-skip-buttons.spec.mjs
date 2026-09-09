@@ -110,12 +110,12 @@ function readSkipAvailability(page) {
 }
 
 test('playlist counter stays below the title when expanded and collapsed', async ({ page, attachScreenshot }) => {
-  await page.route(/^https?:\/\//, (route) => route.abort())
+  await page.route(/^https?:\/\//, (route) => route.fulfill({ status: 404, body: '' }))
   await goTo(page, 'userplaylists')
   await page.getByText('Skip button playlist').click()
   await page.getByText(VIDEO_TITLES[1]).first().click()
 
-  const playlist = page.locator('.watchVideoPlaylist')
+  const playlist = page.locator('.watchVideoPlaylist.resizablePlaylist')
   const counter = playlist.locator('.playlistIndex label')
   await expect(counter).toHaveText('2 / 3')
 
@@ -147,7 +147,7 @@ test('playlist counter stays below the title when expanded and collapsed', async
 })
 
 test('only offers skipping to playlist videos that exist', async ({ page, attachScreenshot }) => {
-  await page.route(/^https?:\/\//, (route) => route.abort())
+  await page.route(/^https?:\/\//, (route) => route.fulfill({ status: 404, body: '' }))
 
   await goTo(page, 'userplaylists')
   await page.getByText('Skip button playlist').click()
@@ -167,7 +167,7 @@ test('only offers skipping to playlist videos that exist', async ({ page, attach
   await attachScreenshot('first playlist video')
 
   // Loop wraps the playlist around in both directions
-  const loopButton = page.locator('.watchVideoPlaylist').getByRole('button', { name: 'Loop Playlist' })
+  const loopButton = page.locator('.watchVideoPlaylist.resizablePlaylist').getByRole('button', { name: 'Loop Playlist' })
   await loopButton.click()
   await expect.poll(() => readSkipAvailability(page)).toEqual({
     canPlayNext: true,
@@ -217,7 +217,7 @@ test('continues a playlist after a Short ends', async ({ app, page }) => {
 })
 
 test('offers skipping to a queued video without a playlist', async ({ page }) => {
-  await page.route(/^https?:\/\//, (route) => route.abort())
+  await page.route(/^https?:\/\//, (route) => route.fulfill({ status: 404, body: '' }))
 
   await goTo(page, 'history')
 

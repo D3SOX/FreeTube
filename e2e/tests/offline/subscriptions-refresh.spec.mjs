@@ -623,7 +623,7 @@ test.describe('cancelling a subscription feed refresh', () => {
   })
 
   test('stops a running refresh and keeps what was already fetched', async ({ page }) => {
-    await routeFeeds(page, () => 4_000)
+    await routeFeeds(page, index => index === 0 ? 0 : 4_000)
     await goTo(page, 'subscriptions')
     await expect(page.getByText('Cached video 0', { exact: true })).toBeVisible()
 
@@ -631,10 +631,10 @@ test.describe('cancelling a subscription feed refresh', () => {
 
     const cancelRefresh = page.getByRole('button', { name: 'Cancel refresh' })
     await expect(cancelRefresh).toBeVisible()
+    await expect(page.getByText('Fresh video 0', { exact: true })).toBeVisible()
     await cancelRefresh.click()
 
-    // The channels that were in flight still finish, the remaining ones are
-    // skipped instead of being fetched
+    // Completed channels stay cached; pending and queued channels are cancelled.
     await expect(page.locator('.tabsProgressBar')).toHaveCount(0, { timeout: 20_000 })
     await expect(cancelRefresh).toHaveCount(0)
     await expect(page.getByText('Fresh video 0', { exact: true })).toBeVisible()
@@ -643,7 +643,7 @@ test.describe('cancelling a subscription feed refresh', () => {
   })
 
   test('offers the cancellation in the feed tab context menu', async ({ page }) => {
-    await routeFeeds(page, () => 4_000)
+    await routeFeeds(page, index => index === 0 ? 0 : 4_000)
     await goTo(page, 'subscriptions')
     await expect(page.getByText('Cached video 0', { exact: true })).toBeVisible()
 
@@ -652,6 +652,7 @@ test.describe('cancelling a subscription feed refresh', () => {
     await menu.getByRole('menuitem', { name: 'Reload Videos' }).click()
 
     await expect(page.getByRole('button', { name: 'Cancel refresh' })).toBeVisible()
+    await expect(page.getByText('Fresh video 0', { exact: true })).toBeVisible()
 
     await page.locator('[data-subscription-feed-tab="videos"]').click({ button: 'right' })
     await expect(menu.getByRole('menuitem', { name: 'Reload Videos' })).toHaveCount(0)

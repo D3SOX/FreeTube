@@ -152,6 +152,9 @@ export async function mockWatchPage(app, page, {
   await stubPoToken(app.electronApp)
 
   await page.route(/^https?:\/\//, (route) => route.abort())
+  // A missing optional label is an HTTP 404, not a lost connection. Aborting
+  // it would leave other SponsorBlock requests waiting for network recovery.
+  await page.route('**/api/videoLabels/**', route => route.fulfill({ status: 404, body: '' }))
   await routeIframeApi(page)
   await routeWatchPageHtml(page)
 
@@ -280,7 +283,7 @@ export async function mockWatchPage(app, page, {
         return route.fulfill({ status: 200, contentType: 'application/json', body })
       }
       console.warn(`[e2e] Missing watch page fixture: ${key}`)
-      return route.abort()
+      return route.fulfill({ status: 404, contentType: 'application/json', body: '{}' })
     }
 
     return route.fallback()

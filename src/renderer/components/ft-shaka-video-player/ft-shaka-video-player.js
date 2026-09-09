@@ -9624,6 +9624,11 @@ export default defineComponent({
           blurTooltipButtons()
           break
         case event.key.toLowerCase() === 'escape':
+          if (ui?.getControls().anyContextMenusAreOpen()) {
+            event.preventDefault()
+            ui.getControls().hideContextMenus()
+            break
+          }
           // Exit full window
           if (fullWindowEnabled.value) {
             event.preventDefault()

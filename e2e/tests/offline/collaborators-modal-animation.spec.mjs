@@ -256,7 +256,8 @@ test.describe('while collaborators are loading', () => {
     })
     await page.route(/^https?:\/\//, async route => {
       await requestsReleased
-      await route.abort()
+      // A terminal error finishes loading instead of waiting for network recovery.
+      await route.fulfill({ status: 404, json: { error: 'Not found' } })
     })
 
     await goTo(page, 'subscriptions')

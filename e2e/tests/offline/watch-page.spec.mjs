@@ -1,5 +1,5 @@
 import crypto from 'node:crypto'
-import { goTo, sel, setPlayerFullscreen, setWindowSize, test, expect } from '../../helpers/app.mjs'
+import { sel, setPlayerFullscreen, setWindowSize, test, expect } from '../../helpers/app.mjs'
 import { activeTab, findWatchComponent, openMockedVideo, waitForPlayback } from '../../helpers/player.mjs'
 import { mockPlayableWatchPage, watchViewHandle } from '../../helpers/watch.mjs'
 import {
@@ -1358,6 +1358,97 @@ test.describe('Shorts transcript navigation', () => {
     }
   })
 
+  test('pausing and seeking near the end does not complete a Short', async ({ app, page }) => {
+    await mockPlayableWatchPage(app, page)
+    await page.locator(sel.searchInput).fill(`https://www.youtube.com/shorts/${CAPTIONED_SHORT_IDS[0]}`)
+    await page.locator(sel.searchInput).press('Enter')
+    const video = await waitForPlayback(page)
+    await video.evaluate(async element => {
+      element.pause()
+      element.currentTime = element.duration - 0.25
+      await new Promise(resolve => element.addEventListener('seeked', resolve, { once: true }))
+    })
+    const view = await watchViewHandle(page)
+    await expect.poll(() => view.evaluate(view => ({
+      complete: view.shortsPlaybackCompleted,
+      progress: view.historyEntry?.watchProgress,
+      full: view.historyEntry?.watchProgress === view.historyEntry?.lengthSeconds
+    }))).toEqual({ complete: false, progress: expect.any(Number), full: false })
+    await video.evaluate(async element => {
+      element.currentTime = element.duration - 2
+      await new Promise(resolve => element.addEventListener('seeked', resolve, { once: true }))
+      await element.play()
+    })
+    await expect.poll(() => view.evaluate(view => view.shortsPlaybackCompleted)).toBe(true)
+    await view.dispose()
+  })
+
+  for (const zoom of [1, 1.25]) {
+    test(`Escape dismisses the Shorts context menu before exiting full window at ${zoom} scale`, async ({ app, page }) => {
+      await mockPlayableWatchPage(app, page)
+      await page.evaluate(zoom => window.ftElectron.setZoomFactor(zoom), zoom)
+      await page.locator(sel.searchInput).fill(`https://www.youtube.com/shorts/${CAPTIONED_SHORT_IDS[0]}`)
+      await page.locator(sel.searchInput).press('Enter')
+      const video = await waitForPlayback(page)
+      await video.evaluate(element => element.pause())
+      const player = page.locator('.ftVideoPlayer.shortsPlayer')
+      await page.keyboard.press('s')
+      await expect(player).toHaveClass(/fullWindow/)
+      await player.click({ button: 'right', position: { x: 100, y: 100 } })
+      const menu = player.locator('.shaka-context-menu')
+      await expect(menu).toBeVisible()
+      await page.keyboard.press('Escape')
+      await expect(menu).toBeHidden()
+      await expect(player).toHaveClass(/fullWindow/)
+      const volume = player.locator('.shortsVolumeControl')
+      await volume.hover()
+      await expect(volume.locator('.shortsVolumeSlider')).toBeVisible()
+      await page.keyboard.press('Escape')
+      await expect(player).not.toHaveClass(/fullWindow/)
+    })
+
+    test(`Shorts information panels contain wheel input with and without overflow at ${zoom} scale`, async ({ app, page }) => {
+      await mockPlayableWatchPage(app, page)
+      await page.evaluate(zoom => window.ftElectron.setZoomFactor(zoom), zoom)
+      await page.locator('[data-subscription-feed-tab="shorts"]').click()
+      await page.getByText('Transcript Short 1', { exact: true }).click()
+      const video = await waitForPlayback(page)
+      await video.evaluate(element => element.pause())
+      const view = await watchViewHandle(page)
+      await view.evaluate(async view => {
+        view.videoDescription = 'Short description'
+        view.videoDescriptionHtml = ''
+        view.toggleShortsMetadata()
+        await view.$nextTick()
+      })
+      const panel = page.locator('.shortsAuxPanel')
+      const scroller = panel.locator('.shortsAuxPanelTarget')
+      await expect(panel).toHaveClass(/shortsAuxPanelOpen/)
+      const originalUrl = page.url()
+      const bounds = await scroller.boundingBox()
+      await page.mouse.move(bounds.x + 20, bounds.y + 20)
+      await page.mouse.wheel(0, 2000)
+      await page.waitForTimeout(300)
+      await expect(page).toHaveURL(originalUrl)
+      await view.evaluate(async view => {
+        view.toggleShortsMetadata()
+        await view.$nextTick()
+        view.videoDescription = Array(200).fill('Long description').join('\n')
+        view.toggleShortsMetadata()
+      })
+      await expect.poll(() => scroller.evaluate(element => element.scrollHeight - element.clientHeight)).toBeGreaterThan(100)
+      const longBounds = await scroller.boundingBox()
+      await page.mouse.move(longBounds.x + 20, longBounds.y + 20)
+      await page.mouse.wheel(0, 120)
+      await expect.poll(() => scroller.evaluate(element => element.scrollTop)).toBeGreaterThan(0)
+      await scroller.evaluate(element => { element.scrollTop = element.scrollHeight })
+      await page.mouse.wheel(0, 2000)
+      await page.waitForTimeout(300)
+      await expect(page).toHaveURL(originalUrl)
+      await view.dispose()
+    })
+  }
+
   test('keeps the current Short from expanding when YouTube-style Shorts are disabled', async ({ app, page }) => {
     await mockPlayableWatchPage(app, page)
     await page.evaluate(async () => {
@@ -1375,7 +1466,12 @@ test.describe('Shorts transcript navigation', () => {
     const shortsBounds = await player.boundingBox()
     expect(shortsBounds).not.toBeNull()
 
-    await goTo(page, 'settings')
+    // Avoid Playwright scrolling the Shorts feed to bring menu controls into view.
+    await page.locator('.profileTrigger').evaluate(button => button.click())
+    await expect(page.locator('.quickSettingsMenu')).toBeVisible()
+    await page.locator('.allSettingsShortcut').evaluate(button => button.click())
+    await expect(page.locator('.settingsWindow')).toBeVisible()
+    await expect(page).toHaveURL(new RegExp(CAPTIONED_SHORT_IDS[0]))
     await page.locator('.settingsMenu [data-section="playback"]').click()
     const toggle = page.getByRole('checkbox', { name: 'Use YouTube-style Shorts' })
     await expect(toggle).toBeChecked()
@@ -1383,6 +1479,7 @@ test.describe('Shorts transcript navigation', () => {
       .filter({ hasText: 'Use YouTube-style Shorts' })
       .click()
     await expect(toggle).not.toBeChecked()
+    await expect(page).toHaveURL(new RegExp(CAPTIONED_SHORT_IDS[0]))
     await expect(player).toHaveClass(/shortsPlayer/)
 
     const bounds = await player.boundingBox()
@@ -1390,7 +1487,8 @@ test.describe('Shorts transcript navigation', () => {
     expect(bounds.width).toBeLessThanOrEqual(shortsBounds.width + 1)
 
     await page.locator('.settingsWindow').getByRole('button', { name: 'Close' }).click()
-    await page.locator('.shortsNavigationButton').last().click()
+    await expect(page).toHaveURL(new RegExp(CAPTIONED_SHORT_IDS[0]))
+    await page.locator('.shortsNavigationButton').last().evaluate(element => element.click())
     await expect(page).toHaveURL(new RegExp(`#\\/watch\\/${CAPTIONED_SHORT_IDS[1]}\\?short=true`))
     await waitForPlayback(page)
     await expect(player).not.toHaveClass(/shortsPlayer/)
@@ -1656,60 +1754,111 @@ test.describe('Shorts transcript navigation', () => {
     ))).toEqual([])
   })
 
-  test('keeps the Shorts player, action rail, and comments inside a Capacitor phone viewport', async ({ app, page }) => {
-    await mockPlayableWatchPage(app, page)
-    await page.locator(sel.searchInput)
-      .fill(`https://www.youtube.com/shorts/${CAPTIONED_SHORT_IDS[0]}`)
-    await page.locator(sel.searchInput).press('Enter')
-    await waitForPlayback(page)
-    await setWindowSize(app, page, { width: 461, height: 1026 })
-    await page.locator('.app').evaluate((element) => {
-      element.classList.add('capacitorTabs', 'capacitorPhoneLayout')
-      element.classList.remove('topTabs', 'bottomTabs', 'verticalTabs')
-      document.querySelector('.tabBar')?.style.setProperty('display', 'none')
+  for (const zoom of [1, 1.25]) {
+    test(`keeps the Shorts player, action rail, and comments inside a Capacitor phone viewport at ${zoom} scale`, async ({ app, page }) => {
+      await mockPlayableWatchPage(app, page)
+      await page.evaluate(zoom => window.ftElectron.setZoomFactor(zoom), zoom)
+      await page.locator(sel.searchInput)
+        .fill(`https://www.youtube.com/shorts/${CAPTIONED_SHORT_IDS[0]}`)
+      await page.locator(sel.searchInput).press('Enter')
+      await waitForPlayback(page)
+      await setWindowSize(app, page, { width: 461, height: 1026 })
+      await page.locator('.app').evaluate((element) => {
+        element.classList.add('capacitorTabs', 'capacitorPhoneLayout')
+        element.classList.remove('topTabs', 'bottomTabs', 'verticalTabs')
+        document.querySelector('.tabBar')?.style.setProperty('display', 'none')
+      })
+
+      const player = page.locator('.ftVideoPlayer.shortsPlayer')
+      const rail = page.locator('.shortsActionRail')
+      const commentsPanel = page.locator('.shortsCommentsPanel')
+      await expect(player).toBeVisible()
+      await expect(rail).toBeVisible()
+      await page.locator('.shortsCommentsAction .iconButton').click()
+      await expect(commentsPanel).toHaveClass(/shortsCommentsPanelOpen/)
+
+      const geometry = await page.evaluate(() => {
+        const playerBounds = document.querySelector('.ftVideoPlayer.shortsPlayer').getBoundingClientRect()
+        const railBounds = document.querySelector('.shortsActionRail').getBoundingClientRect()
+        const commentsBounds = document.querySelector('.shortsCommentsPanel').getBoundingClientRect()
+        const actionLabels = [...document.querySelectorAll('.shortsAction > span')]
+        return {
+          commentsLeft: commentsBounds.left,
+          commentsRight: commentsBounds.right,
+          documentClientWidth: document.documentElement.clientWidth,
+          documentScrollWidth: document.documentElement.scrollWidth,
+          labelsHidden: actionLabels.every(label => getComputedStyle(label).display === 'none'),
+          railBottom: railBounds.bottom,
+          railLeft: railBounds.left,
+          railRight: railBounds.right,
+          playerBottom: playerBounds.bottom,
+          playerLeft: playerBounds.left,
+          playerRight: playerBounds.right,
+          viewportWidth: window.innerWidth,
+        }
+      })
+
+      expect(geometry.labelsHidden).toBe(true)
+      expect(geometry.documentScrollWidth).toBeLessThanOrEqual(geometry.documentClientWidth + 1)
+      expect(geometry.playerLeft).toBeGreaterThanOrEqual(0)
+      expect(geometry.playerRight).toBeLessThanOrEqual(geometry.viewportWidth)
+      expect(geometry.commentsLeft).toBeGreaterThanOrEqual(0)
+      expect(geometry.commentsRight).toBeLessThanOrEqual(geometry.viewportWidth)
+      expect(geometry.railLeft).toBeGreaterThanOrEqual(geometry.playerLeft)
+      expect(geometry.railRight).toBeLessThanOrEqual(geometry.playerRight)
+      expect(geometry.railRight).toBeLessThanOrEqual(geometry.viewportWidth)
+      expect(geometry.railBottom).toBeLessThanOrEqual(geometry.playerBottom)
     })
+  }
+})
 
-    const player = page.locator('.ftVideoPlayer.shortsPlayer')
-    const rail = page.locator('.shortsActionRail')
-    const commentsPanel = page.locator('.shortsCommentsPanel')
-    await expect(player).toBeVisible()
-    await expect(rail).toBeVisible()
-    await page.locator('.shortsCommentsAction .iconButton').click()
-    await expect(commentsPanel).toHaveClass(/shortsCommentsPanelOpen/)
-
-    const geometry = await page.evaluate(() => {
-      const playerBounds = document.querySelector('.ftVideoPlayer.shortsPlayer').getBoundingClientRect()
-      const railBounds = document.querySelector('.shortsActionRail').getBoundingClientRect()
-      const commentsBounds = document.querySelector('.shortsCommentsPanel').getBoundingClientRect()
-      const actionLabels = [...document.querySelectorAll('.shortsAction > span')]
-      return {
-        commentsLeft: commentsBounds.left,
-        commentsRight: commentsBounds.right,
-        documentClientWidth: document.documentElement.clientWidth,
-        documentScrollWidth: document.documentElement.scrollWidth,
-        labelsHidden: actionLabels.every(label => getComputedStyle(label).display === 'none'),
-        railBottom: railBounds.bottom,
-        railLeft: railBounds.left,
-        railRight: railBounds.right,
-        playerBottom: playerBounds.bottom,
-        playerLeft: playerBounds.left,
-        playerRight: playerBounds.right,
-        viewportWidth: window.innerWidth,
+for (const zoom of [1, 1.25]) {
+  test(`chapters stay centered through layout changes until manually scrolled at ${zoom} scale`, async ({ app, page }) => {
+    await mockPlayableWatchPage(app, page)
+    await page.evaluate(zoom => window.ftElectron.setZoomFactor(zoom), zoom)
+    const video = await openMockedVideo(page)
+    await video.evaluate(async element => {
+      element.pause()
+      element.currentTime = element.duration * 20.5 / 40
+      if (element.seeking) {
+        await new Promise(resolve => element.addEventListener('seeked', resolve, { once: true }))
       }
     })
-
-    expect(geometry.labelsHidden).toBe(true)
-    expect(geometry.documentScrollWidth).toBeLessThanOrEqual(geometry.documentClientWidth + 1)
-    expect(geometry.playerLeft).toBeGreaterThanOrEqual(0)
-    expect(geometry.playerRight).toBeLessThanOrEqual(geometry.viewportWidth)
-    expect(geometry.commentsLeft).toBeGreaterThanOrEqual(0)
-    expect(geometry.commentsRight).toBeLessThanOrEqual(geometry.viewportWidth)
-    expect(geometry.railLeft).toBeGreaterThanOrEqual(geometry.playerLeft)
-    expect(geometry.railRight).toBeLessThanOrEqual(geometry.playerRight)
-    expect(geometry.railRight).toBeLessThanOrEqual(geometry.viewportWidth)
-    expect(geometry.railBottom).toBeLessThanOrEqual(geometry.playerBottom)
+    const chapterDuration = await video.evaluate(element => element.duration / 40)
+    const view = await watchViewHandle(page)
+    await view.evaluate(async (view, chapterDuration) => {
+      view.videoChapters = Array.from({ length: 40 }, (_, index) => ({
+        title: `Chapter ${index + 1}`,
+        timestamp: `${index}:00`,
+        startSeconds: index * chapterDuration
+      }))
+      view.videoCurrentChapterIndex = 20
+      view.showSidebarChapters = true
+      await view.$nextTick()
+    }, chapterDuration)
+    const scroller = page.locator('.watchVideoChaptersPanel .chaptersWrapper')
+    const expectCentered = () => expect.poll(() => scroller.evaluate(element => {
+      const row = element.querySelector('.chapter.current').getBoundingClientRect()
+      const viewport = element.getBoundingClientRect()
+      return Math.abs(row.top + row.height / 2 - viewport.top - viewport.height / 2)
+    })).toBeLessThan(2)
+    await expectCentered()
+    await scroller.evaluate(element => { element.style.maxBlockSize = '240px' })
+    await expectCentered()
+    await scroller.hover()
+    await page.mouse.wheel(0, 2000)
+    await scroller.evaluate(element => { element.scrollTop = element.scrollHeight })
+    await expect.poll(() => scroller.evaluate(element => element.scrollTop)).toBeGreaterThan(2000)
+    await scroller.evaluate(element => { element.style.maxBlockSize = '480px' })
+    await expect.poll(() => scroller.evaluate(element => (
+      Math.abs(element.scrollTop - (element.scrollHeight - element.clientHeight))
+    ))).toBeLessThan(2)
+    await view.evaluate(view => { view.videoChapters = view.videoChapters.slice(0, 3) })
+    await expect.poll(() => scroller.evaluate(element => element.scrollTop)).toBe(0)
+    await expect(scroller.locator(':scope > .os-scrollbar-vertical')).toHaveClass(/os-scrollbar-unusable/)
+    await view.dispose()
   })
-})
+}
 
 test('a background watch tab stays loading until its cached avatar is ready', async ({ app, page }) => {
   await mockPlayableWatchPage(app, page)
@@ -3866,11 +4015,28 @@ test.describe('watch page', () => {
 
   test('fullscreen SponsorBlock uses one content scrollbar', async ({ app, page }) => {
     await mockPlayableWatchPage(app, page)
+    await page.route('**/api/skipSegments/**', route => route.fulfill({
+      contentType: 'application/json',
+      body: JSON.stringify([{
+        videoID: 'jNQXAC9IVRw',
+        segments: Array.from({ length: 20 }, (_, index) => ({
+          UUID: `scrollbar-segment-${index}`,
+          actionType: 'skip',
+          category: 'sponsor',
+          description: '',
+          locked: 0,
+          segment: [index, index + 0.5],
+          videoDuration: 30,
+          votes: 1
+        }))
+      }])
+    }))
     await page.evaluate(() => {
       const store = document.querySelector('#app').__vue_app__.config.globalProperties.$store
       store.commit('setUseSponsorBlock', true)
     })
-    await openMockedVideo(page)
+    const video = await openMockedVideo(page)
+    await video.evaluate(element => element.pause())
     await setPlayerFullscreen(page, true)
     await page.locator('.fullscreenSponsorBlockToggle').click({ force: true })
 
@@ -5703,5 +5869,422 @@ test.describe('manual comment loading', () => {
     // rendered, so the position has to still be at the top a moment later.
     await page.waitForTimeout(1000)
     expect(await comments.evaluate((element) => element.scrollTop)).toBe(0)
+  })
+})
+
+test.describe('Shorts feed navigation', () => {
+  const SHORTS_CHANNEL = 'UC-transcript-shorts'
+  const FIRST_SHORT_THUMBNAIL = 'https://i.ytimg.com/vi/jNQXAC9IVRw/frame0.jpg?selected=1'
+  const SECOND_SHORT_THUMBNAIL = 'https://i.ytimg.com/vi/captioned-short-2/frame0.jpg?selected=1'
+
+  test.use({
+    seed: {
+      settings: {
+        ...WATCH_PAGE_SEED,
+        useCustomShortsPlayer: true,
+        useSponsorBlock: true,
+        fetchSubscriptionsAutomatically: false,
+        playNextVideo: true,
+        defaultInterval: 0
+      },
+      profiles: [{
+        _id: 'allChannels',
+        name: 'All Channels',
+        bgColor: '#000000',
+        textColor: '#FFFFFF',
+        subscriptions: [{
+          id: SHORTS_CHANNEL,
+          name: 'Shorts Channel',
+          thumbnail: ''
+        }]
+      }],
+      subscriptionCache: [{
+        _id: SHORTS_CHANNEL,
+        shorts: [
+          {
+            type: 'video',
+            videoId: 'jNQXAC9IVRw',
+            title: 'First seeded Short',
+            author: 'Shorts Channel',
+            authorId: SHORTS_CHANNEL,
+            published: 2,
+            isShort: true,
+            lengthSeconds: '',
+            thumbnailUrl: FIRST_SHORT_THUMBNAIL
+          },
+          {
+            type: 'video',
+            videoId: 'captioned-short-2',
+            title: 'Second seeded Short',
+            author: 'Shorts Channel',
+            authorId: SHORTS_CHANNEL,
+            published: 1,
+            isShort: true,
+            lengthSeconds: '',
+            thumbnailUrl: SECOND_SHORT_THUMBNAIL
+          }
+        ],
+        shortsTimestamp: new Date().toISOString()
+      }]
+    }
+  })
+
+  test('scrolls through the cached subscriptions Shorts feed', async ({ app, page }) => {
+    await mockPlayableWatchPage(app, page, { captionVideoIds: ['jNQXAC9IVRw', 'captioned-short-2'] })
+    await page.route('**/api/skipSegments**', route => route.fulfill({ status: 200, contentType: 'application/json', body: '[]' }))
+    const shortsTab = page
+      .locator('.tabContent[aria-hidden="false"]')
+      .locator('[data-subscription-feed-tab="shorts"]')
+    await shortsTab.click()
+    await page.getByText('First seeded Short', { exact: true }).click()
+    await expect(page).toHaveURL(
+      /#\/watch\/jNQXAC9IVRw\?short=true&shortSource=subscriptions/
+    )
+
+    const player = page.locator('.ftVideoPlayer.shortsPlayer')
+    await expect(player).toBeVisible({ timeout: 30_000 })
+
+    const previous = page.locator('.shortsNavigationButton').first()
+    const next = page.locator('.shortsNavigationButton').last()
+    await expect(previous).toBeDisabled()
+    await expect(next).toBeEnabled()
+    await expect(page.locator('.shortsNextPreview')).toBeVisible()
+    await expect(page.locator('.shortsNextPreview')).toHaveAttribute(
+      'style',
+      /captioned-short-2\/frame0\.jpg\?selected=1/
+    )
+    await expect(page.locator('.shortsExternalMetadata')).toBeVisible()
+    await expect(page.locator('.shortsActionRail')).toBeVisible()
+
+    const commentsButton = page.locator('.shortsCommentsAction').getByRole('button')
+    await commentsButton.click()
+    const commentsPanel = page.locator('.shortsCommentsPanel')
+    await expect(commentsPanel).toHaveClass(/shortsCommentsPanelOpen/)
+    const commentsScroller = commentsPanel.locator('.commentsContentWrapper')
+    const firstComment = commentsPanel.locator('.comment').first()
+    const loadComments = commentsPanel.locator('.getCommentsTitle')
+    await expect(firstComment.or(loadComments)).toBeVisible()
+    if (await loadComments.isVisible()) {
+      await loadComments.click()
+    }
+    await expect(firstComment).toBeVisible({ timeout: 30_000 })
+    await expect.poll(() => commentsScroller.evaluate(element => {
+      return element.scrollHeight > element.clientHeight
+    })).toBe(true)
+    const commentsScrollTop = await commentsScroller.evaluate(element => element.scrollTop)
+    const commentsBounds = await commentsScroller.boundingBox()
+    await page.mouse.move(commentsBounds.x + commentsBounds.width / 2, commentsBounds.y + commentsBounds.height / 2)
+    await page.mouse.wheel(0, 120)
+    await expect.poll(() => commentsScroller.evaluate(element => element.scrollTop))
+      .toBeGreaterThan(commentsScrollTop)
+    await expect(page).toHaveURL(
+      /#\/watch\/jNQXAC9IVRw\?short=true&shortSource=subscriptions/
+    )
+    await page.keyboard.press('ArrowDown')
+    await expect(page).toHaveURL(
+      /#\/watch\/jNQXAC9IVRw\?short=true&shortSource=subscriptions/
+    )
+
+    await page.evaluate(() => window.scrollTo({
+      top: document.documentElement.scrollHeight
+    }))
+    await expect(page).toHaveURL(
+      /#\/watch\/captioned-short-2\?short=true&shortSource=subscriptions/
+    )
+    await expect(commentsPanel).toHaveClass(/shortsCommentsPanelOpen/)
+
+    await page.waitForTimeout(500)
+    await previous.click()
+    await expect(page).toHaveURL(
+      /#\/watch\/jNQXAC9IVRw\?short=true&shortSource=subscriptions/
+    )
+    await expect(commentsPanel).toHaveClass(/shortsCommentsPanelOpen/)
+    await commentsPanel.getByRole('button', { name: 'Hide Comments' }).click()
+
+    const auxPanel = page.locator('.shortsAuxPanel')
+    const sponsorBlockButton = page.getByRole('button', { name: 'Open SponsorBlock info' })
+    await sponsorBlockButton.click()
+    await expect(sponsorBlockButton).toHaveAttribute('aria-pressed', 'true')
+    await expect(auxPanel).toHaveClass(/shortsAuxPanelOpen/)
+    const sponsorBlockContent = auxPanel.locator('.sponsorBlockContent')
+    await expect(sponsorBlockContent).toHaveCSS('overscroll-behavior', 'contain')
+    const sponsorBlockBounds = await sponsorBlockContent.boundingBox()
+    await page.mouse.move(sponsorBlockBounds.x + 20, sponsorBlockBounds.y + 20)
+    await page.mouse.wheel(0, 2000)
+    await expect(page).toHaveURL(
+      /#\/watch\/jNQXAC9IVRw\?short=true&shortSource=subscriptions/
+    )
+
+    await page.waitForTimeout(500)
+    await page.evaluate(() => window.scrollTo({
+      top: document.documentElement.scrollHeight
+    }))
+    await expect(page).toHaveURL(
+      /#\/watch\/captioned-short-2\?short=true&shortSource=subscriptions/
+    )
+    await expect(auxPanel).toHaveClass(/shortsAuxPanelOpen/)
+    await expect(sponsorBlockButton).toHaveAttribute('aria-pressed', 'true')
+
+    await page.waitForTimeout(500)
+    await previous.click()
+    await expect(page).toHaveURL(
+      /#\/watch\/jNQXAC9IVRw\?short=true&shortSource=subscriptions/
+    )
+    await expect(auxPanel).toHaveClass(/shortsAuxPanelOpen/)
+    await expect(sponsorBlockButton).toHaveAttribute('aria-pressed', 'true')
+    await auxPanel.locator('.sponsorBlockHeader').getByRole('button', { name: 'Close' }).click()
+
+    const transcriptButton = page.locator('.shortsComponentAction')
+      .filter({ hasText: 'Transcript' })
+      .getByRole('button')
+    await transcriptButton.click()
+    const transcriptCard = auxPanel.locator('.watchVideoTranscript')
+    const transcriptTarget = auxPanel.locator('.shortsAuxPanelTarget')
+    await expect(transcriptCard).toBeVisible()
+    await expect(transcriptTarget).toHaveCSS('overscroll-behavior', 'contain')
+    await expect.poll(async () => {
+      const [cardHeight, targetHeight] = await Promise.all([
+        transcriptCard.evaluate(element => element.offsetHeight),
+        transcriptTarget.evaluate(element => element.clientHeight),
+      ])
+      return Math.abs(cardHeight - targetHeight)
+    }).toBeLessThanOrEqual(32)
+    const transcriptBounds = await transcriptTarget.boundingBox()
+    await page.mouse.move(transcriptBounds.x + 20, transcriptBounds.y + 20)
+    await page.mouse.wheel(0, 2000)
+    await expect(page).toHaveURL(
+      /#\/watch\/jNQXAC9IVRw\?short=true&shortSource=subscriptions/
+    )
+
+    await page.waitForTimeout(500)
+    await page.evaluate(() => window.scrollTo({
+      top: document.documentElement.scrollHeight
+    }))
+    await expect(page).toHaveURL(
+      /#\/watch\/captioned-short-2\?short=true&shortSource=subscriptions/
+    )
+    await expect(auxPanel).toHaveClass(/shortsAuxPanelOpen/)
+    await expect(transcriptButton).toHaveAttribute('aria-pressed', 'true')
+    await expect.poll(async () => {
+      const [cardHeight, targetHeight] = await Promise.all([
+        transcriptCard.evaluate(element => element.offsetHeight),
+        transcriptTarget.evaluate(element => element.clientHeight),
+      ])
+      return Math.abs(cardHeight - targetHeight)
+    }).toBeLessThanOrEqual(32)
+
+    await page.waitForTimeout(500)
+    await previous.click()
+    await expect(page).toHaveURL(
+      /#\/watch\/jNQXAC9IVRw\?short=true&shortSource=subscriptions/
+    )
+    await auxPanel.getByRole('button', { name: 'Close transcript' }).click()
+
+    const [playerBounds, videoAreaBounds, metadataBounds, actionBounds, previewBounds, navigationBounds] =
+      await Promise.all([
+        player.boundingBox(),
+        page.locator('.videoArea').boundingBox(),
+        page.locator('.shortsExternalMetadata').boundingBox(),
+        page.locator('.shortsActionRail').boundingBox(),
+        page.locator('.shortsNextPreview').boundingBox(),
+        page.locator('.shortsNavigation').boundingBox(),
+      ])
+    expect(metadataBounds.x + metadataBounds.width).toBeLessThanOrEqual(playerBounds.x)
+    expect(actionBounds.x).toBeGreaterThanOrEqual(playerBounds.x + playerBounds.width)
+    expect(previewBounds.y).toBeGreaterThanOrEqual(playerBounds.y + playerBounds.height)
+    expect(previewBounds.width).toBeCloseTo(playerBounds.width, 0)
+    expect(playerBounds.x + playerBounds.width / 2)
+      .toBeCloseTo(videoAreaBounds.x + videoAreaBounds.width / 2, 0)
+    expect(navigationBounds.x).toBeGreaterThan(actionBounds.x)
+
+    // Narrow layouts move the rail over the player and grow it upwards, so the
+    // navigation joins the same column above the actions instead of landing on
+    // top of them.
+    await page.setViewportSize({ width: 900, height: 700 })
+    await expect(page.locator('.shortsExternalChannel')).toHaveCSS('opacity', '1')
+    expect(await page.locator('.shortsExternalChannel').evaluate(element => {
+      return getComputedStyle(element).color === getComputedStyle(document.body).color
+    })).toBe(true)
+    await expect.poll(async () => {
+      const [rail, navigation, firstAction] = await Promise.all([
+        page.locator('.shortsActionRail').boundingBox(),
+        page.locator('.shortsNavigation').boundingBox(),
+        page.locator('.shortsAction').first().boundingBox()
+      ])
+
+      return {
+        navigationAboveActions: navigation.y + navigation.height <= firstAction.y,
+        centeredInRail: Math.abs(
+          (navigation.x + navigation.width / 2) - (rail.x + rail.width / 2)
+        ) <= 1,
+        insideRail: navigation.x >= rail.x && navigation.x + navigation.width <= rail.x + rail.width
+      }
+    }).toEqual({ navigationAboveActions: true, centeredInRail: true, insideRail: true })
+
+    await page.setViewportSize({ width: 1280, height: 900 })
+    await expect.poll(async () => {
+      const [rail, navigation] = await Promise.all([
+        page.locator('.shortsActionRail').boundingBox(),
+        page.locator('.shortsNavigation').boundingBox()
+      ])
+
+      return navigation.x > rail.x + rail.width
+    }).toBe(true)
+
+    await page.evaluate(() => {
+      window.__shortsNavigationDisappeared = false
+      const observer = new MutationObserver(() => {
+        if (!document.querySelector('.shortsNavigation')) {
+          window.__shortsNavigationDisappeared = true
+        }
+      })
+      observer.observe(document.body, { childList: true, subtree: true })
+    })
+
+    await next.click()
+    await expect(page.locator('.videoPlayerPlaceholder.ft-shimmer')).toHaveCount(0)
+    await expect(page).toHaveURL(
+      /#\/watch\/captioned-short-2\?short=true&shortSource=subscriptions/
+    )
+    expect(await page.evaluate(() => window.__shortsNavigationDisappeared)).toBe(false)
+
+    await page.waitForTimeout(500)
+    await page.keyboard.press('ArrowUp')
+    await expect(page).toHaveURL(
+      /#\/watch\/jNQXAC9IVRw\?short=true&shortSource=subscriptions/
+    )
+
+    await page.waitForTimeout(500)
+    // Browser middle-button autoscroll moves the window instead of emitting a
+    // wheel event, so window scrolling must navigate Shorts too.
+    await page.evaluate(() => window.scrollTo({
+      top: document.documentElement.scrollHeight
+    }))
+    await expect(page).toHaveURL(
+      /#\/watch\/captioned-short-2\?short=true&shortSource=subscriptions/
+    )
+
+    await page.waitForTimeout(500)
+    await page.keyboard.press('ArrowUp')
+    await expect(page).toHaveURL(
+      /#\/watch\/jNQXAC9IVRw\?short=true&shortSource=subscriptions/
+    )
+
+    await page.waitForTimeout(500)
+    const scrollbarHandle = page.locator(
+      'body > .os-scrollbar-vertical .os-scrollbar-handle'
+    )
+    const handleBounds = await scrollbarHandle.boundingBox()
+    await page.mouse.move(
+      handleBounds.x + handleBounds.width / 2,
+      handleBounds.y + handleBounds.height / 2
+    )
+    await page.mouse.down()
+    await page.mouse.move(
+      handleBounds.x + handleBounds.width / 2,
+      handleBounds.y + handleBounds.height / 2 + 50
+    )
+    await page.mouse.up()
+    await expect(page).toHaveURL(
+      /#\/watch\/captioned-short-2\?short=true&shortSource=subscriptions/
+    )
+  })
+
+  test('does not show a stale loading indicator after leaving a loaded Shorts tab', async ({ app, page }) => {
+    await mockPlayableWatchPage(app, page)
+    await page.route('**/api/skipSegments**', route => route.fulfill({ status: 200, contentType: 'application/json', body: '[]' }))
+    await page.locator(sel.newTabButton).click()
+    await expect(page.locator(sel.tabs)).toHaveCount(2)
+    const shortTab = page.locator(sel.tabs).first()
+    await shortTab.click()
+
+    const shortsFeedTab = page
+      .locator('.tabContent[aria-hidden="false"]')
+      .locator('[data-subscription-feed-tab="shorts"]')
+    await shortsFeedTab.click()
+    await page.getByText('First seeded Short', { exact: true }).click()
+    await expect(page).toHaveURL(
+      /#\/watch\/jNQXAC9IVRw\?short=true&shortSource=subscriptions/
+    )
+
+    const player = page.locator('.ftVideoPlayer.shortsPlayer')
+    await expect(player).toBeVisible({ timeout: 30_000 })
+
+    await expect(shortTab).not.toHaveClass(/loading/)
+    await shortTab.evaluate((tab) => {
+      window.__shortTabShowedLoadingWhileScrolling = false
+      new MutationObserver(() => {
+        if (tab.classList.contains('loading')) {
+          window.__shortTabShowedLoadingWhileScrolling = true
+        }
+      }).observe(tab, { attributes: true, attributeFilter: ['class'] })
+    })
+    await page.evaluate(() => window.scrollTo({
+      top: document.documentElement.scrollHeight
+    }))
+    await expect(page).toHaveURL(
+      /#\/watch\/captioned-short-2\?short=true&shortSource=subscriptions/
+    )
+    await expect.poll(() => page.evaluate(
+      () => window.__shortTabShowedLoadingWhileScrolling
+    )).toBe(true)
+    await expect(
+      page.locator('.tabContent[aria-hidden="false"] [data-tab-loading-indicator]')
+    ).toHaveCount(0)
+    await expect(player).toBeVisible({ timeout: 30_000 })
+    const video = await waitForPlayback(page)
+    await video.evaluate(element => element.pause())
+
+    await expect(shortTab).not.toHaveClass(/loading/)
+    await shortTab.evaluate((tab) => {
+      window.__shortTabShowedLoadingAfterDeactivation = false
+      window.__shortTabLoadingTransitions = []
+      new MutationObserver(() => {
+        window.__shortTabLoadingTransitions.push({
+          loading: tab.classList.contains('loading'),
+          markers: [...document.querySelectorAll(
+            `[data-tab-id="${tab.dataset.tabId}"] [data-tab-loading-indicator]`
+          )].map(element => element.className),
+        })
+        if (tab.classList.contains('loading')) {
+          window.__shortTabShowedLoadingAfterDeactivation = true
+        }
+      }).observe(tab, { attributes: true, attributeFilter: ['class'] })
+    })
+
+    await app.electronApp.evaluate(({ BrowserWindow, Menu }) => {
+      const findMenuItem = (items, label) => {
+        for (const item of items) {
+          if (item.label === label) return item
+          const match = findMenuItem(item.submenu?.items ?? [], label)
+          if (match) return match
+        }
+        return null
+      }
+      const menuItem = findMenuItem(Menu.getApplicationMenu()?.items ?? [], 'Next Tab')
+      const browserWindow = BrowserWindow.getFocusedWindow()
+      if (!menuItem || !browserWindow) {
+        throw new Error('Next Tab application-menu item was not found')
+      }
+      menuItem.click(undefined, browserWindow, undefined)
+    })
+    await expect(page.locator(sel.tabs)).toHaveCount(2)
+    await page.waitForTimeout(5000)
+    const loadingResult = await page.evaluate(() => ({
+      showed: window.__shortTabShowedLoadingAfterDeactivation,
+      transitions: window.__shortTabLoadingTransitions,
+    }))
+    expect(loadingResult.showed, JSON.stringify(loadingResult.transitions)).toBe(false)
+    await expect(shortTab).not.toHaveClass(/loading/)
+
+    await shortTab.click()
+    await expect(page).toHaveURL(
+      /#\/watch\/captioned-short-2\?short=true&shortSource=subscriptions/
+    )
+    await expect(shortTab).not.toHaveClass(/loading/)
+    await expect(player).toBeVisible()
+    await expect(
+      page.locator('.tabContent[aria-hidden="false"] [data-tab-loading-indicator]')
+    ).toHaveCount(0)
   })
 })

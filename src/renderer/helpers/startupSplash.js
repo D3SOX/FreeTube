@@ -41,6 +41,7 @@ export function revealStartupSplash() {
     document.removeEventListener('visibilitychange', onVisibilityChange)
     splash.remove()
     document.getElementById('app')?.removeAttribute('inert')
+    document.dispatchEvent(new Event('startup-splash-hidden'))
   }
   const onVisibilityChange = () => {
     if (document.hidden) finish()

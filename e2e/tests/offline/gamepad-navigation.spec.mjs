@@ -283,7 +283,7 @@ test('keeps a changed quick settings slider focused', async ({ attachScreenshot,
 
   await expect(slider).not.toHaveValue(initialValue)
   await expect(slider).toBeFocused()
-  await expect.poll(() => slider.evaluate(element => element.matches(':focus-visible'))).toBe(true)
+  await expect(slider.locator('..')).toHaveCSS('box-shadow', /inset/)
   await expect(slider).toHaveAttribute('data-gamepad-active', 'true')
   await expect(menu).not.toBeFocused()
   await attachScreenshot('active quick settings gamepad slider')

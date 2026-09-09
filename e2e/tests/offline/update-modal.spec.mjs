@@ -75,8 +75,13 @@ test('the update notification stays dismissed for the current app session', asyn
   await expect(dismissButton.locator('[data-icon="xmark"]')).toBeVisible()
   expect(await notification.evaluate(element => element.scrollWidth <= element.clientWidth)).toBe(true)
 
-  const dismissBox = await dismissButton.boundingBox()
-  const updateBox = await updateButton.boundingBox()
+  // Read both controls in the same frame while the toast animates into place.
+  const [dismissBox, updateBox] = await notification.evaluate(element =>
+    ['Dismiss', 'See changes and update'].map(label => {
+      const button = Array.from(element.querySelectorAll('button')).find(button => button.textContent.trim() === label)
+      return button.getBoundingClientRect().toJSON()
+    })
+  )
   expect(dismissBox).not.toBeNull()
   expect(updateBox).not.toBeNull()
   expect(Math.abs(dismissBox.x - updateBox.x)).toBeLessThanOrEqual(1)

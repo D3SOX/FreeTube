@@ -6,6 +6,9 @@
     class="chaptersWrapper"
     :class="{ compact }"
     role="list"
+    @wheel.passive="followCurrentChapter = false"
+    @pointerdown="followCurrentChapter = false"
+    @keydown="followCurrentChapter = false"
     @keydown.arrow-up.stop.prevent="navigateChapters('up')"
     @keydown.arrow-down.stop.prevent="navigateChapters('down')"
   >
@@ -90,6 +93,7 @@ const emit = defineEmits(['copy-timestamp', 'timestamp-event'])
 const chaptersWrapper = useTemplateRef('chaptersWrapper')
 const chaptersContent = useTemplateRef('chaptersContent')
 let scrollFrame = null
+let followCurrentChapter = true
 const resizeObserver = new ResizeObserver(scheduleScrollClamp)
 
 function scheduleScrollClamp() {
@@ -98,6 +102,7 @@ function scheduleScrollClamp() {
     scrollFrame = null
     if (chaptersWrapper.value && chaptersContent.value) {
       clampOverlayScrollTop(chaptersWrapper.value, chaptersContent.value)
+      if (followCurrentChapter) scrollToCurrentChapter(0)
     }
   })
 }
@@ -115,6 +120,7 @@ const currentIndex = ref(props.currentChapterIndex)
 watch(() => props.currentChapterIndex, (value) => {
   if (currentIndex.value !== value) {
     currentIndex.value = value
+    followCurrentChapter = true
     scrollToCurrentChapter()
   }
 })
@@ -176,6 +182,7 @@ const observeVisibilityOptions = {
     if (isVisible) {
       // Wait for the panel/dock layout to settle; centering with a zero-height
       // container would scroll by half a row and clip the first chapter.
+      followCurrentChapter = true
       requestAnimationFrame(() => scrollToCurrentChapter())
     }
   },
