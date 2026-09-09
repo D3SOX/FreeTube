@@ -33,6 +33,7 @@ final class NativePlaybackEngine implements NativePlaybackSession.Playback {
     private final Consumer<JSObject> listener;
     private final DefaultBandwidthMeter bandwidthMeter;
     private Surface surface;
+    private boolean startupFramePresented;
     private boolean videoVisible = true;
     private boolean released;
     private String mimeType;
@@ -110,10 +111,6 @@ final class NativePlaybackEngine implements NativePlaybackSession.Playback {
             ) {
                 updateCaptionCues();
                 publish("seeked");
-            }
-
-            @Override public void onRenderedFirstFrame() {
-                publish("firstframe");
             }
 
             @Override public void onVideoSizeChanged(VideoSize size) {
@@ -232,6 +229,7 @@ final class NativePlaybackEngine implements NativePlaybackSession.Playback {
     }
 
     @Override public void load(String source, long positionMs) {
+        startupFramePresented = false;
         player.setPlayWhenReady(false);
         MediaItem item = new MediaItem.Builder().setUri(source).setMimeType(mimeType).build();
         player.setMediaItem(item, positionMs);
@@ -314,6 +312,14 @@ final class NativePlaybackEngine implements NativePlaybackSession.Playback {
         player.pause();
         player.stop();
         player.clearMediaItems();
+    }
+
+    void onVideoFramePresented() {
+        // Preparing paused media can render a black frame at the starting
+        // position. Keep the poster until a texture update during playback.
+        if (startupFramePresented || !player.isPlaying()) return;
+        startupFramePresented = true;
+        publish("firstframe");
     }
 
     void setSurface(Surface nextSurface) {
