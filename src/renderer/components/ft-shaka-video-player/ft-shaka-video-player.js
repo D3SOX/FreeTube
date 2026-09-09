@@ -10657,6 +10657,8 @@ export default defineComponent({
       isLive.value = player.isLive()
       restorePendingPlaybackRate()
       const mediaElement = video.value
+      // Background tabs may finish loading without emitting play or pause.
+      shortsPaused.value = mediaElement.paused
       if (props.format === 'legacy' && activeLegacyFormat.value?.localFile &&
         mediaElement.videoWidth > 0 && mediaElement.videoHeight > 0) {
         const format = activeLegacyFormat.value
