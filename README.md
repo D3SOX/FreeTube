@@ -55,12 +55,22 @@ experience. Some of its major areas of focus are:
 <details>
 <summary>Show feature list</summary>
 
+- Android app preview for phones and tablets, with background playback, offline downloads, touch controls and sync with desktop devices.
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/OpenTubeX/media/releases/download/attachments/20260907T170658Z-mobile-tabs-flow-dark-dark-6d36048f51.webp">
+  <source media="(prefers-color-scheme: light)" srcset="https://github.com/OpenTubeX/media/releases/download/attachments/20260907T170658Z-mobile-tabs-flow-light-light-fcf25f28d8.webp">
+  <img width="162" height="300" alt="Mobile tab flow: page previews, hold actions, drag to reorder, and switch tabs" src="https://github.com/OpenTubeX/media/releases/download/attachments/20260907T170658Z-mobile-tabs-flow-dark-dark-6d36048f51.webp">
+</picture>
+
 - Manage and automatically apply playback speed, video quality, subtitles and volume for individual channels. You can enable each option in settings. Playback speeds can be saved automatically whenever you change them through the player options, or you can leave automatic saving off and use the dedicated button below the player to save the current speed for that channel manually.
  <img height="300" alt="image" src="https://github.com/user-attachments/assets/c713c463-93c3-4f21-96a2-4a653c2c8399" />
  <br />
  <img height="75" alt="image" src="https://github.com/user-attachments/assets/560a55c0-f653-4c21-ae30-5cdeff6ac428" />
  <br />
  <img height="250" alt="image" src="https://github.com/user-attachments/assets/a802d400-0f41-4375-a252-9f5a157afb84" />
+
+- YouTube Music audio tracks and audio-only formats use a dedicated artwork player with an optional animated audio visualizer.
+<img width="356" height="200" src="https://github.com/OpenTubeX/media/releases/download/attachments/20260831T212640Z-opentubex-music-player-real-song-82408ea747.webp" alt="YouTube Music artwork player with an animated audio spectrum">
 
 - Option if you want to multiply seek intervals by playback rate. By default, seek intervals (arrow keys and J/L) are not multiplied by playback rate. You can change this in Player Settings if you prefer the previous behavior.
  <img height="150" alt="image" src="https://github.com/user-attachments/assets/9195f70e-a881-4052-b199-bbdad043e39a" />
@@ -123,10 +133,23 @@ experience. Some of its major areas of focus are:
 - Option to define a script to run when YouTube blocked your IP. It will automatically run it and reload the video after it has finished
 <img width="500" alt="image" src="https://github.com/user-attachments/assets/2946401c-8e01-4048-9638-621289e31956" />
 
-- Authenticated playback for age-restricted, members-only and account-only videos through yt-dlp cookies loaded from a browser or file
+- Preload upcoming yt-dlp videos from the watch queue, playlist or recommendations, or prepare an entire playlist before watching. Choose how many videos to prepare and how many extractions to run concurrently. Preloading prepares stream URLs to reduce playback delays; use Downloads to save videos for offline playback.
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/OpenTubeX/media/releases/download/attachments/20260907T114447Z-playlist-preload-dark-dark-9a8ed3e374.png">
+  <source media="(prefers-color-scheme: light)" srcset="https://github.com/OpenTubeX/media/releases/download/attachments/20260907T114447Z-playlist-preload-light-light-2721e09f24.png">
+  <img width="700" height="177" alt="Playlist preload action and progress notification" src="https://github.com/OpenTubeX/media/releases/download/attachments/20260907T114447Z-playlist-preload-dark-dark-9a8ed3e374.png">
+</picture>
+
+- Authenticated playback for age-restricted, members-only and account-only videos through yt-dlp cookies loaded from a browser or file. Use the configured cookies for subtitles, transcripts and automatic caption translations, with a separate subtitle-only authentication setting.
 <img width="579" height="99" alt="Cookie source settings" src="https://github.com/user-attachments/assets/a38336e6-9210-43c3-ab49-f8e889d4d9f1" />
 <br />
 <img width="700" height="211" alt="Restricted video playback controls" src="https://github.com/user-attachments/assets/853fb879-ebeb-4d4e-b968-64beb8486bcf" />
+<br />
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/f842285f-5ee9-4246-911f-2c2e17c061ab">
+  <source media="(prefers-color-scheme: light)" srcset="https://github.com/user-attachments/assets/b59e597c-8d52-4948-b6af-0ba25f4affc7">
+  <img width="426" height="150" alt="Subtitle cookie settings" src="https://github.com/user-attachments/assets/f842285f-5ee9-4246-911f-2c2e17c061ab">
+</picture>
 
 - Auto Picture-in-Picture when switching tabs, minimizing or switching windows, plus mini-player options when scrolling or switching tabs
 <img width="436" height="157" alt="image" src="https://github.com/user-attachments/assets/4c1f1f7b-7614-41c8-abd3-5c5179d75cee" />
@@ -138,6 +161,8 @@ experience. Some of its major areas of focus are:
   <source media="(prefers-color-scheme: light)" srcset="https://github.com/OpenTubeX/media/releases/download/attachments/20260827T093432Z-937-cross-tab-mini-player-light-light-c891741308.webp">
   <img width="533" height="300" alt="Mini-player kept across tabs" src="https://github.com/OpenTubeX/media/releases/download/attachments/20260827T093432Z-937-cross-tab-mini-player-dark-dark-a5c2094e77.webp">
 </picture>
+
+- When autoplay is off, finished videos show a darkened poster with up to six recommended videos if recommendations are enabled.
 
 - Loop & Copy link in player context menu
 <img height="200" alt="image" src="https://github.com/user-attachments/assets/24f7716f-27de-421d-8740-f9a5e30ed1e6" />
@@ -161,6 +186,13 @@ experience. Some of its major areas of focus are:
 
 - Player shortcut <kbd>G</kbd> to toggle between 1x and the last playback speed
 
+- Choose whether each channel appears in Videos, Shorts, Live and Posts, set a daily video limit, and enable members-only videos when playback cookies are configured. Batch-edit channel preferences in Subscription settings, add subscribed channels directly to Saved Channel Settings, or hide a channel's content type from the feed menu.
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/OpenTubeX/media/releases/download/attachments/20260907T111835Z-channel-feed-dark-dark-f534fb0d44.png">
+  <source media="(prefers-color-scheme: light)" srcset="https://github.com/OpenTubeX/media/releases/download/attachments/20260907T111835Z-channel-feed-light-light-063edf63b2.png">
+  <img width="624" height="250" alt="Per-channel subscription controls for feed types, members-only uploads, and the daily video limit" src="https://github.com/OpenTubeX/media/releases/download/attachments/20260907T111835Z-channel-feed-dark-dark-f534fb0d44.png">
+</picture>
+
 - Persistent subscription auto-refresh timers, a visual refresh indicator and feed items that stay visible while refreshing
 <img width="246" height="226" alt="image" src="https://github.com/user-attachments/assets/31dfc690-b8a3-4ffd-994e-a53e59d0e71f" />
 <br />
@@ -169,11 +201,17 @@ experience. Some of its major areas of focus are:
 - Watch time statistics with daily and weekly charts
 <img height="200" alt="image" src="https://github.com/user-attachments/assets/61942468-a351-4a8c-813e-a7504828121f" />
 
-- Customizable Home page with shelves for resuming videos, recent subscriptions, queues, playlists, downloads, reminders and weekly watch activity
+- Customizable Home page with shelves for resuming videos, recent subscriptions, queues, playlists, downloads, reminders and weekly watch activity. Enable personalized recommendations for unwatched videos, ranked locally from viewing activity, saved videos and feedback. Choose Familiar, Balanced or Explore discovery and reset learned feedback at any time.
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://github.com/OpenTubeX/media/releases/download/attachments/20260828T152427Z-opentubex-home-release-note-dark-dark-2c14b3da84.png">
   <source media="(prefers-color-scheme: light)" srcset="https://github.com/OpenTubeX/media/releases/download/attachments/20260828T152427Z-opentubex-home-release-note-light-light-8a62aaf509.png">
   <img width="284" height="300" alt="Customizable Home page with recent activity shelves" src="https://github.com/OpenTubeX/media/releases/download/attachments/20260828T152427Z-opentubex-home-release-note-dark-dark-2c14b3da84.png">
+</picture>
+<br />
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/01a7bfa4-bc19-4857-aef3-986aa0614795">
+  <source media="(prefers-color-scheme: light)" srcset="https://github.com/user-attachments/assets/41074e2c-25d3-4b48-9702-7a64d9975d94">
+  <img width="601" height="250" alt="Personalized Home recommendations with the discovery options open and a centered load-more button" src="https://github.com/user-attachments/assets/01a7bfa4-bc19-4857-aef3-986aa0614795">
 </picture>
 
 - Configurable extra thumbnail action button
@@ -207,7 +245,7 @@ experience. Some of its major areas of focus are:
 
 - Reorder or remove playlist items during playback and remember the reverse state of each playlist
 
-- Independent Grid or List views for playlist pages, plus read-only bookmarks for saving YouTube playlists in Your Playlists
+- Independent Grid or List views for playlist pages, plus read-only bookmarks for saving YouTube playlists in Your Playlists. Copy complete YouTube playlists into editable local playlists, then append missing videos from the source while preserving local order and additions.
 <img width="700" height="92" alt="Playlist view setting" src="https://github.com/user-attachments/assets/9fab29b3-0111-4e1c-9227-ff11b7aa6442" />
 <br />
 <picture>
@@ -357,8 +395,12 @@ experience. Some of its major areas of focus are:
 - Search selected text using your chosen search engine.
 <img height="300" alt="image" src="https://github.com/user-attachments/assets/862fd213-8646-4f2e-a039-a9cf14c21600" />
 
-- Full search history with restored filters when selecting a search suggestion, plus chips to filter channel search results.
-<img height="300" alt="image" src="https://github.com/user-attachments/assets/2932ddbf-6ac3-4cca-b381-914509fe6ef2" />
+- Full search history with restored filters when selecting a search suggestion, plus chips to filter channel search results. Save the same search query with different filters as separate presets and restore each combination when selected.
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/OpenTubeX/media/releases/download/attachments/20260901T182410Z-search-history-dark-dark-a2e6328d63.png">
+  <source media="(prefers-color-scheme: light)" srcset="https://github.com/OpenTubeX/media/releases/download/attachments/20260901T182410Z-search-history-light-light-c1e3d5c3bc.png">
+  <img width="440" height="119" alt="Search history entries for the same query with distinct saved filters" src="https://github.com/OpenTubeX/media/releases/download/attachments/20260901T182410Z-search-history-dark-dark-a2e6328d63.png">
+</picture>
 
 - Customizable watched-percentage threshold. Set it to 0% to restore the old behavior of marking videos as watched instantly.
 <img width="405" height="82" alt="image" src="https://github.com/user-attachments/assets/91d298bd-8cda-4c7d-815d-3834cac977aa" />
@@ -411,9 +453,22 @@ experience. Some of its major areas of focus are:
 - Improved live streams and premieres with automatic premiere refreshes, comments, chat replay, optional chat timestamps and a choice between top chat and all messages
 <img height="300" alt="image" src="https://github.com/user-attachments/assets/7605cabd-8b2d-428d-a04f-207f9f24cf55" />
 
-- Quick-settings menu for profiles and common preferences, with customizable emoji or cropped-image profile icons
+- Add, remove and reorder navigation destinations for the desktop sidebar and mobile bottom bar from Appearance settings.
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/3e859256-a8d0-4b9d-8459-05c33d4840ca">
+  <source media="(prefers-color-scheme: light)" srcset="https://github.com/user-attachments/assets/ecae69dd-d6a6-4372-b141-7796af240e19">
+  <img width="468" height="300" alt="Navigation customization settings" src="https://github.com/user-attachments/assets/3e859256-a8d0-4b9d-8459-05c33d4840ca">
+</picture>
+
+- Quick-settings menu for profiles and common preferences, with customizable emoji or cropped-image profile icons. Choose which controls appear and reorder them, including autoplay, audio-only playback, DeArrow, translations, privacy preferences and light/dark theme selection.
 <img height="300" alt="image" src="https://github.com/user-attachments/assets/80cfe992-c400-4ecf-be56-f0685b1e9ecb" />
 <img height="300" alt="image" src="https://github.com/user-attachments/assets/a8e50f1b-383b-4865-a2d5-83ef18510b64" />
+<br />
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/OpenTubeX/media/releases/download/attachments/20260907T114449Z-quick-customization-dark-dark-90cdbcaee5.png">
+  <source media="(prefers-color-scheme: light)" srcset="https://github.com/OpenTubeX/media/releases/download/attachments/20260907T114449Z-quick-customization-light-light-086ae9337d.png">
+  <img width="462" height="300" alt="Quick Settings customization with selected controls and reorder buttons" src="https://github.com/OpenTubeX/media/releases/download/attachments/20260907T114449Z-quick-customization-dark-dark-90cdbcaee5.png">
+</picture>
 
 - Synchronized voice-over translation for supported videos via the unofficial Yandex API, with separate translated and original volume controls
 
@@ -425,8 +480,14 @@ https://github.com/user-attachments/assets/0df65773-8f13-4c5e-90d6-2db9106dea98
 - Operating-system notifications when scheduled live streams and premieres start
 <img width="460" height="71" alt="image" src="https://github.com/user-attachments/assets/d8d0e9fc-517c-4136-a3a7-d4f165e99477" />
 
-- Create, import, export, edit and share custom themes with transparent colors, backdrop blur, custom interaction and text-selection colors, and independent light and dark themes when following the system setting
+- Create, import, export, edit and share custom themes with transparent colors, backdrop blur, custom interaction and text-selection colors, and independent light and dark themes when following the system setting. Import themes directly from the clipboard, or browse community screenshots and install, apply or update themes inside the app.
 <img height="300" alt="image" src="https://github.com/user-attachments/assets/55b85fc1-04de-44d6-9a0c-1a5081b5d39a" />
+<br />
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/579cc131-6ab7-4cfd-94a0-ed6130b4f119">
+  <source media="(prefers-color-scheme: light)" srcset="https://github.com/user-attachments/assets/f8135f2d-5d8f-4cc6-b8e3-bb03f897d0ad">
+  <img width="632" height="300" alt="Discover community themes with screenshots and one-click installation" src="https://github.com/user-attachments/assets/579cc131-6ab7-4cfd-94a0-ed6130b4f119">
+</picture>
 
 - Automatically translate captions into any language offered by YouTube
 <img height="250" alt="image" src="https://github.com/user-attachments/assets/a706d1fa-a6b9-41a2-8ceb-9b42db1ca678" />
