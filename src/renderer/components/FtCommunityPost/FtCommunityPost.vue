@@ -161,15 +161,15 @@
         :size="18"
       />
       <FtIconButton
-        v-if="hideSubscriptionFeedTypeOption"
+        v-if="dropdownOptions.length > 0"
         :icon="['fas', 'ellipsis-v']"
         :title="$t('Video.More Options')"
         theme="base-no-default"
         :size="18"
         :use-shadow="false"
         dropdown-position-x="right"
-        :dropdown-options="[hideSubscriptionFeedTypeOption]"
-        @click="hideSubscriptionFeedType"
+        :dropdown-options="dropdownOptions"
+        @click="handleOptionsClick"
       />
     </div>
   </div>
@@ -179,6 +179,7 @@
 import { FtIcon } from '@opentubex/icons'
 import autolinker from 'autolinker'
 import { computed, onActivated, onMounted, useTemplateRef } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 import FtListVideo from '../FtListVideo/FtListVideo.vue'
 import FtListPlaylist from '../FtListPlaylist/FtListPlaylist.vue'
@@ -219,6 +220,7 @@ const props = defineProps({
   },
 })
 
+const { t } = useI18n()
 const relativeTimeNow = useRelativeTimeClock()
 const { hideSubscriptionFeedType, hideSubscriptionFeedTypeOption } = useHideSubscriptionFeedType(() => props.data.authorId, true)
 
@@ -245,6 +247,42 @@ const showNewSubscriptionFeedIndicator = computed(() => {
     props.data.isNewInSubscriptionFeed === true &&
     props.data.hideNewSubscriptionFeedIndicator !== true
 })
+
+const showMarkAsSeen = computed(() => {
+  return props.data.isNewInSubscriptionFeed === true &&
+    (props.data.isInNewSubscriptionFeed === true || showNewSubscriptionFeedIndicator.value)
+})
+
+const dropdownOptions = computed(() => {
+  const options = []
+  if (showMarkAsSeen.value) {
+    options.push({
+      label: t('Subscriptions.Mark as Seen'),
+      value: 'markAsSeen',
+      icon: ['fas', 'check']
+    })
+  }
+  if (hideSubscriptionFeedTypeOption.value) {
+    options.push(hideSubscriptionFeedTypeOption.value)
+  }
+  return options
+})
+
+/**
+ * @param {string} option
+ */
+function handleOptionsClick(option) {
+  switch (option) {
+    case 'markAsSeen':
+      if (showMarkAsSeen.value && props.data.postId) {
+        store.dispatch('markSubscriptionPostAsSeen', props.data.postId)
+      }
+      break
+    case 'hideSubscriptionFeedType':
+      hideSubscriptionFeedType()
+      break
+  }
+}
 
 /** @type {import('vue').ComputedRef<'local' | 'invidious'>} */
 const backendPreference = computed(() => {
