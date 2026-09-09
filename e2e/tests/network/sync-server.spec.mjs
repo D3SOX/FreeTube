@@ -630,7 +630,8 @@ test.describe('OpenTubeX sync server', () => {
   })
 
   test('migrates existing plaintext data before locking the account', async ({ app, page }, testInfo) => {
-    const enhancedPrivacy = (await getSyncCapabilities()).encrypted_sync === 1
+    const capabilities = await getSyncCapabilities()
+    const enhancedPrivacy = capabilities.encrypted_sync === 1
     test.skip(!enhancedPrivacy, 'Enhanced privacy server required')
 
     const username = `opentubex-migration-${Date.now()}-${Math.random().toString(16).slice(2)}`
@@ -718,19 +719,23 @@ test.describe('OpenTubeX sync server', () => {
     expect(envelope).not.toHaveProperty('payload_length')
     expect(legacyHistoryDownloads).toBe(1)
     // Playback speeds migrate into settings without recreating their retired collection.
-    expect(encryptedUploadResponses).toHaveLength(7)
     const encryptedUploadBodies = await Promise.all(
       encryptedUploadResponses.map(response => response.json())
     )
-    expect(encryptedUploadBodies).toEqual(expect.arrayContaining([
+    const expectedUploads = [
       { collection: 'subscriptions', revision: 1, payload: null },
       { collection: 'playlists', revision: 1, payload: null },
       { collection: 'playlistBookmarks', revision: 1, payload: null },
       { collection: 'history', revision: 1, payload: null },
       { collection: 'profiles', revision: 1, payload: null },
       { collection: 'sessionsV2', revision: 1, payload: null },
-      { collection: 'settings', revision: 1, payload: null }
-    ]))
+      { collection: 'settings', revision: 1, payload: null },
+      ...(capabilities.seen_videos === 1
+        ? [{ collection: 'seenVideos', revision: 1, payload: null }]
+        : [])
+    ]
+    expect(encryptedUploadBodies).toHaveLength(expectedUploads.length)
+    expect(encryptedUploadBodies).toEqual(expect.arrayContaining(expectedUploads))
 
     const plaintextResponse = await fetch(`${syncServerUrl}/v1/subscriptions/`, {
       headers: migratedHeaders

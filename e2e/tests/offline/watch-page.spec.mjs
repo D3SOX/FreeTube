@@ -1978,7 +1978,7 @@ async function mockTranslatedEndscreen(app, page) {
   })
 }
 
-async function measureSponsorBlockSkipStartTime(app, page, { cpuThrottlingRate } = {}) {
+async function measureSponsorBlockSkipStartTime(app, page, { rendererLoad = false } = {}) {
   await mockPlayableWatchPage(app, page)
   await page.route('**/api/skipSegments/**', route => route.fulfill({
     body: JSON.stringify([{
@@ -2005,10 +2005,22 @@ async function measureSponsorBlockSkipStartTime(app, page, { cpuThrottlingRate }
   await expect(page.locator('.sponsorBlockMarker')).toHaveCount(1)
 
   const video = page.locator('.ftVideoPlayer video')
-  await video.evaluate(element => {
+  await video.evaluate((element, rendererLoad) => {
     element.pause()
     element.currentTime = 14.57
     element.dispatchEvent(new Event('timeupdate'))
+
+    let loadInterval
+    window.__sponsorBlockLoadTasks = 0
+    if (rendererLoad) {
+      // Use fixed-duration work so the load does not depend on host CPU speed.
+      // Leave gaps for the skip scheduler to run while playback advances.
+      loadInterval = setInterval(() => {
+        const end = performance.now() + 30
+        while (performance.now() < end) { /* simulate renderer work */ }
+        window.__sponsorBlockLoadTasks++
+      }, 50)
+    }
 
     const currentTime = Object.getOwnPropertyDescriptor(HTMLMediaElement.prototype, 'currentTime')
     Object.defineProperty(element, 'currentTime', {
@@ -2017,20 +2029,19 @@ async function measureSponsorBlockSkipStartTime(app, page, { cpuThrottlingRate }
       set(value) {
         if (value === 20) {
           window.__sponsorBlockSkipStartedAt = currentTime.get.call(this)
+          clearInterval(loadInterval)
         }
         currentTime.set.call(this, value)
       }
     })
     element.addEventListener('timeupdate', event => event.stopImmediatePropagation(), { capture: true })
     return element.play()
-  })
-
-  if (cpuThrottlingRate !== undefined) {
-    const cdpSession = await page.context().newCDPSession(page)
-    await cdpSession.send('Emulation.setCPUThrottlingRate', { rate: cpuThrottlingRate })
-  }
+  }, rendererLoad)
 
   await expect.poll(() => page.evaluate(() => window.__sponsorBlockSkipStartedAt ?? null)).not.toBeNull()
+  if (rendererLoad) {
+    expect(await page.evaluate(() => window.__sponsorBlockLoadTasks)).toBeGreaterThan(0)
+  }
   return page.evaluate(() => window.__sponsorBlockSkipStartedAt)
 }
 
@@ -4272,7 +4283,7 @@ test.describe('watch page', () => {
   })
 
   test('skips SponsorBlock segments promptly under renderer load', async ({ app, page }) => {
-    const skipStartedAt = await measureSponsorBlockSkipStartTime(app, page, { cpuThrottlingRate: 12 })
+    const skipStartedAt = await measureSponsorBlockSkipStartTime(app, page, { rendererLoad: true })
     expect(skipStartedAt).toBeGreaterThanOrEqual(15)
     expect(skipStartedAt).toBeLessThan(15.3)
   })
