@@ -112,6 +112,10 @@ final class NativePlaybackEngine implements NativePlaybackSession.Playback {
                 publish("seeked");
             }
 
+            @Override public void onRenderedFirstFrame() {
+                publish("firstframe");
+            }
+
             @Override public void onVideoSizeChanged(VideoSize size) {
                 publish("resize");
             }
