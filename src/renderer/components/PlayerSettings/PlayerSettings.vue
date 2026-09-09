@@ -259,7 +259,7 @@
           :select-names="mobileSwipeActionNames"
           :select-values="MOBILE_SWIPE_ACTION_VALUES"
           :tooltip="t('Settings.Player Settings.Swipe Gestures.Hint')"
-          :icon="['fas', 'sun']"
+          :icon="MOBILE_SWIPE_ACTION_ICONS[store.getters.getMobileLeftSwipeAction]"
           @change="store.dispatch('updateMobileLeftSwipeAction', $event)"
         />
         <FtSelect
@@ -269,7 +269,7 @@
           :select-names="mobileSwipeActionNames"
           :select-values="MOBILE_SWIPE_ACTION_VALUES"
           :tooltip="t('Settings.Player Settings.Swipe Gestures.Hint')"
-          :icon="['fas', 'volume-high']"
+          :icon="MOBILE_SWIPE_ACTION_ICONS[store.getters.getMobileRightSwipeAction]"
           @change="store.dispatch('updateMobileRightSwipeAction', $event)"
         />
       </template>
@@ -640,6 +640,12 @@ const QUICK_PLAYBACK_SPEED_LIMIT = 14
 const USING_ELECTRON = process.env.IS_ELECTRON
 const IS_CAPACITOR = process.env.IS_CAPACITOR
 const MOBILE_SWIPE_ACTION_VALUES = ['disabled', 'brightness', 'volume', 'speed']
+const MOBILE_SWIPE_ACTION_ICONS = {
+  disabled: ['fas', 'xmark'],
+  brightness: ['fas', 'sun'],
+  volume: ['fas', 'volume-high'],
+  speed: ['fas', 'gauge-high'],
+}
 const mobileSwipeActionNames = computed(() => [
   t('Settings.Player Settings.Swipe Gestures.Disabled'),
   t('Settings.Player Settings.Swipe Gestures.Brightness'),
