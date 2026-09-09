@@ -970,7 +970,7 @@ async function getPlaylistInvidious() {
       channelId: channelId.value
     })
 
-    lastUpdatedDate.value = new Date(result.updated * 1000)
+    lastUpdatedDate.value = result.updated == null ? null : new Date(result.updated * 1000)
     updateLastUpdatedDate()
 
     playlistItems.value = result.videos

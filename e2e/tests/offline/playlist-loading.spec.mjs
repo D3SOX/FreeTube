@@ -56,6 +56,65 @@ async function openPlaylistTab(page, route) {
   await expect(page).toHaveURL(/#\/playlist\//)
 }
 
+test('loads an Invidious Mix response from the playlist endpoint', async ({ page, attachScreenshot }) => {
+  const playlistId = 'RDnGusAJYHcjo'
+  const errors = []
+  page.on('console', message => {
+    if (message.type() === 'error') errors.push(message.text())
+  })
+  // Invidious redirects RD playlists to /mixes, whose JSON only has these fields.
+  await page.route(new RegExp(`/api/v1/playlists/${playlistId}\\?`), route => route.fulfill({
+    json: {
+      title: 'Mix - Playlist video 1',
+      mixId: playlistId,
+      videos: [playlistVideo(0, 'nGusAJYHcjo'), playlistVideo(1)],
+    },
+  }))
+
+  await openPlaylistTab(page, `/playlist/${playlistId}`)
+
+  const playlistPage = page.locator('.playlistPage')
+  await expect(playlistPage.getByText('Playlist video 1', { exact: true })).toBeVisible()
+  await expect(playlistPage.getByText('Playlist video 2', { exact: true })).toBeVisible()
+  await expect(playlistPage.locator('.playlistInfo')).toContainText('2 videos')
+  await expect(playlistPage.locator('.playlistInfo')).not.toContainText('Invalid Date')
+  await expect(playlistPage.locator('.playlistInfo')).not.toContainText('Last Updated')
+  await expect(playlistPage.locator('.playlistInfo')).not.toContainText('views')
+  await expect(playlistPage.locator('.playlistChannel')).toHaveCount(0)
+  await expect(playlistPage.locator('.ft-auto-load-next-page-wrapper')).toHaveCount(0)
+  await expect(playlistPage.locator('.playlistThumbnail a')).toHaveAttribute('href', /\/watch\/nGusAJYHcjo/)
+  expect(errors).toEqual([])
+  await attachScreenshot('loaded-invidious-mix')
+
+  await playlistPage.getByText('Playlist video 1', { exact: true }).click()
+  const watchPlaylist = page.locator('.watchVideoPlaylist')
+  await expect(watchPlaylist.locator('.playlistItem')).toHaveCount(2)
+  await expect(watchPlaylist.locator('.playlistIndex label')).toHaveText('1 / 2')
+})
+
+test('displays an unknown Mix video count without a negative badge', async ({ page, attachScreenshot }) => {
+  await page.route('https://invidious.test/api/v1/search/**', route => route.fulfill({
+    json: [{
+      type: 'playlist',
+      title: 'Mix - Playlist video 1',
+      playlistId: 'RDnGusAJYHcjo',
+      playlistThumbnail: 'https://i.ytimg.com/vi/nGusAJYHcjo/hqdefault.jpg',
+      author: 'YouTube',
+      authorId: '',
+      videoCount: -1,
+      videos: [],
+    }],
+  }))
+
+  await page.locator(sel.searchInput).fill('mix')
+  await page.locator(sel.searchInput).press('Enter')
+
+  const mix = page.getByRole('link', { name: 'Mix - Playlist video 1' }).last()
+    .locator('xpath=ancestor::div[contains(@class, "ft-list-item")]')
+  await expect(mix.locator('.videoCountContainer')).toHaveText('∞')
+  await attachScreenshot('mix-search-count')
+})
+
 test('settles a missing user playlist into a persistent not-found state', async ({ page }) => {
   await openPlaylistTab(page, '/playlist/missing-playlist?playlistType=user')
 
