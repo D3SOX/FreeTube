@@ -977,34 +977,14 @@ const dropdownOptions = computed(() => {
         type: 'divider'
       },
       {
-        label: t('Video.Copy YouTube Link'),
-        value: 'copyYoutube',
-        icon: ['fas', 'link']
-      },
-      {
         label: t('Video.Open in YouTube'),
         value: 'openYoutube',
         icon: ['fab', 'youtube']
-      },
-      {
-        label: t('Video.Copy YouTube Embedded Player Link'),
-        value: 'copyYoutubeEmbed',
-        icon: ['fas', 'display']
-      },
-      {
-        label: t('Video.Open YouTube Embedded Player'),
-        value: 'openYoutubeEmbed',
-        icon: ['fas', 'display']
       },
       ...showInvidiousShareOptions.value
         ? [
             {
               type: 'divider'
-            },
-            {
-              label: t('Video.Copy Invidious Link'),
-              value: 'copyInvidious',
-              icon: ['fas', 'link']
             },
             {
               label: t('Video.Open in Invidious'),
@@ -1020,11 +1000,6 @@ const dropdownOptions = computed(() => {
           type: 'divider'
         },
         {
-          label: t('Video.Copy YouTube Channel Link'),
-          value: 'copyYoutubeChannel',
-          icon: ['fas', 'link']
-        },
-        {
           label: t('Video.Open Channel in YouTube'),
           value: 'openYoutubeChannel',
           icon: ['fab', 'youtube']
@@ -1033,11 +1008,6 @@ const dropdownOptions = computed(() => {
           ? [
               {
                 type: 'divider'
-              },
-              {
-                label: t('Video.Copy Invidious Channel Link'),
-                value: 'copyInvidiousChannel',
-                icon: ['fas', 'link']
               },
               {
                 label: t('Video.Open Channel in Invidious'),
@@ -1170,10 +1140,6 @@ async function toggleLiveReminder() {
   }
 }
 
-function getYoutubeEmbedUrl() {
-  return `https://www.youtube-nocookie.com/embed/${id.value}`
-}
-
 function getYoutubeChannelUrl() {
   return `https://youtube.com/channel/${channelId.value}`
 }
@@ -1247,26 +1213,11 @@ function handleOptionsClick(option) {
       openExternalLink(videoUrl)
       break
     }
-    case 'copyYoutubeEmbed':
-      copyToClipboard(getYoutubeEmbedUrl(), { messageOnSuccess: t('Share.YouTube Embed URL copied to clipboard') })
-      break
-    case 'openYoutubeEmbed':
-      openExternalLink(getYoutubeEmbedUrl())
-      break
-    case 'copyInvidious':
-      copyToClipboard(getInvidiousUrl(), { messageOnSuccess: t('Share.Invidious URL copied to clipboard') })
-      break
     case 'openInvidious':
       openExternalLink(getInvidiousUrl())
       break
-    case 'copyYoutubeChannel':
-      copyToClipboard(getYoutubeChannelUrl(), { messageOnSuccess: t('Share.YouTube Channel URL copied to clipboard') })
-      break
     case 'openYoutubeChannel':
       openExternalLink(getYoutubeChannelUrl())
-      break
-    case 'copyInvidiousChannel':
-      copyToClipboard(getInvidiousChannelUrl(), { messageOnSuccess: t('Share.Invidious Channel URL copied to clipboard') })
       break
     case 'openInvidiousChannel':
       openExternalLink(getInvidiousChannelUrl())

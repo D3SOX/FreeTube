@@ -39,6 +39,7 @@
 
 .headingRow {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
@@ -58,7 +59,7 @@
   flex-wrap: wrap;
   justify-content: flex-end;
   gap: 8px;
-  margin-inline-end: 5px;
+  margin-inline: auto 5px;
 }
 
 .historySearch {

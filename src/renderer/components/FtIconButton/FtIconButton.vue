@@ -106,6 +106,7 @@
           tabindex="-1"
           class="iconDropdown"
           :class="{
+            kebabMenu: isKebabMenu,
             left: dropdownPositionX === 'left',
             right: dropdownPositionX === 'right',
             center: dropdownPositionX === 'center',
@@ -137,6 +138,7 @@
           <slot v-else>
             <ul
               v-if="dropdownOptions.length > 0"
+              ref="dropdownContentInner"
               class="list"
               role="listbox"
             >
@@ -275,6 +277,10 @@ const emit = defineEmits(['click', 'disabled-click'])
 const LONG_CLICK_BOUNDARY_MS = 500
 
 const id = useId()
+
+const isKebabMenu = computed(() => (
+  Array.isArray(props.icon) && ['ellipsis-v', 'ellipsis-vertical'].includes(props.icon[1])
+))
 
 const dropdownShown = ref(false)
 const useModal = ref(false)
@@ -419,8 +425,8 @@ function keepDropdownInViewport() {
     dropdown.value.style.overflowY = dropdownContent.value ? 'hidden' : 'auto'
   }
 
-  if (dropdownContent.value) {
-    clampOverlayScrollTop(dropdownContent.value, dropdownContentInner.value)
+  if (dropdownContentInner.value) {
+    clampOverlayScrollTop(dropdownContent.value ?? dropdown.value, dropdownContentInner.value)
   }
 
   if (props.dropdownPortal) {

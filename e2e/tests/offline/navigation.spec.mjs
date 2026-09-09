@@ -212,6 +212,16 @@ test.describe('side nav navigation', () => {
     await expect(page).toHaveURL(/#\/userplaylists/)
   })
 
+  test('mobile navigation history keeps its own menu sizing', async ({ page }) => {
+    await goTo(page, 'history')
+    await goTo(page, 'userplaylists')
+    await page.setViewportSize({ width: 375, height: 812 })
+    await page.locator(sel.backButton).click({ button: 'right' })
+    const popout = page.locator('.topNav .iconDropdown')
+    await expect(popout.getByRole('option').first()).toHaveCSS('font-size', '12px')
+    await expect(popout).toHaveCSS('min-width', '0px')
+  })
+
   test('navigation history popout shows page icons and a drop shadow', async ({ page }) => {
     await goTo(page, 'history')
     await goTo(page, 'userplaylists')
