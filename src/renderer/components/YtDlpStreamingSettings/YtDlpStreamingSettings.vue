@@ -25,7 +25,7 @@
         :label="t('Settings.Player Settings.Upcoming Videos to Preload')"
         :default-value="ytDlpPreloadCount"
         setting-key="ytDlpPreloadCount"
-        :min-value="1"
+        :min-value="0"
         :max-value="MAX_YT_DLP_PRELOAD_COUNT"
         :step="1"
         :disabled="!ytDlpPreloadEnabled"

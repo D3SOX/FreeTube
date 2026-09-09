@@ -164,6 +164,8 @@ test.describe('seeded playlists', () => {
   })
 
   test('preloads every video in a user playlist with yt-dlp', async ({ app, page }) => {
+    await dispatchStoreAction(page, 'updateYtDlpPreloadEnabled', true)
+    await dispatchStoreAction(page, 'updateYtDlpPreloadCount', 0)
     await dispatchStoreAction(page, 'updateYtDlpPreloadConcurrency', 1)
     await app.electronApp.evaluate(({ ipcMain }, channel) => {
       globalThis.__ytDlpPreloadVideoIds = []
