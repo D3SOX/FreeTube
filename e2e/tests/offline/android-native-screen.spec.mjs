@@ -1205,6 +1205,33 @@ test('double taps on invisible seek feedback text and icons still seek', async (
   }
 })
 
+test('native fullscreen stays available when the WebView has no browser fullscreen support', async ({ app, page }) => {
+  await mockPlayableWatchPage(app, page)
+  await page.evaluate(() => Object.defineProperty(document, 'fullscreenEnabled', { configurable: true, value: false }))
+  const video = await openMockedVideo(page)
+  const button = page.locator('.shaka-fullscreen-button')
+  await expect(button).toBeHidden()
+  await openNativeScreen(page, false)
+  try {
+    // The app binds native controls before applying its UI configuration.
+    await video.evaluate(element => element.ui.configure({ tapSeekDistance: 5 }))
+    for (const event of ['loadedmetadata', 'loadeddata']) {
+      await video.evaluate((element, event) => {
+        element.dispatchEvent(new Event(event))
+        element.ui.getControls().showUI()
+      }, event)
+      await expect(button).toBeVisible()
+      await button.click()
+      await expect(page.locator('.ftVideoPlayer')).toHaveAttribute('data-native-player-screen')
+      await button.click()
+      await expect(page.locator('.ftVideoPlayer')).not.toHaveAttribute('data-native-player-screen')
+    }
+  } finally {
+    await page.evaluate(() => window.nativeScreenTest.destroy())
+  }
+  expect(await video.evaluate(element => element.ui.getControls().isFullScreenSupported())).toBe(false)
+})
+
 test('native rotation returns to inline portrait and keeps the fullscreen button usable', async ({ app, page }) => {
   await mockPlayableWatchPage(app, page)
   const video = await openMockedVideo(page)

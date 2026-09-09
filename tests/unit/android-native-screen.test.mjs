@@ -74,6 +74,21 @@ async function fixture({ fullscreen = true, chrome = [], deferTransitions = fals
   } }
 }
 
+test('native fullscreen support overrides WebView detection and restores it on teardown', async () => {
+  const f = await fixture({ fullscreen: false })
+  const unsupported = () => false
+  const prototype = { isFullScreenSupported: unsupported, compiledSupport: unsupported }
+  const controls = Object.create(prototype)
+  const otherControls = Object.create(prototype)
+  f.screen.bindControls(controls)
+  assert.equal(controls.isFullScreenSupported(), true)
+  assert.equal(controls.compiledSupport(), true)
+  assert.equal(otherControls.isFullScreenSupported(), false)
+  f.screen.destroy()
+  assert.equal(controls.isFullScreenSupported(), false)
+  assert.equal(controls.compiledSupport(), false)
+})
+
 test('mini-player motion is sent as one native animation instead of separate browser frames', async () => {
   const f = await fixture({ fullscreen: false })
   const event = new Event('native-player-transition', { cancelable: true })
@@ -189,14 +204,14 @@ test('inline native controls follow the player bounds and shared visibility afte
 })
 
 for (const cancel of [false, true]) {
-  test(`fullscreen rotation waits for the prepared native WebView frame${cancel ? ' and ignores a cancelled entry' : ''}`, async () => {
+  test(`fullscreen rotation starts with native presentation${cancel ? ' and cancels without a late entry' : ''}`, async () => {
     const f = await fixture({ fullscreen: false, deferFullscreen: true })
     const entering = f.screen.show()
-    assert.equal(f.fullscreenEvents.length, 0, 'Do not rotate a snapshot of the inline page before fullscreen has drawn')
+    assert.deepEqual(f.fullscreenEvents, [2], 'Queue native fullscreen and rotation together, before a portrait fullscreen frame is drawn')
     if (cancel) await f.screen.hide()
     f.completeFullscreen[0]()
     await entering
-    assert.equal(f.fullscreenEvents.length, 1)
+    assert.equal(f.fullscreenEvents.length, cancel ? 2 : 1)
     assert.equal(f.screen.isOpen(), !cancel)
     f.screen.destroy()
   })
@@ -211,7 +226,7 @@ for (const teardown of ['reset', 'destroy']) {
     await entering
     assert.equal(f.screen.hasSurface(), false)
     assert.equal(f.screen.isOpen(), false)
-    assert.equal(f.fullscreenEvents.length, 1)
+    assert.equal(f.fullscreenEvents.length, 2)
     f.screen.destroy()
   })
 }
