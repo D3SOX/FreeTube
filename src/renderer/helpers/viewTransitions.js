@@ -98,6 +98,7 @@ export async function morphThumbnailIntoNewTab(linkElement, createTab) {
       }
     })
 
+    transition.types.add(NEW_TAB_THUMBNAIL_MORPH_NAME)
     transition.finished.then(cleanup, cleanup)
     await transition.updateCallbackDone
   } catch (error) {

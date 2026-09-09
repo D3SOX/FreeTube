@@ -2287,6 +2287,18 @@ a:visited {
   animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* Background-tab animations must let subsequent clicks reach the live links.
+   Chromium otherwise hit-tests the snapshot overlay as the document root,
+   where middle clicks can start autoscroll instead of opening another video. */
+:root:active-view-transition-type(new-tab-thumbnail-morph) {
+  view-transition-name: none;
+}
+
+:root:active-view-transition-type(new-tab-thumbnail-morph)::view-transition,
+:root:active-view-transition-type(new-tab-thumbnail-morph)::view-transition-group(*) {
+  pointer-events: none;
+}
+
 :root.utilityWindowMorphActive .utilityWindowMorphTarget {
   view-transition-name: utility-window-morph;
 }
