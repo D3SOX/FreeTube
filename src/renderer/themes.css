@@ -2356,8 +2356,8 @@ body .os-scrollbar {
    their own primary and secondary colors. */
 .openTubeXLight,
 .openTubeXDark {
-  /* Leave enough tonal headroom for SponsorBlock's color-blended markers. */
-  --seekbar-played-color: #ddd;
+  /* Keep a pale teal tint while leaving tonal headroom for SponsorBlock markers. */
+  --seekbar-played-color: #c4d8d4;
   --toggle-track-color: #758b87;
   --toggle-checked-track-color: #4e9185;
   --toggle-thumb-color: #e6f4f1;
