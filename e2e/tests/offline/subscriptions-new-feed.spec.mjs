@@ -399,6 +399,37 @@ test.describe('new subscriptions feed', () => {
     await expect(page.getByRole('option', { name: 'Mark as seen' })).toHaveCount(0)
   })
 
+  test('marks a dotted post as seen from its options menu and persists after restart', async ({ app, page }) => {
+    await goTo(page, 'subscriptions')
+    await page.locator('[data-subscription-feed-tab="posts"]').click()
+
+    const post = page.locator('.ft-list-post').filter({ hasText: 'New community post' })
+    await expect(post.locator('.newContentDot')).toBeVisible()
+    await post.getByRole('button', { name: /^More options$/i }).click()
+    await page.getByRole('option', { name: 'Mark as seen', exact: true }).click()
+
+    await expect(post).toBeVisible()
+    await expect(post.locator('.newContentDot')).toHaveCount(0)
+    await expect(page.getByRole('button', { name: 'Mark all as seen' })).toHaveCount(0)
+
+    await post.getByRole('button', { name: /^More options$/i }).click()
+    await expect(page.getByRole('option', { name: 'Mark as seen', exact: true })).toHaveCount(0)
+    await expect(page.getByRole('option', { name: 'Never show Posts from this channel in feeds again' })).toBeVisible()
+    await page.keyboard.press('Escape')
+    await page.locator('[data-subscription-feed-tab="all"]').click()
+    await expect(post).toHaveCount(0)
+    await expect(page.getByText('New video', { exact: true })).toBeVisible()
+
+    const relaunched = await app.relaunch()
+    await goTo(relaunched.page, 'subscriptions')
+    await relaunched.page.locator('[data-subscription-feed-tab="posts"]').click()
+    const seenPost = relaunched.page.locator('.ft-list-post').filter({ hasText: 'New community post' })
+    await expect(seenPost).toBeVisible()
+    await expect(seenPost.locator('.newContentDot')).toHaveCount(0)
+    await seenPost.getByRole('button', { name: /^More options$/i }).click()
+    await expect(relaunched.page.getByRole('option', { name: 'Mark as seen', exact: true })).toHaveCount(0)
+  })
+
   test('history sync imports seen videos and keeps them seen after refresh and restart', async ({ app, page }) => {
     const key = Buffer.alloc(32, 1).toString('base64')
     const salt = Buffer.alloc(16, 2).toString('base64')
@@ -775,6 +806,28 @@ test.describe('new feed settings and seen state', () => {
     await page.getByRole('option', { name: 'Mark as seen' }).click()
 
     await expect(newFeedVideo).toHaveCount(0)
+  })
+
+  test('marks a post as seen from the New feed even when dots are disabled', async ({ page }) => {
+    await goTo(page, 'subscriptions')
+    await page.locator('[data-subscription-feed-tab="posts"]').click()
+
+    const post = page.locator('.ft-list-post').filter({ hasText: 'New community post' })
+    await post.getByRole('button', { name: /^More options$/i }).click()
+    await expect(page.getByRole('option', { name: 'Mark as seen', exact: true })).toHaveCount(0)
+    await page.keyboard.press('Escape')
+    await page.locator('[data-subscription-feed-tab="all"]').click()
+
+    await post.getByRole('button', { name: /^More options$/i }).click()
+    await page.getByRole('option', { name: 'Mark as seen', exact: true }).focus()
+    await page.keyboard.press('Enter')
+    await expect(post).toHaveCount(0)
+    await expect(page.getByText('New video post', { exact: true })).toBeVisible()
+
+    await page.locator('[data-subscription-feed-tab="posts"]').click()
+    await expect(post).toBeVisible()
+    await post.getByRole('button', { name: /^More options$/i }).click()
+    await expect(page.getByRole('option', { name: 'Mark as seen', exact: true })).toHaveCount(0)
   })
 
   test('keeps YouTube-style Shorts as portrait grid cards in list display mode', async ({ page }) => {
