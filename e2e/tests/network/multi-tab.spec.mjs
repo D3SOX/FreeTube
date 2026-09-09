@@ -14,24 +14,23 @@ async function openVideoInActiveTab(page, url) {
 }
 
 async function setWindowMinimized(electronApp, minimized) {
-  await electronApp.evaluate(({ BrowserWindow }, shouldMinimize) => {
-    const window = BrowserWindow.getAllWindows()[0]
-    if (shouldMinimize) {
-      window.minimize()
-    } else {
-      window.restore()
-    }
-  }, minimized)
+  // Xvfb has no window manager to honour minimize()/restore(). Emit the native
+  // events so the main process forwards the same state as in production.
+  await electronApp.evaluate(({ BrowserWindow }, event) => {
+    BrowserWindow.getAllWindows()[0].emit(event)
+  }, minimized ? 'minimize' : 'restore')
 }
 
-async function setRendererFocused(page, focused) {
+async function setWindowFocused(app, page, focused) {
   await page.evaluate((hasFocus) => {
     Object.defineProperty(document, 'hasFocus', {
       configurable: true,
       value: () => hasFocus,
     })
-    window.dispatchEvent(new Event(hasFocus ? 'focus' : 'blur'))
   }, focused)
+  await app.electronApp.evaluate(({ BrowserWindow }, event) => {
+    BrowserWindow.getAllWindows()[0].emit(event)
+  }, focused ? 'focus' : 'blur')
 }
 
 async function expectPictureInPicture(video, active) {
@@ -86,6 +85,10 @@ test.describe('automatic picture-in-picture', () => {
     }
   })
 
+  test.beforeEach(async ({ app, page }) => {
+    await setWindowFocused(app, page, true)
+  })
+
   // Regression: the blur emitted while minimizing kept the blur trigger active
   // after restore, so the automatically opened PiP window never closed (#265).
   test('exits PiP after restoring a minimized window', async ({ app, page, innertube }) => {
@@ -103,18 +106,18 @@ test.describe('automatic picture-in-picture', () => {
 
   // Regression: Chromium on Windows can briefly stretch the poster across the
   // compositor surface when blur-triggered PiP detaches a playing video (#362).
-  test('removes the poster before blur-triggered PiP', async ({ page, innertube }) => {
+  test('removes the poster before blur-triggered PiP', async ({ app, page, innertube }) => {
     test.skip(innertube.replay, 'no recorded fixtures for these videos')
     test.slow()
 
     const video = await openVideoInActiveTab(page, VIDEO_ONE)
     await expect(video).not.toHaveAttribute('poster')
 
-    await setRendererFocused(page, false)
+    await setWindowFocused(app, page, false)
     await expectPictureInPicture(video, true)
     await expect(video).not.toHaveAttribute('poster')
 
-    await setRendererFocused(page, true)
+    await setWindowFocused(app, page, true)
     await expectPictureInPicture(video, false)
   })
 
@@ -124,7 +127,9 @@ test.describe('automatic picture-in-picture', () => {
     test.skip(innertube.replay, 'no recorded fixtures for these videos')
     test.slow()
 
-    const video = await openVideoInActiveTab(page, VIDEO_ONE)
+    await openVideoInActiveTab(page, VIDEO_ONE)
+    // Keep targeting the original player after another tab becomes active.
+    const video = page.locator('.tabContent').first().locator('video')
 
     await page.locator(sel.newTabButton).click()
     await expect(page.locator(sel.tabs)).toHaveCount(2)

@@ -131,7 +131,8 @@ test('stores and presents every previous metadata version', async ({ app, page }
   try {
     const { port } = thumbnailServer.address()
     await mockPlayableWatchPage(app, page)
-    await openMockedVideo(page)
+    const video = await openMockedVideo(page)
+    await video.evaluate(element => element.pause())
 
     const thumbnailBaseUrl = `http://127.0.0.1:${port}`
     await page.evaluate(async ({ action, url }) => {

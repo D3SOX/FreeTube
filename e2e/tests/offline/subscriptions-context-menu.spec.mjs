@@ -28,8 +28,8 @@ test.use({
 })
 
 test('subscription tabs expose feed-specific reload actions', async ({ page }) => {
-  // The reload actions start real refreshes, which fail immediately offline
-  await page.route(/^https?:\/\//, (route) => route.abort())
+  // HTTP failures finish the refresh; network failures now retry until recovery.
+  await page.route(/^https?:\/\//, route => route.fulfill({ status: 404, body: '' }))
   await goTo(page, 'subscriptions')
 
   await page.evaluate(() => {

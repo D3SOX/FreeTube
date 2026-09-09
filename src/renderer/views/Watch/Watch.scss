@@ -1394,7 +1394,9 @@
   position: relative;
   grid-column: 1;
   grid-row: 1;
-  place-self: end;
+  place-self: start end;
+  block-size: var(--shorts-player-height);
+  justify-content: flex-end;
   inset: auto;
   inline-size: auto;
   margin: 0;

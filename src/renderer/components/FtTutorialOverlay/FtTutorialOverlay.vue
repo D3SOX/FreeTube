@@ -332,6 +332,10 @@ const highlightStyle = computed(() => {
   }
 })
 
+function focusPrimaryButton() {
+  primaryButtonRef.value?.$el.focus()
+}
+
 onMounted(() => {
   lastActiveElement = document.activeElement
   lockBodyScroll()
@@ -339,9 +343,10 @@ onMounted(() => {
   window.addEventListener('resize', schedulePositionUpdate)
   window.addEventListener('scroll', schedulePositionUpdate, true)
   document.addEventListener('keydown', handleDocumentKeydown, true)
+  document.addEventListener('startup-splash-hidden', focusPrimaryButton)
   updatePosition()
   nextTick(() => {
-    primaryButtonRef.value?.$el.focus()
+    focusPrimaryButton()
     observeTutorialContent()
   })
 })
@@ -351,6 +356,7 @@ onBeforeUnmount(() => {
   window.removeEventListener('resize', schedulePositionUpdate)
   window.removeEventListener('scroll', schedulePositionUpdate, true)
   document.removeEventListener('keydown', handleDocumentKeydown, true)
+  document.removeEventListener('startup-splash-hidden', focusPrimaryButton)
   contentResizeObserver?.disconnect()
   targetResizeObserver?.disconnect()
   store.commit('removeOpenPrompt', promptId)

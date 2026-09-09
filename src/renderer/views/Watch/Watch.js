@@ -3880,6 +3880,10 @@ export default defineComponent({
         !this.isUpcoming &&
         !this.isLive &&
         this.videoLengthSeconds > 0 &&
+        // pause() queues a timeupdate before a subsequent seek's seeking event.
+        // That update already sees the new time, but is not played content.
+        this.$refs.player?.hasLoaded &&
+        !this.$refs.player.isPaused() &&
         shortReachedEnd
       ) {
         this.shortsPlaybackCompleted = true

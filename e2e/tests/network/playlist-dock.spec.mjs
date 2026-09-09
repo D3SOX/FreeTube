@@ -4,14 +4,22 @@ import { waitForPlaybackOrSkip } from '../../helpers/player.mjs'
 const PLAYLIST_URL = 'https://youtu.be/g4OXlrxqIx0?list=UULFSMOQeBJ2RAnuFungnQOxLg'
 
 async function clickAndMeasureNextPaint(locator) {
-  const page = locator.page()
-  const start = await page.evaluate(() => performance.now())
-  await locator.click()
-
-  return page.evaluate(async (clickStart) => {
-    await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))
-    return performance.now() - clickStart
-  }, start)
+  const videoBox = await locator.page().locator('.ftVideoPlayer video').boundingBox()
+  await locator.page().mouse.move(videoBox.x + videoBox.width / 2, videoBox.y + videoBox.height / 2)
+  const measurement = await locator.page().evaluateHandle(() => ({
+    nextPaint: new Promise(resolve => {
+      document.addEventListener('click', () => {
+        const start = performance.now()
+        requestAnimationFrame(() => requestAnimationFrame(() => resolve(performance.now() - start)))
+      }, { capture: true, once: true })
+    })
+  }))
+  try {
+    await locator.click()
+    return await measurement.evaluate(value => value.nextPaint)
+  } finally {
+    await measurement.dispose()
+  }
 }
 
 test('large fullscreen playlist dock remains responsive and preserves its state', async ({ page, innertube }) => {
@@ -76,7 +84,8 @@ test('large fullscreen playlist dock remains responsive and preserves its state'
     element.style.removeProperty('inline-size')
   })
 
-  await waitForPlaybackOrSkip(test, page)
+  const video = await waitForPlaybackOrSkip(test, page)
+  await video.evaluate(element => element.pause())
 
   await sidebar.evaluate((element) => { element.scrollTop = 420 })
   await expect.poll(async () => sidebar.evaluate((element) => element.scrollTop)).toBe(420)

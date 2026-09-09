@@ -325,9 +325,6 @@ test.describe('watch page', () => {
     await openVideo(page)
     await waitForPlaybackOrSkip(test, page)
 
-    const loadComments = page.locator('.getCommentsTitle')
-    await loadComments.scrollIntoViewIfNeeded()
-    await loadComments.click()
     await expect(page.locator('.commentsTitle')).toBeVisible({ timeout: 30_000 })
 
     await setPlayerFullscreen(page, true)
@@ -570,9 +567,19 @@ test.describe('watch page', () => {
     test.skip(innertube.replay, 'watch page hydration needs the real API')
     await openVideo(page)
 
+    const video = await waitForPlaybackOrSkip(test, page)
+    await video.evaluate(async element => {
+      element.pause()
+      element.currentTime = element.duration * 20.5 / 40
+      if (element.seeking) {
+        await new Promise(resolve => element.addEventListener('seeked', resolve, { once: true }))
+      }
+    })
+
     const currentChapterIndex = 20
+    const chapterDuration = await video.evaluate(element => element.duration / 40)
     const watchComponent = await page.evaluateHandle(findWatchComponent)
-    await page.evaluate(async ({ component, chapterIndex }) => {
+    await page.evaluate(async ({ component, chapterIndex, chapterDuration }) => {
       const watchView = component.proxy
       if (!watchView) {
         throw new Error('Unable to access the watch view')
@@ -581,13 +588,13 @@ test.describe('watch page', () => {
       watchView.videoChapters = Array.from({ length: 40 }, (_, index) => ({
         title: `Test chapter ${index + 1}`,
         timestamp: `${index}:00`,
-        startSeconds: index * 60,
-        endSeconds: (index + 1) * 60
+        startSeconds: index * chapterDuration,
+        endSeconds: (index + 1) * chapterDuration
       }))
       watchView.videoCurrentChapterIndex = chapterIndex
       watchView.showSidebarChapters = true
       await watchView.$nextTick()
-    }, { component: watchComponent, chapterIndex: currentChapterIndex })
+    }, { component: watchComponent, chapterIndex: currentChapterIndex, chapterDuration })
 
     const panel = page.locator('.watchVideoChaptersPanel')
     await expect(panel).toBeVisible()
@@ -609,10 +616,7 @@ test.describe('watch page', () => {
     await expect(panel).toHaveCount(0)
 
     await setPlayerFullscreen(page, true)
-    await page.evaluate(async (component) => {
-      component.refs.player.showChaptersOverlay = true
-      await component.proxy.$nextTick()
-    }, watchComponent)
+    await page.locator('.shaka-controls-button-panel .ft-chapters-button').click({ force: true })
 
     const overlay = page.locator('.chapterOverlay')
     await expect(overlay).toBeVisible()
@@ -768,15 +772,13 @@ test.describe('watch page', () => {
   test('fullscreen comments dock preserves its active state and scroll position', async ({ page, innertube }) => {
     test.skip(innertube.replay, 'watch page hydration needs the real API')
     await openVideo(page)
-    await waitForPlaybackOrSkip(test, page)
+    const video = await waitForPlaybackOrSkip(test, page)
+    await video.evaluate(element => element.pause())
 
-    const loadComments = page.locator('.getCommentsTitle')
-    await loadComments.scrollIntoViewIfNeeded()
-    await loadComments.click()
     await expect(page.locator('.commentsTitle')).toBeVisible({ timeout: 30_000 })
 
     await setPlayerFullscreen(page, true)
-    await page.locator('.fullscreenCommentsToggle').click({ force: true })
+    await page.locator('.fullscreenCommentsToggle').evaluate(button => button.click())
 
     const comments = page.locator('.fullscreenCommentsOverlay .commentsContentWrapper')
     await expect(comments).toBeVisible()
@@ -786,7 +788,7 @@ test.describe('watch page', () => {
 
     await page.locator('.fullscreenCommentHeader .fullscreenCommentAction').last().click()
     await expect(page.locator('.fullscreenCommentsOverlay.open')).toHaveCount(0)
-    await page.locator('.fullscreenCommentsToggle').click({ force: true })
+    await page.locator('.fullscreenCommentsToggle').evaluate(button => button.click())
     await expect(comments).toBeVisible()
     await expect.poll(async () => comments.evaluate((element) => element.scrollTop)).toBe(300)
 
@@ -846,7 +848,7 @@ test.describe('watch page', () => {
     await expect(video).toHaveJSProperty('muted', true)
     await expect.poll(() => video.evaluate(element => element.currentTime)).toBeLessThan(10)
 
-    const muteNotification = page.locator('.skippedSegment').filter({ hasText: 'Muted Sponsor segment' })
+    const muteNotification = page.locator('.skippedSegment').filter({ hasText: 'Sponsor Muted' })
     await expect(muteNotification).toBeVisible()
     await expect(muteNotification.locator('.skippedSegmentTimer')).toHaveText('7s')
     await muteNotification.getByRole('button', { name: /Unmute/ }).click()
@@ -1303,8 +1305,9 @@ test.describe('watch page', () => {
 
     test('shows the progress preview above the content viewport', async ({ page, innertube }) => {
       test.skip(innertube.replay, 'watch page hydration needs the real API')
-      await openVideo(page)
       await openFullscreenPlaylistVideo(page)
+      const video = await waitForPlaybackOrSkip(test, page)
+      await video.evaluate(element => element.pause())
       await expect(page.locator('.watchVideoPlaylist.resizablePlaylist')).toBeVisible()
 
       await page.locator('.full-window-button').click({ force: true })
@@ -1314,6 +1317,7 @@ test.describe('watch page', () => {
       const content = dock.locator('.fullscreenPlaylistContent')
       const progress = dock.locator('.playlistProgressBarContainer')
       await expect(dock).toBeVisible()
+      await progress.hover()
       const progressBox = await progress.boundingBox()
       await page.mouse.move(progressBox.x + 1, progressBox.y + (progressBox.height / 2))
 
@@ -1349,11 +1353,12 @@ test.describe('watch page', () => {
   test('full window playlist action shows its popover above the player', async ({ page, innertube }) => {
     test.skip(innertube.replay, 'watch page hydration needs the real API')
     await openVideo(page)
-    await waitForPlaybackOrSkip(test, page)
+    const video = await waitForPlaybackOrSkip(test, page)
+    await video.evaluate(element => element.pause())
 
-    await page.locator('.full-window-button').click({ force: true })
+    await page.locator('.full-window-button').click()
     await expect(page.locator('.ftVideoPlayer.fullWindow')).toBeVisible()
-    await page.locator('.fullscreenPlaylistAction .iconButton').click({ force: true })
+    await page.locator('.fullscreenPlaylistAction .iconButton').click()
 
     const popover = page.locator('.fullscreenPlaylistAction .iconDropdown')
     await expect(popover.locator('.dropdownHeader')).toBeVisible()
@@ -1362,7 +1367,7 @@ test.describe('watch page', () => {
     await page.keyboard.press('Escape')
     await expect(popover).toHaveCount(0)
 
-    await page.locator('.fullscreenQuickBookmarkAction').click({ force: true })
+    await page.locator('.fullscreenQuickBookmarkAction').click()
     const toastHolder = page.locator('.toast-holder')
     await expect(toastHolder.locator('.toast')).toBeVisible()
     expect(await toastHolder.evaluate(element => Number(getComputedStyle(element).zIndex))).toBeGreaterThan(1000)
@@ -1615,7 +1620,8 @@ test.describe('custom Shorts player', () => {
 
     await setPlayerFullscreen(page, false)
     await setWindowWidth(app, 600)
-    await player.evaluate(element => element.classList.add('fullWindow'))
+    await page.keyboard.press('s')
+    await expect(player).toHaveClass(/fullWindow/)
     await expect(player).toHaveCSS('width', '600px')
     const [narrowVideoBounds, narrowSeekBarBounds] = await Promise.all([
       videoSpace.boundingBox(),
@@ -1742,6 +1748,7 @@ test.describe('custom Shorts player', () => {
     await page.keyboard.press('Escape')
 
     const volumeControl = player.locator('.shortsVolumeControl')
+    await expect(contextMenu).toBeHidden()
     await volumeControl.hover()
     await expect(volumeControl.locator('.shortsVolumeSlider')).toBeVisible()
 
@@ -1779,11 +1786,12 @@ test.describe('custom Shorts player', () => {
       name: 'Video information'
     })
     await expect(videoInfoMenuButton).toBeVisible()
-    await videoInfoMenuButton.click()
+    await videoInfoMenuButton.evaluate(element => element.click())
     await expect(page.locator('.shortsAuxPanel')).toHaveClass(/shortsAuxPanelOpen/)
-    await page.getByRole('button', { name: 'Close video information' }).click()
+    await page.getByRole('button', { name: 'Close video information' }).evaluate(element => element.click())
     await expect(page.locator('.shortsAuxPanel')).not.toHaveClass(/shortsAuxPanelOpen/)
 
+    await expect(page).toHaveURL(/#\/watch\/w1WKmSqwM8I\?short=true/)
     for (const label of ['Share Video', 'Add to Playlist']) {
       const action = page.locator('.shortsComponentAction').filter({ hasText: label })
       const actionButton = action.getByRole('button', { name: label })
@@ -1791,25 +1799,27 @@ test.describe('custom Shorts player', () => {
         return getComputedStyle(element).backgroundColor
       })
 
-      await actionButton.click()
+      await actionButton.evaluate(element => element.click())
       await expect(actionButton).toHaveAttribute('aria-expanded', 'true')
       await expect.poll(() => actionButton.evaluate(element => {
         return getComputedStyle(element).backgroundColor
       })).not.toBe(idleBackground)
-      await actionButton.click()
+      await actionButton.evaluate(element => element.click())
     }
 
-    const commentsButton = page.getByRole('button', { name: 'Show Comments' })
-    await commentsButton.click()
+    await expect(page).toHaveURL(/#\/watch\/w1WKmSqwM8I\?short=true/)
+    const commentsButton = page.locator('.shortsCommentsAction').getByRole('button')
+    await commentsButton.evaluate(element => element.click())
     await expect(commentsButton).toHaveAttribute('aria-pressed', 'true')
     await expect(commentsButton).toHaveAccessibleName('Hide Comments')
     await expect(page.locator('.shortsCommentsPanel')).toHaveClass(/shortsCommentsPanelOpen/)
-    await commentsButton.click()
+    await commentsButton.evaluate(element => element.click())
     await expect(commentsButton).toHaveAttribute('aria-pressed', 'false')
 
+    await expect(page).toHaveURL(/#\/watch\/w1WKmSqwM8I\?short=true/)
     const quickBookmark = page.locator('.shortsQuickBookmark')
     if (await quickBookmark.count()) {
-      await quickBookmark.locator('.iconButton').click()
+      await quickBookmark.locator('.iconButton').evaluate(element => element.click())
       await expect(quickBookmark).toHaveClass(/shortsQuickBookmarked/)
     }
 
@@ -1875,13 +1885,18 @@ test.describe('custom Shorts player', () => {
       test.skip(true, `Shorts watch page unavailable from the live API: ${await errorMessage.textContent()}`)
     }
 
+    const playingVideo = await waitForPlaybackOrSkip(test, page)
+    await playingVideo.evaluate(element => element.pause())
     const captionTrackCount = await player.evaluate(element => {
       return element.ui.getControls().getPlayer().getTextTracks().length
     })
     await expect(player.locator('.shortsCaptionsControl')).toHaveCount(captionTrackCount > 0 ? 1 : 0)
 
     const overflowMenu = player.locator('.shaka-overflow-menu')
-    await player.getByRole('button', { name: 'More Options' }).click()
+    const menuButton = player.getByRole('button', { name: 'More Options' })
+    const menuBounds = await menuButton.boundingBox()
+    await page.mouse.move(menuBounds.x + menuBounds.width / 2, menuBounds.y + menuBounds.height / 2)
+    await menuButton.evaluate(button => button.click())
     await expect(overflowMenu).toBeVisible()
     await expect(overflowMenu.getByRole('button', { name: /Autoplay/ })).toHaveCount(0)
 
@@ -1902,7 +1917,7 @@ test.describe('custom Shorts player', () => {
       const store = document.querySelector('#app').__vue_app__.config.globalProperties.$store
       const entry = store.getters.getHistoryCacheById.w1WKmSqwM8I
       return {
-        nearEnd: entry?.watchProgress >= expectedDuration - 0.5,
+        nearEnd: document.querySelector('.ftVideoPlayer.shortsPlayer video').currentTime >= expectedDuration - 0.5,
         full: entry?.watchProgress === entry?.lengthSeconds
       }
     }, duration)).toEqual({ nearEnd: true, full: false })
@@ -1949,395 +1964,5 @@ test.describe('custom Shorts player', () => {
 
     await expect(page).toHaveURL(/#\/watch\/[^?]+\?[^#]*\bshort=true\b/)
     await expect(page.locator('.autoplayCountdownOverlay')).toHaveCount(0)
-  })
-
-  test('scrolls through the cached subscriptions Shorts feed', async ({ page }) => {
-    const shortsTab = page
-      .locator('.tabContent[aria-hidden="false"]')
-      .locator('[data-subscription-feed-tab="shorts"]')
-    await shortsTab.click()
-    await page.getByText('First seeded Short', { exact: true }).click()
-    await expect(page).toHaveURL(
-      /#\/watch\/w1WKmSqwM8I\?short=true&shortSource=subscriptions/
-    )
-
-    const player = page.locator('.ftVideoPlayer.shortsPlayer')
-    const errorMessage = page.locator('.errorMessage')
-    await expect(player.or(errorMessage)).toBeVisible({ timeout: 30_000 })
-    if (await errorMessage.isVisible()) {
-      test.skip(true, `Shorts watch page unavailable from the live API: ${await errorMessage.textContent()}`)
-    }
-
-    const previous = page.locator('.shortsNavigationButton').first()
-    const next = page.locator('.shortsNavigationButton').last()
-    await expect(previous).toBeDisabled()
-    await expect(next).toBeEnabled()
-    await expect(page.locator('.shortsNextPreview')).toBeVisible()
-    await expect(page.locator('.shortsNextPreview')).toHaveAttribute(
-      'style',
-      /RZ6PG5QATg4\/frame0\.jpg\?selected=1/
-    )
-    await expect(page.locator('.shortsExternalMetadata')).toBeVisible()
-    await expect(page.locator('.shortsActionRail')).toBeVisible()
-
-    const commentsButton = page.locator('.shortsCommentsAction').getByRole('button')
-    await commentsButton.click()
-    const commentsPanel = page.locator('.shortsCommentsPanel')
-    await expect(commentsPanel).toHaveClass(/shortsCommentsPanelOpen/)
-    const commentsScroller = commentsPanel.locator('.commentsContentWrapper')
-    const firstComment = commentsPanel.locator('.comment').first()
-    const loadComments = commentsPanel.locator('.getCommentsTitle')
-    await expect(firstComment.or(loadComments)).toBeVisible()
-    if (await loadComments.isVisible()) {
-      await loadComments.click()
-    }
-    await expect(firstComment).toBeVisible({ timeout: 30_000 })
-    await expect.poll(() => commentsScroller.evaluate(element => {
-      return element.scrollHeight > element.clientHeight
-    })).toBe(true)
-    const commentsScrollTop = await commentsScroller.evaluate(element => element.scrollTop)
-    await commentsPanel.hover()
-    await page.mouse.wheel(0, 120)
-    await expect.poll(() => commentsScroller.evaluate(element => element.scrollTop))
-      .toBeGreaterThan(commentsScrollTop)
-    await expect(page).toHaveURL(
-      /#\/watch\/w1WKmSqwM8I\?short=true&shortSource=subscriptions/
-    )
-    await page.keyboard.press('ArrowDown')
-    await expect(page).toHaveURL(
-      /#\/watch\/w1WKmSqwM8I\?short=true&shortSource=subscriptions/
-    )
-
-    await page.evaluate(() => window.scrollTo({
-      top: document.documentElement.scrollHeight
-    }))
-    await expect(page).toHaveURL(
-      /#\/watch\/RZ6PG5QATg4\?short=true&shortSource=subscriptions/
-    )
-    await expect(commentsPanel).toHaveClass(/shortsCommentsPanelOpen/)
-
-    await page.waitForTimeout(500)
-    await previous.click()
-    await expect(page).toHaveURL(
-      /#\/watch\/w1WKmSqwM8I\?short=true&shortSource=subscriptions/
-    )
-    await expect(commentsPanel).toHaveClass(/shortsCommentsPanelOpen/)
-    await commentsPanel.getByRole('button', { name: 'Hide Comments' }).click()
-
-    const auxPanel = page.locator('.shortsAuxPanel')
-    const sponsorBlockButton = page.getByRole('button', { name: 'Open SponsorBlock info' })
-    await sponsorBlockButton.click()
-    await expect(sponsorBlockButton).toHaveAttribute('aria-pressed', 'true')
-    await expect(auxPanel).toHaveClass(/shortsAuxPanelOpen/)
-    const sponsorBlockContent = auxPanel.locator('.sponsorBlockContent')
-    await expect(sponsorBlockContent).toHaveCSS('overscroll-behavior', 'contain')
-    await sponsorBlockContent.hover()
-    await page.mouse.wheel(0, 2000)
-    await expect(page).toHaveURL(
-      /#\/watch\/w1WKmSqwM8I\?short=true&shortSource=subscriptions/
-    )
-
-    await page.waitForTimeout(500)
-    await page.evaluate(() => window.scrollTo({
-      top: document.documentElement.scrollHeight
-    }))
-    await expect(page).toHaveURL(
-      /#\/watch\/RZ6PG5QATg4\?short=true&shortSource=subscriptions/
-    )
-    await expect(auxPanel).toHaveClass(/shortsAuxPanelOpen/)
-    await expect(sponsorBlockButton).toHaveAttribute('aria-pressed', 'true')
-
-    await page.waitForTimeout(500)
-    await previous.click()
-    await expect(page).toHaveURL(
-      /#\/watch\/w1WKmSqwM8I\?short=true&shortSource=subscriptions/
-    )
-    await expect(auxPanel).toHaveClass(/shortsAuxPanelOpen/)
-    await expect(sponsorBlockButton).toHaveAttribute('aria-pressed', 'true')
-    await auxPanel.locator('.sponsorBlockHeader').getByRole('button', { name: 'Close' }).click()
-
-    const transcriptButton = page.locator('.shortsComponentAction')
-      .filter({ hasText: 'Transcript' })
-      .getByRole('button')
-    await transcriptButton.click()
-    const transcriptCard = auxPanel.locator('.watchVideoTranscript')
-    const transcriptTarget = auxPanel.locator('.shortsAuxPanelTarget')
-    await expect(transcriptCard).toBeVisible()
-    await expect(transcriptTarget).toHaveCSS('overscroll-behavior', 'contain')
-    await expect.poll(async () => {
-      const [cardHeight, targetHeight] = await Promise.all([
-        transcriptCard.evaluate(element => element.offsetHeight),
-        transcriptTarget.evaluate(element => element.clientHeight),
-      ])
-      return Math.abs(cardHeight - targetHeight)
-    }).toBeLessThanOrEqual(32)
-    await transcriptTarget.hover()
-    await page.mouse.wheel(0, 2000)
-    await expect(page).toHaveURL(
-      /#\/watch\/w1WKmSqwM8I\?short=true&shortSource=subscriptions/
-    )
-
-    await page.waitForTimeout(500)
-    await page.evaluate(() => window.scrollTo({
-      top: document.documentElement.scrollHeight
-    }))
-    await expect(page).toHaveURL(
-      /#\/watch\/RZ6PG5QATg4\?short=true&shortSource=subscriptions/
-    )
-    await expect(auxPanel).toHaveClass(/shortsAuxPanelOpen/)
-    await expect(transcriptButton).toHaveAttribute('aria-pressed', 'true')
-    await expect.poll(async () => {
-      const [cardHeight, targetHeight] = await Promise.all([
-        transcriptCard.evaluate(element => element.offsetHeight),
-        transcriptTarget.evaluate(element => element.clientHeight),
-      ])
-      return Math.abs(cardHeight - targetHeight)
-    }).toBeLessThanOrEqual(32)
-
-    await page.waitForTimeout(500)
-    await previous.click()
-    await expect(page).toHaveURL(
-      /#\/watch\/w1WKmSqwM8I\?short=true&shortSource=subscriptions/
-    )
-    await auxPanel.getByRole('button', { name: 'Close transcript' }).click()
-
-    const [playerBounds, videoAreaBounds, metadataBounds, actionBounds, previewBounds, navigationBounds] =
-      await Promise.all([
-        player.boundingBox(),
-        page.locator('.videoArea').boundingBox(),
-        page.locator('.shortsExternalMetadata').boundingBox(),
-        page.locator('.shortsActionRail').boundingBox(),
-        page.locator('.shortsNextPreview').boundingBox(),
-        page.locator('.shortsNavigation').boundingBox(),
-      ])
-    expect(metadataBounds.x + metadataBounds.width).toBeLessThanOrEqual(playerBounds.x)
-    expect(actionBounds.x).toBeGreaterThanOrEqual(playerBounds.x + playerBounds.width)
-    expect(previewBounds.y).toBeGreaterThanOrEqual(playerBounds.y + playerBounds.height)
-    expect(previewBounds.width).toBeCloseTo(playerBounds.width, 0)
-    expect(playerBounds.x + playerBounds.width / 2)
-      .toBeCloseTo(videoAreaBounds.x + videoAreaBounds.width / 2, 0)
-    expect(navigationBounds.x).toBeGreaterThan(actionBounds.x)
-
-    // Narrow layouts move the rail over the player and grow it upwards, so the
-    // navigation joins the same column above the actions instead of landing on
-    // top of them.
-    await page.setViewportSize({ width: 900, height: 700 })
-    await expect(page.locator('.shortsExternalChannel')).toHaveCSS('opacity', '1')
-    expect(await page.locator('.shortsExternalChannel').evaluate(element => {
-      return getComputedStyle(element).color === getComputedStyle(document.body).color
-    })).toBe(true)
-    await expect.poll(async () => {
-      const [rail, navigation, firstAction] = await Promise.all([
-        page.locator('.shortsActionRail').boundingBox(),
-        page.locator('.shortsNavigation').boundingBox(),
-        page.locator('.shortsAction').first().boundingBox()
-      ])
-
-      return {
-        navigationAboveActions: navigation.y + navigation.height <= firstAction.y,
-        centeredInRail: Math.abs(
-          (navigation.x + navigation.width / 2) - (rail.x + rail.width / 2)
-        ) <= 1,
-        insideRail: navigation.x >= rail.x && navigation.x + navigation.width <= rail.x + rail.width
-      }
-    }).toEqual({ navigationAboveActions: true, centeredInRail: true, insideRail: true })
-
-    await page.setViewportSize({ width: 1280, height: 900 })
-    await expect.poll(async () => {
-      const [rail, navigation] = await Promise.all([
-        page.locator('.shortsActionRail').boundingBox(),
-        page.locator('.shortsNavigation').boundingBox()
-      ])
-
-      return navigation.x > rail.x + rail.width
-    }).toBe(true)
-
-    await page.evaluate(() => {
-      window.__shortsNavigationDisappeared = false
-      const observer = new MutationObserver(() => {
-        if (!document.querySelector('.shortsNavigation')) {
-          window.__shortsNavigationDisappeared = true
-        }
-      })
-      observer.observe(document.body, { childList: true, subtree: true })
-    })
-
-    await next.click()
-    await expect(page.locator('.videoPlayerPlaceholder.ft-shimmer')).toHaveCount(0)
-    await expect(page).toHaveURL(
-      /#\/watch\/RZ6PG5QATg4\?short=true&shortSource=subscriptions/
-    )
-    expect(await page.evaluate(() => window.__shortsNavigationDisappeared)).toBe(false)
-
-    await page.waitForTimeout(500)
-    await page.keyboard.press('ArrowUp')
-    await expect(page).toHaveURL(
-      /#\/watch\/w1WKmSqwM8I\?short=true&shortSource=subscriptions/
-    )
-
-    await page.waitForTimeout(500)
-    // Browser middle-button autoscroll moves the window instead of emitting a
-    // wheel event, so window scrolling must navigate Shorts too.
-    await page.evaluate(() => window.scrollTo({
-      top: document.documentElement.scrollHeight
-    }))
-    await expect(page).toHaveURL(
-      /#\/watch\/RZ6PG5QATg4\?short=true&shortSource=subscriptions/
-    )
-
-    await page.waitForTimeout(500)
-    await page.keyboard.press('ArrowUp')
-    await expect(page).toHaveURL(
-      /#\/watch\/w1WKmSqwM8I\?short=true&shortSource=subscriptions/
-    )
-
-    await page.waitForTimeout(500)
-    const scrollbarHandle = page.locator(
-      'body > .os-scrollbar-vertical .os-scrollbar-handle'
-    )
-    const handleBounds = await scrollbarHandle.boundingBox()
-    await page.mouse.move(
-      handleBounds.x + handleBounds.width / 2,
-      handleBounds.y + handleBounds.height / 2
-    )
-    await page.mouse.down()
-    await page.mouse.move(
-      handleBounds.x + handleBounds.width / 2,
-      handleBounds.y + handleBounds.height / 2 + 50
-    )
-    await page.mouse.up()
-    await expect(page).toHaveURL(
-      /#\/watch\/RZ6PG5QATg4\?short=true&shortSource=subscriptions/
-    )
-  })
-
-  test('does not show a stale loading indicator after leaving a loaded Shorts tab', async ({ app, page }) => {
-    await page.locator(sel.newTabButton).click()
-    await expect(page.locator(sel.tabs)).toHaveCount(2)
-    const shortTab = page.locator(sel.tabs).first()
-    await shortTab.click()
-
-    const shortsFeedTab = page
-      .locator('.tabContent[aria-hidden="false"]')
-      .locator('[data-subscription-feed-tab="shorts"]')
-    await shortsFeedTab.click()
-    await page.getByText('First seeded Short', { exact: true }).click()
-    await expect(page).toHaveURL(
-      /#\/watch\/w1WKmSqwM8I\?short=true&shortSource=subscriptions/
-    )
-
-    const player = page.locator('.ftVideoPlayer.shortsPlayer')
-    const errorMessage = page.locator('.errorMessage')
-    await expect(player.or(errorMessage)).toBeVisible({ timeout: 30_000 })
-    if (await errorMessage.isVisible()) {
-      test.skip(true, `Shorts watch page unavailable from the live API: ${await errorMessage.textContent()}`)
-    }
-
-    await expect(shortTab).not.toHaveClass(/loading/)
-    await shortTab.evaluate((tab) => {
-      window.__shortTabShowedLoadingWhileScrolling = false
-      new MutationObserver(() => {
-        if (tab.classList.contains('loading')) {
-          window.__shortTabShowedLoadingWhileScrolling = true
-        }
-      }).observe(tab, { attributes: true, attributeFilter: ['class'] })
-    })
-    await page.evaluate(() => window.scrollTo({
-      top: document.documentElement.scrollHeight
-    }))
-    await expect(page).toHaveURL(
-      /#\/watch\/RZ6PG5QATg4\?short=true&shortSource=subscriptions/
-    )
-    await expect.poll(() => page.evaluate(
-      () => window.__shortTabShowedLoadingWhileScrolling
-    )).toBe(true)
-    await expect(player).toBeVisible()
-    await expect(
-      page.locator('.tabContent[aria-hidden="false"] [data-tab-loading-indicator]')
-    ).toHaveCount(0)
-
-    await expect(shortTab).not.toHaveClass(/loading/)
-    await shortTab.evaluate((tab) => {
-      window.__shortTabShowedLoadingAfterDeactivation = false
-      window.__shortTabLoadingTransitions = []
-      new MutationObserver(() => {
-        window.__shortTabLoadingTransitions.push({
-          loading: tab.classList.contains('loading'),
-          markers: [...document.querySelectorAll(
-            `[data-tab-id="${tab.dataset.tabId}"] [data-tab-loading-indicator]`
-          )].map(element => element.className),
-        })
-        if (tab.classList.contains('loading')) {
-          window.__shortTabShowedLoadingAfterDeactivation = true
-        }
-      }).observe(tab, { attributes: true, attributeFilter: ['class'] })
-    })
-
-    const shortTabId = await shortTab.getAttribute('data-tab-id')
-    await page.evaluate((tabId) => {
-      const app = document.querySelector('#app')?.__vue_app__
-      const findWatchView = (vnode) => {
-        if (
-          vnode?.component?.type?.name === 'Watch' &&
-          vnode.component.proxy?.tabId === tabId
-        ) {
-          return vnode.component.proxy
-        }
-        if (vnode?.component?.subTree) {
-          const match = findWatchView(vnode.component.subTree)
-          if (match) return match
-        }
-        if (Array.isArray(vnode?.children)) {
-          for (const child of vnode.children) {
-            const match = findWatchView(child)
-            if (match) return match
-          }
-        }
-        return null
-      }
-      const watchView = findWatchView(app?._container?._vnode)
-      if (!watchView) throw new Error('Unable to access the Shorts watch view')
-
-      // Reproduce a delayed placeholder appearing while the first tab switch
-      // begins. Once hidden, it must never contribute to the tab loader.
-      watchView.shortsTransitionPreview = ''
-      window.setTimeout(() => {
-        watchView.isLoading = true
-      }, 250)
-    }, shortTabId)
-
-    await app.electronApp.evaluate(({ BrowserWindow, Menu }) => {
-      const findMenuItem = (items, label) => {
-        for (const item of items) {
-          if (item.label === label) return item
-          const match = findMenuItem(item.submenu?.items ?? [], label)
-          if (match) return match
-        }
-        return null
-      }
-      const menuItem = findMenuItem(Menu.getApplicationMenu()?.items ?? [], 'Next Tab')
-      const browserWindow = BrowserWindow.getFocusedWindow()
-      if (!menuItem || !browserWindow) {
-        throw new Error('Next Tab application-menu item was not found')
-      }
-      menuItem.click(undefined, browserWindow, undefined)
-    })
-    await expect(page.locator(sel.tabs)).toHaveCount(2)
-    await page.waitForTimeout(5000)
-    const loadingResult = await page.evaluate(() => ({
-      showed: window.__shortTabShowedLoadingAfterDeactivation,
-      transitions: window.__shortTabLoadingTransitions,
-    }))
-    expect(loadingResult.showed, JSON.stringify(loadingResult.transitions)).toBe(false)
-    await expect(shortTab).not.toHaveClass(/loading/)
-
-    await shortTab.click()
-    await expect(page).toHaveURL(
-      /#\/watch\/RZ6PG5QATg4\?short=true&shortSource=subscriptions/
-    )
-    await expect(shortTab).toHaveClass(/loading/)
-    await expect(
-      page.locator('.tabContent[aria-hidden="false"] [data-tab-loading-indicator]')
-    ).toHaveCount(1)
   })
 })

@@ -221,6 +221,7 @@ export async function waitForAppReady(page) {
   // The top nav is rendered once Vue has mounted and the locale has loaded.
   await expect(page.locator('.topNav')).toBeVisible({ timeout: 30_000 })
   await expect(page.locator('.tabBar')).toBeVisible()
+  await expect(page.locator('#startup-splash')).toHaveCount(0)
 }
 
 /** Opens a new app window through the tab bar's empty-space context menu. */
