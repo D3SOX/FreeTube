@@ -8,5 +8,5 @@
   <rect width="320" height="180" rx="12" fill="url(#thumbnail-gradient)" />
   <circle cx="160" cy="82" r="32" fill="#000" fill-opacity=".45" />
   <path d="m153 65 24 17-24 17z" fill="#fff" />
-  <text x="20" y="154" fill="#fff" font-family="sans-serif" font-size="18" font-weight="700">OpenTubeX E2E</text>
+  <text x="160" y="154" text-anchor="middle" fill="#fff" font-family="sans-serif" font-size="18" font-weight="700">OpenTubeX E2E</text>
 </svg>
