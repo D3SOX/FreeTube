@@ -167,6 +167,8 @@ Feed:
   Cancel Refresh: Yenilemeyi iptal et
   Next Auto Refresh: 'Sonraki otomatik yenileme: {date}'
 User Playlists:
+  Add Missing Videos: "Kaynak oynatma listesinden eksik videoları ekle"
+  Source Playlist: "Kaynak oynatma listesi"
   Save Playlist: "Oynatma listesini kaydet"
   Remove Saved Playlist: "Kaydedilen oynatma listesini kaldır"
   Load More Playlists: Daha Fazla Oynatma Listesi Yükle

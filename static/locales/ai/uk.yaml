@@ -169,6 +169,8 @@ Feed:
   Cancel Refresh: Скасувати оновлення
   Next Auto Refresh: 'Наступне автоматичне оновлення: {date}'
 User Playlists:
+  Add Missing Videos: "Додати відсутні відео з початкового списку відтворення"
+  Source Playlist: "Початковий список відтворення"
   Save Playlist: "Зберегти плейліст"
   Remove Saved Playlist: "Видалити збережений плейліст"
   Load More Playlists: Завантажити більше списків відтворення

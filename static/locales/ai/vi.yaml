@@ -169,6 +169,8 @@ Feed:
   Cancel Refresh: Hủy làm mới
   Next Auto Refresh: 'Lần tự động làm mới tiếp theo: {date}'
 User Playlists:
+  Add Missing Videos: "Thêm video còn thiếu từ danh sách phát nguồn"
+  Source Playlist: "Danh sách phát nguồn"
   Save Playlist: "Lưu danh sách phát"
   Remove Saved Playlist: "Xóa danh sách phát đã lưu"
   Load More Playlists: Tải thêm danh sách phát

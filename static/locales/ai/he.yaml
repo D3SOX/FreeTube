@@ -169,6 +169,8 @@ Feed:
   Cancel Refresh: ביטול הרענון
   Next Auto Refresh: 'הרענון האוטומטי הבא: {date}'
 User Playlists:
+  Add Missing Videos: "הוספת סרטונים חסרים מרשימת ההשמעה המקורית"
+  Source Playlist: "רשימת ההשמעה המקורית"
   Save Playlist: "שמירת הפלייליסט"
   Remove Saved Playlist: "הסרת הפלייליסט השמור"
   Load More Playlists: טעינת רשימות השמעה נוספות

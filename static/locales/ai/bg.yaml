@@ -169,6 +169,8 @@ Feed:
   Cancel Refresh: Отмени обновяването
   Next Auto Refresh: 'Следващо автоматично обновяване: {date}'
 User Playlists:
+  Add Missing Videos: "Добавяне на липсващи видеоклипове от изходния плейлист"
+  Source Playlist: "Изходен плейлист"
   Save Playlist: "Запазване на плейлиста"
   Remove Saved Playlist: "Премахване на запазения плейлист"
   Load More Playlists: Зареди още плейлисти

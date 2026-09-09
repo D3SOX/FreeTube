@@ -167,6 +167,8 @@ Feed:
   Cancel Refresh: 取消刷新
   Next Auto Refresh: '下次自动刷新：{date}'
 User Playlists:
+  Add Missing Videos: "从来源播放列表添加缺少的视频"
+  Source Playlist: "来源播放列表"
   Save Playlist: "保存播放列表"
   Remove Saved Playlist: "移除已保存的播放列表"
   Load More Playlists: 加载更多播放列表

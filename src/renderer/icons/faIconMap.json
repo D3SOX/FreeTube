@@ -639,6 +639,10 @@
     "ri": "play-list-add-line",
     "material": "playlist-add"
   },
+  "playlist-merge": {
+    "ri": "git-merge-line",
+    "material": "merge-type-rounded"
+  },
   "playlist-check": {
     "ri": "play-list-check-fill",
     "material": "playlist-add-check"

@@ -167,6 +167,8 @@ Feed:
   Cancel Refresh: Zrušit obnovení
   Next Auto Refresh: 'Další automatické obnovení: {date}'
 User Playlists:
+  Add Missing Videos: "Přidat chybějící videa ze zdrojového playlistu"
+  Source Playlist: "Zdrojový playlist"
   Save Playlist: "Uložit playlist"
   Remove Saved Playlist: "Odebrat uložený playlist"
   Load More Playlists: Načíst další playlisty

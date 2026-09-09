@@ -442,6 +442,8 @@ const newPlaylistDefaultProperties = computed(() => store.getters.getNewPlaylist
 function openCreatePlaylistPrompt() {
   store.dispatch('showCreatePlaylistPrompt', {
     title: newPlaylistDefaultProperties.value.title || '',
+    description: newPlaylistDefaultProperties.value.description || '',
+    sourcePlaylistId: newPlaylistDefaultProperties.value.sourcePlaylistId,
   })
 }
 

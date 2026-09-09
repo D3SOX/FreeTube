@@ -169,6 +169,8 @@ Feed:
   Cancel Refresh: Cancelar atualização
   Next Auto Refresh: 'Próxima atualização automática: {date}'
 User Playlists:
+  Add Missing Videos: "Adicionar vídeos em falta a partir da lista de reprodução original"
+  Source Playlist: "Lista de reprodução original"
   Save Playlist: "Guardar lista de reprodução"
   Remove Saved Playlist: "Remover lista de reprodução guardada"
   Load More Playlists: Carregar mais listas de reprodução

@@ -82,6 +82,11 @@
             {{ $t('User Playlists.TotalTimePlaylist', { duration: durationFormatted }) }}
           </template>
         </p>
+        <p v-if="isUserPlaylist && selectedUserPlaylist?.sourcePlaylistId">
+          <router-link :to="`/playlist/${selectedUserPlaylist.sourcePlaylistId}`">
+            {{ t('User Playlists.Source Playlist') }}
+          </router-link>
+        </p>
       </template>
     </div>
 
@@ -178,9 +183,22 @@
           <FtIconButton
             v-if="videoCount > 0 && showPlaylists && !editMode"
             :title="$t('User Playlists.Copy Playlist')"
-            :icon="['fas', 'copy']"
+            :icon="snapshotPending ? ['fas', 'sync'] : ['fas', 'copy']"
+            :disabled="snapshotPending"
+            :spin="snapshotPending"
+            :aria-busy="snapshotPending"
             theme="secondary"
             @click="toggleCopyVideosPrompt"
+          />
+          <FtIconButton
+            v-if="!editMode && isUserPlaylist && selectedUserPlaylist?.sourcePlaylistId"
+            :title="t('User Playlists.Add Missing Videos')"
+            :icon="snapshotPending ? ['fas', 'sync'] : ['fas', 'playlist-merge']"
+            :disabled="snapshotPending"
+            :spin="snapshotPending"
+            :aria-busy="snapshotPending"
+            theme="secondary"
+            @click="addMissingVideos"
           />
           <FtIconButton
             v-if="exportPlaylistButtonVisible"
@@ -331,6 +349,7 @@ import {
   writeFileWithPicker,
   deepCopy,
 } from '../../helpers/utils'
+import { getPlaylistSnapshot } from '../../helpers/api/playlist-snapshot'
 import { isHistoryEntryWatched } from '../../helpers/history'
 import { getQuickBookmarkIconValue } from '../../helpers/quickBookmarkIcons'
 import thumbnailPlaceholder from '../../assets/img/thumbnail_placeholder.svg'
@@ -651,25 +670,93 @@ function handlePlaylistNameInput(input) {
   newTitle.value = input.trim()
 }
 
-function toggleCopyVideosPrompt(force = false) {
-  if (props.moreVideoDataAvailable && !isUserPlaylist.value && !force) {
-    showToast({
-      message: t('User Playlists.SinglePlaylistView.Toast["Some videos in the playlist are not loaded yet. Click here to copy anyway."]'),
-      time: 5000,
-      action: () => {
-        toggleCopyVideosPrompt(true)
-      },
-      icon: ['fas', 'copy'],
+const snapshotPending = ref(false)
+let snapshotController
+
+function cancelSnapshot() {
+  snapshotController?.abort()
+}
+
+watch(() => props.id, cancelSnapshot)
+onBeforeUnmount(cancelSnapshot)
+
+async function loadSnapshot(id) {
+  snapshotController = new AbortController()
+  snapshotPending.value = true
+  try {
+    return await getPlaylistSnapshot(id, {
+      backend: backendPreference.value,
+      fallback: store.getters.getBackendFallback,
+      signal: snapshotController.signal,
     })
-    return
+  } catch (error) {
+    if (!snapshotController.signal.aborted) {
+      console.error(error)
+      showToast({
+        message: t("User Playlists.SinglePlaylistView['This playlist could not be loaded.']"),
+        icon: ['fas', 'circle-exclamation'],
+      })
+    }
+    return null
+  } finally {
+    snapshotPending.value = false
   }
+}
+
+async function toggleCopyVideosPrompt() {
+  if (snapshotPending.value) return
+  const id = props.id
+  const defaults = {
+    title: props.channelName === '' ? props.title : `${props.title} | ${props.channelName}`,
+    description: props.description,
+    sourcePlaylistId: isUserPlaylist.value ? selectedUserPlaylist.value?.sourcePlaylistId : id,
+  }
+  const snapshot = isUserPlaylist.value ? { videos: props.videos } : await loadSnapshot(id)
+  if (!snapshot) return
 
   store.dispatch('showAddToPlaylistPromptForManyVideos', {
-    videos: props.videos,
-    newPlaylistDefaultProperties: {
-      title: props.channelName === '' ? props.title : `${props.title} | ${props.channelName}`,
-    },
+    videos: snapshot.videos,
+    newPlaylistDefaultProperties: defaults,
   })
+}
+
+async function addMissingVideos() {
+  if (snapshotPending.value) return
+  const id = props.id
+  const sourceId = selectedUserPlaylist.value?.sourcePlaylistId
+  if (!sourceId) return
+  const snapshot = await loadSnapshot(sourceId)
+  if (!snapshot) return
+
+  snapshotPending.value = true
+  try {
+    const playlist = store.getters.getPlaylist(id)
+    if (!playlist) throw new Error('Playlist was deleted')
+    const present = new Set(playlist.videos.map(video => video.videoId))
+    for (const video of snapshot.videos) {
+      snapshotController.signal.throwIfAborted()
+      if (present.has(video.videoId)) continue
+      // The single-video action also checks the database, protecting edits in
+      // other windows and avoiding duplicate entries during simultaneous refreshes.
+      const saved = await store.dispatch('addVideo', { _id: id, videoData: { ...video } })
+      if (!saved) throw new Error('Could not append a source playlist video')
+      present.add(video.videoId)
+    }
+    showToast({
+      message: t('User Playlists.SinglePlaylistView.Toast["Playlist has been updated."]'),
+      icon: ['fas', 'check'],
+    })
+  } catch (error) {
+    if (!snapshotController.signal.aborted) {
+      console.error(error)
+      showToast({
+        message: t('User Playlists.SinglePlaylistView.Toast["There was an issue with updating this playlist."]'),
+        icon: ['fas', 'circle-exclamation'],
+      })
+    }
+  } finally {
+    snapshotPending.value = false
+  }
 }
 
 async function savePlaylistInfo() {
