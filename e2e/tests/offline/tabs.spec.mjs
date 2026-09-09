@@ -196,6 +196,36 @@ test.describe('tab bar', () => {
     await expect(page.locator(sel.tabs).nth(1).locator('[data-icon="rss"]')).toBeVisible()
   })
 
+  test('Ctrl+T selects and presents the new tab before main receives mount readiness', async ({ app, page }) => {
+    await app.electronApp.evaluate(({ ipcMain }) => {
+      const channel = 'tabs-mount-ready'
+      const [listener] = ipcMain.listeners(channel)
+      const pending = []
+      const holdMount = (...args) => pending.push(args)
+      ipcMain.removeListener(channel, listener)
+      ipcMain.on(channel, holdMount)
+      ipcMain.once('e2e-release-tab-mounts', () => {
+        ipcMain.removeListener(channel, holdMount)
+        ipcMain.on(channel, listener)
+        for (const args of pending) listener(...args)
+      })
+    })
+
+    try {
+      await page.keyboard.press('Control+t')
+      await expect(page.locator(sel.tabs)).toHaveCount(2)
+      const newTab = page.locator(sel.tabs).nth(1)
+      await expect(newTab).toHaveClass(/active/)
+      const tabId = await newTab.getAttribute('data-tab-id')
+      await expect(page.locator(`.tabContent[data-tab-id="${tabId}"]`)).toBeVisible()
+      const state = await page.evaluate(() => window.ftElectron.tabs.getState())
+      expect(state.activeTabId).toBe(tabId)
+      expect(state.tabs.find(tab => tab.id === tabId).loadState).toBe('mounting')
+    } finally {
+      await app.electronApp.evaluate(({ ipcMain }) => ipcMain.emit('e2e-release-tab-mounts'))
+    }
+  })
+
   test('restarts background tab creation order after a manual move', async ({ page }) => {
     const openerTabId = await page.locator(sel.tabs).getAttribute('data-tab-id')
     const existingTab = await page.evaluate(() => window.ftElectron.tabs.create({

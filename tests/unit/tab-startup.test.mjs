@@ -58,6 +58,49 @@ function session(count) {
   }
 }
 
+test('foreground tabs become selected before their content mounts', async t => {
+  const manager = createManager(t)
+  const original = manager.createTab({ route: '/history' })
+  presentActive(manager)
+
+  const tab = await manager.createTabWithPreference({ route: '/subscriptions', makeActive: true })
+  assert.equal(tab.loadState, 'mounting')
+  assert.equal(manager.activeTabId, tab.id)
+  assert.equal(manager.presentedTabId, original.id, 'keeps the previous content until the new content is ready')
+
+  manager.markTabMounted(tab.id, tab.mountRevision)
+  manager.markTabPresented(tab.id, manager.selectionRevision)
+  assert.equal(manager.presentedTabId, tab.id)
+})
+
+test('slow foreground tab mounts cannot steal a newer selection', async t => {
+  const manager = createManager(t)
+  const original = manager.createTab({ route: '/history' })
+  presentActive(manager)
+  const first = await manager.createTabWithPreference({ route: '/subscriptions', makeActive: true })
+  const second = await manager.createTabWithPreference({ route: '/about', makeActive: true })
+  assert.equal(manager.activeTabId, second.id)
+
+  manager.markTabMounted(second.id, second.mountRevision)
+  manager.markTabMounted(first.id, first.mountRevision)
+  assert.equal(manager.activeTabId, second.id)
+
+  const third = await manager.createTabWithPreference({ route: '/playlists', makeActive: true })
+  manager.activateTab(original.id)
+  manager.markTabMounted(third.id, third.mountRevision)
+  assert.equal(manager.activeTabId, original.id)
+})
+
+test('background tab creation and mounting preserve the selected tab', async t => {
+  const manager = createManager(t)
+  const original = manager.createTab({ route: '/history' })
+  presentActive(manager)
+  const tab = await manager.createTabWithPreference({ route: '/subscriptions', makeActive: false })
+  assert.equal(manager.activeTabId, original.id)
+  manager.markTabMounted(tab.id, tab.mountRevision)
+  assert.equal(manager.activeTabId, original.id)
+})
+
 test('restoring many tabs serializes only one initial renderer snapshot', async t => {
   const manager = createManager(t)
   const getState = manager.getState.bind(manager)
