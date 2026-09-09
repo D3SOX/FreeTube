@@ -144,13 +144,13 @@ public class AndroidMediaSessionService extends Service {
         }
 
         if (ACTION_STOP.equals(action)) {
-            stopPlaybackService();
+            stopPlaybackService(startId);
             return START_NOT_STICKY;
         }
 
         String serializedState = intent == null ? null : intent.getStringExtra(EXTRA_STATE);
         if (!ACTION_UPDATE.equals(action) || serializedState == null) {
-            stopPlaybackService();
+            stopPlaybackService(startId);
             return START_NOT_STICKY;
         }
 
@@ -162,26 +162,26 @@ public class AndroidMediaSessionService extends Service {
                     // before stopping, or Android terminates the entire process.
                     startForeground(NOTIFICATION_ID, buildNotification(nextState, java.util.Collections.emptySet()));
                     stopSelf(startId);
-                } else applyState(currentState, true);
+                } else applyState(currentState, startId);
                 return START_NOT_STICKY;
             }
             currentState = nextState;
             mediaSession.setActive(true);
-            applyState(currentState, true);
+            applyState(currentState, startId);
         } catch (JSONException error) {
-            stopPlaybackService();
+            stopPlaybackService(startId);
         }
         return START_NOT_STICKY;
     }
 
     private void applyState(JSONObject state) {
-        applyState(state, false);
+        applyState(state, 0);
     }
 
-    private void applyState(JSONObject state, boolean foregroundStart) {
+    private void applyState(JSONObject state, int startId) {
         String playbackState = state.optString("playbackState", "none");
         if ("none".equals(playbackState)) {
-            stopPlaybackService();
+            stopPlaybackService(startId);
             return;
         }
 
@@ -234,7 +234,7 @@ public class AndroidMediaSessionService extends Service {
         );
         // Every startForegroundService request needs an acknowledgement, even
         // when Android demoted an existing service whose notification is unchanged.
-        if (foregroundStart || !nextNotificationSignature.equals(notificationSignature)) {
+        if (startId != 0 || !nextNotificationSignature.equals(notificationSignature)) {
             startForeground(NOTIFICATION_ID, buildNotification(state, actions));
             notificationSignature = nextNotificationSignature;
         }
@@ -570,6 +570,10 @@ public class AndroidMediaSessionService extends Service {
     }
 
     private void stopPlaybackService() {
+        stopPlaybackService(0);
+    }
+
+    private void stopPlaybackService(int startId) {
         String nativeOwner = currentState == null ? "" : currentState.optString("nativeOwner", "");
         currentState = null;
         AndroidPlaybackPlugin.pauseOwner(nativeOwner);
@@ -581,7 +585,9 @@ public class AndroidMediaSessionService extends Service {
         releasePlaybackWakeLock.run();
         mediaSession.setActive(false);
         stopForeground(STOP_FOREGROUND_REMOVE);
-        stopSelf();
+        // A later foreground start may already be queued when a clear arrives.
+        // Leave that start alive so onStartCommand can acknowledge it.
+        if (startId == 0) stopSelf(); else stopSelf(startId);
     }
 
     @Override
