@@ -525,6 +525,60 @@ test.describe('subscription feed refresh controls', () => {
     await expect(page.locator('.newContentDot')).toHaveCount(0)
     await expect(markAllAsSeen).toHaveCount(0)
   })
+
+  test.describe('tabbed New feed', () => {
+    test.use({
+      seed: {
+        settings: {
+          ...commonSettings,
+          hideSubscriptionsShorts: false,
+          hideSubscriptionsLive: false,
+          showNewSubscriptionFeed: true,
+          showNewSubscriptionFeedIndicators: true
+        },
+        profiles: [profileWith(1)],
+        subscriptionCache: [{
+          ...cachedChannel(0),
+          videos: [{ ...cachedChannel(0).videos[0], isNewInSubscriptionFeed: true }],
+          shorts: [cachedShort],
+          shortsTimestamp: new Date(now - 2 * HOUR).toISOString(),
+          liveStreams: [{ ...cachedShort, videoId: 'cached-live', title: 'Cached live', liveNow: true }],
+          liveStreamsTimestamp: new Date(now - 2 * HOUR).toISOString()
+        }]
+      }
+    })
+
+    for (const feed of ['shorts', 'live']) {
+      test(`keeps Mark all as seen enabled for New ${feed} while Videos refreshes`, async ({ page }) => {
+        await page.route(/^https?:\/\//, route => route.abort())
+        // Leave the refresh pending until the test window closes.
+        const pendingRequest = page.waitForRequest('**/feeds/videos.xml**')
+        await page.route('**/feeds/videos.xml**', () => {})
+        await goTo(page, 'subscriptions')
+        await page.getByRole('button', { name: /Refresh Videos/ }).click()
+        await pendingRequest
+        await page.locator('[data-subscription-feed-tab="all"]').click()
+        const markAllAsSeen = page.getByRole('button', { name: 'Mark all as seen' })
+        await expect(markAllAsSeen).toBeDisabled()
+
+        await page.getByRole('button', { name: 'Show tabbed view' }).click()
+        await expect(markAllAsSeen).toBeDisabled()
+        await page.locator(`[data-new-feed-tab="${feed}"]`).click()
+        const entry = page.getByText(feed === 'shorts' ? 'Cached short' : 'Cached live', { exact: true })
+        await expect(entry).toHaveCount(1)
+        await expect(entry).toBeVisible()
+        await expect(markAllAsSeen).toBeEnabled({ timeout: 3_000 })
+        await markAllAsSeen.click()
+        await expect(entry).toHaveCount(0)
+        await expect(markAllAsSeen).toHaveCount(0)
+        await expect(page.getByTestId('subscription-refresh-toast')).toBeVisible()
+
+        await page.locator('[data-new-feed-tab="videos"]').click()
+        await expect(page.getByText('Cached video 0', { exact: true })).toBeVisible()
+        await expect(markAllAsSeen).toBeDisabled()
+      })
+    }
+  })
 })
 
 test.describe('seen state after a subscription feed refresh', () => {
