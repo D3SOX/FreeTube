@@ -9995,12 +9995,15 @@ export default defineComponent({
         return
       }
 
+      // The media duration can extend beyond the last seekable sample.
+      // Keep the saved boundaries visible at the nearest timeline edge.
+      const position = time => Math.min(100, Math.max(0, ((time - start) / duration) * 100))
       const markers = []
       if (hasValidAbRepeatRange()) {
         const range = document.createElement('div')
         range.className = `abRepeatRange${abRepeatEnabled.value ? '' : ' abRepeatRangeInactive'}`
-        range.style.left = `${((abRepeatStart.value - start) / duration) * 100}%`
-        range.style.width = `${((abRepeatEnd.value - abRepeatStart.value) / duration) * 100}%`
+        range.style.left = `${position(abRepeatStart.value)}%`
+        range.style.width = `${position(abRepeatEnd.value) - position(abRepeatStart.value)}%`
         markers.push(range)
       }
 
@@ -10008,12 +10011,12 @@ export default defineComponent({
         ['A', abRepeatStart.value],
         ['B', abRepeatEnd.value],
       ]
-        .filter(([_point, time]) => time !== null && time >= start && time <= end)
+        .filter(([_point, time]) => time !== null)
         .map(([point, time]) => {
           const marker = document.createElement('button')
           marker.type = 'button'
           marker.className = `abRepeatMarker abRepeatMarker${point}${abRepeatEnabled.value ? '' : ' abRepeatMarkerInactive'}`
-          marker.style.left = `calc(${((time - start) / duration) * 100}% - 22px)`
+          marker.style.left = `calc(${position(time)}% - 22px)`
           marker.dataset.point = point
           marker.ariaLabel = t('Video.Player.A-B Repeat.Adjust Point', {
             point,

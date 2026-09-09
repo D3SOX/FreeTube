@@ -891,6 +891,52 @@ test('repeats an A-B range and manages it from the player menu', async ({ app, p
   await expect(player.getByRole('button', { name: /^Clear A-B repeat range/ })).not.toBeVisible()
 })
 
+test('keeps the B repeat marker visible and interactive at the end', async ({ app, page }) => {
+  await mockPlayableWatchPage(app, page)
+  const video = await openMockedVideo(page)
+  const player = page.locator('.ftVideoPlayer')
+
+  await video.evaluate((element) => {
+    element.pause()
+    element.currentTime = 5
+    // Media duration can extend past the last seekable sample.
+    Object.defineProperty(element, 'seekable', {
+      configurable: true,
+      get: () => ({ length: 1, start: () => 0, end: () => element.duration - 0.001 })
+    })
+  })
+  await player.hover()
+  await player.getByRole('button', { name: 'More settings' }).click()
+  await player.getByRole('button', { name: /^Set repeat start/ }).click()
+  await video.evaluate(async (element) => {
+    element.currentTime = element.duration - 0.1
+    await element.play()
+  })
+  await expect.poll(() => video.evaluate(element => element.ended)).toBe(true)
+  await player.hover()
+  await player.getByRole('button', { name: 'More settings' }).click()
+  await player.getByRole('button', { name: /^Set repeat end/ }).click()
+
+  for (const zoom of [1, 1.25]) {
+    await page.evaluate(zoom => window.ftElectron.setZoomFactor(zoom), zoom)
+    await player.hover()
+    const marker = player.locator('.abRepeatMarkerB')
+    await expect(marker).toBeVisible()
+    await expect.poll(() => marker.evaluate((element) => {
+      const bounds = element.getBoundingClientRect()
+      const label = getComputedStyle(element, '::after')
+      const left = bounds.left + Number.parseFloat(label.left)
+      const top = bounds.top + Number.parseFloat(label.top)
+      const width = Number.parseFloat(label.width)
+      const height = Number.parseFloat(label.height)
+      return [left + 1, left + width - 1].every(x => (
+        document.elementFromPoint(x, top + height / 2) === element
+      ))
+    })).toBe(true)
+    await marker.click({ trial: true })
+  }
+})
+
 test('repeats an A-B range when point B is at the end of the video', async ({ app, page }) => {
   await mockPlayableWatchPage(app, page)
   const video = await openMockedVideo(page)
