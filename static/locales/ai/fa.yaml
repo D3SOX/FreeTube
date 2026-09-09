@@ -814,6 +814,7 @@ Settings:
     Posts Auto Refresh Interval: فاصلهٔ تازه‌سازی خودکار پست‌ها
     Refresh Subscriptions While App Is Closed: "تازه‌سازی اشتراک‌ها هنگام بسته بودن برنامه"
   Distraction Free Settings:
+    Hide Repeat Stats: پنهان کردن آمار تکرار
     Sections:
       Visible While Paused: نمایش هنگام توقف در پنجرهٔ کامل / تمام‌صفحه
     Hide Channel Avatars: پنهان‌کردن آواتار کانال‌ها
@@ -1180,6 +1181,12 @@ Video:
     interaction: یادآوری تعامل
     filler: حاشیه‌روی
   Player:
+    Repeat Stats:
+      Repeat Stats: آمار تکرار
+      Looping: تکرار فعال است
+      Repeats: تکرارها
+      Time Spent: زمان تماشا
+      Current Pass: دور فعلی
     Voice-over Translation:
       Start: ترجمه
       Cancel: لغو

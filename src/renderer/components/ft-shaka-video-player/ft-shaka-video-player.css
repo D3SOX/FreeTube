@@ -4066,6 +4066,55 @@ html[data-reduced-motion='reduce'] .musicVisualizerCanvas {
   position: relative;
 }
 
+.repeatStats {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 24px;
+  padding: 12px 16px;
+  background-color: var(--card-bg-color);
+  color: var(--primary-text-color);
+  border-end-start-radius: calc(8px * var(--ui-roundness));
+  border-end-end-radius: calc(8px * var(--ui-roundness));
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+
+.repeatStatsMode,
+.repeatStatsValues,
+.repeatStatsValues > div {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.repeatStatsMode {
+  gap: 8px;
+}
+
+.repeatStatsMode > .ft-icon {
+  color: var(--primary-color);
+}
+
+.repeatStatsValues {
+  gap: 12px 24px;
+  margin: 0;
+}
+
+.repeatStatsValues > div {
+  gap: 6px;
+}
+
+.repeatStatsValues dt {
+  color: var(--secondary-text-color);
+}
+
+.repeatStatsValues dd {
+  order: -1;
+  margin: 0;
+}
+
 .ambientCanvas {
   position: absolute;
   inset: -5% -4% -9%;

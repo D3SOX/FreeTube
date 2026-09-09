@@ -797,6 +797,7 @@ Settings:
     Posts Auto Refresh Interval: Διάστημα αυτόματης ανανέωσης αναρτήσεων
     Refresh Subscriptions While App Is Closed: "Ανανέωση συνδρομών όταν η εφαρμογή είναι κλειστή"
   Distraction Free Settings:
+    Hide Repeat Stats: Απόκρυψη στατιστικών επανάληψης
     Sections:
       Visible While Paused: Ορατά κατά την παύση σε πλήρες παράθυρο / πλήρη οθόνη
     Hide Channel Avatars: Απόκρυψη εικόνων προφίλ καναλιών
@@ -1147,6 +1148,12 @@ Video:
   Live chat replay is enabled. Chat messages will appear here as the video plays.: Η επανάληψη ζωντανής συνομιλίας είναι ενεργοποιημένη. Τα μηνύματα θα εμφανίζονται εδώ κατά την αναπαραγωγή του βίντεο.
   Premiere started: Η πρεμιέρα βρίσκεται σε εξέλιξη. Ξεκίνησε {timeAgo}
   Player:
+    Repeat Stats:
+      Repeat Stats: Στατιστικά επανάληψης
+      Looping: Επανάληψη ενεργή
+      Repeats: Επαναλήψεις
+      Time Spent: Χρόνος παρακολούθησης
+      Current Pass: Τρέχουσα αναπαραγωγή
     Voice-over Translation:
       Start: Μετάφραση
       Cancel: Ακύρωση

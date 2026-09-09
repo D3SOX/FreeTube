@@ -810,6 +810,7 @@ Settings:
     Refresh Subscriptions While App Is Closed: "Opdater abonnementer, mens appen er lukket"
     Limit the number of videos displayed for each channel: Begræns antallet af viste videoer for hver kanal
   Distraction Free Settings:
+    Hide Repeat Stats: Skjul gentagelsesstatistik
     Sections:
       Visible While Paused: Synligt ved pause i helt vindue eller fuld skærm
     Hide Channel Avatars: Skjul kanalavatarer
@@ -1175,6 +1176,12 @@ Video:
   Sponsor Block category:
     hook: Introduktion/hilsen
   Player:
+    Repeat Stats:
+      Repeat Stats: Gentagelsesstatistik
+      Looping: Gentagelse slået til
+      Repeats: Gentagelser
+      Time Spent: Tid brugt
+      Current Pass: Aktuel gennemspilning
     Voice-over Translation:
       Start: Oversæt
       Cancel: Annuller

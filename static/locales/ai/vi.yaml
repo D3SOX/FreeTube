@@ -792,6 +792,7 @@ Settings:
     Posts Auto Refresh Interval: Khoảng tự động làm mới bài đăng
     Refresh Subscriptions While App Is Closed: "Làm mới đăng ký khi ứng dụng đã đóng"
   Distraction Free Settings:
+    Hide Repeat Stats: Ẩn thống kê lặp lại
     Sections:
       Visible While Paused: Hiện khi tạm dừng ở chế độ toàn cửa sổ / toàn màn hình
     Hide Channel Avatars: Ẩn ảnh đại diện kênh
@@ -1139,6 +1140,12 @@ Video:
   Live chat replay is enabled. Chat messages will appear here as the video plays.: Đã bật bản phát lại trò chuyện trực tiếp. Tin nhắn trò chuyện sẽ xuất hiện ở đây khi video phát.
   Premiere started: Đang công chiếu. Bắt đầu {timeAgo}
   Player:
+    Repeat Stats:
+      Repeat Stats: Thống kê lặp lại
+      Looping: Đang lặp
+      Repeats: Số lần lặp
+      Time Spent: Thời gian xem
+      Current Pass: Lượt phát hiện tại
     Voice-over Translation:
       Start: Dịch
       Cancel: Hủy

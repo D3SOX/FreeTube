@@ -792,6 +792,7 @@ Settings:
     Posts Auto Refresh Interval: Interval Pembaruan Otomatis Postingan
     Refresh Subscriptions While App Is Closed: "Perbarui Langganan Saat Aplikasi Ditutup"
   Distraction Free Settings:
+    Hide Repeat Stats: Sembunyikan statistik pengulangan
     Sections:
       Visible While Paused: Terlihat Saat Dijeda dalam Jendela Penuh / Layar Penuh
     Hide Channel Avatars: Sembunyikan Avatar Saluran
@@ -1141,6 +1142,12 @@ Video:
   Sponsor Block category:
     hook: Pembuka/Sapaan
   Player:
+    Repeat Stats:
+      Repeat Stats: Statistik pengulangan
+      Looping: Pengulangan aktif
+      Repeats: Pengulangan
+      Time Spent: Waktu menonton
+      Current Pass: Putaran saat ini
     Voice-over Translation:
       Start: Terjemahkan
       Cancel: Batal

@@ -784,6 +784,7 @@ Settings:
     Posts Auto Refresh Interval: Gönderilerin Otomatik Yenileme Aralığı
     Refresh Subscriptions While App Is Closed: "Uygulama Kapalıyken Abonelikleri Yenile"
   Distraction Free Settings:
+    Hide Repeat Stats: Tekrar istatistiklerini gizle
     Sections:
       Visible While Paused: Tam Pencere / Tam Ekranda Duraklatıldığında Görünür
     Hide Channel Avatars: Kanal Avatarlarını Gizle
@@ -1114,6 +1115,12 @@ Video:
   Live chat replay is enabled. Chat messages will appear here as the video plays.: Canlı sohbet tekrarı etkin. Video oynatıldıkça sohbet mesajları burada görünecek.
   Premiere started: İlk gösterim sürüyor. {timeAgo} başladı
   Player:
+    Repeat Stats:
+      Repeat Stats: Tekrar istatistikleri
+      Looping: Döngü açık
+      Repeats: Tekrarlar
+      Time Spent: İzleme süresi
+      Current Pass: Geçerli oynatma
     Voice-over Translation:
       Start: Çevir
       Cancel: İptal

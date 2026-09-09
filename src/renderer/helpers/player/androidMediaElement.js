@@ -114,7 +114,14 @@ export function attachAndroidMediaElement(element, { command, load, onError, now
     }
   })
   define('defaultPlaybackRate', { get: () => defaultRate, set: value => { defaultRate = value } })
-  define('loop', { get: () => loop, set(value) { loop = Boolean(value); send('loop', loop ? 1 : 0) } })
+  define('loop', {
+    get: () => loop,
+    set(value) {
+      loop = Boolean(value)
+      element.toggleAttribute('loop', loop)
+      send('loop', loop ? 1 : 0)
+    }
+  })
   define('play', {
     value: () => {
       pendingPause = false
@@ -182,7 +189,10 @@ export function attachAndroidMediaElement(element, { command, load, onError, now
       if (next.duration !== undefined && next.duration !== previous.duration) emit('durationchange')
       if (state.width !== previous.width || state.height !== previous.height) emit('resize')
       if (state.paused !== previous.paused) emit(state.paused ? 'pause' : 'play')
-      if (next.buffering && !previous.buffering) emit('waiting')
+      // Audio-focus suppression stops playback without changing playWhenReady.
+      // Shared media consumers still need a waiting/playing transition.
+      if ((next.buffering && !previous.buffering) ||
+        (previous.playing && !state.playing && !state.paused && !state.ended)) emit('waiting')
       if (state.playing && !previous.playing) emit('playing')
       if (next.event === 'seeked') { seeking = false; emit('seeked') }
       if (next.ended && !previous.ended) emit('ended')

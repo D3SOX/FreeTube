@@ -786,6 +786,7 @@ Settings:
     Posts Auto Refresh Interval: Интервал за автоматично опресняване на публикациите
     Refresh Subscriptions While App Is Closed: "Опресняване на абонаментите при затворено приложение"
   Distraction Free Settings:
+    Hide Repeat Stats: Скриване на статистиката на повторенията
     Sections:
       Visible While Paused: Видими при поставяне на пауза в режим на цял прозорец / цял екран
     Hide Channel Avatars: Скриване на аватарите на каналите
@@ -1123,6 +1124,12 @@ Video:
   Live chat replay is enabled. Chat messages will appear here as the video plays.: Повторението на чата на живо е включено. Съобщенията от чата ще се показват тук при възпроизвеждането на видеоклипа.
   Premiere started: Премиерата е в ход. Започна {timeAgo}
   Player:
+    Repeat Stats:
+      Repeat Stats: Статистика на повторенията
+      Looping: Повтаряне
+      Repeats: Повторения
+      Time Spent: Време на гледане
+      Current Pass: Текущо изпълнение
     Voice-over Translation:
       Start: Превод
       Cancel: Отказ

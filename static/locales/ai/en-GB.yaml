@@ -770,6 +770,7 @@ Settings:
     Posts Auto Refresh Interval: Posts Auto Refresh Interval
     Refresh Subscriptions While App Is Closed: "Refresh Subscriptions While App Is Closed"
   Distraction Free Settings:
+    Hide Repeat Stats: Hide Repeat Stats
     Hide Channel Avatars: Hide Channel Avatars
     Shorten View Counts: Shorten View, Comment and Comment Like Counts
     Hide Home: Hide Home
@@ -1090,6 +1091,12 @@ Video:
   Live chat replay is enabled. Chat messages will appear here as the video plays.: Live chat replay is enabled.  Chat messages will appear here as the video plays.
   Premiere started: Premiere in progress. Started {timeAgo}
   Player:
+    Repeat Stats:
+      Repeat Stats: Repeat stats
+      Looping: Looping
+      Repeats: Repeats
+      Time Spent: Time spent
+      Current Pass: Current pass
     Voice-over Translation:
       Start: Translate
       Cancel: Cancel

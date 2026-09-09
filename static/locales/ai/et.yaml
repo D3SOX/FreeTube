@@ -784,6 +784,7 @@ Settings:
     Posts Auto Refresh Interval: Postituste automaatse värskendamise intervall
     Refresh Subscriptions While App Is Closed: "Värskenda tellimusi, kui rakendus on suletud"
   Distraction Free Settings:
+    Hide Repeat Stats: Peida korduste statistika
     Sections:
       Visible While Paused: Pausi ajal täisaknas või täisekraanil nähtav
     Hide Channel Avatars: Peida kanalite avatarid
@@ -1116,6 +1117,12 @@ Video:
   Sponsor Block category:
     hook: Sissejuhatus/tervitus
   Player:
+    Repeat Stats:
+      Repeat Stats: Korduste statistika
+      Looping: Kordus sees
+      Repeats: Kordused
+      Time Spent: Vaatamisaeg
+      Current Pass: Praegune esitus
     Voice-over Translation:
       Start: Tõlgi
       Cancel: Tühista

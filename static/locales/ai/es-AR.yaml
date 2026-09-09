@@ -868,6 +868,7 @@ Settings:
     Posts Auto Refresh Interval: Intervalo de actualización automática de publicaciones
     Refresh Subscriptions While App Is Closed: "Actualizar suscripciones con la aplicación cerrada"
   Distraction Free Settings:
+    Hide Repeat Stats: Ocultar estadísticas de repetición
     Sections:
       Visible While Paused: Visible al pausar en ventana completa o pantalla completa
     Hide Channel Avatars: Ocultar avatares de canales
@@ -1448,6 +1449,12 @@ Video:
       shuffling playlists: aleatorizar las listas de reproducción
       looping playlists: reproducir en bucle las listas de reproducción
   Player:
+    Repeat Stats:
+      Repeat Stats: Estadísticas de repetición
+      Looping: En bucle
+      Repeats: Repeticiones
+      Time Spent: Tiempo dedicado
+      Current Pass: Reproducción actual
     Voice-over Translation:
       Start: Traducir
       Cancel: Cancelar

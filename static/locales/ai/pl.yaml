@@ -334,6 +334,7 @@ Settings:
     Show Scheduled Live Streams / Premieres First: Najpierw pokazuj zaplanowane transmisje na żywo i premiery
     Refresh Subscriptions While App Is Closed: "Odświeżaj subskrypcje, gdy aplikacja jest zamknięta"
   Distraction Free Settings:
+    Hide Repeat Stats: Ukryj statystyki powtarzania
     Sections:
       Visible While Paused: Widoczne po wstrzymaniu w trybie pełnego okna lub pełnego ekranu
     Hide Channel Avatars: Ukrywaj awatary kanałów
@@ -553,6 +554,12 @@ Video:
   All Messages: Wszystkie wiadomości
   Live chat replay is enabled. Chat messages will appear here as the video plays.: Powtórka czatu na żywo jest włączona. Wiadomości będą pojawiać się tutaj podczas odtwarzania filmu.
   Player:
+    Repeat Stats:
+      Repeat Stats: Statystyki powtarzania
+      Looping: Zapętlanie włączone
+      Repeats: Powtórzenia
+      Time Spent: Czas oglądania
+      Current Pass: Bieżące odtworzenie
     Voice-over Translation:
       Start: Tłumacz
       Cancel: Anuluj

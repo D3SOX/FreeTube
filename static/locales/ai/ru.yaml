@@ -769,6 +769,7 @@ Settings:
     Posts Auto Refresh Interval: Интервал автообновления публикаций
     Refresh Subscriptions While App Is Closed: "Обновлять подписки, когда приложение закрыто"
   Distraction Free Settings:
+    Hide Repeat Stats: Скрыть статистику повторов
     Sections:
       Visible While Paused: Показывать во время паузы в полнооконном и полноэкранном режимах
     Hide Channel Avatars: Скрывать аватары каналов
@@ -1119,6 +1120,12 @@ Video:
   Live chat replay is enabled. Chat messages will appear here as the video plays.: Повтор чата трансляции включён.  Сообщения чата будут появляться здесь по мере воспроизведения видео.
   Premiere started: Идёт премьера. Началась {timeAgo}
   Player:
+    Repeat Stats:
+      Repeat Stats: Статистика повторов
+      Looping: Повтор включён
+      Repeats: Повторы
+      Time Spent: Время просмотра
+      Current Pass: Текущий проход
     Voice-over Translation:
       Start: Перевести
       Cancel: Отмена

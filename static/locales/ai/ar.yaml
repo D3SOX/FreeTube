@@ -792,6 +792,7 @@ Settings:
     Posts Auto Refresh Interval: المشاركات الفاصل الزمني للتحديث التلقائي
     Refresh Subscriptions While App Is Closed: "تحديث الاشتراكات أثناء إغلاق التطبيق"
   Distraction Free Settings:
+    Hide Repeat Stats: إخفاء إحصاءات التكرار
     Sections:
       Visible While Paused: مرئي أثناء الإيقاف المؤقت في نافذة كاملة/شاشة كاملة
     Hide Channel Avatars: إخفاء الصور الرمزية للقناة
@@ -1142,6 +1143,12 @@ Video:
   Live chat replay is enabled. Chat messages will appear here as the video plays.: تم تمكين إعادة تشغيل الدردشة المباشرة.  ستظهر رسائل الدردشة هنا أثناء تشغيل الفيديو.
   Premiere started: العرض الأول قيد التقدم. بدأ {timeAgo}
   Player:
+    Repeat Stats:
+      Repeat Stats: إحصاءات التكرار
+      Looping: التكرار مفعّل
+      Repeats: التكرارات
+      Time Spent: وقت المشاهدة
+      Current Pass: الدورة الحالية
     Voice-over Translation:
       Start: يترجم
       Cancel: يلغي

@@ -357,6 +357,18 @@
       border-radius: calc(12px * var(--ui-roundness));
     }
 
+    .videoArea .videoAreaMargin:has(.repeatStats) {
+      grid-template-rows: auto auto auto;
+    }
+
+    .videoArea .videoPlayer:has(.repeatStats) {
+      block-size: auto;
+
+      :deep(.ftVideoPlayer:not(:fullscreen, .fullWindow, .scrollMiniPlayer)) {
+        block-size: var(--shorts-player-height);
+      }
+    }
+
     .videoArea :deep(.ftVideoPlayer),
     .videoArea .videoPlayer:has(.errorContainer) {
       overflow: hidden;

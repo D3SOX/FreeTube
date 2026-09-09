@@ -786,6 +786,7 @@ Settings:
     Posts Auto Refresh Interval: Intervall för automatisk uppdatering av inlägg
     Refresh Subscriptions While App Is Closed: "Uppdatera prenumerationer medan appen är stängd"
   Distraction Free Settings:
+    Hide Repeat Stats: Dölj upprepningsstatistik
     Sections:
       Visible While Paused: Synligt under paus i helfönster eller helskärm
     Hide Channel Avatars: Dölj kanalavatarer
@@ -1123,6 +1124,12 @@ Video:
   Live chat replay is enabled. Chat messages will appear here as the video plays.: Repris av livechatten är aktiverad. Chattmeddelanden visas här medan videon spelas upp.
   Premiere started: Premiären pågår. Startade {timeAgo}
   Player:
+    Repeat Stats:
+      Repeat Stats: Upprepningsstatistik
+      Looping: Upprepning på
+      Repeats: Upprepningar
+      Time Spent: Tid använd
+      Current Pass: Aktuell uppspelning
     Voice-over Translation:
       Start: Översätt
       Cancel: Avbryt

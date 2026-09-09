@@ -978,6 +978,7 @@ Settings:
     To: 다음으로
     Confirm Before Unsubscribing: 구독 취소 전 확인
   Distraction Free Settings:
+    Hide Repeat Stats: 반복 통계 숨기기
     Sections:
       Side Bar: 사이드바
       Subscriptions Page: 구독 페이지
@@ -1426,6 +1427,12 @@ Video:
     Show Original Details: 원본 정보 표시
     Show Modified Details: 수정된 정보 표시
   Player:
+    Repeat Stats:
+      Repeat Stats: 반복 통계
+      Looping: 반복 중
+      Repeats: 반복 횟수
+      Time Spent: 시청 시간
+      Current Pass: 현재 재생 회차
     Voice-over Translation:
       Start: 번역
       Cancel: 취소

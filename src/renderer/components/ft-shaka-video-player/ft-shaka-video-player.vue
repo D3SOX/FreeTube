@@ -1418,6 +1418,40 @@
     </div>
     </Teleport>
     <!-- eslint-enable vue/html-indent -->
+    <section
+      v-if="repeatStats.active && !hideRepeatStats && !fullWindowEnabled && !isFullscreen"
+      class="repeatStats"
+      :aria-label="$t('Video.Player.Repeat Stats.Repeat Stats')"
+    >
+      <span class="repeatStatsMode">
+        <ft-icon
+          :icon="['fas', 'retweet']"
+          aria-hidden="true"
+        />
+        {{ repeatStatsRange ? $t('Video.Player.A-B Repeat.A-B Repeat') : $t('Video.Player.Repeat Stats.Looping') }}
+        <bdi v-if="repeatStatsRange">{{ repeatStatsRange }}</bdi>
+      </span>
+      <dl class="repeatStatsValues">
+        <div>
+          <dt>{{ $t('Video.Player.Repeat Stats.Repeats') }}</dt>
+          <dd class="repeatStatsCount">
+            {{ repeatStats.repeats.toLocaleString($i18n.locale) }}
+          </dd>
+        </div>
+        <div>
+          <dt>{{ $t('Video.Player.Repeat Stats.Time Spent') }}</dt>
+          <dd class="repeatStatsTime">
+            {{ repeatStatsTime }}
+          </dd>
+        </div>
+        <div>
+          <dt>{{ $t('Video.Player.Repeat Stats.Current Pass') }}</dt>
+          <dd class="repeatStatsPass">
+            {{ (repeatStats.repeats + 1).toLocaleString($i18n.locale) }}
+          </dd>
+        </div>
+      </dl>
+    </section>
   </div>
 </template>
 

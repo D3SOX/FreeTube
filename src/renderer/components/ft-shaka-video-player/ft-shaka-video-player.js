@@ -3,6 +3,7 @@ import { isAppHidden } from '../../helpers/appVisibility.js'
 import { playbackScreenWake } from '../../helpers/playbackScreenWake'
 import { capturePlayerFrame } from '../../helpers/player/capturePlayerFrame'
 import { createAndroidPlayer } from '../../helpers/player/androidPlayer'
+import { createRepeatStatsTracker } from '../../helpers/player/repeatStats'
 import { computed, defineComponent, inject, nextTick, onBeforeUnmount, onMounted, onUnmounted, reactive, ref, shallowRef, watch } from 'vue'
 import FtPaidPromotionBadge from '../FtPaidPromotionBadge/FtPaidPromotionBadge.vue'
 import FtSelect from '../FtSelect/FtSelect.vue'
@@ -3979,6 +3980,35 @@ export default defineComponent({
     const abRepeatStart = ref(null)
     const abRepeatEnd = ref(null)
     const abRepeatEnabled = ref(false)
+    const repeatStats = reactive({ active: false, repeats: 0, seconds: 0 })
+    const hideRepeatStats = computed(() => store.getters.getHideRepeatStats)
+    const repeatStatsTime = computed(() => formatDurationAsTimestamp(repeatStats.seconds))
+    const repeatStatsRange = computed(() => abRepeatEnabled.value
+      ? `${formatAbRepeatTimestamp(abRepeatStart.value)} – ${formatAbRepeatTimestamp(abRepeatEnd.value)}`
+      : '')
+    let repeatStatsTracker = null
+    let repeatStatsLoopObserver = null
+
+    function syncRepeatStatsMode() {
+      const mode = isLive.value
+        ? null
+        : abRepeatEnabled.value && abRepeatAvailable.value
+          ? `ab:${abRepeatStart.value}:${abRepeatEnd.value}`
+          : video.value?.loop ? 'video' : null
+      repeatStatsTracker?.setMode(mode)
+    }
+
+    watch([abRepeatStart, abRepeatEnd, abRepeatEnabled, isLive], syncRepeatStatsMode)
+    onMounted(() => {
+      repeatStatsTracker = createRepeatStatsTracker(video.value, stats => Object.assign(repeatStats, stats))
+      repeatStatsLoopObserver = new MutationObserver(syncRepeatStatsMode)
+      repeatStatsLoopObserver.observe(video.value, { attributes: true, attributeFilter: ['loop'] })
+      syncRepeatStatsMode()
+    })
+    onBeforeUnmount(() => {
+      repeatStatsTracker?.destroy()
+      repeatStatsLoopObserver?.disconnect()
+    })
     const abRepeatDuration = ref(Number.POSITIVE_INFINITY)
     const disableAbRepeat = computed(() => store.getters.getDisableAbRepeat)
     const abRepeatValidation = computed(() => validateAbRepeatRange(
@@ -4153,17 +4183,18 @@ export default defineComponent({
       return abRepeatAvailable.value
     }
 
-    function repeatAbRangeFromStart() {
+    function repeatAbRangeFromStart(countRepeat = false) {
       const videoElement = video.value
       if (!videoElement || !hasValidAbRepeatRange()) {
         return
       }
 
       clearAbRepeatBoundarySchedule()
+      if (countRepeat) repeatStatsTracker?.repeat()
       videoElement.currentTime = abRepeatStart.value
     }
 
-    function checkAbRepeatBoundary() {
+    function checkAbRepeatBoundary(countRepeat = true) {
       clearAbRepeatBoundarySchedule()
       const videoElement = video.value
       if (!videoElement || !abRepeatEnabled.value || !hasValidAbRepeatRange()) {
@@ -4174,7 +4205,8 @@ export default defineComponent({
         videoElement.currentTime < abRepeatStart.value - AB_REPEAT_BOUNDARY_TOLERANCE_SECONDS ||
         videoElement.currentTime >= abRepeatEnd.value - AB_REPEAT_BOUNDARY_TOLERANCE_SECONDS
       ) {
-        repeatAbRangeFromStart()
+        repeatAbRangeFromStart(countRepeat && !videoElement.paused && !videoElement.seeking &&
+          videoElement.currentTime >= abRepeatEnd.value - AB_REPEAT_BOUNDARY_TOLERANCE_SECONDS)
         return
       }
 
@@ -5463,6 +5495,8 @@ export default defineComponent({
 
     watch(() => props.videoId, () => {
       resetAbRepeat()
+      repeatStatsTracker?.reset()
+      syncRepeatStatsMode()
       mediaSessionStopped = false
       voiceOverTranslation.reset()
       showPoster.value = true
@@ -6115,7 +6149,7 @@ export default defineComponent({
 
     function handleEnded() {
       if (abRepeatEnabled.value && hasValidAbRepeatRange()) {
-        repeatAbRangeFromStart()
+        repeatAbRangeFromStart(true)
         video.value.play()
         return
       }
@@ -6162,7 +6196,7 @@ export default defineComponent({
     }
 
     function handleAbRepeatSeeked() {
-      checkAbRepeatBoundary()
+      checkAbRepeatBoundary(false)
     }
 
     function applyPendingPresentationModes() {
@@ -11170,6 +11204,8 @@ export default defineComponent({
      * }>}
      */
     async function destroyPlayer() {
+      repeatStatsTracker?.destroy()
+      repeatStatsLoopObserver?.disconnect()
       screenWakeBinding?.destroy()
       screenWakeBinding = null
       nativePlaybackCleanup?.()
@@ -11394,6 +11430,10 @@ export default defineComponent({
       selectOverlayChapter,
       copyChapterTimestamp,
       fullscreenDockStyle,
+      repeatStats,
+      hideRepeatStats,
+      repeatStatsTime,
+      repeatStatsRange,
       fullscreenDockCanResize,
       fullscreenDockCanReorder,
       fullscreenDockResizing,

@@ -28,6 +28,7 @@ function fixture(native = true) {
   const context = vm.createContext({
     player, localPlayer: player, controls: {}, mediaTabId: 'video',
     nativePlaybackCleanup: null, screenWakeBinding: null,
+    repeatStatsTracker: null, repeatStatsLoopObserver: null,
     store: { getters: reactive({ getContinuePlaybackWhenScreenIsLocked: true }) },
     defaultSkipInterval: ref(5), seekIntervalMultiplyByPlaybackRate: ref(false),
     watch, handleError: assert.fail,

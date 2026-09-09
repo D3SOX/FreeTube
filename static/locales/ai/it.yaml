@@ -784,6 +784,7 @@ Settings:
     Posts Auto Refresh Interval: Intervallo di aggiornamento automatico dei post
     Refresh Subscriptions While App Is Closed: "Aggiorna le iscrizioni quando l'app è chiusa"
   Distraction Free Settings:
+    Hide Repeat Stats: Nascondi statistiche di ripetizione
     Sections:
       Visible While Paused: Visibile durante la pausa in finestra intera o a schermo intero
     Hide Channel Avatars: Nascondi avatar dei canali
@@ -1114,6 +1115,12 @@ Video:
   Live chat replay is enabled. Chat messages will appear here as the video plays.: La replica della chat dal vivo è abilitata. I messaggi appariranno qui durante la riproduzione del video.
   Premiere started: Première in corso. Iniziata {timeAgo}
   Player:
+    Repeat Stats:
+      Repeat Stats: Statistiche di ripetizione
+      Looping: In ripetizione
+      Repeats: Ripetizioni
+      Time Spent: Tempo trascorso
+      Current Pass: Riproduzione attuale
     Voice-over Translation:
       Start: Traduci
       Cancel: Annulla

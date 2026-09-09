@@ -792,6 +792,7 @@ Settings:
     Posts Auto Refresh Interval: Bil milli sjálfvirkra uppfærslna færslna
     Refresh Subscriptions While App Is Closed: "Uppfæra áskriftir þegar forritið er lokað"
   Distraction Free Settings:
+    Hide Repeat Stats: Fela tölfræði endurtekninga
     Sections:
       Visible While Paused: Sýnilegt þegar gert er hlé í heilum glugga eða á öllum skjánum
     Hide Channel Avatars: Fela auðkennismyndir rása
@@ -1148,6 +1149,12 @@ Video:
     music offtopic: Ekki tónlist
     filler: Útúrdúrar
   Player:
+    Repeat Stats:
+      Repeat Stats: Tölfræði endurtekninga
+      Looping: Endurtekning virk
+      Repeats: Endurtekningar
+      Time Spent: Áhorfstími
+      Current Pass: Núverandi umferð
     Voice-over Translation:
       Start: Þýða
       Cancel: Hætta við

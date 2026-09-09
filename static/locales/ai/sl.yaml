@@ -1018,6 +1018,7 @@ Settings:
     To: Na
     Confirm Before Unsubscribing: Zahtevaj potrditev pred odjavo
   Distraction Free Settings:
+    Hide Repeat Stats: Skrij statistiko ponavljanja
     Sections:
       Side Bar: Stranska vrstica
       Subscriptions Page: Stran z naročninami
@@ -1536,6 +1537,12 @@ Video:
       shuffling playlists: naključno predvajanje seznamov predvajanja
       looping playlists: ponavljanje seznamov predvajanja
   Player:
+    Repeat Stats:
+      Repeat Stats: Statistika ponavljanja
+      Looping: Ponavljanje vklopljeno
+      Repeats: Ponovitve
+      Time Spent: Čas gledanja
+      Current Pass: Trenutni prehod
     Voice-over Translation:
       Start: Prevedi
       Cancel: Prekliči

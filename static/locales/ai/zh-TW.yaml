@@ -784,6 +784,7 @@ Settings:
     Posts Auto Refresh Interval: 貼文自動重新整理間隔
     Refresh Subscriptions While App Is Closed: "應用程式關閉時重新整理訂閱"
   Distraction Free Settings:
+    Hide Repeat Stats: 隱藏循環統計
     Sections:
       Visible While Paused: 在全視窗／全螢幕模式暫停播放時顯示
     Hide Channel Avatars: 隱藏頻道頭像
@@ -1121,6 +1122,12 @@ Video:
   Sponsor Block category:
     hook: 開場／問候
   Player:
+    Repeat Stats:
+      Repeat Stats: 循環統計
+      Looping: 循環中
+      Repeats: 重複次數
+      Time Spent: 觀看時間
+      Current Pass: 目前播放輪次
     Voice-over Translation:
       Start: 翻譯
       Cancel: 取消

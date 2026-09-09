@@ -784,6 +784,7 @@ Settings:
     Posts Auto Refresh Interval: 帖子自动刷新间隔
     Refresh Subscriptions While App Is Closed: "应用关闭时刷新订阅"
   Distraction Free Settings:
+    Hide Repeat Stats: 隐藏循环统计
     Sections:
       Visible While Paused: 全窗口或全屏暂停时显示
     Hide Channel Avatars: 隐藏频道头像
@@ -1114,6 +1115,12 @@ Video:
   Live chat replay is enabled. Chat messages will appear here as the video plays.: 已启用实时聊天回放。视频播放时，聊天消息会显示在这里。
   Premiere started: 首映正在进行，开始时间：{timeAgo}
   Player:
+    Repeat Stats:
+      Repeat Stats: 循环统计
+      Looping: 循环中
+      Repeats: 重复次数
+      Time Spent: 观看时长
+      Current Pass: 当前播放轮次
     Voice-over Translation:
       Start: 翻译
       Cancel: 取消
