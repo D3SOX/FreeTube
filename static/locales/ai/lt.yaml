@@ -2174,3 +2174,7 @@ Theme Discovery:
   Apply Theme: "Taikyti apipavidalinimą"
   Install and Apply: "Įdiegti ir taikyti"
   Update and Apply: "Atnaujinti ir taikyti"
+
+Connection:
+  Reconnecting: "Ryšys nutrūko. Bandoma prisijungti iš naujo…"
+  Back Online: "Vėl prisijungta"

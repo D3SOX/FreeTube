@@ -1749,3 +1749,7 @@ Theme Discovery:
   Apply Theme: "Примени тему"
   Install and Apply: "Инсталирај и примени"
   Update and Apply: "Ажурирај и примени"
+
+Connection:
+  Reconnecting: "Веза је прекинута. Покушавам поновно повезивање…"
+  Back Online: "Поново на мрежи"

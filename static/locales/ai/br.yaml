@@ -1692,3 +1692,7 @@ Theme Discovery:
   Apply Theme: "Arloañ an neuz"
   Install and Apply: "Staliañ hag arloañ"
   Update and Apply: "Hizivaat hag arloañ"
+
+Connection:
+  Reconnecting: "Kollet eo ar cʼhennask. O klask adkennaskañ…"
+  Back Online: "Enlinenn en-dro"

@@ -1720,3 +1720,7 @@ Theme Discovery:
   Apply Theme: "Εφαρμογή θέματος"
   Install and Apply: "Εγκατάσταση και εφαρμογή"
   Update and Apply: "Ενημέρωση και εφαρμογή"
+
+Connection:
+  Reconnecting: "Η σύνδεση χάθηκε. Γίνεται προσπάθεια επανασύνδεσης…"
+  Back Online: "Ξανά σε σύνδεση"

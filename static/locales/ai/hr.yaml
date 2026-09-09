@@ -1698,3 +1698,7 @@ Theme Discovery:
   Apply Theme: "Primijeni temu"
   Install and Apply: "Instaliraj i primijeni"
   Update and Apply: "Ažuriraj i primijeni"
+
+Connection:
+  Reconnecting: "Veza je izgubljena. Pokušaj ponovnog povezivanja…"
+  Back Online: "Ponovno na mreži"

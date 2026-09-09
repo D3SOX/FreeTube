@@ -1676,3 +1676,7 @@ Theme Discovery:
   Apply Theme: "テーマを適用"
   Install and Apply: "インストールして適用"
   Update and Apply: "更新して適用"
+
+Connection:
+  Reconnecting: "接続が切れました。再接続しています…"
+  Back Online: "オンラインに戻りました"

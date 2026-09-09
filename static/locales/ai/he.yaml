@@ -1722,3 +1722,7 @@ Theme Discovery:
   Apply Theme: "החלת ערכת נושא"
   Install and Apply: "התקנה והחלה"
   Update and Apply: "עדכון והחלה"
+
+Connection:
+  Reconnecting: "החיבור אבד. מנסה להתחבר מחדש…"
+  Back Online: "החיבור חזר"

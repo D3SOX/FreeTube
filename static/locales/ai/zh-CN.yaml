@@ -1676,3 +1676,7 @@ Theme Discovery:
   Apply Theme: "应用主题"
   Install and Apply: "安装并应用"
   Update and Apply: "更新并应用"
+
+Connection:
+  Reconnecting: "连接已断开，正在尝试重新连接…"
+  Back Online: "已恢复网络连接"

@@ -1658,3 +1658,7 @@ Theme Discovery:
   Apply Theme: "Apply theme"
   Install and Apply: "Install and apply"
   Update and Apply: "Update and apply"
+
+Connection:
+  Reconnecting: "Connection lost. Trying to reconnect…"
+  Back Online: "Back online"

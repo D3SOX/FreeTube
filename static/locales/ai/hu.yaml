@@ -1676,3 +1676,7 @@ Theme Discovery:
   Apply Theme: "Téma alkalmazása"
   Install and Apply: "Telepítés és alkalmazás"
   Update and Apply: "Frissítés és alkalmazás"
+
+Connection:
+  Reconnecting: "Megszakadt a kapcsolat. Újracsatlakozás folyamatban…"
+  Back Online: "Újra online"

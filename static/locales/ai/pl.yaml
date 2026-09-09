@@ -891,3 +891,7 @@ Theme Discovery:
   Apply Theme: "Zastosuj motyw"
   Install and Apply: "Zainstaluj i zastosuj"
   Update and Apply: "Zaktualizuj i zastosuj"
+
+Connection:
+  Reconnecting: "Utracono połączenie. Próba ponownego połączenia…"
+  Back Online: "Ponownie online"

@@ -1,0 +1,15 @@
+diff --git a/capacitor/src/main/java/com/getcapacitor/plugin/util/HttpRequestHandler.java b/capacitor/src/main/java/com/getcapacitor/plugin/util/HttpRequestHandler.java
+index 69278bc63b3fc8b2489ac3cf88b37c0330d3e516..ad8b13c9b5ed38346fc5506739dc6481fd56a123 100644
+--- a/capacitor/src/main/java/com/getcapacitor/plugin/util/HttpRequestHandler.java
++++ b/capacitor/src/main/java/com/getcapacitor/plugin/util/HttpRequestHandler.java
+@@ -219,7 +219,9 @@ public class HttpRequestHandler {
+         output.put("status", statusCode);
+         output.put("headers", buildResponseHeaders(connection));
+         output.put("url", connection.getURL());
+-        output.put("data", readData(connection, responseType));
++        // HEAD and empty HTTP errors have no error stream. Reading the normal
++        // stream would throw and discard the HTTP status (e.g. a YouTube 404).
++        output.put("data", statusCode >= 400 && connection.getErrorStream() == null ? "" : readData(connection, responseType));
+ 
+         InputStream errorStream = connection.getErrorStream();
+         if (errorStream != null) {

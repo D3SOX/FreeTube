@@ -2106,3 +2106,7 @@ Theme Discovery:
   Apply Theme: "Bruk tema"
   Install and Apply: "Installer og bruk"
   Update and Apply: "Oppdater og bruk"
+
+Connection:
+  Reconnecting: "Sambandet vart brote. Prøver å kople til att…"
+  Back Online: "På nett att"

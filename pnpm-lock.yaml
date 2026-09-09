@@ -10,6 +10,7 @@ overrides:
   yauzl: '>=3.3.1'
 
 patchedDependencies:
+  '@capacitor/android@8.5.1': 12c2128338ac622453e4a18693e731185c696f8870f9b9a5f4e86c49e948501b
   '@capawesome/capacitor-app-shortcuts@8.0.2': 2581c86d60ce7892c0b3136523994591d24ee7313bbc5fc9b4ad1c710719c70a
   '@capawesome/capacitor-clipboard@0.1.2': 729c6071cbf0e196e2212b015677cdd162c287dca48137c24250c0d056c9fd5b
   shaka-player@5.1.12: 17d85e267c8958999207ce9d6c29a2ddf18734d0499fb30870ac8a55d90303fa
@@ -28,7 +29,7 @@ importers:
         version: 8.0.0(@capacitor/core@8.5.1)
       '@capacitor/android':
         specifier: ^8.5.1
-        version: 8.5.1(@capacitor/core@8.5.1)
+        version: 8.5.1(patch_hash=12c2128338ac622453e4a18693e731185c696f8870f9b9a5f4e86c49e948501b)(@capacitor/core@8.5.1)
       '@capacitor/app':
         specifier: ^8.1.1
         version: 8.1.1(@capacitor/core@8.5.1)
@@ -6342,7 +6343,7 @@ snapshots:
     dependencies:
       '@capacitor/core': 8.5.1
 
-  '@capacitor/android@8.5.1(@capacitor/core@8.5.1)':
+  '@capacitor/android@8.5.1(patch_hash=12c2128338ac622453e4a18693e731185c696f8870f9b9a5f4e86c49e948501b)(@capacitor/core@8.5.1)':
     dependencies:
       '@capacitor/core': 8.5.1
 

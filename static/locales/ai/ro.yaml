@@ -1722,3 +1722,7 @@ Theme Discovery:
   Apply Theme: "Aplică tema"
   Install and Apply: "Instalează și aplică"
   Update and Apply: "Actualizează și aplică"
+
+Connection:
+  Reconnecting: "Conexiune pierdută. Se încearcă reconectarea…"
+  Back Online: "Din nou online"

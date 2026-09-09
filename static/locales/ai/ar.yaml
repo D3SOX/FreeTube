@@ -1698,3 +1698,7 @@ Theme Discovery:
   Apply Theme: "تطبيق السمة"
   Install and Apply: "تثبيت وتطبيق"
   Update and Apply: "تحديث وتطبيق"
+
+Connection:
+  Reconnecting: "انقطع الاتصال. جارٍ محاولة إعادة الاتصال…"
+  Back Online: "تم الاتصال مجددًا"

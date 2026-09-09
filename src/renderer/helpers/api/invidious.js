@@ -224,9 +224,9 @@ export async function getInvidiousChannelShorts(channelId, sortBy, continuation)
  * @param {string | undefined} sortBy
  * @param {string | undefined | null} continuation
  */
-export async function getInvidiousChannelLive(channelId, sortBy, continuation) {
+export async function getInvidiousChannelLive(channelId, sortBy, continuation, signal) {
   /** @type {{continuation: string?, videos: InvidiousVideoType[]}}  */
-  const response = await getInvidiousChannelTab('streams', channelId, continuation, sortBy)
+  const response = await getInvidiousChannelTab('streams', channelId, continuation, sortBy, signal)
 
   normalizeManyInvidiousVideosAttributes(response.videos, channelId)
   setMultiplePublishedTimestamps(response.videos)
@@ -706,11 +706,12 @@ function parseInvidiousCommentData(response) {
   })
 }
 
-export async function invidiousGetCommunityPosts(channelId, continuation = null) {
+export async function invidiousGetCommunityPosts(channelId, continuation = null, signal) {
   const payload = {
     resource: 'channels',
     id: channelId,
     subResource: 'community',
+    signal,
     params: {}
   }
 

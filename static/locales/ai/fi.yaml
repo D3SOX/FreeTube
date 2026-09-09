@@ -1720,3 +1720,7 @@ Theme Discovery:
   Apply Theme: "Ota teema käyttöön"
   Install and Apply: "Asenna ja ota käyttöön"
   Update and Apply: "Päivitä ja ota käyttöön"
+
+Connection:
+  Reconnecting: "Yhteys katkesi. Yritetään yhdistää uudelleen…"
+  Back Online: "Jälleen verkossa"

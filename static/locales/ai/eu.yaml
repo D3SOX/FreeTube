@@ -1703,3 +1703,7 @@ Theme Discovery:
   Apply Theme: "Aplikatu gaia"
   Install and Apply: "Instalatu eta aplikatu"
   Update and Apply: "Eguneratu eta aplikatu"
+
+Connection:
+  Reconnecting: "Konexioa galdu da. Berriz konektatzen saiatzen…"
+  Back Online: "Berriro konektatuta"
