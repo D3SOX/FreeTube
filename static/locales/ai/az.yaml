@@ -466,6 +466,7 @@ Settings:
         Destructive pressed: Silinmə elementi basıldıqda
         Text and icons on destructive actions: Silinmə əməliyyatlarında mətn və nişanlar
   Player Settings:
+    Use Document Picture-in-Picture: Sənəd üçün şəkil-içində-şəkil rejimindən istifadə et (eksperimental)
     Swipe Gestures:
       Fullscreen Brightness: Tam ekranda tam parlaqlıq
       Left: Sol tərəfdə sürüşdürmə
@@ -1448,6 +1449,7 @@ Tooltips:
   Proxy Settings:
     IP Block Recovery Script Path: IP bloklanması aşkarlandıqda icra ediləcək skript faylının yolu. OpenTubeX onun bitməsini gözləyir, sonra videonu yenidən yükləyir. Ehtiyat mənbəyə keçid aktivdirsə, skript yalnız həmin keçid də uğursuz olduqda icra edilir.
   Player Settings:
+    Use Document Picture-in-Picture: Tətbiqin pleyer idarəetmələrini və altyazılarını şəkil-içində-şəkil rejimində göstərir. Əvəzinə sistemin video şəkil-içində-şəkil pəncərəsindən istifadə etmək üçün bunu söndürün.
     Enable Caption Translations: Aktivləşdirildikdə, videoda uyğun orijinal titr treki yoxdursa, titr düyməsi və C qısayolu üstünlük verilən titr dilinə avtomatik tərcümə olunmuş trekə üstünlük verir.
     Use Quick Playback Speed Bar: Oynadıcının sağ tərəfdəki idarəetmə hissəsində sürətli oynatma sürəti panelini göstərir. Kanal üzrə oynatma sürətinin əl ilə saxlanması aktivdirsə, paneldə cari kanalın sürətini saxlamaq üçün düymə də olur.
     Multiply Seek Interval by Playback Rate: Aktivləşdirildikdə, vaxt üzrə keçid aralıqları (ox düymələri və J/L) cari oynatma sürətinə vurulur. Bağlandıqda keçid aralıqları oynatma sürətindən asılı olmayaraq sabit qalır.
