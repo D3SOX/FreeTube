@@ -15,6 +15,7 @@
 
 ## UI
 
+- Follow `.github/PULL_REQUEST_TEMPLATE.md` for release-note screenshot and recording instructions.
 - The in-app UI Scale setting changes Electron's zoom factor and can produce legitimate fractional CSS-pixel geometry. Changes involving scrolling, measurements, positioning, reflow, or animation boundaries must also work at non-100% UI scales; do not treat a subpixel difference from integer layout properties as stale or invalid state.
 - Custom Shaka overflow-menu controls must hide while any submenu is open; follow the existing `submenuopen` / `submenuclose` visibility pattern using `isSubMenuOpened` and `shaka-hidden`.
 - Headers in scrollable menus and panels must stay outside the content's scroll viewport so neither content nor its scrollbar can pass behind the header. Prefer a fixed header plus a separate inner scroller over covering content with a sticky header.
