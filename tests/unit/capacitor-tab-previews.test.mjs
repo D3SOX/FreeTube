@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { Capacitor } from '@capacitor/core'
+import { attachAndroidMediaElement } from '../../src/renderer/helpers/player/androidMediaElement.js'
 
 // Register the plugins against a native bridge so their real proxies call our mocks.
 globalThis.androidBridge = {}
@@ -16,8 +17,9 @@ const {
 } = await import('../../src/renderer/tabs/capacitorTabPreviews.js')
 delete globalThis.androidBridge
 
-function setup(t, { cleanupError, decodeError } = {}) {
+function setup(t, { cleanupError, decodeError, videos = [] } = {}) {
   const preview = 'data:image/jpeg;base64,cHJldmlldw=='
+  let captureImage = preview
   const uri = '/cache/temporary-screenshot.jpg'
   const tab = { id: 'tab', route: { fullPath: '/home' }, loadState: 'loaded' }
   const store = { getters: {
@@ -29,16 +31,20 @@ function setup(t, { cleanupError, decodeError } = {}) {
   } }
   const document = new EventTarget()
   let overlayReads = 0
+  const drawImage = t.mock.fn(source => {
+    if (videos.includes(source)) throw new DOMException('The video has no decoded frame', 'InvalidStateError')
+  })
   Object.assign(document, {
     visibilityState: 'visible',
     querySelector: () => null,
     querySelectorAll: selector => {
       if (selector.includes('[role=')) overlayReads += 1
+      if (selector.includes('video')) return videos
       return []
     },
     createElement: () => ({
-      getContext: () => ({ drawImage() {} }),
-      toDataURL: () => preview,
+      getContext: () => ({ drawImage, fillRect() {} }),
+      toDataURL: () => captureImage,
     }),
   })
   const globals = {
@@ -84,7 +90,57 @@ function setup(t, { cleanupError, decodeError } = {}) {
     for (const restore of restoreGlobals) restore()
   })
   overlayReads = 0
-  return { document, store, tab, preview, uri, take, remove, warn, overlayReads: () => overlayReads }
+  return { document, store, tab, preview, uri, take, remove, warn, drawImage,
+    setCaptureImage: image => { captureImage = image }, overlayReads: () => overlayReads }
+}
+
+for (const event of ['loadeddata', 'playing', 'seeked']) {
+  test(`${event} replaces a cached loading screenshot before the organizer opens`, async t => {
+    const state = setup(t)
+    t.mock.timers.tick(600)
+    await new Promise(setImmediate)
+    assert.equal(getCapacitorTabPreview(state.tab), state.preview)
+
+    const frame = 'data:image/jpeg;base64,bmF0aXZlLWZyYW1l'
+    state.setCaptureImage(frame)
+    state.document.dispatchEvent(new Event(event))
+    t.mock.timers.tick(600)
+    await new Promise(setImmediate)
+
+    assert.equal(getCapacitorTabPreview(state.tab), frame)
+    assert.equal(state.take.mock.callCount(), 2)
+  })
+}
+
+for (const playback of [
+  { name: 'playing', ready: true, playing: true, paused: false, width: 1920, height: 1080 },
+  { name: 'paused', ready: true, playing: false, paused: true, width: 1920, height: 1080 },
+  { name: 'loading', ready: false },
+  { name: 'audio-only', ready: true, width: 0, height: 0 },
+]) {
+  test(`watch previews retain the native window screenshot during ${playback.name} playback`, async t => {
+    // Android's DOM video carries native playback state and layout, but never
+    // contains a decoded frame that CanvasRenderingContext2D can draw.
+    const video = Object.assign(new EventTarget(), {
+      style: {},
+      pause() {},
+      getBoundingClientRect: () => ({ left: 0, top: 56, bottom: 267, width: 375, height: 211 }),
+    })
+    const media = attachAndroidMediaElement(video, {
+      command: async () => {}, load: async () => {}, onError: assert.fail,
+    })
+    t.after(() => media.detach())
+    media.update(playback)
+    const state = setup(t, { videos: [video] })
+    state.tab.route.fullPath = '/watch/test-video'
+
+    await captureBeforeTabOrganizer()
+
+    assert.equal(getCapacitorTabPreview(state.tab), state.preview)
+    assert.equal(state.drawImage.mock.callCount(), 1)
+    assert.equal(state.remove.mock.callCount(), 1)
+    assert.equal(state.warn.mock.callCount(), 0)
+  })
 }
 
 test('a cleanup failure preserves the successfully captured page preview', async t => {

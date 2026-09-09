@@ -6,8 +6,12 @@ import static org.junit.Assert.assertTrue;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.view.TextureView;
+import android.view.ViewGroup;
 import android.webkit.WebView;
 
+import androidx.media3.datasource.DefaultDataSource;
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -24,6 +28,75 @@ import java.util.concurrent.atomic.AtomicReference;
 
 @RunWith(AndroidJUnit4.class)
 public class WebViewScreenshotTest {
+    @Test
+    public void windowCaptureIncludesNativeVideoAndWebControls() throws Exception {
+        try (ActivityScenario<MainActivity> scenario = ActivityScenario.launch(MainActivity.class)) {
+            AtomicReference<WebView> view = new AtomicReference<>();
+            AtomicReference<NativePlaybackScreen> screen = new AtomicReference<>();
+            AtomicReference<NativePlaybackEngine> engine = new AtomicReference<>();
+            scenario.onActivity(activity -> view.set(activity.getBridge().getWebView()));
+            WebView webView = view.get();
+            awaitCondition(webView, "!!document.querySelector('.app')");
+            scenario.onActivity(activity -> webView.loadData("""
+                <html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+                <body style="margin:0;background:transparent">
+                  <video style="width:100vw;height:100vh;opacity:0"></video>
+                  <div id="control" style="position:fixed;left:40vw;top:40vh;width:20vw;height:20vh;background:cyan"></div>
+                </body></html>
+                """, "text/html", "UTF-8"));
+            awaitCondition(webView, "!!document.querySelector('#control')");
+            try {
+                scenario.onActivity(activity -> {
+                    engine.set(new NativePlaybackEngine(activity, new DefaultDataSource.Factory(activity), state -> {}));
+                    screen.set(new NativePlaybackScreen(activity, engine.get(), webView, "en-US", action -> {}));
+                    activity.addContentView(screen.get(), new ViewGroup.LayoutParams(-1, -1));
+                    screen.get().setFullscreen(false);
+                    screen.get().setInlineVisible(true);
+                    screen.get().setControlsVisible(false);
+                });
+                CountDownLatch painted = new CountDownLatch(1);
+                scenario.onActivity(activity -> webView.postVisualStateCallback(2, new WebView.VisualStateCallback() {
+                    @Override public void onComplete(long requestId) {
+                        webView.postOnAnimation(() -> {
+                            TextureView texture = (TextureView) ((ViewGroup) screen.get().getChildAt(0)).getChildAt(0);
+                            assertTrue("The native video texture is ready", texture.isAvailable());
+                            // Paint a deterministic frame into the same texture used by Media3.
+                            android.graphics.Canvas canvas = texture.lockCanvas();
+                            assertNotNull(canvas);
+                            canvas.drawColor(Color.MAGENTA);
+                            texture.unlockCanvasAndPost(canvas);
+                            webView.postOnAnimation(() -> webView.postOnAnimation(painted::countDown));
+                        });
+                    }
+                }));
+                assertTrue("The native frame and web controls have rendered", painted.await(10, TimeUnit.SECONDS));
+                AtomicReference<Bitmap> captured = new AtomicReference<>();
+                AtomicReference<Exception> error = new AtomicReference<>();
+                CountDownLatch completed = new CountDownLatch(1);
+                scenario.onActivity(activity -> WebViewScreenshot.capture(activity, webView,
+                    bitmap -> { captured.set(bitmap); completed.countDown(); },
+                    failure -> { error.set(failure); completed.countDown(); }));
+                assertTrue("Window capture completes", completed.await(10, TimeUnit.SECONDS));
+                assertEquals(null, error.get());
+                Bitmap bitmap = captured.get();
+                assertNotNull(bitmap);
+                try {
+                    assertEquals("The window already contains the native video frame", Color.MAGENTA,
+                        bitmap.getPixel(bitmap.getWidth() / 4, bitmap.getHeight() / 2));
+                    assertEquals("Web controls remain above the native video", Color.CYAN,
+                        bitmap.getPixel(bitmap.getWidth() / 2, bitmap.getHeight() / 2));
+                } finally {
+                    bitmap.recycle();
+                }
+            } finally {
+                scenario.onActivity(activity -> {
+                    if (screen.get() != null) screen.get().close();
+                    if (engine.get() != null) engine.get().release();
+                });
+            }
+        }
+    }
+
     @Test
     public void populatedFeedControlsKeepTheirRenderedProportions() throws Exception {
         try (ActivityScenario<MainActivity> scenario = ActivityScenario.launch(MainActivity.class)) {
