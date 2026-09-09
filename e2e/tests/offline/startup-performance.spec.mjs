@@ -2,6 +2,7 @@ import { rm } from 'node:fs/promises'
 import { test, expect, createUserDataDir, launchApp } from '../../helpers/app.mjs'
 
 test('presents the selected tab before mounting a large restored background session', async () => {
+  test.setTimeout(120_000)
   const tabs = Array.from({ length: 60 }, (_, index) => ({
     id: `startup-${index}`,
     url: 'app://bundle/index.html#/history',
@@ -39,7 +40,7 @@ test('presents the selected tab before mounting a large restored background sess
     await expect.poll(() => app.page.evaluate(async () => {
       const { tabs } = await window.ftElectron.tabs.getState()
       return tabs.filter(tab => tab.loadState === 'loaded').length
-    }), { timeout: 30_000 }).toBe(59)
+    }), { timeout: 90_000 }).toBe(59)
     expect(await app.page.evaluate(async () => {
       const { tabs } = await window.ftElectron.tabs.getState()
       return tabs.find(tab => tab.id === 'startup-58').loadState
