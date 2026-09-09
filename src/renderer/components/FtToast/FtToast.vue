@@ -407,9 +407,19 @@ function stopProgressToastPointerTracking() {
 }
 
 /**
- * @param {CustomEvent<{ message: string | (({elapsedMs: number, remainingMs: number}) => string), time: number | null, action: Function | null, abortSignal: AbortSignal | null, image: string | null, icon: [string, string] | null, buttons: { label: string, action?: Function, primary?: boolean, icon?: [string, string] }[], verticalButtons: boolean, dismissible: boolean }>} event
+ * @param {CustomEvent<{ message: string | (({elapsedMs: number, remainingMs: number}) => string), time: number | null, action: Function | null, abortSignal: AbortSignal | null, image: string | null, icon: [string, string] | null, buttons: { label: string, action?: Function, primary?: boolean, icon?: [string, string] }[], buttonAction: 'open-sync-settings' | null, verticalButtons: boolean, dismissible: boolean }>} event
  */
-function open({ detail: { message, time, action, abortSignal, image, icon, buttons, verticalButtons, dismissible } }) {
+function open({ detail: { message, time, action, abortSignal, image, icon, buttons, buttonAction, verticalButtons, dismissible } }) {
+  if (buttonAction === 'open-sync-settings') {
+    buttons = [{
+      label: t('Settings.Sync Settings.Sync Settings'),
+      icon: ['fas', 'sync'],
+      action: () => {
+        store.commit('setSettingsWindowSection', 'sync')
+        store.dispatch('showSettingsWindow')
+      },
+    }]
+  }
   time ||= 3000
 
   /** @type {number | string | null} */
@@ -553,8 +563,8 @@ onMounted(() => {
   updateFullscreenTarget()
 
   if (process.env.IS_ELECTRON) {
-    removeShowToastListener = window.ftElectron.handleShowToast((message, time, icon) => {
-      showToast({ message, time, icon })
+    removeShowToastListener = window.ftElectron.handleShowToast((message, time, icon, buttonAction) => {
+      showToast({ message, time, icon, buttonAction })
     })
   }
 })

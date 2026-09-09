@@ -3403,19 +3403,20 @@ function runApp() {
     openPendingUrlForReadyWebContents(event)
   })
 
-  ipcMain.on(IpcChannels.SHOW_TOAST, (event, message, time, icon) => {
+  ipcMain.on(IpcChannels.SHOW_TOAST, (event, message, time, icon, buttonAction) => {
     if (
       !isOpenTubeXUrl(event.senderFrame.url) ||
       typeof message !== 'string' ||
       (time !== null && typeof time !== 'number') ||
-      (icon != null && (!Array.isArray(icon) || icon.length !== 2 || icon.some(part => typeof part !== 'string')))
+      (icon != null && (!Array.isArray(icon) || icon.length !== 2 || icon.some(part => typeof part !== 'string'))) ||
+      (buttonAction != null && buttonAction !== 'open-sync-settings')
     ) {
       return
     }
 
     for (const window of BrowserWindow.getAllWindows()) {
       if (!window.webContents.isDestroyed() && isOpenTubeXUrl(window.webContents.getURL())) {
-        window.webContents.send(IpcChannels.SHOW_TOAST, message, time, icon ?? null)
+        window.webContents.send(IpcChannels.SHOW_TOAST, message, time, icon ?? null, buttonAction ?? null)
       }
     }
   })

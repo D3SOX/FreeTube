@@ -826,6 +826,9 @@ Settings:
     Import playlists formats: 'Format yang didukung: OpenTubeX / FreeTube (.db)'
     Import search history formats: 'Format yang didukung: OpenTubeX / FreeTube (.db), YouTube Takeout (.json)'
   Sync Settings:
+    Previous Auto Sync Notice: "Sinkronisasi otomatis dinonaktifkan. Versi sebelumnya mungkin menonaktifkannya untuk mencegah kehilangan data."
+    Enable Automatic Sync: "Aktifkan sinkronisasi otomatis"
+    Destructive Sync Blocked: "Sinkronisasi dihentikan untuk mencegah kehilangan data. Sinkronisasi otomatis dinonaktifkan. Buka pengaturan sinkronisasi untuk meninjau penghapusan."
     Turn Flashlight On: Nyalakan senter
     Turn Flashlight Off: Matikan senter
     Devices: "Perangkat"

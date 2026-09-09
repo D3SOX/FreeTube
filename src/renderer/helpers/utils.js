@@ -270,6 +270,7 @@ const ERROR_TOAST_ICON = ['fas', 'circle-exclamation']
  * @property {number} [time]
  * @property {Function} [action]
  * @property {{ label: string, action?: Function, primary?: boolean, icon?: [string, string] }[]} [buttons]
+ * @property {'open-sync-settings' | null} [buttonAction] predefined action for cross-window notifications
  * @property {boolean} [verticalButtons] whether buttons should be stacked vertically
  * @property {boolean} [dismissible] whether Escape and swipe gestures can dismiss the toast
  * @property {AbortSignal} [abortSignal]
@@ -289,13 +290,14 @@ export function showToast(message, time = null, action = null, abortSignal = nul
   let image = null
   let icon = null
   let buttons = []
+  let buttonAction = null
   let verticalButtons = false
   let dismissible = true
 
   // Allow calling with a single options object while staying backwards compatible
   // with the positional (message, time, action, abortSignal) signature
   if (message !== null && typeof message === 'object') {
-    ({ message, time = null, action = null, abortSignal = null, image = null, icon = null, buttons = [], verticalButtons = false, dismissible = true } = message)
+    ({ message, time = null, action = null, abortSignal = null, image = null, icon = null, buttons = [], buttonAction = null, verticalButtons = false, dismissible = true } = message)
   }
 
   // Sometimes caller just pass user setting based value in and it can be zero
@@ -313,6 +315,7 @@ export function showToast(message, time = null, action = null, abortSignal = nul
       image,
       icon,
       buttons,
+      buttonAction,
       verticalButtons,
       dismissible,
     }
@@ -320,16 +323,17 @@ export function showToast(message, time = null, action = null, abortSignal = nul
 }
 
 /**
- * Shows a non-interactive toast in every tab.
+ * Shows a toast in every window and tab.
  * @param {string} message
  * @param {number} time
  * @param {[string, string] | null} icon optional semantic icon shown alongside the message
+ * @param {'open-sync-settings' | null} buttonAction optional predefined action
  */
-export function showToastOnAllTabs(message, time = null, icon = null) {
+export function showToastOnAllTabs(message, time = null, icon = null, buttonAction = null) {
   if (process.env.IS_ELECTRON) {
-    window.ftElectron.showToastOnAllTabs(message, time, icon)
+    window.ftElectron.showToastOnAllTabs(message, time, icon, buttonAction)
   } else {
-    showToast({ message, time, icon })
+    showToast({ message, time, icon, buttonAction })
   }
 }
 

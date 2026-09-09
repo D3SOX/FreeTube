@@ -803,6 +803,9 @@ Settings:
     Import playlists formats: 'Поддерживаемые форматы: OpenTubeX / FreeTube (.db)'
     Import search history formats: 'Поддерживаемые форматы: OpenTubeX / FreeTube (.db), YouTube Takeout (.json)'
   Sync Settings:
+    Previous Auto Sync Notice: "Автоматическая синхронизация выключена. Предыдущая версия могла отключить её, чтобы предотвратить потерю данных."
+    Enable Automatic Sync: "Включить автоматическую синхронизацию"
+    Destructive Sync Blocked: "Синхронизация остановлена, чтобы предотвратить потерю данных. Автоматическая синхронизация отключена. Откройте настройки синхронизации, чтобы проверить удаления."
     Turn Flashlight On: Включить фонарик
     Turn Flashlight Off: Выключить фонарик
     Devices: "Устройства"

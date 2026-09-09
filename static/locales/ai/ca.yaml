@@ -1129,6 +1129,9 @@ Settings:
     Import playlists formats: 'Formats admesos: OpenTubeX / FreeTube (.db)'
     Import search history formats: 'Formats admesos: OpenTubeX / FreeTube (.db), YouTube Takeout (.json)'
   Sync Settings:
+    Previous Auto Sync Notice: "La sincronització automàtica està desactivada. Una versió anterior pot haver-la desactivat per evitar la pèrdua de dades."
+    Enable Automatic Sync: "Activa la sincronització automàtica"
+    Destructive Sync Blocked: "La sincronització s'ha aturat per evitar la pèrdua de dades. La sincronització automàtica està desactivada. Obriu la configuració de sincronització per revisar les supressions."
     Turn Flashlight On: Activa la llanterna
     Turn Flashlight Off: Desactiva la llanterna
     Devices: "Dispositius"

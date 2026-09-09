@@ -826,6 +826,9 @@ Settings:
     Import playlists formats: 'Định dạng được hỗ trợ: OpenTubeX / FreeTube (.db)'
     Import search history formats: 'Định dạng được hỗ trợ: OpenTubeX / FreeTube (.db), YouTube Takeout (.json)'
   Sync Settings:
+    Previous Auto Sync Notice: "Đồng bộ tự động đang tắt. Phiên bản trước có thể đã tắt tính năng này để tránh mất dữ liệu."
+    Enable Automatic Sync: "Bật đồng bộ tự động"
+    Destructive Sync Blocked: "Đã dừng đồng bộ để tránh mất dữ liệu. Đồng bộ tự động đã tắt. Mở cài đặt đồng bộ để xem lại các mục sẽ bị xóa."
     Turn Flashlight On: Bật đèn pin
     Turn Flashlight Off: Tắt đèn pin
     Devices: "Thiết bị"

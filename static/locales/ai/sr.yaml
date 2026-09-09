@@ -847,6 +847,9 @@ Settings:
     Import playlists formats: 'Подржани формати: OpenTubeX / FreeTube (.db)'
     Import search history formats: 'Подржани формати: OpenTubeX / FreeTube (.db), YouTube Takeout (.json)'
   Sync Settings:
+    Previous Auto Sync Notice: "Аутоматска синхронизација је искључена. Ранија верзија ју је можда искључила да би спречила губитак података."
+    Enable Automatic Sync: "Укључи аутоматску синхронизацију"
+    Destructive Sync Blocked: "Синхронизација је заустављена да би се спречио губитак података. Аутоматска синхронизација је искључена. Отворите подешавања синхронизације да бисте прегледали брисања."
     Turn Flashlight On: Укључи батеријску лампу
     Turn Flashlight Off: Искључи батеријску лампу
     Devices: "Уређаји"

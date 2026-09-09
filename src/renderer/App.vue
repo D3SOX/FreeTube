@@ -534,6 +534,7 @@ import {
   setLastUsedVersion,
   setTutorialAudience,
 } from './helpers/tutorialState'
+import { dismissAutoSyncNotice, shouldShowAutoSyncNotice, showAutoSyncNoticeOnce } from './helpers/sync-auto-sync-notice'
 import { invalidateAllYtDlpPlaybackSources } from './helpers/player/ytDlpPlayback'
 import { getTabNavigationService } from './tabs/TabNavigationService'
 import { initializeCapacitorTabPreviews } from './tabs/capacitorTabPreviews'
@@ -1258,6 +1259,7 @@ onMounted(async () => {
     tabsReady,
   ])
   const lastUsedVersion = getLastUsedVersion(tutorialState.lastUsedVersion)
+  const showAutoSyncNotice = shouldShowAutoSyncNotice(lastUsedVersion, store.state.settings)
   if (tutorialState.landingPageToInitialize !== null) {
     await store.dispatch('updateLandingPage', tutorialState.landingPageToInitialize)
   }
@@ -1340,6 +1342,40 @@ onMounted(async () => {
     }
 
     await nextTick()
+    if (showAutoSyncNotice) {
+      showAutoSyncNoticeOnce(release => {
+        const dismissNotice = () => {
+          dismissAutoSyncNotice()
+          release()
+        }
+        showToast({
+          message: t('Settings.Sync Settings.Previous Auto Sync Notice'),
+          time: Infinity,
+          dismissible: false,
+          icon: ['fas', 'sync'],
+          verticalButtons: true,
+          buttons: [{
+            label: t('Dismiss'),
+            icon: ['fas', 'xmark'],
+            action: dismissNotice,
+          }, {
+            label: t('Settings.Sync Settings.Enable Automatic Sync'),
+            icon: ['fas', 'sync'],
+            primary: true,
+            action: async () => {
+              try {
+                await store.dispatch('setSyncServerAutoSync', true)
+                dismissNotice()
+              } catch (error) {
+                showToast({ message: error.message })
+              } finally {
+                release()
+              }
+            },
+          }],
+        })
+      })
+    }
     scheduleUtilityRoutePreload()
     if (isCapacitor) {
       capacitorPullToRefreshSetup = initializeCapacitorPullToRefresh()

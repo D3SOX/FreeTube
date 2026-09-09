@@ -826,6 +826,9 @@ Settings:
     Import playlists formats: 'Studd snið: OpenTubeX / FreeTube (.db)'
     Import search history formats: 'Studd snið: OpenTubeX / FreeTube (.db), YouTube Takeout (.json)'
   Sync Settings:
+    Previous Auto Sync Notice: "Slökkt er á sjálfvirkri samstillingu. Eldri útgáfa gæti hafa slökkt á henni til að koma í veg fyrir gagnatap."
+    Enable Automatic Sync: "Kveikja á sjálfvirkri samstillingu"
+    Destructive Sync Blocked: "Samstilling var stöðvuð til að koma í veg fyrir gagnatap. Slökkt er á sjálfvirkri samstillingu. Opnaðu samstillingarstillingar til að fara yfir eyðingar."
     Turn Flashlight On: Kveikja á vasaljósi
     Turn Flashlight Off: Slökkva á vasaljósi
     Devices: "Tæki"

@@ -810,6 +810,9 @@ Settings:
     Import playlists formats: 'Dəstəklənən formatlar: OpenTubeX (.db)'
     Import search history formats: 'Dəstəklənən formatlar: OpenTubeX (.db), YouTube Takeout (.json)'
   Sync Settings:
+    Previous Auto Sync Notice: Avtomatik sinxronizasiya söndürülüb. Əvvəlki versiya məlumat itkisinin qarşısını almaq üçün onu söndürmüş ola bilər.
+    Enable Automatic Sync: Avtomatik sinxronizasiyanı aktivləşdir
+    Destructive Sync Blocked: Məlumat itkisinin qarşısını almaq üçün sinxronizasiya dayandırıldı. Avtomatik sinxronizasiya söndürülüb. Silinəcək elementləri nəzərdən keçirmək üçün sinxronizasiya ayarlarını açın.
     Turn Flashlight On: Fənəri yandır
     Turn Flashlight Off: Fənəri söndür
     Sync Settings: Sinxronizasiya

@@ -1043,6 +1043,9 @@ Settings:
     Import playlists formats: '지원 형식: OpenTubeX / FreeTube (.db)'
     Import search history formats: '지원 형식: OpenTubeX / FreeTube (.db), YouTube Takeout (.json)'
   Sync Settings:
+    Previous Auto Sync Notice: "자동 동기화가 꺼져 있습니다. 이전 버전에서 데이터 손실을 방지하기 위해 비활성화했을 수 있습니다."
+    Enable Automatic Sync: "자동 동기화 활성화"
+    Destructive Sync Blocked: "데이터 손실을 방지하기 위해 동기화를 중지했습니다. 자동 동기화가 꺼져 있습니다. 동기화 설정을 열어 삭제할 항목을 확인하세요."
     Turn Flashlight On: 손전등 켜기
     Turn Flashlight Off: 손전등 끄기
     Devices: "기기"

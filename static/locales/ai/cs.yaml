@@ -807,6 +807,9 @@ Settings:
     Import playlists formats: 'Podporované formáty: OpenTubeX / FreeTube (.db)'
     Import search history formats: 'Podporované formáty: OpenTubeX / FreeTube (.db), YouTube Takeout (.json)'
   Sync Settings:
+    Previous Auto Sync Notice: "Automatická synchronizace je vypnutá. Starší verze ji mohla vypnout, aby zabránila ztrátě dat."
+    Enable Automatic Sync: "Zapnout automatickou synchronizaci"
+    Destructive Sync Blocked: "Synchronizace byla zastavena, aby nedošlo ke ztrátě dat. Automatická synchronizace je vypnutá. Otevřete nastavení synchronizace a zkontrolujte mazání."
     Turn Flashlight On: Zapnout svítilnu
     Turn Flashlight Off: Vypnout svítilnu
     Devices: "Zařízení"

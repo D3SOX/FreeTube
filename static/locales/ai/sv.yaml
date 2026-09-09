@@ -811,6 +811,9 @@ Settings:
     Import playlists formats: 'Format som stöds: OpenTubeX / FreeTube (.db)'
     Import search history formats: 'Format som stöds: OpenTubeX / FreeTube (.db), YouTube Takeout (.json)'
   Sync Settings:
+    Previous Auto Sync Notice: "Automatisk synkronisering är avstängd. En tidigare version kan ha stängt av den för att förhindra dataförlust."
+    Enable Automatic Sync: "Slå på automatisk synkronisering"
+    Destructive Sync Blocked: "Synkroniseringen stoppades för att förhindra dataförlust. Automatisk synkronisering är avstängd. Öppna synkroniseringsinställningarna för att granska borttagningarna."
     Turn Flashlight On: Slå på ficklampan
     Turn Flashlight Off: Slå av ficklampan
     Devices: "Enheter"
