@@ -6101,7 +6101,9 @@ export default defineComponent({
       // surface while detaching it into native PiP on Windows. Once a real
       // frame is available the poster is no longer needed, so remove it before
       // a later blur-triggered PiP transition.
-      showPoster.value = false
+      // Media3 can start its playback clock before rendering the first frame.
+      // Native playback dismisses the overlay through its firstframe event.
+      if (!process.env.IS_CAPACITOR) showPoster.value = false
       startPaidPromotionTimer()
 
       if (process.env.IS_ELECTRON && window.ftElectron?.tabs?.setPlaybackState) {

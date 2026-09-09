@@ -137,6 +137,8 @@
         :poster="!audioPlayerMode && showPoster ? thumbnail : null"
         @play="handlePlay"
         @playing="handlePlaying"
+        @firstframe="showPoster = false"
+        @emptied="showPoster = true"
         @waiting="handleWaiting"
         @pause="handlePause"
         @ended="handleEnded"
@@ -198,7 +200,7 @@
       </template>
       <!-- Native playback hides the video element, including its poster. -->
       <div
-        v-if="showCountdownOverlay && !audioPlayerMode && thumbnail"
+        v-if="(showCountdownOverlay || (useNativePlayback && showPoster)) && !audioPlayerMode && thumbnail"
         class="countdownPoster"
         aria-hidden="true"
       >

@@ -194,6 +194,7 @@ export function attachAndroidMediaElement(element, { command, load, onError, now
       if ((next.buffering && !previous.buffering) ||
         (previous.playing && !state.playing && !state.paused && !state.ended)) emit('waiting')
       if (state.playing && !previous.playing) emit('playing')
+      if (next.event === 'firstframe') emit('firstframe')
       if (next.event === 'seeked') { seeking = false; emit('seeked') }
       if (next.ended && !previous.ended) emit('ended')
       emit('timeupdate')

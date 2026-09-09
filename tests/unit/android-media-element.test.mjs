@@ -223,3 +223,18 @@ test('repeat time excludes native audio-focus suppression without a user pause',
   tracker.destroy()
   media.detach()
 })
+
+test('startup poster receives a first-frame event only after native rendering, including paused starts', () => {
+  const { element, media, ready } = fixture()
+  const events = []
+  element.addEventListener('firstframe', () => events.push('firstframe'))
+  media.update(ready)
+  assert.deepEqual(events, [])
+  media.update({ ...ready, event: 'firstframe', paused: true, playing: false })
+  assert.deepEqual(events, ['firstframe'])
+  media.reset()
+  media.update(ready)
+  assert.deepEqual(events, ['firstframe'])
+  media.update({ ...ready, event: 'firstframe' })
+  assert.deepEqual(events, ['firstframe', 'firstframe'])
+})

@@ -698,5 +698,7 @@ final class NativePlaybackScreen extends FrameLayout implements TextureView.Surf
     }
 
     @Override public void onSurfaceTextureSizeChanged(SurfaceTexture texture, int width, int height) {}
-    @Override public void onSurfaceTextureUpdated(SurfaceTexture texture) {}
+    @Override public void onSurfaceTextureUpdated(SurfaceTexture texture) {
+        engine.onVideoFramePresented();
+    }
 }

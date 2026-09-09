@@ -1,6 +1,7 @@
 import { registerPlugin } from '@capacitor/core'
 
 import { createAbortError } from './requestErrors.js'
+import { DESKTOP_USER_AGENT } from './capacitor-http.js'
 
 const SabrHttp = registerPlugin('SabrHttp')
 
@@ -24,10 +25,17 @@ export async function capacitorSabrFetch(url, init) {
   }
   if (init.signal?.aborted) throw createAbortError()
 
+  // Metadata uses the WEB client. Keep its identity when native HTTP fetches
+  // the stream instead of letting HttpURLConnection use Android's default.
+  const headers = new Headers(init.headers)
+  if (!headers.has('user-agent')) {
+    headers.set('user-agent', DESKTOP_USER_AGENT)
+  }
+
   const { requestId } = await SabrHttp.prepare({
     url,
     body: bytesToBase64(init.body),
-    headers: Object.fromEntries(new Headers(init.headers))
+    headers: Object.fromEntries(headers)
   })
 
   const onAbort = () => {
