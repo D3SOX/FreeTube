@@ -1,5 +1,8 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
+import { readFile } from 'node:fs/promises'
+import vm from 'node:vm'
+import { ref, nextTick } from 'vue'
 
 import {
   buildSubscriptionShortsFeed,
@@ -11,6 +14,45 @@ import {
   parseLocalShortLinkedVideo,
   setChannelShortsNavigationContext,
 } from '../../src/renderer/helpers/player/shorts.js'
+
+const playerSource = await readFile(new URL('../../src/renderer/components/ft-shaka-video-player/ft-shaka-video-player.js', import.meta.url), 'utf8')
+const handleLoadedSource = playerSource.slice(
+  playerSource.indexOf('    async function handleLoaded() {'),
+  playerSource.indexOf('    async function unloadForFormatSwitch() {')
+)
+
+for (const paused of [true, false]) {
+  test(`Shorts controls reflect media paused=${paused} after loading without a playback event`, async () => {
+    const shortsPaused = ref(false)
+    const video = ref({ paused, duration: 30, videoWidth: 1080, videoHeight: 1920 })
+    const handleLoaded = vm.runInNewContext(`${handleLoadedSource}\nhandleLoaded`, {
+      shortsPaused,
+      video,
+      hasLoaded: ref(false),
+      isLive: ref(false),
+      hasMultipleAudioTracks: ref(false),
+      togglePlaybackRate: null,
+      restoreCaptionIndex: null,
+      suppressInitialAutoplay: false,
+      props: { shortsPlayer: true, format: 'dash', captions: [], chapters: [] },
+      player: { isLive: () => false, getAudioTracks: () => [], getTextTracks: () => [] },
+      process: { env: { SUPPORTS_LOCAL_API: false } },
+      deduplicateAudioTracks: tracks => new Set(tracks),
+      nextTick,
+      emit() {},
+      restorePendingPlaybackRate() {},
+      rememberInlinePlayerLayoutHeight() {},
+      loadChapterThumbnails() {},
+      syncShortsCaptionsEnabled() {},
+      refreshAbRepeatMarkers() {},
+      applyPendingPresentationModes() {},
+    })
+
+    await handleLoaded()
+    assert.equal(shortsPaused.value, paused, 'the play/pause control must match the loaded media')
+    assert.equal(video.value.paused, paused, 'synchronizing the control must not start playback')
+  })
+}
 
 test('only completes Shorts after continuous playback following a seek', () => {
   const seekToEnd = getShortsCompletionState({
