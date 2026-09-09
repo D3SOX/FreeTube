@@ -1,10 +1,10 @@
-import { DARK_BASE_THEMES, LIGHT_BASE_THEMES, PALETTE_BASE_THEMES } from './constants.js'
+import { BUILTIN_BASE_THEME_VALUES, DARK_BASE_THEMES, FIXED_COLOR_BASE_THEMES, LIGHT_BASE_THEMES } from './constants.js'
 import { isCustomThemeValue } from './customTheme.js'
 
-const BUILTIN_BASE_THEMES = new Set(['system', ...LIGHT_BASE_THEMES, ...DARK_BASE_THEMES])
+const BUILTIN_BASE_THEMES = new Set(BUILTIN_BASE_THEME_VALUES)
 
 function hasFixedThemeColors(theme) {
-  return ['hotPink', 'openTubeXLight', 'openTubeXDark', ...PALETTE_BASE_THEMES].includes(theme) || isCustomThemeValue(theme)
+  return FIXED_COLOR_BASE_THEMES.includes(theme) || isCustomThemeValue(theme)
 }
 
 function getThemeClassification(value, customThemes = []) {

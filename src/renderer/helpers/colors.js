@@ -1,7 +1,5 @@
 import { randomArrayItem } from './utils'
 
-// When adding new colors here,
-// remember to update the name translations in `src/renderer/composables/colors.js`
 export const colors = [
   { name: 'Red', value: '#d50000' },
   { name: 'Pink', value: '#C51162' },

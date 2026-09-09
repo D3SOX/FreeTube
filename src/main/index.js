@@ -21,6 +21,7 @@ import {
   getElectronAccelerator,
   SEARCH_CHAR_LIMIT,
   MULTIPLE_TABS_CONFIRM_THRESHOLD,
+  BASE_THEME_BACKGROUND_COLORS,
   LIGHT_BASE_THEMES,
   DARK_BASE_THEMES,
   DOWNLOADED_MEDIA_MIME_TYPES,
@@ -2647,88 +2648,8 @@ function runApp() {
         return (await getSelectedCustomTheme(theme))?.colors.background ??
           (nativeTheme.shouldUseDarkColors ? '#0f0f0f' : '#f1f1f1')
       }
-      switch (theme) {
-        case 'tokyoNightNight':
-          return '#1a1b26'
-        case 'tokyoNightStorm':
-          return '#24283b'
-        case 'tokyoNightMoon':
-          return '#222436'
-        case 'tokyoNightDay':
-          return '#e1e2e7'
-        case 'rosePine':
-          return '#191724'
-        case 'rosePineMoon':
-          return '#232136'
-        case 'rosePineDawn':
-          return '#faf4ed'
-        case 'kanagawaWave':
-          return '#1f1f28'
-        case 'kanagawaDragon':
-          return '#181616'
-        case 'kanagawaLotus':
-          return '#f2ecbc'
-        case 'ayuDark':
-          return '#0d1017'
-        case 'ayuMirage':
-          return '#1f2430'
-        case 'ayuLight':
-          return '#f8f9fa'
-        case 'oneDark':
-          return '#282c34'
-        case 'carbonfox':
-          return '#161616'
-        case 'catppuccinMacchiato':
-          return '#24273a'
-
-        case 'dark':
-          return '#0f0f0f'
-        case 'light':
-          return '#f1f1f1'
-        case 'openTubeXLight':
-          return '#e8f2f0'
-        case 'openTubeXDark':
-          return '#0b1416'
-        case 'black':
-          return '#000000'
-        case 'dracula':
-          return '#282a36'
-        case 'catppuccin-mocha':
-          return '#1e1e2e'
-        case 'pastelPink':
-          return '#ffeadd'
-        case 'hotPink':
-          return '#ff008a'
-        case 'nordic':
-          return '#2b2f3a'
-        case 'solarized-dark':
-          return '#002B36'
-        case 'solarized-light':
-          return '#fdf6e3'
-        case 'gruvbox-dark':
-          return '#282828'
-        case 'gruvbox-light':
-          return '#fbf1c7'
-        case 'catppuccin-frappe':
-          return '#303446'
-        case 'everforest-dark-hard':
-          return '#272e33'
-        case 'everforest-dark-medium':
-          return '#2d353b'
-        case 'everforest-dark-low':
-          return '#333c43'
-        case 'everforest-light-hard':
-          return '#fffbef'
-        case 'everforest-light-medium':
-          return '#fdf6e3'
-        case 'everforest-light-low':
-          return '#f3ead3'
-        case 'catppuccin-latte':
-          return '#eff1f5'
-        case 'system':
-        default:
-          return nativeTheme.shouldUseDarkColors ? '#0f0f0f' : '#f1f1f1'
-      }
+      return BASE_THEME_BACKGROUND_COLORS[theme] ??
+        (nativeTheme.shouldUseDarkColors ? '#0f0f0f' : '#f1f1f1')
     }).catch((error) => {
       console.error(error)
       // Default to nativeTheme settings if nothing is found.
