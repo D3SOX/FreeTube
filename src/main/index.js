@@ -3522,6 +3522,9 @@ function runApp() {
         if (!await isAllowedVideoMetadataThumbnailUrl(parsedUrl, allowedPrivateOrigin)) return null
 
         response = await net.fetch(parsedUrl.href, {
+          // Thumbnail replacements often keep the same URL. Comparing a cached
+          // response would hide the change until its HTTP cache entry expires.
+          cache: 'no-store',
           credentials: 'omit',
           redirect: 'manual',
           signal: abortController.signal

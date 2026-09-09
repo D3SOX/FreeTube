@@ -20,6 +20,65 @@ const THUMBNAILS = [
 
 test.use({ seed: { settings: WATCH_PAGE_SEED } })
 
+test('shows metadata history after loading a video with a previously recorded title', async ({ app, page }) => {
+  await page.evaluate(() => window.ftElectron.videoMetadataCache.update({
+    videoId: 'jNQXAC9IVRw',
+    title: 'Previously recorded title',
+    description: '',
+    thumbnailUrl: ''
+  }))
+  await mockPlayableWatchPage(app, page)
+  await openMockedVideo(page)
+
+  const historyButton = page.locator(`${activeTab} .infoArea`)
+    .getByRole('button', { name: 'Metadata history' })
+  await expect(historyButton).toBeVisible({ timeout: 25_000 })
+  await historyButton.click()
+  await expect(page.getByRole('dialog', { name: 'Metadata history' }))
+    .toContainText('Previously recorded title')
+})
+
+test('detects a replaced thumbnail at the same cacheable URL', async ({ page }) => {
+  let revision = 0
+  let requests = 0
+  const thumbnailServer = createServer((request, response) => {
+    requests += 1
+    const thumbnail = THUMBNAILS[revision]
+    response.writeHead(200, {
+      'cache-control': 'public, max-age=86400',
+      'content-length': thumbnail.length,
+      'content-type': 'image/png'
+    })
+    response.end(thumbnail)
+  })
+  thumbnailServer.listen(0, '127.0.0.1')
+  await once(thumbnailServer, 'listening')
+
+  try {
+    const url = `http://127.0.0.1:${thumbnailServer.address().port}`
+    await page.evaluate(({ action, url }) => window.ftElectron.dbSettings(action, {
+      _id: 'defaultInvidiousInstance',
+      value: url
+    }), { action: DBActions.GENERAL.UPSERT, url })
+    const metadata = {
+      videoId: 'thumbnail01',
+      title: 'Unchanged title',
+      description: 'Unchanged description',
+      thumbnailUrl: `${url}/thumbnail.png`
+    }
+    expect(await page.evaluate(metadata => window.ftElectron.videoMetadataCache.update(metadata), metadata))
+      .toBeNull()
+    revision = 1
+    const history = await page.evaluate(metadata => window.ftElectron.videoMetadataCache.update(metadata), metadata)
+    expect(history?.revisions).toHaveLength(2)
+    expect(requests).toBe(2)
+    expect(history.revisions[0].thumbnail).not.toBe(history.revisions[1].thumbnail)
+  } finally {
+    thumbnailServer.close()
+    await once(thumbnailServer, 'close')
+  }
+})
+
 test('preserves the displayed cache size when clearing fails', async ({ app, page }) => {
   await app.electronApp.evaluate(({ ipcMain }, channels) => {
     ipcMain.removeHandler(channels.getUsage)
