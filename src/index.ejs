@@ -11,10 +11,24 @@
     <link rel="manifest" href="static/manifest.json" />
     <% } %>
     <title></title>
+    <% if (typeof startupSplash !== 'undefined') { %>
+    <style><%= startupSplash.styles %></style>
+    <% } %>
   </head>
 
   <body<% if (!process.env.IS_CAPACITOR) { %> data-overlayscrollbars-initialize<% } %>>
-    <div id="app"></div>
+    <div id="app"<% if (typeof startupSplash !== 'undefined') { %> inert<% } %>></div>
+    <% if (typeof startupSplash !== 'undefined') { %>
+    <div id="startup-splash" class="startupSplash" role="status" aria-label="OpenTubeX" aria-busy="true">
+      <div class="startupCurtain startupCurtainLeft" aria-hidden="true"></div>
+      <div class="startupCurtain startupCurtainRight" aria-hidden="true"></div>
+      <canvas class="startupFabric" aria-hidden="true" hidden></canvas>
+      <div class="startupLogo" aria-hidden="true"><%= startupSplash.logo %></div>
+      <div class="startupLabel">OpenTubeX</div>
+      <div class="startupTrack" aria-hidden="true"><div class="startupProgress"></div></div>
+    </div>
+    <script><%= startupSplash.script %></script>
+    <% } %>
     <% if (process.env.IS_ELECTRON || process.env.IS_CAPACITOR) { %>
     <iframe
       id="sigFrame"

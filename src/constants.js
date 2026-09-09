@@ -1,5 +1,6 @@
 // IPC Channels
 const IpcChannels = {
+  STARTUP_SPLASH_READY: 'startup-splash-ready',
   ENABLE_PROXY: 'enable-proxy',
   DISABLE_PROXY: 'disable-proxy',
   GET_DEVICE_NAME: 'get-device-name',

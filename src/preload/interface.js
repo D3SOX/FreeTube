@@ -45,6 +45,11 @@ ipcRenderer.on(IpcChannels.VIDEO_METADATA_CACHE_CLEARED, () => {
 })
 
 export default {
+  startupSplashReady: () => ipcRenderer.send(IpcChannels.STARTUP_SPLASH_READY),
+  startupAppearance: {
+    background: process.argv.find(argument => argument.startsWith('--startup-background='))?.slice('--startup-background='.length),
+    dark: process.argv.includes('--startup-dark=true')
+  },
   isFlatpak: process.env.FLATPAK_ID !== undefined,
   runtimeVersions: Object.freeze({
     electron: process.versions.electron,

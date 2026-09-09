@@ -189,7 +189,14 @@ const config = {
     new HtmlWebpackPlugin({
       filename: 'index.html',
       template: path.resolve(__dirname, '../src/index.ejs'),
-      templateParameters: sigFrameTemplateParameters
+      templateParameters: {
+        ...sigFrameTemplateParameters,
+        startupSplash: {
+          styles: readFileSync(path.join(__dirname, '../src/renderer/startup/splash.css'), 'utf8'),
+          script: readFileSync(path.join(__dirname, '../src/renderer/startup/boot.js'), 'utf8'),
+          logo: readFileSync(path.join(__dirname, '../_icons/iconColorSmall.svg'), 'utf8').replaceAll('#212121', 'currentColor')
+        }
+      }
     }),
     new VueLoaderPlugin(),
     new MiniCssExtractPlugin({
