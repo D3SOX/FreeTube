@@ -4696,7 +4696,7 @@ export default defineComponent({
 
         player.cancelTrickPlay()
 
-        showValueChange(`${getDefaultPlaybackRateForVideo()}x`)
+        showValueChange(`${getDefaultPlaybackRateForVideo()}x`, 'gauge')
       }
     }
 
@@ -9218,7 +9218,7 @@ export default defineComponent({
           player.trickPlay(newPlaybackRate, false)
         }
 
-        showValueChange(`${newPlaybackRateString}x`)
+        showValueChange(`${newPlaybackRateString}x`, 'gauge')
       }
     }
 
