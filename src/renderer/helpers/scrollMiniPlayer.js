@@ -1,7 +1,7 @@
-export const DEFAULT_WIDTH = 360
+export const DEFAULT_SIZE = 360
 export const DEFAULT_HEIGHT = 202
-export const MIN_WIDTH = 240
-export const MAX_WIDTH = 560
+export const MIN_SIZE = 240
+export const MAX_SIZE = 560
 export const MARGIN = 16
 export const EDGE_SNAP = 72
 export const BOUNCE_MS = 450
@@ -173,7 +173,10 @@ function getLegacyVerticalAnchor(rect, insets) {
  */
 export function reanchorScrollMiniPlayerRect(rect, aspectRatio = DEFAULT_ASPECT_RATIO) {
   const insets = getViewportInsets()
-  const sized = clampScrollMiniPlayerRect(rect, aspectRatio)
+  // Share the longest edge across orientations, so a saved landscape width
+  // becomes the portrait height instead of producing a much larger player.
+  const width = Math.max(rect.width, rect.height) * Math.min(1, normalizeAspectRatio(aspectRatio))
+  const sized = clampScrollMiniPlayerRect({ ...rect, width }, aspectRatio)
   const anchor = pickScrollMiniVerticalAnchor(rect) ?? getLegacyVerticalAnchor(sized, insets)
 
   const top = anchor.verticalDock === 'top'
@@ -181,7 +184,7 @@ export function reanchorScrollMiniPlayerRect(rect, aspectRatio = DEFAULT_ASPECT_
     : window.innerHeight - insets.bottom - sized.height - anchor.verticalOffset
 
   return {
-    ...clampScrollMiniPlayerRect(snapScrollMiniPlayerToEdge({ ...sized, top }, insets), aspectRatio),
+    ...clampScrollMiniPlayerRect(snapScrollMiniPlayerToEdge({ ...sized, top, dock: rect.dock }, insets), aspectRatio),
     ...anchor,
   }
 }
@@ -284,7 +287,7 @@ export function getViewportInsets() {
  */
 export function getDefaultScrollMiniPlayerRect(aspectRatio = DEFAULT_ASPECT_RATIO) {
   const insets = getViewportInsets()
-  const width = DEFAULT_WIDTH
+  const width = DEFAULT_SIZE * Math.min(1, normalizeAspectRatio(aspectRatio))
   const height = getHeightForAspectRatio(width, aspectRatio)
 
   return {
@@ -303,11 +306,12 @@ export function getDefaultScrollMiniPlayerRect(aspectRatio = DEFAULT_ASPECT_RATI
  */
 export function clampScrollMiniPlayerRect(rect, aspectRatio = DEFAULT_ASPECT_RATIO) {
   const insets = getViewportInsets()
-  const maxWidth = Math.min(MAX_WIDTH, getViewportWidth() - insets.left - insets.right)
-  const maxHeight = window.innerHeight - insets.top - insets.bottom
   const normalizedAspectRatio = normalizeAspectRatio(aspectRatio)
+  const widthFactor = Math.min(1, normalizedAspectRatio)
+  const maxWidth = Math.min(MAX_SIZE * widthFactor, getViewportWidth() - insets.left - insets.right)
+  const maxHeight = window.innerHeight - insets.top - insets.bottom
 
-  let width = Math.min(Math.max(rect.width, MIN_WIDTH), maxWidth)
+  let width = Math.min(Math.max(rect.width, MIN_SIZE * widthFactor), maxWidth)
   let height = getHeightForAspectRatio(width, normalizedAspectRatio)
   if (height > maxHeight) {
     height = maxHeight
@@ -340,8 +344,8 @@ export function getDockFromRect(rect, insets) {
  */
 export function scrollMiniPlayerRectToStyle(rect) {
   // Overlays (e.g. the SponsorBlock skip notice) are sized for a full-size
-  // player, so scale them down with the mini player to keep them inside it.
-  const scale = Math.max(0.6, Math.min(1, rect.width / DEFAULT_WIDTH))
+  // player, so scale them to the available width, including on portrait videos.
+  const scale = Math.max(0.6, Math.min(1, rect.width / DEFAULT_SIZE))
 
   return {
     position: 'fixed',
@@ -555,9 +559,10 @@ export function getResizeHandleCorner(rect, insets) {
  */
 export function resizeScrollMiniPlayerFromCorner(rect, corner, pointerX, pointerY, insets, aspectRatio = DEFAULT_ASPECT_RATIO) {
   const dock = getDockFromRect(rect, insets)
-  const maxWidth = Math.min(MAX_WIDTH, getViewportWidth() - insets.left - insets.right)
-  const maxHeight = window.innerHeight - insets.top - insets.bottom
   const normalizedAspectRatio = normalizeAspectRatio(aspectRatio)
+  const widthFactor = Math.min(1, normalizedAspectRatio)
+  const maxWidth = Math.min(MAX_SIZE * widthFactor, getViewportWidth() - insets.left - insets.right)
+  const maxHeight = window.innerHeight - insets.top - insets.bottom
 
   let width
   if (corner.endsWith('right')) {
@@ -566,7 +571,7 @@ export function resizeScrollMiniPlayerFromCorner(rect, corner, pointerX, pointer
     width = rect.left + rect.width - pointerX
   }
 
-  width = Math.min(Math.max(width, MIN_WIDTH), maxWidth)
+  width = Math.min(Math.max(width, MIN_SIZE * widthFactor), maxWidth)
   let height = getHeightForAspectRatio(width, normalizedAspectRatio)
 
   if (height > maxHeight) {

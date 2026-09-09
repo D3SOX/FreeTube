@@ -4,6 +4,8 @@ import test from 'node:test'
 import {
   getViewportInsets,
   getViewportWidth,
+  getDefaultScrollMiniPlayerRect,
+  resizeScrollMiniPlayerFromCorner,
   snapScrollMiniPlayerToEdge,
   clampScrollMiniPlayerRect,
   parseScrollMiniPlayerSavedRect,
@@ -186,6 +188,56 @@ const SAVED_RECT = {
   verticalDock: 'bottom',
   verticalOffset: 96
 }
+
+test('portrait and landscape defaults use the same longest edge', () => {
+  stubViewport({ clientWidth: 1585 })
+  const landscape = clampScrollMiniPlayerRect(getDefaultScrollMiniPlayerRect())
+  const portrait = clampScrollMiniPlayerRect(getDefaultScrollMiniPlayerRect(9 / 16), 9 / 16)
+  assert.equal(portrait.height, landscape.width)
+  assert.ok(Math.abs(portrait.width - landscape.height) <= 1)
+})
+
+test('the shared size survives switching between portrait and landscape', () => {
+  stubViewport({ clientWidth: 1585 })
+  const portrait = reanchorScrollMiniPlayerRect(SAVED_RECT, 9 / 16)
+  assert.equal(portrait.width, SAVED_RECT.height)
+  assert.equal(portrait.height, SAVED_RECT.width)
+  const restored = reanchorScrollMiniPlayerRect(portrait)
+  assert.equal(restored.width, SAVED_RECT.width)
+  assert.equal(restored.height, SAVED_RECT.height)
+})
+
+test('switching a large docked mini player to portrait preserves its dock edge', () => {
+  stubViewport({ clientWidth: 800, clientHeight: 900 })
+  for (const dock of ['left', 'right']) {
+    const saved = {
+      left: dock === 'left' ? 16 : 224,
+      top: 16,
+      width: 560,
+      height: 315,
+      dock,
+      verticalDock: 'top',
+      verticalOffset: 0,
+    }
+    const portrait = reanchorScrollMiniPlayerRect(saved, 9 / 16)
+    assert.equal(portrait.dock, dock)
+    assert.equal(portrait.left, dock === 'left' ? 16 : 469)
+    assert.equal(reanchorScrollMiniPlayerRect(portrait).left, saved.left)
+  }
+})
+
+test('portrait resize limits apply to the longest edge', () => {
+  stubViewport({ clientWidth: 1585, clientHeight: 1200 })
+  const portrait = { left: 16, top: 16, width: 202.5, height: 360, dock: 'left' }
+  for (const [pointerX, expectedHeight] of [[16, 240], [1000, 560]]) {
+    const resized = resizeScrollMiniPlayerFromCorner(
+      portrait, 'bottom-right', pointerX, 0, getViewportInsets(), 9 / 16
+    )
+    assert.equal(resized.height, expectedHeight)
+    const landscape = reanchorScrollMiniPlayerRect(resized)
+    assert.equal(landscape.width, expectedHeight)
+  }
+})
 
 test('scroll and tab-switch positions do not overwrite each other', () => {
   const tabRect = { ...SAVED_RECT, top: 200 }
