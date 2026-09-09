@@ -244,7 +244,7 @@ html[data-reduced-motion='reduce'] .musicVisualizerCanvas {
   transition-delay: 0s, 0s;
 }
 
-.ftVideoPlayer.shortsPlayer {
+.ftVideoPlayer.shortsPlayer:not(.scrollMiniPlayer) {
   /*
     Keep the container from becoming a focus-scroll area and let the seek
     thumb extend below the video. The video itself owns the rounded crop.
@@ -4180,6 +4180,7 @@ html[data-reduced-motion='reduce'] .musicVisualizerCanvas {
   border-radius: calc(10px * var(--ui-roundness));
 }
 
+.ftVideoPlayer.scrollMiniPlayer.shortsPlayer > .shortsTopControls,
 .ftVideoPlayer.scrollMiniPlayer :deep(.shaka-bottom-controls),
 .ftVideoPlayer.scrollMiniPlayer :deep(.shaka-controls-button-panel),
 .ftVideoPlayer.scrollMiniPlayer :deep(.shaka-spinner-container),

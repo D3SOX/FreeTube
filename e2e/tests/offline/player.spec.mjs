@@ -1576,6 +1576,94 @@ test.describe('scroll mini player', () => {
       }
     })
 
+    async function usePortraitShort(page) {
+      const watch = await page.evaluateHandle(findWatchComponent)
+      await watch.evaluate(async component => {
+        component.proxy.useCustomShortsPlayerForCurrentVideo = true
+        component.proxy.updateShortsPlayerState(30, [{ width: 360, height: 640 }])
+        await component.proxy.$nextTick()
+      })
+      await watch.dispose()
+      // Keep local playback, but report the dimensions of a portrait stream.
+      await page.locator('.ftVideoPlayer video').evaluate(video => {
+        Object.defineProperties(video, {
+          videoWidth: { configurable: true, value: 360 },
+          videoHeight: { configurable: true, value: 640 }
+        })
+        video.dispatchEvent(new Event('resize'))
+      })
+      await expect(page.locator('.ftVideoPlayer')).toHaveClass(/shortsPlayer/)
+    }
+
+    test('hides Shorts controls in the cross-tab mini player and restores them on return', async ({ app, page }) => {
+      await openDemoVideo({ app, page })
+      await usePortraitShort(page)
+      const player = page.locator('.ftVideoPlayer')
+      await page.locator('.tabBar .newTabButton').click()
+      await expect(player).toHaveClass(/scrollMiniPlayer/)
+      await player.locator('.scrollMiniPlayPause').click()
+      await expect.poll(() => player.locator('video').evaluate(video => video.paused)).toBe(true)
+      await expect(player.locator('.shortsTopControls')).toBeHidden()
+      await expect(player).toHaveCSS('overflow', 'clip')
+      await expect(player.locator('.scrollMiniPlayPause')).toBeVisible()
+      await expect(player).toBeInViewport({ ratio: 1 })
+      // Playwright screenshots crop Electron's output at non-100% UI scale.
+      const screenshot = await app.electronApp.evaluate(async ({ BrowserWindow }) => {
+        const image = await BrowserWindow.getAllWindows()[0].capturePage()
+        return image.toPNG().toString('base64')
+      })
+      await test.info().attach('Shorts cross-tab mini player', {
+        body: Buffer.from(screenshot, 'base64'), contentType: 'image/png'
+      })
+
+      await page.locator('.tabBar .tab').first().click()
+      await expect(player).not.toHaveClass(/scrollMiniPlayer/)
+      await expect(player.locator('.shortsTopControls')).toBeVisible()
+    })
+
+    test('shares the longest mini-player edge between Shorts and normal videos', async ({ app, page }) => {
+      await openDemoVideo({ app, page })
+      const player = page.locator('.ftVideoPlayer')
+      const size = () => player.evaluate(element => ({
+        width: Number.parseFloat(element.style.width),
+        height: Number.parseFloat(element.style.height)
+      }))
+      await page.locator('.tabBar .newTabButton').click()
+      await expect(player).toHaveClass(/scrollMiniPlayer/)
+      const landscape = await size()
+      await page.locator('.tabBar .tab').first().click()
+      await usePortraitShort(page)
+      await player.locator('video').evaluate(video => video.play())
+      await page.locator('.tabBar .tab').nth(1).click()
+      await expect(player).toHaveClass(/scrollMiniPlayer/)
+      await expect.poll(async () => (await size()).height).toBe(landscape.width)
+
+      const handle = player.locator('.scrollMiniResizeHandle')
+      await handle.dispatchEvent('pointerdown', { button: 0, clientX: 0, clientY: 0, pointerId: 1 })
+      await page.evaluate(() => {
+        const rect = document.querySelector('.scrollMiniPlayer').getBoundingClientRect()
+        for (const type of ['pointermove', 'pointerup']) {
+          window.dispatchEvent(new PointerEvent(type, {
+            clientX: rect.right - 270, clientY: rect.top, pointerId: 1
+          }))
+        }
+      })
+      await expect.poll(async () => (await size()).height).toBe(480)
+      await page.locator('.tabBar .tab').first().click()
+      const watch = await page.evaluateHandle(findWatchComponent)
+      await watch.evaluate(component => { component.proxy.isShort = false })
+      await watch.dispose()
+      await player.locator('video').evaluate(video => {
+        delete video.videoWidth
+        delete video.videoHeight
+        video.dispatchEvent(new Event('resize'))
+        return video.play()
+      })
+      await page.locator('.tabBar .tab').nth(1).click()
+      await expect(player).toHaveClass(/scrollMiniPlayer/)
+      await expect.poll(size).toEqual({ width: 480, height: 270 })
+    })
+
     test('remembers separate mini player positions for scrolling and tab switches', async ({ app, page }) => {
       await openDemoVideo({ app, page })
       let player = page.locator('.ftVideoPlayer')
