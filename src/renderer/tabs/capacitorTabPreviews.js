@@ -48,7 +48,10 @@ export function initializeCapacitorTabPreviews(store) {
     cache.prune(store.getters.getTabs)
     schedule()
   }, { immediate: true, flush: 'sync' })
-  document.addEventListener('scroll', schedule, true)
+  // Native playback can become ready after the route's initial screenshot.
+  // Refresh that cached image before a slow organizer capture needs it.
+  const contentEvents = ['scroll', 'loadeddata', 'playing', 'seeked']
+  for (const event of contentEvents) document.addEventListener(event, schedule, true)
   document.addEventListener('visibilitychange', schedule)
   window.addEventListener('resize', schedule)
   return () => {
@@ -56,7 +59,7 @@ export function initializeCapacitorTabPreviews(store) {
     clearTimeout(timer)
     cache.clear()
     captureCurrent = async () => {}
-    document.removeEventListener('scroll', schedule, true)
+    for (const event of contentEvents) document.removeEventListener(event, schedule, true)
     document.removeEventListener('visibilitychange', schedule)
     window.removeEventListener('resize', schedule)
   }
@@ -83,34 +86,17 @@ async function capturePage() {
   // Crop the top of the visible content to the card's aspect ratio.
   const cropHeight = Math.min(height - top, width * 9 / 16)
   canvas.height = Math.round(canvas.width * cropHeight / width)
-  const scaleX = canvas.width / width
-  const scaleY = canvas.height / cropHeight
-  const videos = [...document.querySelectorAll('.tabContent:not([inert]) video')]
-    .map(video => ({ video, rect: video.getBoundingClientRect() }))
-    .filter(({ rect }) => rect.width > 0 && rect.height > 0 && rect.bottom > top && rect.top < top + cropHeight)
   const { uri } = await Screenshot.take()
   try {
     const screenshot = new Image()
     screenshot.src = Capacitor.convertFileSrc(uri)
     await screenshot.decode()
     if (hasVisibleOverlay()) return null
+    // PixelCopy captures the native video texture and the WebView together.
+    // Android's DOM video only carries playback state, not drawable frames.
     context.drawImage(screenshot, 0, top * screenshot.height / height,
       screenshot.width, cropHeight * screenshot.height / height,
       0, 0, canvas.width, canvas.height)
-    // Hardware video surfaces can be separate from the window buffer. Composite
-    // readable frames; otherwise retain the card fallback.
-    for (const { video, rect } of videos) {
-      if (video.readyState < 2 || !video.videoWidth) return null
-      const fit = Math.min(rect.width / video.videoWidth, rect.height / video.videoHeight)
-      const frameWidth = video.videoWidth * fit
-      const frameHeight = video.videoHeight * fit
-      context.fillStyle = '#000'
-      context.fillRect(rect.left * scaleX, (rect.top - top) * scaleY, rect.width * scaleX, rect.height * scaleY)
-      context.drawImage(video,
-        (rect.left + (rect.width - frameWidth) / 2) * scaleX,
-        (rect.top - top + (rect.height - frameHeight) / 2) * scaleY,
-        frameWidth * scaleX, frameHeight * scaleY)
-    }
     return canvas.toDataURL('image/jpeg', 0.7)
   } finally {
     try {
