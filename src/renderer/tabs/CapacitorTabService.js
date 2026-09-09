@@ -20,6 +20,7 @@ const STORAGE_KEY = 'opentubex-capacitor-tabs'
 const PERSISTED_MUTATIONS = new Set([
   'setHistoryEntryScroll',
   'setPresentedTab',
+  'setRememberTabNavigationHistory',
   'setTabContentTitle',
   'setTabNavigation',
   'setTabsState'
@@ -52,15 +53,27 @@ export class CapacitorTabService {
   async initialize(currentRoute) {
     if (this.initialized) return
 
-    const persisted = readPersistedSession()
+    const startupBehavior = this.store.getters.getStartupBehavior ?? 'loadLastActiveTab'
+    const persisted = startupBehavior === 'emptySession' ? null : readPersistedSession()
+    const initialRoute = currentRoute.path === '/'
+      ? this.router.resolve(`/${this.store.getters.getLandingPage}`)
+      : currentRoute
     this.sessionUpdatedAt = Number.isFinite(persisted?.updatedAt)
       ? persisted.updatedAt
       : Date.now()
     let session = restoreCapacitorTabSession(
       persisted,
-      currentRoute
+      initialRoute,
+      undefined,
+      this.store.getters.getRememberTabNavigationHistory === true
     )
-    session = loadCapacitorTab(session, session.activeTabId)
+    for (const tab of session.tabs) {
+      if (tab.id === session.activeTabId || startupBehavior === 'loadAllTabs') {
+        session = loadCapacitorTab(session, tab.id)
+      } else if (startupBehavior !== 'restoreTabLoadState') {
+        session = unloadCapacitorTab(session, tab.id)
+      }
+    }
     this.commitSession(session, session.activeTabId)
     this.store.commit('setPresentedTab', session.activeTabId)
     tabMediaCoordinator.setPresented(session.activeTabId)
@@ -93,7 +106,7 @@ export class CapacitorTabService {
   async createTab(location = `/${this.store.getters.getLandingPage}`, title = '', makeActive = true) {
     const tab = createCapacitorTab(this.router.resolve(location), title)
     const previous = this.currentSession()
-    const session = addCapacitorTab(previous, tab, makeActive)
+    const session = addCapacitorTab(previous, tab, makeActive, this.store.getters.getNewTabPosition ?? 'afterCurrentInOrder')
     if (!makeActive) {
       this.commitSession(session)
       return tab.id
@@ -117,7 +130,7 @@ export class CapacitorTabService {
     const tab = createCapacitorTab(source.route)
     tab.title = source.contentTitle || source.title || source.route.fullPath
     const previous = this.currentSession()
-    const session = addCapacitorTab(previous, tab)
+    const session = addCapacitorTab(previous, tab, true, this.store.getters.getNewTabPosition ?? 'afterCurrentInOrder')
     return await this.commitAndPresent(previous, session) ? tab.id : null
   }
 
@@ -131,7 +144,7 @@ export class CapacitorTabService {
     if (wasActive) this.navigation.saveScroll(tabId)
 
     if (wasActive && previous.tabs.length > 1) {
-      const nextTabId = findReplacementTabId(previous.tabs, tabId)
+      const nextTabId = findReplacementTabId(previous.tabs, tabId, this.store.getters.getTabCloseFocus)
       if (!nextTabId || !await this.activateTab(nextTabId)) return false
       previous = this.currentSession()
     }
@@ -272,7 +285,7 @@ export class CapacitorTabService {
     if (session.activeTabId === tabId) {
       if (session.tabs.length <= 1) return false
 
-      const nextTabId = findReplacementTabId(session.tabs, tabId)
+      const nextTabId = findReplacementTabId(session.tabs, tabId, this.store.getters.getTabCloseFocus)
       if (!nextTabId || !await this.activateTab(nextTabId)) return false
       session = this.currentSession()
     }
@@ -330,6 +343,7 @@ export class CapacitorTabService {
         id: tab.id,
         title: tab.contentTitle || tab.title || tab.route.fullPath,
         isPinned: tab.isPinned === true,
+        placementOpenerTabId: tab.placementOpenerTabId,
         route: tab.route,
         history: tab.history,
         historyIndex: tab.historyIndex,
@@ -344,6 +358,7 @@ export class CapacitorTabService {
         id: tab.id,
         title: tab.title || tab.route.fullPath,
         isPinned: tab.isPinned === true,
+        placementOpenerTabId: tab.placementOpenerTabId,
         route: tab.route,
         history: tab.history,
         historyIndex: tab.historyIndex
@@ -363,7 +378,10 @@ export class CapacitorTabService {
   persist() {
     try {
       this.sessionUpdatedAt = Date.now()
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(toPersistedSession(this.currentSession())))
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(toPersistedSession(
+        this.currentSession(),
+        this.store.getters.getRememberTabNavigationHistory === true
+      )))
     } catch (error) {
       console.error('Failed to persist Capacitor tabs:', error)
     }
@@ -376,25 +394,27 @@ export class CapacitorTabService {
   }
 }
 
-function findReplacementTabId(tabs, tabId) {
+function findReplacementTabId(tabs, tabId, focus) {
   const tabIndex = tabs.findIndex(tab => tab.id === tabId)
   if (tabIndex === -1) return null
 
-  const candidates = [
-    ...tabs.slice(tabIndex + 1),
-    ...tabs.slice(0, tabIndex).reverse()
-  ]
-  return candidates.find(tab => tab.loadState === 'loaded')?.id ?? candidates[0]?.id ?? null
+  const previous = tabs[tabIndex - 1]
+  const next = tabs[tabIndex + 1]
+  const [preferred, fallback] = focus === 'nextTab' ? [next, previous] : [previous, next]
+  // Match desktop: prefer a loaded opposite neighbor, but never skip over
+  // the nearest tab on the configured side to find a more distant loaded tab.
+  if (preferred?.loadState !== 'loaded' && fallback?.loadState === 'loaded') return fallback.id
+  return preferred?.id ?? fallback?.id ?? null
 }
 
-function toPersistedSession(session) {
+function toPersistedSession(session, rememberHistory) {
   const serializeTab = (tab, includeLoadState) => ({
     id: tab.id,
     title: tab.title,
     isPinned: tab.isPinned,
+    placementOpenerTabId: tab.placementOpenerTabId,
     route: tab.route,
-    history: tab.history,
-    historyIndex: tab.historyIndex,
+    ...(rememberHistory && { history: tab.history, historyIndex: tab.historyIndex }),
     ...(includeLoadState && { isUnloaded: tab.loadState === 'unloaded' })
   })
 

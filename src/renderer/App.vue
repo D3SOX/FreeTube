@@ -1214,15 +1214,16 @@ onMounted(async () => {
       removeTabsStateListener = removeListener
       window.ftElectron.tabs.rendererReady()
     })
-  } else if (isCapacitor) {
-    tabsReady = capacitorTabService.initialize(route)
-    removeCapacitorTabPreviews = initializeCapacitorTabPreviews(store)
   }
 
   const settingsReady = store.dispatch('grabUserSettings').then(tutorialState => {
     removeAndroidYtDlpSettingsListener = initializeAndroidYtDlp()
     return tutorialState
   })
+  if (isCapacitor) {
+    tabsReady = settingsReady.then(() => capacitorTabService.initialize(route))
+    removeCapacitorTabPreviews = initializeCapacitorTabPreviews(store)
+  }
   const customThemesReady = loadCustomThemes().catch((error) => {
     console.error('Failed to load custom theme:', error)
     return []

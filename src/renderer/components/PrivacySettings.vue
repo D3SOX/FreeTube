@@ -44,7 +44,7 @@
           @change="updateEnableSearchSuggestions"
         />
         <FtToggleSwitch
-          v-if="USING_ELECTRON"
+          v-if="USING_ELECTRON || IS_CAPACITOR"
           :label="$t('Settings.General Settings.Remember Tab Navigation History')"
           :default-value="rememberTabNavigationHistory"
           setting-key="rememberTabNavigationHistory"
@@ -122,6 +122,7 @@ import store from '../store/index'
 
 const { locale, t } = useI18n()
 const USING_ELECTRON = process.env.IS_ELECTRON
+const IS_CAPACITOR = process.env.IS_CAPACITOR
 
 /** @type {import('vue').ComputedRef<boolean>} */
 const rememberHistory = computed(() => store.getters.getRememberHistory)

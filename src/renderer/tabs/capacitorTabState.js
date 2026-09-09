@@ -24,7 +24,7 @@ export function createCapacitorTab(route, title = '', id = window.crypto.randomU
   }
 }
 
-export function restoreCapacitorTabSession(value, currentRoute, createId = () => window.crypto.randomUUID()) {
+export function restoreCapacitorTabSession(value, currentRoute, createId = () => window.crypto.randomUUID(), rememberHistory = true) {
   const seenIds = new Set()
   const tabs = Array.isArray(value?.tabs)
     ? value.tabs
@@ -33,7 +33,7 @@ export function restoreCapacitorTabSession(value, currentRoute, createId = () =>
           seenIds.add(tab.id)
           return true
         })
-        .map(normalizeRestoredTab)
+        .map(tab => normalizeRestoredTab(tab, rememberHistory))
     : []
 
   const closedTabIds = new Set()
@@ -45,7 +45,7 @@ export function restoreCapacitorTabSession(value, currentRoute, createId = () =>
           return true
         })
         .slice(-MAX_CLOSED_CAPACITOR_TABS)
-        .map(normalizePersistedTab)
+        .map(tab => normalizePersistedTab(tab, rememberHistory))
     : []
 
   if (tabs.length === 0) {
@@ -67,8 +67,19 @@ export function restoreCapacitorTabSession(value, currentRoute, createId = () =>
   }
 }
 
-export function addCapacitorTab(session, tab, makeActive = true) {
-  const tabs = [...session.tabs, normalizePersistedTab(tab)]
+export function addCapacitorTab(session, tab, makeActive = true, position = 'end') {
+  const tabs = [...session.tabs]
+  const openerIndex = tabs.findIndex(candidate => candidate.id === session.activeTabId)
+  const pinnedCount = tabs.filter(candidate => candidate.isPinned).length
+  let insertIndex = tabs.length
+  if (position !== 'end' && openerIndex !== -1) {
+    insertIndex = Math.max(openerIndex + 1, tab.isPinned ? 0 : pinnedCount)
+    if (position === 'afterCurrentInOrder') {
+      while (tabs[insertIndex]?.placementOpenerTabId === session.activeTabId) insertIndex += 1
+    }
+  }
+  insertIndex = tab.isPinned ? Math.min(insertIndex, pinnedCount) : Math.max(insertIndex, pinnedCount)
+  tabs.splice(insertIndex, 0, normalizePersistedTab({ ...tab, placementOpenerTabId: session.activeTabId }))
   return {
     ...session,
     tabs,
@@ -208,9 +219,11 @@ export function setCapacitorTabPinned(session, tabId, pinned) {
     return session
   }
 
-  const updated = session.tabs.map(tab => (
-    tab.id === tabId ? { ...tab, isPinned: pinned } : tab
-  ))
+  const updated = session.tabs.map(tab => ({
+    ...tab,
+    isPinned: tab.id === tabId ? pinned : tab.isPinned,
+    placementOpenerTabId: null
+  }))
   return {
     ...session,
     tabs: [
@@ -235,7 +248,7 @@ export function moveCapacitorTab(session, tabId, targetIndex) {
   const tabs = [...session.tabs]
   tabs.splice(sourceIndex, 1)
   tabs.splice(clampedIndex, 0, source)
-  return { ...session, tabs }
+  return { ...session, tabs: tabs.map(tab => ({ ...tab, placementOpenerTabId: null })) }
 }
 
 export function toRuntimeTabState(session, presentedTabId = session.activeTabId) {
@@ -277,12 +290,12 @@ function isValidPersistedTab(tab) {
     typeof tab.route === 'object'
 }
 
-function normalizePersistedTab(tab) {
+function normalizePersistedTab(tab, rememberHistory = true) {
   const route = normalizeRoute(tab.route)
   const title = typeof tab.title === 'string' && tab.title.length > 0
     ? tab.title
     : route.fullPath
-  const history = Array.isArray(tab.history) && tab.history.length > 0
+  const history = rememberHistory && Array.isArray(tab.history) && tab.history.length > 0
     ? tab.history.map(entry => ({
         route: cloneRoute(entry?.route),
         title: typeof entry?.title === 'string' ? entry.title : entry?.route?.fullPath || '/',
@@ -304,6 +317,7 @@ function normalizePersistedTab(tab) {
     id: tab.id,
     title,
     isPinned: tab.isPinned === true,
+    placementOpenerTabId: typeof tab.placementOpenerTabId === 'string' ? tab.placementOpenerTabId : null,
     route,
     history,
     historyIndex,
@@ -319,8 +333,8 @@ function normalizePersistedTab(tab) {
   }
 }
 
-function normalizeRestoredTab(tab) {
-  const normalized = normalizePersistedTab(tab)
+function normalizeRestoredTab(tab, rememberHistory) {
+  const normalized = normalizePersistedTab(tab, rememberHistory)
   if (normalized.loadState === 'unloaded') return normalized
 
   return {

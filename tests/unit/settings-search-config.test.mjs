@@ -303,3 +303,40 @@ test('ignored comment translation languages follow local API availability', () =
   assert.ok(!webValues.some(({ label }) => label === 'Enable comment translations'))
   assert.ok(!webValues.some(({ label }) => label === 'Comment translations'))
 })
+
+for (const [platform, usingElectron, isCapacitor] of [
+  ['desktop', true, false], ['mobile', false, true], ['web', false, false],
+]) {
+  test(`${platform} general settings search matches tab support`, () => {
+    const entries = createSettingsSearchIndex({
+      sections: [{ type: 'general', title: 'General', description: '' }],
+      tm: path => getAtPath(locale, path),
+      store: { getters: {} },
+      usingElectron,
+      isCapacitor,
+    }).get('general')
+    for (const path of [
+      'New Tab Position.New Tab Position',
+      'Tab Close Focus.Tab Close Focus',
+      'Startup Behavior.Startup Behavior',
+    ]) {
+      const label = getAtPath(locale, `Settings.General Settings.${path}`)
+      assert.equal(entries.some(entry => entry.label === label), usingElectron || isCapacitor, label)
+    }
+  })
+}
+
+for (const [platform, usingElectron, isCapacitor] of [
+  ['desktop', true, false], ['mobile', false, true], ['web', false, false],
+]) {
+  test(`${platform} privacy search matches navigation history setting visibility`, () => {
+    const entries = createSettingsSearchIndex({
+      sections: [{ type: 'privacy', title: 'Privacy', description: '' }],
+      tm: path => getAtPath(locale, path),
+      store: { getters: {} },
+      usingElectron,
+      isCapacitor,
+    }).get('privacy')
+    assert.equal(entries.some(({ label }) => label === 'Remember Tab Navigation History'), usingElectron || isCapacitor)
+  })
+}
