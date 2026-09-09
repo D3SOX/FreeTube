@@ -38,6 +38,7 @@ import {
   isSyncReasonEnabled,
 } from '../../helpers/sync-server-scheduling'
 import { isSettingSyncEnabled } from './settings'
+import { syncSubscriptionSeenVideos } from '../../helpers/subscription-seen-videos'
 
 const EVENT_SYNC_DEBOUNCE_MS = 1500
 const ENCRYPTED_SYNC_RETRIES = 3
@@ -179,15 +180,16 @@ async function runSync(context, { allowDataLoss = false } = {}) {
 
   async function runStage(stage, callback) {
     assertSyncStillActive()
+    const progressStage = stage === 'seenVideos' ? 'history' : stage
     commit('setSyncServerProgress', {
-      stage,
+      stage: progressStage,
       percentage: Math.round((completedStages / stages.length) * 100),
     })
     const value = await callback()
     assertSyncStillActive()
     completedStages++
     commit('setSyncServerProgress', {
-      stage,
+      stage: progressStage,
       percentage: Math.round((completedStages / stages.length) * 100),
     })
     return value
@@ -199,6 +201,9 @@ async function runSync(context, { allowDataLoss = false } = {}) {
 
   async function applyCollection(collection, targetClient) {
     switch (collection) {
+      case 'seenVideos':
+        result.seenVideos = await syncSubscriptionSeenVideos(targetClient, store)
+        break
       case 'subscriptions':
         next.subscriptions = await syncSubscriptions(
           targetClient,
@@ -281,6 +286,9 @@ async function runSync(context, { allowDataLoss = false } = {}) {
 
   try {
     if (encrypted) {
+      if (settings.syncServerSyncHistory && await networkClient.supportsSeenVideosSync()) {
+        stages.splice(stages.indexOf('history') + 1, 0, 'seenVideos')
+      }
       if (!settings.syncServerPrivacyKey) {
         throw new Error('Reconnect and enter your privacy passphrase to enable enhanced privacy')
       }

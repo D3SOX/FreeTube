@@ -44,6 +44,7 @@ import { isSettingSyncableOnPlatform } from '../../helpers/platformSettings.js'
 import { CUSTOM_THEMES_SYNC_KEY } from '../../../customTheme.js'
 import { DEFAULT_QUICK_SETTINGS, normalizeQuickSettings } from '../../helpers/quickSettings.js'
 import { createOptimisticSettingUpdater, createSettingUpdateQueue } from '../../helpers/settingUpdateQueue.js'
+import { mergeSubscriptionSeenVideos } from '../../../subscriptionSeenVideos.js'
 import { filterAvailableNavigationItems } from '../../../navigationAvailability.js'
 import {
   DEFAULT_NAVIGATION_ITEMS,
@@ -492,6 +493,7 @@ const state = {
   syncServerSettingUpdatedAt: {},
   syncServerLastSyncAt: 0,
   syncServerSnapshot: '{}',
+  subscriptionSeenVideos: '[]',
   playlistBookmarks: [],
   useProxy: false,
   userPlaylistSortOrder: 'date_added_descending',
@@ -794,6 +796,7 @@ export const NON_TRANSFERABLE_SETTINGS = new Set([
   'syncServerSettingUpdatedAt',
   'syncServerLastSyncAt',
   'syncServerSnapshot',
+  'subscriptionSeenVideos',
 
   /* Depends on process.env.SUPPORTS_LOCAL_API */
   'backendFallback',
@@ -970,6 +973,14 @@ function updateOrderedSetting(commit, settings, settingId, value) {
 }
 
 const customActions = {
+  async mergeSubscriptionSeenVideos({ commit, state, rootGetters }, entries) {
+    const saved = await DBSettingHandlers.mergeSeenVideos(entries)
+    // Another window's newer update may arrive before this request's reply.
+    const value = JSON.stringify(mergeSubscriptionSeenVideos(
+      state.subscriptionSeenVideos, saved, rootGetters.getHistoryCacheById
+    ))
+    if (value !== state.subscriptionSeenVideos) commit('setSubscriptionSeenVideos', value)
+  },
   recordSyncSettingEdit: ({ commit, state }, settingId) => (
     recordSettingSyncTimestamp(commit, state, settingId)
   ),

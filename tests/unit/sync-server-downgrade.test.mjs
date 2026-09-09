@@ -11,6 +11,8 @@ import * as errors from '../../src/renderer/helpers/sync-server-errors.js'
 import * as privacy from '../../src/renderer/helpers/sync-server-privacy.js'
 import { isRecentSync } from '../../src/renderer/helpers/sync-server-scheduling.js'
 import { createSyncServerRequestHeaders } from '../../src/renderer/helpers/sync-server-request.js'
+import { mergeSubscriptionSeenVideos } from '../../src/subscriptionSeenVideos.js'
+import { syncSubscriptionSeenVideos } from '../../src/renderer/helpers/subscription-seen-videos.js'
 
 // These modules use webpack imports. Keep their actual request, merge, and store
 // code while replacing platform dependencies and the network with local fixtures.
@@ -42,6 +44,7 @@ function fixture (overrides = {}, { encrypted = false, respond } = {}) {
   const common = {
     ...errors,
     ...privacy,
+    syncSubscriptionSeenVideos,
     isRecentSync,
     crypto,
     URL,
@@ -68,6 +71,7 @@ function fixture (overrides = {}, { encrypted = false, respond } = {}) {
       requests.push({ url, method: options.method ?? 'GET', body: options.body })
       if (respond) {
         const response = await respond(url, options)
+        if (response instanceof Response) return response
         if (response !== undefined) return new Response(JSON.stringify(response))
       }
       let result = null
@@ -80,12 +84,13 @@ function fixture (overrides = {}, { encrypted = false, respond } = {}) {
     },
   }
   const helper = vm.createContext({ ...common })
-  vm.runInContext(withoutImports(helperSource) + '\nglobalThis.exports = { SyncServerClient, syncSubscriptions, syncSettings, normalizeSyncServerUrl };', helper)
+  vm.runInContext(withoutImports(helperSource) + '\nglobalThis.exports = { SyncServerClient, syncSubscriptions, syncSettings, syncHistory, normalizeSyncServerUrl };', helper)
   const store = vm.createContext({ ...common, ...helper.exports, getSavedOtherDeviceSessions: () => [] })
   vm.runInContext(withoutImports(storeSource).replace('export default { state, getters, actions, mutations }', 'globalThis.exports = { state, actions, mutations }'), store)
   const context = {
     rootState: {
       settings,
+      history: { historyCacheSorted: [] },
       utils: { customThemes: [] },
       profiles: { profileList: [{ _id: 'main', subscriptions: [{ id: 'private-channel', name: 'Private subscription' }] }] },
     },
@@ -96,6 +101,9 @@ function fixture (overrides = {}, { encrypted = false, respond } = {}) {
       store.exports.mutations[action]?.(store.exports.state, value)
     },
     dispatch: async (action, value) => {
+      if (action === 'mergeSubscriptionSeenVideos') {
+        settings.subscriptionSeenVideos = JSON.stringify(mergeSubscriptionSeenVideos(settings.subscriptionSeenVideos, value))
+      }
       if (action.startsWith('updateSyncServer')) {
         const key = action.slice(6)
         settings[key[0].toLowerCase() + key.slice(1)] = value
@@ -107,6 +115,57 @@ function fixture (overrides = {}, { encrypted = false, respond } = {}) {
   }
   return { settings, requests, commits, context, actions: store.exports.actions }
 }
+
+for (const historyEnabled of [false, true]) {
+  for (const supported of [false, true]) {
+    test(`seen videos sync requires history enabled=${historyEnabled} and server support=${supported}`, async () => {
+      const f = fixture({
+        syncServerSyncHistory: historyEnabled,
+        subscriptionSeenVideos: JSON.stringify([{ videoId: 'private-seen-video', seenAt: 1000 }]),
+      }, {
+        encrypted: true,
+        respond: url => url.endsWith('/health')
+          ? { capabilities: { encrypted_sync: 1, seen_videos: supported ? 1 : 0 } }
+          : undefined,
+      })
+      await f.actions.syncWithSyncServer(f.context)
+      assert.equal(f.context.state.syncServerStatus, 'success')
+      const seenRequests = f.requests.filter(request => request.url.endsWith('/encrypted_sync/seenVideos'))
+      assert.equal(seenRequests.length, historyEnabled && supported ? 2 : 0)
+      if (seenRequests.length > 0) {
+        const upload = seenRequests.find(request => request.method === 'PUT')
+        assert.ok(!upload.body.includes('private-seen-video'))
+        const entries = await privacy.decryptSyncDocument(JSON.parse(upload.body).payload, f.settings.syncServerPrivacyKey)
+        assert.equal(entries[0].videoId, 'private-seen-video')
+      }
+    })
+  }
+}
+
+test('seen-video upload conflicts retain marks added by both devices', async () => {
+  const key = Buffer.alloc(32, 1).toString('base64')
+  const salt = Buffer.alloc(16, 2).toString('base64')
+  const remote = await privacy.encryptSyncDocument([{ videoId: 'other-device', seenAt: 2000 }], key, salt)
+  let uploads = 0
+  const f = fixture({
+    syncServerSyncHistory: true,
+    subscriptionSeenVideos: JSON.stringify([{ videoId: 'local-device', seenAt: 1000 }]),
+  }, {
+    encrypted: true,
+    respond(url, options) {
+      if (url.endsWith('/health')) return { capabilities: { encrypted_sync: 1, seen_videos: 1 } }
+      if (!url.endsWith('/encrypted_sync/seenVideos')) return
+      if (options.method === 'PUT' && ++uploads === 1) return new Response('{}', { status: 409 })
+      if (!options.method && uploads > 0) return { revision: 1, payload: remote }
+    },
+  })
+  await f.actions.syncWithSyncServer(f.context)
+  assert.equal(f.context.state.syncServerStatus, 'success')
+  const upload = f.requests.filter(request => request.method === 'PUT' && request.url.endsWith('/seenVideos')).at(-1)
+  const entries = await privacy.decryptSyncDocument(JSON.parse(upload.body).payload, key)
+  assert.deepEqual(entries.map(entry => entry.videoId), ['local-device', 'other-device'])
+  assert.equal(uploads, 2)
+})
 
 for (const overrides of [
   {},
