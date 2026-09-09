@@ -86,7 +86,7 @@ final class AndroidProxy {
     static void protectWebView(WebView view) {
         boolean ready = webViewReady.isDone() && !webViewReady.isCompletedExceptionally();
         view.getSettings().setBlockNetworkLoads(!ready);
-        if (!ready) waitingViews.add(view);
+        if (!webViewReady.isDone()) waitingViews.add(view);
     }
 
     static CompletableFuture<Void> ready() { return webViewReady; }

@@ -26,8 +26,10 @@ function fixture(configure, { failWrite = false, persisted = null } = {}) {
     showToast: toast => errors.push(toast),
     i18n: { global: { t: key => key } },
   })
-  vm.runInContext(source.slice(source.indexOf('let androidProxyUpdate ='),
-    source.indexOf('  async mergeSubscriptionSeenVideos(')) + '\n};globalThis.actions = customActions', context)
+  const start = source.indexOf('let androidProxyUpdate =')
+  const end = source.indexOf('  async mergeSubscriptionSeenVideos(')
+  assert.ok(start !== -1 && end > start, 'Expected Android proxy action anchors in settings.js')
+  vm.runInContext(source.slice(start, end) + '\n};globalThis.actions = customActions', context)
   const state = { useProxy: false, proxyHostname: 'old', proxyPort: '9050', proxyProtocol: 'socks5' }
   return {
     writes,

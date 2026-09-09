@@ -254,6 +254,30 @@ public class AndroidProxyIntegrationTest {
         }
     }
 
+    @Test public void failedProxyOverrideBlocksViewsWithoutRetainingThem() throws Exception {
+        AndroidProxy.ready().get(10, TimeUnit.SECONDS);
+        java.lang.reflect.Field field = AndroidProxy.class.getDeclaredField("waitingViews");
+        field.setAccessible(true);
+        List<?> waiting = (List<?>) field.get(null);
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
+            int retained = waiting.size();
+            AndroidProxy.ready().obtrudeException(new IllegalStateException("Proxy override unsupported"));
+            try {
+                for (int i = 0; i < 3; i++) {
+                    WebView view = new WebView(InstrumentationRegistry.getInstrumentation().getTargetContext());
+                    try {
+                        AndroidProxy.protectWebView(view);
+                        assertTrue("Failed proxy setup must block network loads", view.getSettings().getBlockNetworkLoads());
+                    } finally { view.destroy(); }
+                }
+                assertEquals("Destroyed views must not be retained after proxy setup fails", retained, waiting.size());
+            } finally {
+                waiting.clear();
+                AndroidProxy.ready().obtrudeValue(null);
+            }
+        });
+    }
+
     @Test public void nativeHttpAndMedia3ReadSuccessfulResponsesThroughForwardingProxy() throws Exception {
         try (ForwardingProxy proxy = new ForwardingProxy()) {
             proxy.configure();

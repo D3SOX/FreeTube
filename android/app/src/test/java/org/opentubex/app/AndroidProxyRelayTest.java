@@ -4,6 +4,9 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 import java.io.InputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
@@ -33,6 +36,52 @@ public class AndroidProxyRelayTest {
         client.setSoTimeout(3000);
         client.getOutputStream().write(("CONNECT " + target + " HTTP/1.1\r\nHost: " + target + "\r\n\r\n").getBytes(StandardCharsets.US_ASCII));
         return client;
+    }
+
+    @Test public void unsupportedTlsHalfClosePreservesResponseAfterRequestEof() throws Exception {
+        ByteArrayOutputStream sent = new ByteArrayOutputStream();
+        Socket client = new Socket() {
+            @Override public InputStream getInputStream() {
+                return new ByteArrayInputStream("payload".getBytes(StandardCharsets.US_ASCII));
+            }
+        };
+        // Android's older Conscrypt SSLSocket implementations reject half-close.
+        Socket remote = new Socket() {
+            @Override public OutputStream getOutputStream() { return sent; }
+            @Override public InputStream getInputStream() {
+                return new ByteArrayInputStream("response".getBytes(StandardCharsets.US_ASCII));
+            }
+            @Override public void shutdownOutput() { throw new UnsupportedOperationException(); }
+        };
+        AndroidProxyRelay.copyRequest(client, remote);
+        assertEquals("payload", sent.toString(StandardCharsets.US_ASCII));
+        assertFalse(remote.isClosed());
+        assertEquals("response", new String(remote.getInputStream().readAllBytes(), StandardCharsets.US_ASCII));
+    }
+
+    @Test public void requestIoFailureStillClosesUpstream() throws Exception {
+        Socket client = new Socket() {
+            @Override public InputStream getInputStream() throws IOException { throw new IOException("disconnected"); }
+        };
+        Socket remote = new Socket();
+        AndroidProxyRelay.copyRequest(client, remote);
+        assertTrue(remote.isClosed());
+    }
+
+    @Test public void plainSocketHalfCloseSignalsRequestEofAndKeepsResponseReadable() throws Exception {
+        try (ServerSocket destination = server(); Socket remote = new Socket("127.0.0.1", destination.getLocalPort());
+             Socket origin = destination.accept()) {
+            Socket client = new Socket() {
+                @Override public InputStream getInputStream() { return new ByteArrayInputStream(new byte[] {42}); }
+            };
+            AndroidProxyRelay.copyRequest(client, remote);
+            origin.setSoTimeout(3000);
+            assertEquals(42, origin.getInputStream().read());
+            assertEquals(-1, origin.getInputStream().read());
+            origin.getOutputStream().write(43);
+            remote.setSoTimeout(3000);
+            assertEquals(43, remote.getInputStream().read());
+        }
     }
 
     @Test public void httpProxyReceivesRemoteHostnameAndCredentialsOnlyInHandshake() throws Exception {

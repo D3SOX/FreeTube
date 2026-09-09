@@ -140,10 +140,7 @@ final class AndroidProxyRelay implements AutoCloseable {
             remote.setSoTimeout(0);
             connected = true;
             // Half-close preserves responses after a client finishes sending its body.
-            threads.execute(() -> {
-                try { copy(client.getInputStream(), remote.getOutputStream()); remote.shutdownOutput(); }
-                catch (IOException ignored) { closeSocket(remote); }
-            });
+            threads.execute(() -> copyRequest(client, remote));
             copy(remote.getInputStream(), client.getOutputStream());
         } catch (Exception error) {
             if (!connected) {
@@ -154,6 +151,18 @@ final class AndroidProxyRelay implements AutoCloseable {
             closeSocket(upstream);
             synchronized (this) { sockets.remove(transport); }
         }
+    }
+
+    static void copyRequest(Socket client, Socket remote) {
+        try {
+            copy(client.getInputStream(), remote.getOutputStream());
+            try { remote.shutdownOutput(); }
+            catch (UnsupportedOperationException ignored) {
+                // Older Android TLS sockets cannot half-close. HTTP bodies and
+                // tunneled TLS records carry their own completion markers; leave
+                // the response pump running until the peer closes or we cancel.
+            }
+        } catch (IOException ignored) { closeSocket(remote); }
     }
 
     private ProxyConfiguration resolveSystemProxy(ProxyConfiguration policy, URI target) {
