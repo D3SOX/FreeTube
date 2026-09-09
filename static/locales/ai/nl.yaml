@@ -1731,3 +1731,7 @@ Theme Discovery:
   Apply Theme: "Thema toepassen"
   Install and Apply: "Installeren en toepassen"
   Update and Apply: "Bijwerken en toepassen"
+
+Connection:
+  Reconnecting: "Verbinding verbroken. Bezig met opnieuw verbinden…"
+  Back Online: "Weer online"

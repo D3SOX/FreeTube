@@ -408,6 +408,7 @@
       </div>
     </div>
   </div>
+  <FtConnectionStatus />
 </template>
 
 <script setup>
@@ -433,6 +434,7 @@ import TabContent from './components/TabContent/TabContent.vue'
 import FtPrompt from './components/FtPrompt/FtPrompt.vue'
 import FtButton from './components/FtButton/FtButton.vue'
 import FtToast from './components/FtToast/FtToast.vue'
+import FtConnectionStatus from './components/FtConnectionStatus/FtConnectionStatus.vue'
 import FtProgressBar from './components/FtProgressBar/FtProgressBar.vue'
 import FtContextMenu from './components/FtContextMenu/FtContextMenu.vue'
 import { lockBodyScroll, unlockBodyScroll } from './components/FtPrompt/scrollLock'

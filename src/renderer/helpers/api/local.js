@@ -157,8 +157,8 @@ export function clearLocalSearchSuggestionsSession() {
   searchSuggestionsSession = null
 }
 
-export async function getLocalPlaylist(id) {
-  const innertube = await createInnertube()
+export async function getLocalPlaylist(id, signal) {
+  const innertube = await createInnertube({ signal })
   return await innertube.getPlaylist(id)
 }
 
@@ -1178,9 +1178,10 @@ export async function getLocalChannelId(url, doLogError = false) {
 /**
  * Returns the channel or the channel termination reason
  * @param {string} id
+ * @param {AbortSignal} [signal]
  */
-export async function getLocalChannel(id) {
-  const innertube = await createInnertube()
+export async function getLocalChannel(id, signal) {
+  const innertube = await createInnertube({ signal })
   let result
   try {
     result = await innertube.getChannel(id)
@@ -1260,9 +1261,10 @@ export async function getLocalChannelVideos(id, safetyMode = false, signal) {
 
 /**
  * @param {string} id
+ * @param {AbortSignal} [signal]
  */
-export async function getLocalChannelLiveStreams(id) {
-  const innertube = await createInnertube()
+export async function getLocalChannelLiveStreams(id, signal) {
+  const innertube = await createInnertube({ signal })
 
   try {
     const response = await innertube.actions.execute('/browse', {
@@ -1309,8 +1311,8 @@ export async function getLocalChannelLiveStreams(id) {
   }
 }
 
-export async function getLocalChannelCommunity(id) {
-  const innertube = await createInnertube()
+export async function getLocalChannelCommunity(id, signal) {
+  const innertube = await createInnertube({ signal })
 
   try {
     const response = await innertube.actions.execute('/browse', {

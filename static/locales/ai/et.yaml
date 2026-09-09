@@ -1692,3 +1692,7 @@ Theme Discovery:
   Apply Theme: "Rakenda teema"
   Install and Apply: "Paigalda ja rakenda"
   Update and Apply: "Uuenda ja rakenda"
+
+Connection:
+  Reconnecting: "Ühendus katkes. Proovin uuesti ühendada…"
+  Back Online: "Taas võrgus"

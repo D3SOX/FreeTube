@@ -1769,3 +1769,7 @@ Theme Discovery:
   Apply Theme: "Ужыць тэму"
   Install and Apply: "Усталяваць і ўжыць"
   Update and Apply: "Абнавіць і ўжыць"
+
+Connection:
+  Reconnecting: "Злучэнне страчана. Спроба аднавіць злучэнне…"
+  Back Online: "Зноў у сетцы"

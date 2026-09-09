@@ -1713,3 +1713,7 @@ Theme Discovery:
   Apply Theme: "Застосувати тему"
   Install and Apply: "Встановити й застосувати"
   Update and Apply: "Оновити й застосувати"
+
+Connection:
+  Reconnecting: "З’єднання втрачено. Спроба відновити з’єднання…"
+  Back Online: "Знову в мережі"

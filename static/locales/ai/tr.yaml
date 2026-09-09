@@ -1676,3 +1676,7 @@ Theme Discovery:
   Apply Theme: "Temayı uygula"
   Install and Apply: "Yükle ve uygula"
   Update and Apply: "Güncelle ve uygula"
+
+Connection:
+  Reconnecting: "Bağlantı kesildi. Yeniden bağlanmaya çalışılıyor…"
+  Back Online: "Yeniden çevrimiçi"

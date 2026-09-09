@@ -5,6 +5,7 @@ import vm from 'node:vm'
 
 import { createAbortError } from '../../src/renderer/helpers/api/requestErrors.js'
 import { classifyRequestFailure } from '../../src/renderer/helpers/api/requestDiagnostics.js'
+import { createNetworkRecovery } from '../../src/renderer/helpers/networkRecovery.js'
 import { createSubscriptionNetworkRecovery, SubscriptionNetworkError } from '../../src/renderer/helpers/subscriptionNetworkRecovery.js'
 
 import {
@@ -247,6 +248,7 @@ async function loadNativeHttp(request) {
     .replace(/^export /gm, '')
   const context = vm.createContext({
     CapacitorHttp: { request },
+    withNetworkRecovery: (input, init, task) => task(init?.signal ?? (input instanceof Request ? input.signal : undefined)),
     createAbortError, Request, Response, Headers, URL, URLSearchParams, setTimeout, clearTimeout,
   })
   vm.runInContext(`${source}\nglobalThis.fetchNative = capacitorHttpFetch`, context)
@@ -293,7 +295,7 @@ for (const timeoutOption of ['connectTimeout', 'readTimeout']) {
       })
     })
     const controller = new AbortController()
-    const recovery = createSubscriptionNetworkRecovery({ eventTarget: new EventTarget(), isOnline: () => true })
+    const recovery = createSubscriptionNetworkRecovery({ recovery: createNetworkRecovery({ eventTarget: new EventTarget(), isOnline: () => true }) })
     let body
     const pending = recovery.run(async () => {
       try {

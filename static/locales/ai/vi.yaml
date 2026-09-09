@@ -1710,3 +1710,7 @@ Theme Discovery:
   Apply Theme: "Áp dụng giao diện"
   Install and Apply: "Cài đặt và áp dụng"
   Update and Apply: "Cập nhật và áp dụng"
+
+Connection:
+  Reconnecting: "Mất kết nối. Đang thử kết nối lại…"
+  Back Online: "Đã trực tuyến trở lại"

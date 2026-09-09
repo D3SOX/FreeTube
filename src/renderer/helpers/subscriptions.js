@@ -6,6 +6,7 @@ import {
   invidiousGetCommunityPosts
 } from './api/invidious'
 import {
+  getLocalChannel,
   getLocalChannelCommunity,
   getLocalChannelLiveStreams,
   getLocalChannelVideos,
@@ -37,8 +38,9 @@ import { getLocalPremiereState } from './premiere'
 import { getInvidiousSubscriptionPremiereUpdate, getLocalSubscriptionPremiereUpdate, shouldRefreshSubscriptionPremiere } from './subscription-premieres'
 import { shouldShowProgressStartToast } from './progressPresentation'
 import { isAndroidSubscriptionRefreshActive } from './androidSubscriptionRefresh'
+import { isRecoverableNetworkError } from './networkRecovery'
 import { createSubscriptionNetworkRecovery, SubscriptionNetworkError } from './subscriptionNetworkRecovery'
-import { buildRequestDiagnostic, classifyRequestFailure, formatRequestDiagnostic } from './api/requestDiagnostics'
+import { buildRequestDiagnostic, formatRequestDiagnostic } from './api/requestDiagnostics'
 
 const AUTO_REFRESH_TOAST_DURATION = 5000
 export const SUBSCRIPTION_REFRESH_CHANNEL_EVENT = 'opentubex-subscription-refresh-channel'
@@ -56,7 +58,7 @@ let electronRefreshOwnerTabId = null
 
 /**
  * Cancellation state of the refresh this renderer is running, if any.
- * @type {{ cancelled: boolean, tab: string, profileId: string, refreshId: number, networkRecovery: ReturnType<typeof createSubscriptionNetworkRecovery> | null } | null}
+ * @type {{ cancelled: boolean, tab: string, profileId: string, refreshId: number, controller: AbortController, errorShown: boolean, networkRecovery: ReturnType<typeof createSubscriptionNetworkRecovery> | null } | null}
  */
 let activeRefresh = null
 let nextRefreshId = 0
@@ -138,6 +140,7 @@ export function cancelSubscriptionRefresh() {
 function markActiveSubscriptionRefreshCancelled() {
   if (activeRefresh !== null && !activeRefresh.cancelled) {
     activeRefresh.cancelled = true
+    activeRefresh.controller.abort()
     activeRefresh.networkRecovery?.cancel()
     window.dispatchEvent(new CustomEvent(SUBSCRIPTION_REFRESH_CANCELLED_EVENT, {
       detail: {
@@ -206,18 +209,18 @@ async function runWithSubscriptionRefreshLock(tab, profileId, refresh) {
   const cancelCountAtStart = cancelCount
   const refreshId = ++nextRefreshId
   const runRefresh = async () => {
+    const controller = new AbortController()
     activeRefresh = {
       cancelled: false,
+      errorShown: false,
+      controller,
       tab,
       profileId,
       refreshId,
-      networkRecovery: process.env.IS_CAPACITOR
-        ? createSubscriptionNetworkRecovery({
-            eventTarget: window,
-            isOnline: () => navigator.onLine !== false,
-            allowFallback: process.env.SUPPORTS_LOCAL_API && store.getters.getBackendFallback
-          })
-        : null
+      networkRecovery: createSubscriptionNetworkRecovery({
+        signal: controller.signal,
+        allowFallback: process.env.SUPPORTS_LOCAL_API && store.getters.getBackendFallback
+      })
     }
     window.dispatchEvent(new CustomEvent(SUBSCRIPTION_REFRESH_STARTED_EVENT, {
       detail: { tab, profileId, refreshId }
@@ -315,14 +318,18 @@ async function fetchSubscriptionsConcurrently(channels, fetchChannel) {
         await window.ftElectron.waitForIpBlockRecoveryScript()
       }
 
-      if (activeRefresh?.networkRecovery) {
-        const preferredBackend = store.getters.getBackendPreference
-        await activeRefresh.networkRecovery.run(useFallback => fetchChannel(
-          channel,
-          useFallback ? (preferredBackend === 'local' ? 'invidious' : 'local') : preferredBackend
-        ))
-      } else {
-        await fetchChannel(channel)
+      try {
+        if (activeRefresh?.networkRecovery) {
+          const preferredBackend = store.getters.getBackendPreference
+          await activeRefresh.networkRecovery.run(useFallback => fetchChannel(
+            channel,
+            useFallback ? (preferredBackend === 'local' ? 'invidious' : 'local') : preferredBackend
+          ))
+        } else {
+          await fetchChannel(channel)
+        }
+      } catch (error) {
+        if (!isRefreshCancelled()) throw error
       }
 
       // Let input and navigation tasks run between parsing/cache updates.
@@ -346,6 +353,12 @@ async function fetchSubscriptionsInBatches(channels, fetchChannel) {
   }
 }
 
+// Bulk refreshes retain individual diagnostics in the log, without announcing
+// every backend switch as another notification.
+function showSubscriptionFallbackToast(options) {
+  if (!activeRefresh) showToast(options)
+}
+
 /**
  * @param {{ id: string, name?: string }} channel
  * @param {unknown} error
@@ -353,7 +366,8 @@ async function fetchSubscriptionsInBatches(channels, fetchChannel) {
  * @param {{ category: string, backend: string }} context
  */
 function handleSubscriptionFetchError(channel, error, title, context) {
-  if (activeRefresh?.networkRecovery && classifyRequestFailure(error) === 'network') {
+  if (activeRefresh?.controller.signal.aborted) throw error
+  if (activeRefresh?.networkRecovery && isRecoverableNetworkError(error)) {
     // Let the shared queue probe both enabled backends after backoff without
     // cache writes, completion timestamps, or one toast per subscribed channel.
     throw new SubscriptionNetworkError(error)
@@ -364,7 +378,10 @@ function handleSubscriptionFetchError(channel, error, title, context) {
   const message = `${channelLabel}: ${diagnostic}`
 
   console.error(`Failed to fetch subscription channel ${channelLabel}: ${diagnostic}`)
-  showApiErrorToast(title, message)
+  if (!activeRefresh?.errorShown) {
+    if (activeRefresh) activeRefresh.errorShown = true
+    showApiErrorToast(title, message)
+  }
 }
 
 /**
@@ -1109,7 +1126,7 @@ async function refreshSubscriptionPostsFromRemoteUnlocked({
 
 async function getChannelPostsLocal(channel, t, errorChannels) {
   try {
-    const posts = await getLocalChannelCommunity(channel.id)
+    const posts = await getLocalChannelCommunity(channel.id, activeRefresh?.controller.signal)
 
     if (posts === null) {
       errorChannels.push(channel)
@@ -1124,7 +1141,7 @@ async function getChannelPostsLocal(channel, t, errorChannels) {
     })
 
     if (store.getters.getBackendPreference === 'local' && store.getters.getBackendFallback) {
-      showToast({ message: t('Falling back to Invidious API'), icon: ['fas', 'exchange-alt'] })
+      showSubscriptionFallbackToast({ message: t('Falling back to Invidious API'), icon: ['fas', 'exchange-alt'] })
       return await getChannelPostsInvidious(channel, t, errorChannels)
     }
 
@@ -1134,7 +1151,7 @@ async function getChannelPostsLocal(channel, t, errorChannels) {
 
 async function getChannelPostsInvidious(channel, t, errorChannels) {
   try {
-    const result = await invidiousGetCommunityPosts(channel.id)
+    const result = await invidiousGetCommunityPosts(channel.id, null, activeRefresh?.controller.signal)
 
     return result.posts
   } catch (err) {
@@ -1148,7 +1165,7 @@ async function getChannelPostsInvidious(channel, t, errorChannels) {
       store.getters.getBackendPreference === 'invidious' &&
       store.getters.getBackendFallback
     ) {
-      showToast({ message: t('Falling back to Local API'), icon: ['fas', 'exchange-alt'] })
+      showSubscriptionFallbackToast({ message: t('Falling back to Local API'), icon: ['fas', 'exchange-alt'] })
       return await getChannelPostsLocal(channel, t, errorChannels)
     }
 
@@ -1158,7 +1175,7 @@ async function getChannelPostsInvidious(channel, t, errorChannels) {
 
 async function getChannelVideosLocalScraper(channel, t, errorChannels, failedAttempts = 0) {
   try {
-    const result = await getLocalChannelVideos(channel.id)
+    const result = await getLocalChannelVideos(channel.id, false, activeRefresh?.controller.signal)
 
     if (result === null) {
       errorChannels.push(channel)
@@ -1182,7 +1199,7 @@ async function getChannelVideosLocalScraper(channel, t, errorChannels, failedAtt
         return await getChannelVideosLocalRSS(channel, t, errorChannels, failedAttempts + 1)
       case 1:
         if (store.getters.getBackendFallback) {
-          showToast({ message: t('Falling back to Invidious API'), icon: ['fas', 'exchange-alt'] })
+          showSubscriptionFallbackToast({ message: t('Falling back to Invidious API'), icon: ['fas', 'exchange-alt'] })
           return await getChannelVideosInvidiousScraper(channel, t, errorChannels, failedAttempts + 1)
         }
         return { videos: null }
@@ -1199,23 +1216,16 @@ async function getChannelVideosLocalRSS(channel, t, errorChannels, failedAttempt
   const feedUrl = `https://www.youtube.com/feeds/videos.xml?playlist_id=${playlistId}`
 
   try {
-    const response = await localApiFetch(feedUrl)
+    const response = await localApiFetch(feedUrl, { signal: activeRefresh?.controller.signal })
 
     if (response.status === 403) {
       return { videos: null }
     }
 
     if (response.status === 404) {
-      const response2 = await localApiFetch(`https://www.youtube.com/feeds/videos.xml?channel_id=${channel.id}`, {
-        method: 'HEAD'
-      })
-
-      if (response2.status === 404) {
-        errorChannels.push(channel)
-        return { videos: null }
-      }
-
-      return { videos: [] }
+      // RSS can return 404 for channels that still exist. Verify through
+      // the API instead of treating a second RSS response as channel removal.
+      return await getChannelVideosLocalScraper(channel, t, errorChannels, 3)
     }
 
     return await parseYouTubeRSSFeed(await response.text(), channel.id)
@@ -1230,7 +1240,7 @@ async function getChannelVideosLocalRSS(channel, t, errorChannels, failedAttempt
         return await getChannelVideosLocalScraper(channel, t, errorChannels, failedAttempts + 1)
       case 1:
         if (store.getters.getBackendFallback) {
-          showToast({ message: t('Falling back to Invidious API'), icon: ['fas', 'exchange-alt'] })
+          showSubscriptionFallbackToast({ message: t('Falling back to Invidious API'), icon: ['fas', 'exchange-alt'] })
           return await getChannelVideosInvidiousRSS(channel, t, errorChannels, failedAttempts + 1)
         }
         return { videos: null }
@@ -1244,7 +1254,7 @@ async function getChannelVideosLocalRSS(channel, t, errorChannels, failedAttempt
 
 async function getChannelVideosInvidiousScraper(channel, t, errorChannels, failedAttempts = 0) {
   try {
-    const result = await getInvidiousChannelVideos(channel.id)
+    const result = await getInvidiousChannelVideos(channel.id, undefined, undefined, { signal: activeRefresh?.controller.signal })
     let name
 
     if (result.videos.length > 0) {
@@ -1266,7 +1276,7 @@ async function getChannelVideosInvidiousScraper(channel, t, errorChannels, faile
         return await getChannelVideosInvidiousRSS(channel, t, errorChannels, failedAttempts + 1)
       case 1:
         if (process.env.SUPPORTS_LOCAL_API && store.getters.getBackendFallback) {
-          showToast({ message: t('Falling back to Local API'), icon: ['fas', 'exchange-alt'] })
+          showSubscriptionFallbackToast({ message: t('Falling back to Local API'), icon: ['fas', 'exchange-alt'] })
           return await getChannelVideosLocalScraper(channel, t, errorChannels, failedAttempts + 1)
         }
         return { videos: null }
@@ -1283,11 +1293,12 @@ async function getChannelVideosInvidiousRSS(channel, t, errorChannels, failedAtt
   const feedUrl = `${store.getters.getCurrentInvidiousInstanceUrl}/feed/playlist/${playlistId}`
 
   try {
-    const response = await invidiousFetch(feedUrl)
+    const response = await invidiousFetch(feedUrl, activeRefresh?.controller.signal)
 
     if (response.status === 404) {
       const response2 = await fetch(`${store.getters.getCurrentInvidiousInstanceUrl}/feed/channel/${channel.id}`, {
-        method: 'GET'
+        method: 'GET',
+        signal: activeRefresh?.controller.signal
       })
 
       if (response2.status === 404) {
@@ -1310,7 +1321,7 @@ async function getChannelVideosInvidiousRSS(channel, t, errorChannels, failedAtt
         return await getChannelVideosInvidiousScraper(channel, t, errorChannels, failedAttempts + 1)
       case 1:
         if (process.env.SUPPORTS_LOCAL_API && store.getters.getBackendFallback) {
-          showToast({ message: t('Falling back to Local API'), icon: ['fas', 'exchange-alt'] })
+          showSubscriptionFallbackToast({ message: t('Falling back to Local API'), icon: ['fas', 'exchange-alt'] })
           return await getChannelVideosLocalRSS(channel, t, errorChannels, failedAttempts + 1)
         }
         return { videos: null }
@@ -1327,23 +1338,23 @@ async function getChannelShortsLocal(channel, t, errorChannels, failedAttempts =
   const feedUrl = `https://www.youtube.com/feeds/videos.xml?playlist_id=${playlistId}`
 
   try {
-    const response = await localApiFetch(feedUrl)
+    const response = await localApiFetch(feedUrl, { signal: activeRefresh?.controller.signal })
 
     if (response.status === 403) {
       return { videos: null }
     }
 
     if (response.status === 404) {
-      const response2 = await localApiFetch(`https://www.youtube.com/feeds/videos.xml?channel_id=${channel.id}`, {
-        method: 'HEAD'
-      })
-
-      if (response2.status === 404) {
+      const channelPage = await getLocalChannel(channel.id, activeRefresh?.controller.signal)
+      if (channelPage.alert) {
         errorChannels.push(channel)
         return { videos: null }
       }
-
-      return { videos: [] }
+      if (!channelPage.has_shorts) return { videos: [] }
+      const playlist = await getLocalPlaylist(playlistId, activeRefresh?.controller.signal)
+      const videos = parseLocalPlaylistVideos(playlist.items)
+      videos.forEach(video => { video.isShort = true })
+      return { videos }
     }
 
     const [result, thumbnailEntries] = await Promise.all([
@@ -1360,7 +1371,7 @@ async function getChannelShortsLocal(channel, t, errorChannels, failedAttempts =
     })
 
     if (failedAttempts === 0 && store.getters.getBackendFallback) {
-      showToast({ message: t('Falling back to Invidious API'), icon: ['fas', 'exchange-alt'] })
+      showSubscriptionFallbackToast({ message: t('Falling back to Invidious API'), icon: ['fas', 'exchange-alt'] })
       return await getChannelShortsInvidious(channel, t, errorChannels, failedAttempts + 1)
     }
 
@@ -1370,7 +1381,7 @@ async function getChannelShortsLocal(channel, t, errorChannels, failedAttempts =
 
 async function getLocalShortThumbnailEntries(playlistId) {
   try {
-    const playlist = await getLocalPlaylist(playlistId)
+    const playlist = await getLocalPlaylist(playlistId, activeRefresh?.controller.signal)
     return parseLocalPlaylistVideos(playlist.items)
   } catch (error) {
     console.warn(`Failed to load selected Shorts thumbnails for ${playlistId}`, error)
@@ -1383,11 +1394,12 @@ async function getChannelShortsInvidious(channel, t, errorChannels, failedAttemp
   const feedUrl = `${store.getters.getCurrentInvidiousInstanceUrl}/feed/playlist/${playlistId}`
 
   try {
-    const response = await invidiousFetch(feedUrl)
+    const response = await invidiousFetch(feedUrl, activeRefresh?.controller.signal)
 
     if (response.status === 404) {
       const response2 = await fetch(`${store.getters.getCurrentInvidiousInstanceUrl}/feed/channel/${channel.id}`, {
-        method: 'GET'
+        method: 'GET',
+        signal: activeRefresh?.controller.signal
       })
 
       if (response2.status === 404) {
@@ -1408,7 +1420,7 @@ async function getChannelShortsInvidious(channel, t, errorChannels, failedAttemp
     })
 
     if (failedAttempts === 0 && process.env.SUPPORTS_LOCAL_API && store.getters.getBackendFallback) {
-      showToast({ message: t('Falling back to Local API'), icon: ['fas', 'exchange-alt'] })
+      showSubscriptionFallbackToast({ message: t('Falling back to Local API'), icon: ['fas', 'exchange-alt'] })
       return await getChannelShortsLocal(channel, t, errorChannels, failedAttempts + 1)
     }
 
@@ -1418,7 +1430,7 @@ async function getChannelShortsInvidious(channel, t, errorChannels, failedAttemp
 
 async function getChannelLiveLocal(channel, t, errorChannels, failedAttempts = 0) {
   try {
-    const result = await getLocalChannelLiveStreams(channel.id)
+    const result = await getLocalChannelLiveStreams(channel.id, activeRefresh?.controller.signal)
 
     if (result === null) {
       errorChannels.push(channel)
@@ -1437,7 +1449,7 @@ async function getChannelLiveLocal(channel, t, errorChannels, failedAttempts = 0
         return await getChannelLiveLocalRSS(channel, t, errorChannels, failedAttempts + 1)
       case 1:
         if (store.getters.getBackendFallback) {
-          showToast({ message: t('Falling back to Invidious API'), icon: ['fas', 'exchange-alt'] })
+          showSubscriptionFallbackToast({ message: t('Falling back to Invidious API'), icon: ['fas', 'exchange-alt'] })
           return await getChannelLiveInvidious(channel, t, errorChannels, failedAttempts + 1)
         }
         return { videos: null }
@@ -1454,23 +1466,14 @@ async function getChannelLiveLocalRSS(channel, t, errorChannels, failedAttempts 
   const feedUrl = `https://www.youtube.com/feeds/videos.xml?playlist_id=${playlistId}`
 
   try {
-    const response = await localApiFetch(feedUrl)
+    const response = await localApiFetch(feedUrl, { signal: activeRefresh?.controller.signal })
 
     if (response.status === 403) {
       return { videos: null }
     }
 
     if (response.status === 404) {
-      const response2 = await localApiFetch(`https://www.youtube.com/feeds/videos.xml?channel_id=${channel.id}`, {
-        method: 'HEAD'
-      })
-
-      if (response2.status === 404) {
-        errorChannels.push(channel)
-        return { videos: null }
-      }
-
-      return { videos: [] }
+      return await getChannelLiveLocal(channel, t, errorChannels, 3)
     }
 
     return await parseYouTubeRSSFeed(await response.text(), channel.id)
@@ -1485,7 +1488,7 @@ async function getChannelLiveLocalRSS(channel, t, errorChannels, failedAttempts 
         return await getChannelLiveLocal(channel, t, errorChannels, failedAttempts + 1)
       case 1:
         if (store.getters.getBackendFallback) {
-          showToast({ message: t('Falling back to Invidious API'), icon: ['fas', 'exchange-alt'] })
+          showSubscriptionFallbackToast({ message: t('Falling back to Invidious API'), icon: ['fas', 'exchange-alt'] })
           return await getChannelLiveInvidiousRSS(channel, t, errorChannels, failedAttempts + 1)
         }
         return { videos: null }
@@ -1499,7 +1502,7 @@ async function getChannelLiveLocalRSS(channel, t, errorChannels, failedAttempts 
 
 async function getChannelLiveInvidious(channel, t, errorChannels, failedAttempts = 0) {
   try {
-    const result = await getInvidiousChannelLive(channel.id)
+    const result = await getInvidiousChannelLive(channel.id, undefined, undefined, activeRefresh?.controller.signal)
     let name
 
     if (result.videos.length > 0) {
@@ -1521,7 +1524,7 @@ async function getChannelLiveInvidious(channel, t, errorChannels, failedAttempts
         return await getChannelLiveInvidiousRSS(channel, t, errorChannels, failedAttempts + 1)
       case 1:
         if (process.env.SUPPORTS_LOCAL_API && store.getters.getBackendFallback) {
-          showToast({ message: t('Falling back to Local API'), icon: ['fas', 'exchange-alt'] })
+          showSubscriptionFallbackToast({ message: t('Falling back to Local API'), icon: ['fas', 'exchange-alt'] })
           return await getChannelLiveLocal(channel, t, errorChannels, failedAttempts + 1)
         }
         return { videos: null }
@@ -1538,11 +1541,12 @@ async function getChannelLiveInvidiousRSS(channel, t, errorChannels, failedAttem
   const feedUrl = `${store.getters.getCurrentInvidiousInstanceUrl}/feed/playlist/${playlistId}`
 
   try {
-    const response = await invidiousFetch(feedUrl)
+    const response = await invidiousFetch(feedUrl, activeRefresh?.controller.signal)
 
     if (response.status === 404) {
       const response2 = await fetch(`${store.getters.getCurrentInvidiousInstanceUrl}/feed/channel/${channel.id}`, {
-        method: 'GET'
+        method: 'GET',
+        signal: activeRefresh?.controller.signal
       })
 
       if (response2.status === 404) {
@@ -1565,7 +1569,7 @@ async function getChannelLiveInvidiousRSS(channel, t, errorChannels, failedAttem
         return await getChannelLiveInvidious(channel, t, errorChannels, failedAttempts + 1)
       case 1:
         if (process.env.SUPPORTS_LOCAL_API && store.getters.getBackendFallback) {
-          showToast({ message: t('Falling back to Local API'), icon: ['fas', 'exchange-alt'] })
+          showSubscriptionFallbackToast({ message: t('Falling back to Local API'), icon: ['fas', 'exchange-alt'] })
           return await getChannelLiveLocalRSS(channel, t, errorChannels, failedAttempts + 1)
         }
         return { videos: null }

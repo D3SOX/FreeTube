@@ -1760,3 +1760,7 @@ Theme Discovery:
   Apply Theme: "اعمال پوسته"
   Install and Apply: "نصب و اعمال"
   Update and Apply: "به‌روزرسانی و اعمال"
+
+Connection:
+  Reconnecting: "اتصال قطع شد. در حال تلاش برای اتصال مجدد…"
+  Back Online: "دوباره آنلاین هستید"

@@ -1712,3 +1712,7 @@ Theme Discovery:
   Apply Theme: "Terapkan tema"
   Install and Apply: "Pasang dan terapkan"
   Update and Apply: "Perbarui dan terapkan"
+
+Connection:
+  Reconnecting: "Koneksi terputus. Mencoba menghubungkan kembali…"
+  Back Online: "Kembali online"

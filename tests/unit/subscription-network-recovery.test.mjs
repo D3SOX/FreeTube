@@ -3,11 +3,16 @@ import { readFile } from 'node:fs/promises'
 import test from 'node:test'
 import vm from 'node:vm'
 
+import { createNetworkRecovery } from '../../src/renderer/helpers/networkRecovery.js'
+import { createAbortError } from '../../src/renderer/helpers/api/requestErrors.js'
 import { createSubscriptionNetworkRecovery, SubscriptionNetworkError } from '../../src/renderer/helpers/subscriptionNetworkRecovery.js'
 import { mapConcurrently } from '../../src/renderer/helpers/concurrent-map.js'
 import { buildRequestDiagnostic, classifyRequestFailure, formatRequestDiagnostic } from '../../src/renderer/helpers/api/requestDiagnostics.js'
 import { getSubscriptionsForFeed } from '../../src/renderer/helpers/subscription-channels.js'
 import { reconcileFetchedSubscriptionEntries } from '../../src/renderer/helpers/subscription-entries.js'
+
+const networkSource = (await readFile(new URL('../../src/renderer/helpers/networkRecovery.js', import.meta.url), 'utf8'))
+  .replace(/^import .* from .*\n/gm, '').replace(/^export /gm, '')
 
 const source = (await readFile(new URL('../../src/renderer/helpers/subscriptions.js', import.meta.url), 'utf8'))
   .replace(/^import[\s\S]*? from ['"][^'"]+['"]\n/gm, '')
@@ -15,7 +20,7 @@ const source = (await readFile(new URL('../../src/renderer/helpers/subscriptions
 
 // Exercise the real refresh, fallback, cache, and notification paths with fake
 // platform APIs. Webpack-only imports are supplied in the isolated context.
-function createRefresh({ online = true, feed = 'Shorts', error = new TypeError('Failed to fetch'), webCors = false, backend = 'local', fallbackWorks = false } = {}) {
+function createRefresh({ online = true, feed = 'Shorts', error = new TypeError('Failed to fetch'), webCors = false, backend = 'local', fallbackWorks = false, rssStatus = 200, channelInfo = { has_shorts: true }, playlistError = null, stallChannelProbe = false } = {}) {
   const window = new EventTarget()
   const navigator = { onLine: online }
   const toasts = []
@@ -29,6 +34,7 @@ function createRefresh({ online = true, feed = 'Shorts', error = new TypeError('
     getBackendPreference: backend,
     getBackendFallback: true,
     getUseRssFeeds: true,
+    getCurrentInvidiousInstanceUrl: 'https://invidious.example',
     getVideoCache: {},
     getShortsCache: {},
     getLiveCache: {},
@@ -40,7 +46,7 @@ function createRefresh({ online = true, feed = 'Shorts', error = new TypeError('
   const fetchChannel = async url => {
     requests.push(url)
     if (fail) throw error
-    return { videos: [], posts: [], status: 200, text: async () => '<feed/>' }
+    return { videos: [], posts: [], status: rssStatus, text: async () => '<feed/>' }
   }
   const fetchFallback = async url => {
     fallbackRequests.push(url)
@@ -49,7 +55,8 @@ function createRefresh({ online = true, feed = 'Shorts', error = new TypeError('
   const fetchLocal = fallbackWorks && backend === 'invidious' ? fetchFallback : fetchChannel
   const fetchInvidious = fallbackWorks && backend === 'local' ? fetchFallback : fetchChannel
   const context = vm.createContext({
-    window, navigator, CustomEvent, setTimeout, clearTimeout, console: { error() {}, warn() {} },
+    window, navigator, CustomEvent, AbortController, AbortSignal, Request, Response, URL, EventTarget, createAbortError,
+    location: { href: 'https://localhost/', origin: 'https://localhost' }, setTimeout, clearTimeout, console: { error() {}, warn() {} },
     process: { env: { IS_CAPACITOR: true, SUPPORTS_LOCAL_API: true } },
     store: {
       getters,
@@ -72,7 +79,8 @@ function createRefresh({ online = true, feed = 'Shorts', error = new TypeError('
     getLocalChannelLiveStreams: fetchLocal,
     getLocalChannelCommunity: async id => (await fetchLocal(id)).posts,
     invidiousGetCommunityPosts: fetchInvidious,
-    getLocalPlaylist: async () => ({ items: [] }),
+    getLocalChannel: async () => channelInfo,
+    getLocalPlaylist: async () => { if (playlistError) throw playlistError; return { items: [] } },
     parseLocalPlaylistVideos: () => [],
     mergeSubscriptionShortThumbnails: videos => videos,
     DOMParser: class {
@@ -81,6 +89,18 @@ function createRefresh({ online = true, feed = 'Shorts', error = new TypeError('
       }
     },
   })
+  vm.runInContext(networkSource, context)
+  const sharedRecovery = vm.runInContext('initializeNetworkRecovery()', context)
+  context.createSubscriptionNetworkRecovery = options => createSubscriptionNetworkRecovery({ ...options, recovery: sharedRecovery })
+  const wrap = (url, init, task) => vm.runInContext('withNetworkRecovery', context)(url, init, task)
+  context.localApiFetch = (url, init) => wrap(url, init, () => fetchLocal(url))
+  context.invidiousFetch = (url, signal) => wrap(url, { signal }, () => fetchInvidious(url))
+  if (stallChannelProbe) {
+    context.fetch = (url, init) => new Promise((resolve, reject) => {
+      requests.push(url)
+      init?.signal?.addEventListener('abort', () => reject(createAbortError()), { once: true })
+    })
+  }
   vm.runInContext(`${source}\nglobalThis.api = { refreshSubscriptionVideosFromRemote, refreshSubscriptionShortsFromRemote, refreshSubscriptionLiveFromRemote, refreshSubscriptionPostsFromRemote, cancelSubscriptionRefresh }`, context)
   return {
     ...context.api, refresh: context.api[`refreshSubscription${feed}FromRemote`], navigator, requests, fallbackRequests, toasts, writes, events, getters,
@@ -175,7 +195,7 @@ for (const allowFallback of [false, true]) {
   test(`an unreported outage probes one channel with capped backoff with fallback ${allowFallback ? 'enabled' : 'disabled'}`, async t => {
     t.mock.timers.enable({ apis: ['setTimeout'] })
     const eventTarget = new EventTarget()
-    const recovery = createSubscriptionNetworkRecovery({ eventTarget, isOnline: () => true, allowFallback })
+    const recovery = createSubscriptionNetworkRecovery({ recovery: createNetworkRecovery({ eventTarget, isOnline: () => true }), allowFallback })
     let failed = true
     const attempts = []
     const run = id => recovery.run(async () => {
@@ -212,7 +232,7 @@ test('going offline during backoff stops probes until an online event', async t 
   const eventTarget = new EventTarget()
   let online = true
   let attempts = 0
-  const recovery = createSubscriptionNetworkRecovery({ eventTarget, isOnline: () => online })
+  const recovery = createSubscriptionNetworkRecovery({ recovery: createNetworkRecovery({ eventTarget, isOnline: () => online }) })
   const task = recovery.run(async () => {
     attempts++
     if (attempts === 1) throw new SubscriptionNetworkError(new TypeError('Failed to fetch'))
@@ -281,4 +301,47 @@ for (const feed of ['Videos', 'Shorts', 'Live', 'Posts']) {
       }
     })
   }
+}
+
+test('missing Android Shorts feeds do not flood the screen with per-channel API errors', async () => {
+  const app = createRefresh({ error: Object.assign(new Error('https://www.youtube.com/feeds/videos.xml'), { code: 'FileNotFoundException' }) })
+  await app.refresh({ t: key => key })
+  assert.ok(app.toasts.length <= 1, `expected at most one error notification, received ${app.toasts.length}`)
+})
+
+for (const feed of ['Videos', 'Shorts', 'Live']) {
+  test(`${feed} RSS 404 falls back to the API without marking existing channels unavailable`, async () => {
+    const app = createRefresh({ feed, rssStatus: 404 })
+    app.reconnect()
+    const errorChannels = []
+    await app.refresh({ t: key => key, errorChannels })
+    assert.deepEqual(errorChannels, [])
+    assert.equal(app.toasts.length, 0)
+    assert.equal(app.writes.filter(write => write.key.endsWith('CacheByChannel')).length, 20)
+  })
+}
+
+test('a channel without Shorts is empty without an API error or an unavailable-channel warning', async () => {
+  const app = createRefresh({ rssStatus: 404, channelInfo: { has_shorts: false }, playlistError: new Error('This playlist does not exist.') })
+  app.reconnect()
+  const errorChannels = []
+  await app.refresh({ t: key => key, errorChannels })
+  assert.equal(app.toasts.length, 0)
+  assert.deepEqual(errorChannels, [])
+  assert.equal(app.writes.filter(write => write.key.endsWith('CacheByChannel')).length, 20)
+})
+
+for (const feed of ['Videos', 'Shorts', 'Live']) {
+  test(`cancelling ${feed} releases a stalled secondary Invidious channel probe`, async t => {
+    const app = createRefresh({ feed, backend: 'invidious', rssStatus: 404, stallChannelProbe: true })
+    app.reconnect()
+    const pending = app.refresh({ t: key => key })
+    await flushPromises()
+    assert.ok(app.requests.some(url => url.includes('/feed/channel/')))
+    app.cancelSubscriptionRefresh()
+    const result = await Promise.race([pending, new Promise(resolve => setTimeout(() => resolve('stuck'), 100))])
+    assert.equal(result, null)
+    assert.equal(app.getters.getSubscriptionFeedRefreshInProgress, false)
+    assert.deepEqual(app.events, ['finished'])
+  })
 }

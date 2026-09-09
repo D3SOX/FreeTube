@@ -1694,3 +1694,7 @@ Theme Discovery:
   Apply Theme: "Прилагане на тема"
   Install and Apply: "Инсталиране и прилагане"
   Update and Apply: "Обновяване и прилагане"
+
+Connection:
+  Reconnecting: "Връзката е прекъсната. Опит за повторно свързване…"
+  Back Online: "Отново онлайн"

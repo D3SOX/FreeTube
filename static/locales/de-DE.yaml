@@ -2870,3 +2870,7 @@ Theme Discovery:
   Apply Theme: "Theme anwenden"
   Install and Apply: "Installieren und anwenden"
   Update and Apply: "Aktualisieren und anwenden"
+
+Connection:
+  Reconnecting: "Verbindung verloren. Verbindung wird wiederhergestellt…"
+  Back Online: "Wieder online"

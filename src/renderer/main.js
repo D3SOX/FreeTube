@@ -1,6 +1,7 @@
 import { ytDlp } from './helpers/ytDlp'
 import { supportsYtDlp } from './helpers/ytDlpCapabilities'
 import { createApp } from 'vue'
+import { installNetworkFetch } from './helpers/networkRecovery'
 import i18n from './i18n/index'
 import router from './router/index'
 import store from './store/index'
@@ -18,6 +19,16 @@ import 'vue-sonner/style.css'
 import { ObserveVisibility } from 'vue-observe-visibility'
 
 import { FtIcon, FtIconLayers } from './icons/iconComponents'
+
+installNetworkFetch({
+  corsDisabled: process.env.IS_ELECTRON,
+  verifyConnection: process.env.IS_CAPACITOR
+    ? async input => {
+      const { verifyCapacitorConnection } = await import('./helpers/api/capacitor-http')
+      return verifyCapacitorConnection(input)
+    }
+    : undefined
+})
 
 const app = createApp(App)
 

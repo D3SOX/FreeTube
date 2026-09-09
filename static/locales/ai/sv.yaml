@@ -1694,3 +1694,7 @@ Theme Discovery:
   Apply Theme: "Använd tema"
   Install and Apply: "Installera och använd"
   Update and Apply: "Uppdatera och använd"
+
+Connection:
+  Reconnecting: "Anslutningen bröts. Försöker ansluta igen…"
+  Back Online: "Online igen"

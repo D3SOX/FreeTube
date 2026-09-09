@@ -1725,3 +1725,7 @@ Theme Discovery:
   Apply Theme: "தீமைப் பயன்படுத்து"
   Install and Apply: "நிறுவிப் பயன்படுத்து"
   Update and Apply: "புதுப்பித்துப் பயன்படுத்து"
+
+Connection:
+  Reconnecting: "இணைப்பு துண்டிக்கப்பட்டது. மீண்டும் இணைக்க முயல்கிறது…"
+  Back Online: "மீண்டும் இணையத்தில்"

@@ -1719,3 +1719,7 @@ Theme Discovery:
   Apply Theme: "Virkja þema"
   Install and Apply: "Setja upp og virkja"
   Update and Apply: "Uppfæra og virkja"
+
+Connection:
+  Reconnecting: "Tenging rofnaði. Reyni að tengjast aftur…"
+  Back Online: "Aftur á netinu"

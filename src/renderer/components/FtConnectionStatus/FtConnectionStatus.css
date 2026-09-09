@@ -1,0 +1,49 @@
+.connectionStatus {
+  position: fixed;
+  z-index: 10000;
+  inset-inline: 12px;
+  inset-block-end: calc(12px + var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)));
+  inline-size: fit-content;
+  max-inline-size: calc(100% - 48px);
+  margin-inline: auto;
+  padding-block: 10px;
+  padding-inline: 16px;
+  border-radius: 8px;
+  background-color: #303030;
+  color: #fff;
+  font-size: 14px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+  text-align: center;
+  pointer-events: none;
+}
+
+.connectionStatus.restored {
+  background-color: #216e39;
+}
+
+.connectionStatus.hidden {
+  visibility: hidden;
+}
+
+body:has(.app.bottomTabs) .connectionStatus {
+  inset-block-end: 46px;
+}
+
+@media (width <= 680px) {
+  body:has(.app) .connectionStatus {
+    inset-block-end: calc(72px + var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)));
+  }
+
+  body:has(.app.bottomTabs) .connectionStatus {
+    inset-block-end: calc(106px + var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)));
+  }
+}
+
+body:has(.app.capacitorPhoneLayout) .connectionStatus {
+  inset-block-end: calc(72px + var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)));
+}
+
+body:has(.app) :fullscreen .connectionStatus {
+  inset-block-end: calc(12px + var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)));
+}

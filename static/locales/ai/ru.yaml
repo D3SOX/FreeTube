@@ -1688,3 +1688,7 @@ Theme Discovery:
   Apply Theme: "Применить тему"
   Install and Apply: "Установить и применить"
   Update and Apply: "Обновить и применить"
+
+Connection:
+  Reconnecting: "Соединение потеряно. Попытка переподключения…"
+  Back Online: "Снова в сети"

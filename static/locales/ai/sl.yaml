@@ -2270,3 +2270,7 @@ Theme Discovery:
   Apply Theme: "Uveljavi temo"
   Install and Apply: "Namesti in uveljavi"
   Update and Apply: "Posodobi in uveljavi"
+
+Connection:
+  Reconnecting: "Povezava je prekinjena. Poskus ponovne povezave…"
+  Back Online: "Znova povezano"

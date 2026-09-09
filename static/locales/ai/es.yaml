@@ -1708,3 +1708,7 @@ Theme Discovery:
   Apply Theme: "Aplicar tema"
   Install and Apply: "Instalar y aplicar"
   Update and Apply: "Actualizar y aplicar"
+
+Connection:
+  Reconnecting: "Se perdió la conexión. Intentando reconectar…"
+  Back Online: "De nuevo en línea"

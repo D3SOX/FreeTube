@@ -1683,3 +1683,7 @@ Theme Discovery:
   Apply Theme: "Použít motiv"
   Install and Apply: "Nainstalovat a použít"
   Update and Apply: "Aktualizovat a použít"
+
+Connection:
+  Reconnecting: "Připojení ztraceno. Probíhá pokus o obnovení…"
+  Back Online: "Znovu online"

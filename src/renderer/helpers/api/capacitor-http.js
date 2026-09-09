@@ -1,5 +1,7 @@
 import { CapacitorHttp } from '@capacitor/core'
 
+import { classifyRequestFailure } from './requestDiagnostics.js'
+import { withNetworkRecovery } from '../networkRecovery.js'
 import { createAbortError } from './requestErrors.js'
 
 const DESKTOP_USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36'
@@ -106,7 +108,11 @@ async function getRequestBody(input, init) {
  * @param {RequestInit & { nativeTimeoutMs?: number }} [init]
  * @returns {Promise<Response>}
  */
-export async function capacitorHttpFetch(input, init = undefined) {
+export function capacitorHttpFetch(input, init = undefined) {
+  return withNetworkRecovery(input, init, signal => nativeHttpFetch(input, { ...init, signal }))
+}
+
+async function nativeHttpFetch(input, init) {
   const inputRequest = input instanceof Request ? input : null
   const signal = init?.signal ?? inputRequest?.signal
   if (signal?.aborted) throw createAbortError()
@@ -212,4 +218,20 @@ export async function fetchCapacitorAvatarDataUrl(src) {
   }
 
   return `data:${mimeType};base64,${response.data}`
+}
+
+/** Checks transport reachability without WebView CORS or the recovery queue. */
+export async function verifyCapacitorConnection(input) {
+  try {
+    await CapacitorHttp.request({
+      url: input instanceof Request ? input.url : input.toString(),
+      method: 'HEAD',
+      responseType: 'text',
+      connectTimeout: 5000,
+      readTimeout: 5000,
+    })
+    return true
+  } catch (error) {
+    return classifyRequestFailure(error) !== 'network'
+  }
 }

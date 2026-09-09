@@ -1758,3 +1758,7 @@ Theme Discovery:
   Apply Theme: "Anvend tema"
   Install and Apply: "Installer og anvend"
   Update and Apply: "Opdater og anvend"
+
+Connection:
+  Reconnecting: "Forbindelsen er afbrudt. Forsøger at oprette forbindelse igen…"
+  Back Online: "Online igen"

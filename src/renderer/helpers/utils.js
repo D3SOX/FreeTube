@@ -408,6 +408,9 @@ export async function copyToClipboard(content, { messageOnSuccess = null, messag
   }
 }
 
+// API requests often fail together. Keep at most one error toast per lifetime.
+let lastApiErrorToastAt = Number.NEGATIVE_INFINITY
+
 /**
  * Shows an error toast for a failed request, which copies the error to the
  * clipboard when clicked.
@@ -417,6 +420,9 @@ export async function copyToClipboard(content, { messageOnSuccess = null, messag
  *   e.g. the tab-scoped one from {@link import('../composables/useTabToast').useTabToast}
  */
 export function showApiErrorToast(message, error, show = showToast) {
+  const now = Date.now()
+  if (now - lastApiErrorToastAt < 10000) return
+  lastApiErrorToastAt = now
   show({
     message: `${message}: ${error}`,
     time: 10000,

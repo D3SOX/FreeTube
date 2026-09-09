@@ -1692,3 +1692,7 @@ Theme Discovery:
   Apply Theme: "套用佈景主題"
   Install and Apply: "安裝並套用"
   Update and Apply: "更新並套用"
+
+Connection:
+  Reconnecting: "連線已中斷，正在嘗試重新連線…"
+  Back Online: "已恢復網路連線"
