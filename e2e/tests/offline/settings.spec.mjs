@@ -4496,6 +4496,40 @@ test.describe('sync settings', () => {
     }
   })
 
+  for (const scale of [1, 1.25]) {
+    test(`keeps the connected account label in the settings layout at UI scale ${scale}`, async ({ page }) => {
+      await page.route('https://sync.d3sox.me/**', route => route.fulfill({
+        json: { status: 'ok', capabilities: {} }
+      }))
+      await goTo(page, 'settings')
+      await page.evaluate(scale => window.ftElectron.setZoomFactor(scale), scale)
+      await page.locator('.settingsMenu [data-section="sync"]').click()
+
+      const syncSection = page.locator('[data-section="sync"]')
+      const label = syncSection.getByText('Connected as sync-user')
+      await expect(label).toBeVisible()
+      await expect(label).toHaveCSS('position', 'static')
+      await expect(label).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)')
+      await expect(label).toHaveCSS('padding-top', '0px')
+      await expect(label).toHaveCSS('text-align', 'center')
+      const bounds = await label.boundingBox()
+      const fields = await syncSection.locator('.fields').boundingBox()
+      const toggles = await syncSection.locator('.toggles').nth(1).boundingBox()
+      expect(bounds.y).toBeGreaterThanOrEqual(fields.y + fields.height)
+      expect(bounds.y + bounds.height).toBeLessThanOrEqual(toggles.y)
+
+      await page.evaluate(() => {
+        Object.defineProperty(navigator, 'onLine', { configurable: true, value: false })
+        window.dispatchEvent(new Event('offline'))
+      })
+      const banner = page.getByRole('status').filter({ hasText: 'Connection lost.' })
+      await expect(banner).toBeVisible()
+      await expect(banner).toHaveCSS('position', 'fixed')
+      await expect(label).toHaveCSS('position', 'static')
+      await expect(label).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)')
+    })
+  }
+
   test('keeps the paired username when its device metadata update fails', async ({ page }) => {
     await page.route('https://sync.d3sox.me/**', route => {
       const url = new URL(route.request().url())
