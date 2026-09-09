@@ -76,7 +76,7 @@ function fixture (overrides = {}, { encrypted = false, respond } = {}) {
       }
       let result = null
       if (url.endsWith('/health')) result = encrypted ? { capabilities: { encrypted_sync: 1 } } : 'OK'
-      else if (url.endsWith('/account/login')) result = { jwt: 'new-token' }
+      else if (url.endsWith('/account/login') || url.endsWith('/account/register')) result = { jwt: 'new-token' }
       else if (url.endsWith('/encrypted_sync')) result = { collections: [], legacy_data: false }
       else if (url.includes('/encrypted_sync/')) result = { revision: 0, payload: null }
       else if (url.endsWith('/subscriptions/') && !options.method) result = []
@@ -113,7 +113,37 @@ function fixture (overrides = {}, { encrypted = false, respond } = {}) {
       if (action === 'syncWithSyncServer') return store.exports.actions.syncWithSyncServer(context, value)
     },
   }
-  return { settings, requests, commits, context, actions: store.exports.actions }
+  return { settings, requests, commits, context, actions: store.exports.actions, Client: helper.exports.SyncServerClient }
+}
+
+for (const [method, args, path, verb] of [
+  ['authenticate', ['login', 'alice', 'password'], '/account/login', 'POST'],
+  ['authenticate', ['register', 'alice', 'password'], '/account/register', 'POST'],
+  ['deleteAccount', ['password'], '/account/delete', 'DELETE'],
+  ['getAccountSessions', [], '/account/sessions', 'GET'],
+  ['updateAccountSession', ['device/id', 'encrypted'], '/account/sessions/device%2Fid', 'PATCH'],
+  ['revokeAccountSession', ['device/id'], '/account/sessions/device%2Fid', 'DELETE'],
+  ['changePassword', ['old', 'new'], '/account/password', 'PUT'],
+]) {
+  test(`${verb} ${path} preserves v1 errors without trying an unversioned alias`, async () => {
+    const f = fixture({}, {
+      respond: () => new Response('Resource missing', { status: 404 }),
+    })
+    const client = new f.Client('https://sync.example', 'saved-token')
+    await assert.rejects(client[method](...args), error =>
+      error.status === 404 && error.message === 'Resource missing')
+    assert.deepEqual(f.requests.map(({ url, method }) => [url, method]), [
+      [`https://sync.example/v1${path}`, verb],
+    ])
+  })
+
+  test(`${verb} ${path} stays on v1 after legacy API prefix discovery`, async () => {
+    const f = fixture()
+    const client = new f.Client('https://sync.example', 'saved-token')
+    client.apiPrefix = ''
+    await client[method](...args)
+    assert.equal(f.requests[0].url, `https://sync.example/v1${path}`)
+  })
 }
 
 for (const historyEnabled of [false, true]) {

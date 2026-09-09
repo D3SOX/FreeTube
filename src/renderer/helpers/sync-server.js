@@ -294,7 +294,8 @@ export class SyncServerClient {
   }
 
   async authenticate(mode, name, password, deviceId) {
-    const response = await this.apiRequest(`/account/${mode}`, {
+    // Account operations use the v1 contract, independent of legacy sync routing.
+    const response = await this.request(`/v1/account/${mode}`, {
       method: 'POST',
       body: { name, password, device_id: deviceId },
     })
@@ -303,31 +304,31 @@ export class SyncServerClient {
   }
 
   deleteAccount(password) {
-    return this.apiRequest('/account/delete', {
+    return this.request('/v1/account/delete', {
       method: 'DELETE',
       body: { password },
     })
   }
 
   getAccountSessions() {
-    return this.apiRequest('/account/sessions')
+    return this.request('/v1/account/sessions')
   }
 
   updateAccountSession(sessionId, encryptedDeviceInfo) {
-    return this.apiRequest(`/account/sessions/${encodeURIComponent(sessionId)}`, {
+    return this.request(`/v1/account/sessions/${encodeURIComponent(sessionId)}`, {
       method: 'PATCH',
       body: { encrypted_device_info: encryptedDeviceInfo },
     })
   }
 
   revokeAccountSession(sessionId) {
-    return this.apiRequest(`/account/sessions/${encodeURIComponent(sessionId)}`, {
+    return this.request(`/v1/account/sessions/${encodeURIComponent(sessionId)}`, {
       method: 'DELETE',
     })
   }
 
   changePassword(currentPassword, newPassword) {
-    return this.apiRequest('/account/password', {
+    return this.request('/v1/account/password', {
       method: 'PUT',
       body: {
         current_password: currentPassword,
