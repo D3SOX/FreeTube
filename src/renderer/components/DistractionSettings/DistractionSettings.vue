@@ -317,6 +317,13 @@
           @change="updateDisableAbRepeat"
         />
         <FtToggleSwitch
+          :label="t('Settings.Distraction Free Settings.Hide Repeat Stats')"
+          :compact="true"
+          :default-value="hideRepeatStats"
+          setting-key="hideRepeatStats"
+          @change="updateHideRepeatStats"
+        />
+        <FtToggleSwitch
           :label="t('Settings.Distraction Free Settings.Hide End-Screen Annotations')"
           :compact="true"
           :default-value="hideEndScreenAnnotations"
@@ -610,6 +617,14 @@ const disableAbRepeat = computed(() => store.getters.getDisableAbRepeat)
  */
 function updateDisableAbRepeat(value) {
   store.dispatch('updateDisableAbRepeat', value)
+}
+
+/** @type {import('vue').ComputedRef<boolean>} */
+const hideRepeatStats = computed(() => store.getters.getHideRepeatStats)
+
+/** @param {boolean} value */
+function updateHideRepeatStats(value) {
+  store.dispatch('updateHideRepeatStats', value)
 }
 
 /** @type {import('vue').ComputedRef<boolean>} */

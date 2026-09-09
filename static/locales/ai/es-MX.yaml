@@ -912,6 +912,7 @@ Settings:
     To: A
     Confirm Before Unsubscribing: Evitar bajas accidentales
   Distraction Free Settings:
+    Hide Repeat Stats: Ocultar estadísticas de repetición
     Sections:
       Side Bar: Barra lateral
       Subscriptions Page: Página de suscripciones
@@ -1390,6 +1391,11 @@ Video:
     Show Original Details: Mostrar Detalles Originales
     Show Modified Details: Mostrar Detalles Modificados
   Player:
+    Repeat Stats:
+      Repeat Stats: Estadísticas de repetición
+      Looping: En bucle
+      Repeats: Repeticiones
+      Time Spent: Tiempo dedicado
     Voice-over Translation:
       Start: Traducir
       Cancel: Cancelar

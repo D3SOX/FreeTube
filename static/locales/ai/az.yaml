@@ -793,6 +793,7 @@ Settings:
     Hide Home: Ana səhifəni gizlət
     Hide Live Chat Replay: Canlı söhbətin təkrarını gizlət
     Disable A-B Repeat: A-B təkrarını söndür
+    Hide Repeat Stats: Təkrar statistikasını gizlət
     Hide End-Screen Annotations: Son ekran qeydlərini gizlət
     Hide Paid Promotion Badge: Ödənişli tanıtım nişanını gizlət
     Show Player Controls: Pleyer idarəetmələrini göstər
@@ -1145,6 +1146,11 @@ Video:
       Remaining: '{time} qalıb'
       Cancel timer: Taymeri ləğv et
       Timer ended: Yuxu taymerinin vaxtı bitdi
+    Repeat Stats:
+      Repeat Stats: Təkrar statistikası
+      Looping: Təkrarlanır
+      Repeats: Təkrarlar
+      Time Spent: Sərf olunan vaxt
     A-B Repeat:
       A-B Repeat: A-B təkrarı
       'On': 'Aktiv'

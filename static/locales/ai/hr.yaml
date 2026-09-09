@@ -786,6 +786,7 @@ Settings:
     Posts Auto Refresh Interval: Razmak automatskog osvježavanja objava
     Refresh Subscriptions While App Is Closed: "Osvježavaj pretplate dok je aplikacija zatvorena"
   Distraction Free Settings:
+    Hide Repeat Stats: Sakrij statistiku ponavljanja
     Sections:
       Visible While Paused: Vidljivo tijekom pauze u punom prozoru / preko cijelog zaslona
     Hide Channel Avatars: Sakrij avatare kanala
@@ -1127,6 +1128,11 @@ Video:
   Sponsor Block category short:
     filler: Digresije
   Player:
+    Repeat Stats:
+      Repeat Stats: Statistika ponavljanja
+      Looping: Ponavljanje uključeno
+      Repeats: Ponavljanja
+      Time Spent: Provedeno vrijeme
     Voice-over Translation:
       Start: Prevedi
       Cancel: Odustani

@@ -797,6 +797,7 @@ Settings:
     Posts Auto Refresh Interval: מרווח ריענון אוטומטי של פוסטים
     Refresh Subscriptions While App Is Closed: "ריענון מינויים כשהיישום סגור"
   Distraction Free Settings:
+    Hide Repeat Stats: הסתרת נתוני חזרה
     Sections:
       Visible While Paused: מוצג בזמן השהיה בחלון מלא או במסך מלא
     Hide Channel Avatars: הסתרת תמונות ערוצים
@@ -1149,6 +1150,11 @@ Video:
   Sponsor Block category:
     hook: פתיח/ברכות
   Player:
+    Repeat Stats:
+      Repeat Stats: נתוני חזרה
+      Looping: חזרה פעילה
+      Repeats: חזרות
+      Time Spent: זמן צפייה
     Voice-over Translation:
       Start: תרגום
       Cancel: ביטול

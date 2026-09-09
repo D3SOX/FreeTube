@@ -784,6 +784,7 @@ Settings:
     Posts Auto Refresh Interval: Bejegyzések automatikus frissítésének időköze
     Refresh Subscriptions While App Is Closed: "Feliratkozások frissítése bezárt alkalmazásnál"
   Distraction Free Settings:
+    Hide Repeat Stats: Ismétlési statisztikák elrejtése
     Sections:
       Visible While Paused: Szüneteltetéskor látható teljes ablakos vagy teljes képernyős módban
     Hide Channel Avatars: Csatornaavatarok elrejtése
@@ -1114,6 +1115,11 @@ Video:
   Live chat replay is enabled. Chat messages will appear here as the video plays.: Az élő csevegés visszajátszása be van kapcsolva.  A csevegés üzenetei a videó lejátszása közben itt jelennek meg.
   Premiere started: A premier folyamatban van, {timeAgo} kezdődött
   Player:
+    Repeat Stats:
+      Repeat Stats: Ismétlési statisztikák
+      Looping: Ismétlés bekapcsolva
+      Repeats: Ismétlések
+      Time Spent: Eltöltött idő
     Voice-over Translation:
       Start: Fordítás
       Cancel: Mégse

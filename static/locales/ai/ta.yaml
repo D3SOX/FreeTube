@@ -796,6 +796,7 @@ Settings:
     Posts Auto Refresh Interval: இடுகைத் தானியக்கப் புதுப்பிப்பு இடைவெளி
     Refresh Subscriptions While App Is Closed: "செயலி மூடியிருக்கும்போது சந்தாக்களைப் புதுப்பி"
   Distraction Free Settings:
+    Hide Repeat Stats: மீளியக்கப் புள்ளிவிவரங்களை மறை
     Sections:
       Visible While Paused: முழுச் சாளரம் / முழுத்திரையில் இடைநிறுத்தியிருக்கும்போது தெரிபவை
     Hide Channel Avatars: சேனல் அவதார்களை மறை
@@ -1150,6 +1151,11 @@ Video:
   Sponsor Block category short:
     filler: தொடர்பற்றவை
   Player:
+    Repeat Stats:
+      Repeat Stats: மீளியக்கப் புள்ளிவிவரங்கள்
+      Looping: மீளியக்கம் செயலில்
+      Repeats: மீளியக்கங்கள்
+      Time Spent: பார்த்த நேரம்
     Voice-over Translation:
       Start: மொழிபெயர்
       Cancel: ரத்துசெய்

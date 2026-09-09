@@ -786,6 +786,7 @@ Settings:
     Posts Auto Refresh Interval: Cyfwng adnewyddu postiadau yn awtomatig
     Refresh Subscriptions While App Is Closed: "Adnewyddu tanysgrifiadau pan fydd yr ap ar gau"
   Distraction Free Settings:
+    Hide Repeat Stats: Cuddio ystadegau ailadrodd
     Sections:
       Visible While Paused: Yn weladwy wrth oedi mewn ffenestr lawn / sgrin lawn
     Hide Channel Avatars: Cuddio afatarau sianeli
@@ -1132,6 +1133,11 @@ Video:
     music offtopic: Heb fod yn gerddoriaeth
     filler: Gwyriadau
   Player:
+    Repeat Stats:
+      Repeat Stats: Ystadegau ailadrodd
+      Looping: Ailadrodd ymlaen
+      Repeats: Ailadroddiadau
+      Time Spent: Amser a dreuliwyd
     Voice-over Translation:
       Start: Cyfieithu
       Cancel: Canslo

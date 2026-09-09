@@ -945,6 +945,7 @@ Settings:
     To: til
     Confirm Before Unsubscribing: Stadfest før du avsluttar abonnement
   Distraction Free Settings:
+    Hide Repeat Stats: Skjul gjentakingsstatistikk
     Sections:
       Side Bar: Sidestolpe
       Subscriptions Page: Abonnementsside
@@ -1398,6 +1399,11 @@ Video:
   Sponsor Block category short:
     filler: Avsporingar
   Player:
+    Repeat Stats:
+      Repeat Stats: Gjentakingsstatistikk
+      Looping: Gjentaking på
+      Repeats: Gjentakingar
+      Time Spent: Tid brukt
     Voice-over Translation:
       Start: Omset
       Cancel: Avbryt

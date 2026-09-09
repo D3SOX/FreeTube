@@ -316,6 +316,7 @@ const state = {
   ytDlpSelectedTemplate: 'video:best',
   ytDlpAutomaticDownloadRules: '{}',
   disableAbRepeat: false,
+  hideRepeatStats: false,
   expandSideBar: false,
   hideActiveSubscriptions: false,
   hideChannelAvatars: false,

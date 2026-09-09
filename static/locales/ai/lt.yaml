@@ -1002,6 +1002,7 @@ Settings:
     To: Iki
     Confirm Before Unsubscribing: Klausti prieš atsisakant prenumeratos
   Distraction Free Settings:
+    Hide Repeat Stats: Slėpti kartojimo statistiką
     Sections:
       Subscriptions Page: Prenumeratų puslapis
       Visible While Paused: Rodoma pristabdžius viso lango arba viso ekrano režimu
@@ -1461,6 +1462,11 @@ Video:
     music offtopic: Ne muzika
     filler: Nukrypimai
   Player:
+    Repeat Stats:
+      Repeat Stats: Kartojimo statistika
+      Looping: Kartojimas įjungtas
+      Repeats: Pakartojimai
+      Time Spent: Žiūrėjimo laikas
     Voice-over Translation:
       Start: Versti
       Cancel: Atšaukti

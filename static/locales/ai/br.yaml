@@ -784,6 +784,7 @@ Settings:
     Posts Auto Refresh Interval: "Etrevez adkargañ emgefreek ar pennadoù"
     Refresh Subscriptions While App Is Closed: "Freskañ ar c'houmanantoù pa vez serret an arload"
   Distraction Free Settings:
+    Hide Repeat Stats: Kuzhat stadegoù an adlenn
     Sections:
       Visible While Paused: "Gwelus e-pad un ehan er prenestr leun pe er skramm leun"
     Hide Channel Avatars: "Kuzhat skeudennoù ar chadennoù"
@@ -1125,6 +1126,11 @@ Video:
     music offtopic: "N'eo ket sonerezh"
     filler: "Dihanadennoù"
   Player:
+    Repeat Stats:
+      Repeat Stats: Stadegoù an adlenn
+      Looping: Adlenn oberiant
+      Repeats: Adlennoù
+      Time Spent: Amzer tremenet
     Voice-over Translation:
       Start: "Treiñ"
       Cancel: "Nullañ"

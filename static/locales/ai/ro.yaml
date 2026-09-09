@@ -788,6 +788,7 @@ Settings:
     Posts Auto Refresh Interval: Interval de reîmprospătare automată a postărilor
     Refresh Subscriptions While App Is Closed: "Reîmprospătează abonamentele când aplicația este închisă"
   Distraction Free Settings:
+    Hide Repeat Stats: Ascunde statisticile de repetare
     Sections:
       Visible While Paused: Vizibile în pauză în fereastră completă / pe ecran complet
     Hide Channel Avatars: Ascunde avatarurile canalelor
@@ -1142,6 +1143,11 @@ Video:
   Live chat replay is enabled. Chat messages will appear here as the video plays.: Reluarea chatului în direct este activată. Mesajele vor apărea aici pe măsură ce se redă videoclipul.
   Premiere started: Premiera este în curs. A început {timeAgo}
   Player:
+    Repeat Stats:
+      Repeat Stats: Statistici de repetare
+      Looping: Repetare activă
+      Repeats: Repetări
+      Time Spent: Timp petrecut
     Voice-over Translation:
       Start: Tradu
       Cancel: Anulează

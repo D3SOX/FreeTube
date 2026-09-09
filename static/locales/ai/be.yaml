@@ -814,6 +814,7 @@ Settings:
     Posts Auto Refresh Interval: Інтэрвал аўтаматычнага абнаўлення допісаў
     Refresh Subscriptions While App Is Closed: "Абнаўляць падпіскі, калі праграма закрыта"
   Distraction Free Settings:
+    Hide Repeat Stats: Схаваць статыстыку паўтораў
     Sections:
       Visible While Paused: Бачныя падчас паўзы ў поўным акне або поўнаэкранным рэжыме
     Hide Channel Avatars: Хаваць аватары каналаў
@@ -1186,6 +1187,11 @@ Video:
     music offtopic: Не музыка
     filler: Адступленні
   Player:
+    Repeat Stats:
+      Repeat Stats: Статыстыка паўтораў
+      Looping: Паўтор уключаны
+      Repeats: Паўторы
+      Time Spent: Час прагляду
     Voice-over Translation:
       Start: Перакласці
       Cancel: Скасаваць

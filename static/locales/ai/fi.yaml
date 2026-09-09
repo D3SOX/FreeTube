@@ -797,6 +797,7 @@ Settings:
     Posts Auto Refresh Interval: Julkaisujen automaattisen päivityksen aikaväli
     Refresh Subscriptions While App Is Closed: "Päivitä tilaukset sovelluksen ollessa suljettuna"
   Distraction Free Settings:
+    Hide Repeat Stats: Piilota toistotilastot
     Sections:
       Visible While Paused: Näkyvissä keskeytyksen aikana koko ikkunan tai koko näytön tilassa
     Hide Channel Avatars: Piilota kanavien profiilikuvat
@@ -1147,6 +1148,11 @@ Video:
   Live chat replay is enabled. Chat messages will appear here as the video plays.: Livechatin tallenne on käytössä.  Chat-viestit näkyvät tässä videon toiston aikana.
   Premiere started: Ensi-ilta on käynnissä. Alkoi {timeAgo}
   Player:
+    Repeat Stats:
+      Repeat Stats: Toistotilastot
+      Looping: Jatkuva toisto
+      Repeats: Toistokerrat
+      Time Spent: Katseluaika
     Voice-over Translation:
       Start: Käännä
       Cancel: Peruuta

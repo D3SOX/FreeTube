@@ -784,6 +784,7 @@ Settings:
     Posts Auto Refresh Interval: 投稿の自動更新間隔
     Refresh Subscriptions While App Is Closed: "アプリを閉じている間も登録チャンネルを更新"
   Distraction Free Settings:
+    Hide Repeat Stats: リピート統計を非表示
     Sections:
       Visible While Paused: 全ウィンドウ表示・全画面表示で一時停止中に表示
     Hide Channel Avatars: チャンネルのアバターを非表示
@@ -1114,6 +1115,11 @@ Video:
   Live chat replay is enabled. Chat messages will appear here as the video plays.: ライブチャットのリプレイが有効です。動画の再生に合わせてチャットメッセージがここに表示されます。
   Premiere started: プレミア公開中です。{timeAgo}に開始しました
   Player:
+    Repeat Stats:
+      Repeat Stats: リピート統計
+      Looping: リピート中
+      Repeats: リピート回数
+      Time Spent: 視聴時間
     Voice-over Translation:
       Start: 翻訳
       Cancel: キャンセル

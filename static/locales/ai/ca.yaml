@@ -1052,6 +1052,7 @@ Settings:
     To: A
     Confirm Before Unsubscribing: Confirma abans de donar-se de baixa
   Distraction Free Settings:
+    Hide Repeat Stats: Amaga les estadístiques de repetició
     Sections:
       Side Bar: Barra lateral
       Subscriptions Page: Pàgina de subscripcions
@@ -1558,6 +1559,11 @@ Video:
       shuffling playlists: barrejar llistes de reproducció
       looping playlists: reproduir llistes de reproducció en bucle
   Player:
+    Repeat Stats:
+      Repeat Stats: Estadístiques de repetició
+      Looping: En bucle
+      Repeats: Repeticions
+      Time Spent: Temps dedicat
     Voice-over Translation:
       Start: Tradueix
       Cancel: Cancel·la

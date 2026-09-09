@@ -797,6 +797,7 @@ Settings:
     Posts Auto Refresh Interval: Interval voor automatisch vernieuwen van berichten
     Refresh Subscriptions While App Is Closed: "Abonnementen vernieuwen terwijl de app gesloten is"
   Distraction Free Settings:
+    Hide Repeat Stats: Herhaalstatistieken verbergen
     Sections:
       Visible While Paused: Zichtbaar wanneer gepauzeerd in volledig venster of volledig scherm
     Hide Channel Avatars: Kanaalavatars verbergen
@@ -1155,6 +1156,11 @@ Video:
   Sponsor Block category short:
     filler: Uitweidingen
   Player:
+    Repeat Stats:
+      Repeat Stats: Herhaalstatistieken
+      Looping: Herhalen ingeschakeld
+      Repeats: Herhalingen
+      Time Spent: Bestede tijd
     Voice-over Translation:
       Start: Vertalen
       Cancel: Annuleren

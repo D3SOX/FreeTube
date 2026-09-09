@@ -1,18 +1,34 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
+import { createRepeatStatsTracker } from '../../src/renderer/helpers/player/repeatStats.js'
 import { attachAndroidMediaElement } from '../../src/renderer/helpers/player/androidMediaElement.js'
 
 function fixture() {
   const commands = []
-  const element = Object.assign(new EventTarget(), { style: {}, volume: 0.7, muted: false, playbackRate: 1, defaultPlaybackRate: 1, loop: false, pause() {} })
+  const attributes = new Set()
+  const element = Object.assign(new EventTarget(), {
+    style: {}, volume: 0.7, muted: false, playbackRate: 1, defaultPlaybackRate: 1, loop: false, pause() {},
+    toggleAttribute(name, enabled) { if (enabled) attributes.add(name); else attributes.delete(name) },
+    hasAttribute(name) { return attributes.has(name) },
+  })
   let time = 0
   const media = attachAndroidMediaElement(element, {
     command: async (...args) => { commands.push(args) }, load: async () => {}, onError: assert.fail, now: () => time,
   })
   const ready = { position: 10, duration: 100, paused: false, playing: true, ready: true, buffering: false,
     ended: false, playbackRate: 1, bufferedPosition: 40, width: 640, height: 360 }
-  return { commands, element, media, ready, advance: ms => { time += ms } }
+  return { commands, element, media, ready, advance: ms => { time += ms }, now: () => time }
 }
+
+test('native loop changes reflect the media attribute used by repeat stats and loop controls', () => {
+  const { element, commands } = fixture()
+  element.loop = true
+  assert.equal(element.hasAttribute('loop'), true)
+  assert.deepEqual(commands.at(-1), ['loop', 1])
+  element.loop = false
+  assert.equal(element.hasAttribute('loop'), false)
+  assert.deepEqual(commands.at(-1), ['loop', 0])
+})
 
 test('shared player features observe the native clock and stop extrapolating while paused', () => {
   const { element, media, ready, advance } = fixture()
@@ -182,4 +198,28 @@ test('native dimensions keep layout independent of posters and empty DOM video s
   assert.equal(element.style.aspectRatio, '1080 / 1920')
   media.detach()
   assert.equal(element.style.aspectRatio, '1080 / 1920')
+})
+
+test('repeat time excludes native audio-focus suppression without a user pause', () => {
+  const { element, media, ready, advance, now } = fixture()
+  let stats
+  const tracker = createRepeatStatsTracker(element, value => { stats = value }, now)
+  tracker.setMode('video')
+  media.update(ready)
+  advance(1000)
+  media.update({ position: 11, playing: false })
+  advance(10000)
+  media.update({ position: 11, playing: false })
+  assert.equal(stats.seconds, 1)
+  element.currentTime = 20
+  media.update({ position: 20, event: 'seeked' })
+  advance(10000)
+  media.update({ position: 20, playing: false })
+  assert.equal(stats.seconds, 1, 'seeking while suppressed must not restart the timer')
+  media.update({ playing: true })
+  advance(1000)
+  media.update({ position: 12 })
+  assert.equal(stats.seconds, 2)
+  tracker.destroy()
+  media.detach()
 })

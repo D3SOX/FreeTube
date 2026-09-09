@@ -786,6 +786,7 @@ Settings:
     Posts Auto Refresh Interval: Argitalpenen freskatze automatikoaren tartea
     Refresh Subscriptions While App Is Closed: "Freskatu harpidetzak aplikazioa itxita dagoenean"
   Distraction Free Settings:
+    Hide Repeat Stats: Ezkutatu errepikapenen estatistikak
     Sections:
       Visible While Paused: Ikusgai pausatuta dagoenean leiho osoan edo pantaila osoan
     Hide Channel Avatars: Ezkutatu kanalen abatarrak
@@ -1132,6 +1133,11 @@ Video:
     music offtopic: Musikaz bestelakoa
     filler: Gaitik kanpokoak
   Player:
+    Repeat Stats:
+      Repeat Stats: Errepikapenen estatistikak
+      Looping: Begiztan
+      Repeats: Errepikapenak
+      Time Spent: Emandako denbora
     Voice-over Translation:
       Start: Itzuli
       Cancel: Utzi

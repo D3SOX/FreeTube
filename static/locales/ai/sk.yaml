@@ -784,6 +784,7 @@ Settings:
     Posts Auto Refresh Interval: Interval automatického obnovenia príspevkov
     Refresh Subscriptions While App Is Closed: "Obnovovať odbery, keď je aplikácia zatvorená"
   Distraction Free Settings:
+    Hide Repeat Stats: Skryť štatistiky opakovania
     Sections:
       Visible While Paused: Viditeľné počas pozastavenia v režime celého okna alebo celej obrazovky
     Hide Channel Avatars: Skryť avatary kanálov
@@ -1114,6 +1115,11 @@ Video:
   Live chat replay is enabled. Chat messages will appear here as the video plays.: Záznam živého četu je zapnutý. Správy četu sa tu zobrazia počas prehrávania videa.
   Premiere started: Prebieha premiéra. Začala sa {timeAgo}
   Player:
+    Repeat Stats:
+      Repeat Stats: Štatistiky opakovania
+      Looping: Slučka zapnutá
+      Repeats: Opakovania
+      Time Spent: Čas sledovania
     Voice-over Translation:
       Start: Preložiť
       Cancel: Zrušiť
