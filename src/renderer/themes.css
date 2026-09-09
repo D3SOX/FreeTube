@@ -354,8 +354,9 @@ it can be safely elided. This looks quite pleasant on this theme. */
 
 .hotPink {
   --toggle-track-color: #ddd;
-  --toggle-thumb-color: #000;
+  --toggle-thumb-color: #fff;
   --toggle-checked-thumb-color: #fff;
+  --toggle-thumb-outline-color: #000;
   --slider-track-color: #fff;
   --primary-text-color: #ffff;
   --secondary-text-color: #ffff;

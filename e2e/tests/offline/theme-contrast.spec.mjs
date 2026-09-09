@@ -208,16 +208,27 @@ for (const scale of [100, 125]) {
       await goToSettingsSection(page, 'general')
       const toggle = page.getByRole('checkbox', { name: 'Keep relative timestamps updated' })
       const tracks = []
+      const thumbs = []
       for (const checked of [true, false]) {
         if (await toggle.isChecked() !== checked) await toggle.locator('..').locator('.switch-label').click()
         await expect(toggle).toBeChecked({ checked })
         const contrast = await switchContrast(app, toggle.locator('..').locator('.switch-label'), checked)
         tracks.push(contrast.track)
+        thumbs.push(contrast.thumb)
+        const label = toggle.locator('..').locator('.switch-label')
+        const height = await label.evaluate(element => element.getBoundingClientRect().height)
+        // The outline separates the white thumb from the light off track.
+        // Sample its vertical edge where it crosses the track.
+        const edge = await sampleColors(app, label, [-0.5, 0.5, 1.5].map(offset => [
+          (checked ? 21 : 24) + offset, height / 2
+        ]))
+        const thumbRatio = Math.max(contrast.thumbRatio, ...edge.map(color => contrastRatio(color, contrast.track)))
         expect.soft(contrast.trackRatio, `track and background ${JSON.stringify(contrast)}`).toBeGreaterThanOrEqual(3)
-        expect.soft(contrast.thumbRatio, `thumb and track ${JSON.stringify(contrast)}`).toBeGreaterThanOrEqual(3)
+        expect.soft(thumbRatio, `thumb boundary and track ${JSON.stringify({ contrast, edge })}`).toBeGreaterThanOrEqual(3)
         expect.soft(contrast.thumbSurfaceRatio, `thumb and background ${JSON.stringify(contrast)}`).toBeGreaterThanOrEqual(3)
       }
       expect(contrastRatio(...tracks), 'on and off tracks').toBeGreaterThanOrEqual(3)
+      expect(thumbs[0], 'thumb color stays consistent').toEqual(thumbs[1])
     })
 
     test('settings category titles and descriptions remain readable in every state', async ({ page }) => {
