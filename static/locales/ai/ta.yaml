@@ -145,6 +145,7 @@ Home Page:
   All sections hidden: அனைத்துப் பிரிவுகளும் மறைக்கப்பட்டுள்ளன
   All sections hidden description: ஒரு பிரிவை மீண்டும் காட்ட முகப்பைத் தனிப்பயனாக்கவும்.
 Subscriptions:
+  Refresh Errors: "புதுப்பிக்க முடியாத சேனல்கள்: {count}. விவரங்களை நகலெடுக்க கிளிக் செய்யவும்."
   Never show {type} from this channel in feeds again: இந்தச் சேனலின் {type} உள்ளடக்கத்தை ஊட்டங்களில் இனி ஒருபோதும் காட்டாதே
   Refreshing Subscription Videos: சந்தாக்களின் காணொளிகள் புதுப்பிக்கப்படுகின்றன
   Refreshing Subscription Shorts: சந்தாக்களின் Shorts புதுப்பிக்கப்படுகின்றன

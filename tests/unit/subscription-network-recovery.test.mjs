@@ -20,10 +20,11 @@ const source = (await readFile(new URL('../../src/renderer/helpers/subscriptions
 
 // Exercise the real refresh, fallback, cache, and notification paths with fake
 // platform APIs. Webpack-only imports are supplied in the isolated context.
-function createRefresh({ online = true, feed = 'Shorts', error = new TypeError('Failed to fetch'), webCors = false, backend = 'local', fallbackWorks = false, rssStatus = 200, channelInfo = { has_shorts: true }, playlistError = null, stallChannelProbe = false } = {}) {
+function createRefresh({ online = true, feed = 'Shorts', error = new TypeError('Failed to fetch'), webCors = false, backend = 'local', fallbackWorks = false, rssStatus = 200, channelInfo = { has_shorts: true }, playlistError = null, stallChannelProbe = false, channelStatus = rssStatus, scraperError = null } = {}) {
   const window = new EventTarget()
   const navigator = { onLine: online }
   const toasts = []
+  const copied = []
   const requests = []
   const fallbackRequests = []
   const writes = []
@@ -45,8 +46,8 @@ function createRefresh({ online = true, feed = 'Shorts', error = new TypeError('
   }
   const fetchChannel = async url => {
     requests.push(url)
-    if (fail) throw error
-    return { videos: [], posts: [], status: rssStatus, text: async () => '<feed/>' }
+    if (fail) throw typeof error === 'function' ? error(url) : error
+    return { videos: [], posts: [], status: url.includes('/feed/channel/') ? channelStatus : rssStatus, text: async () => '<feed/>' }
   }
   const fetchFallback = async url => {
     fallbackRequests.push(url)
@@ -71,12 +72,15 @@ function createRefresh({ online = true, feed = 'Shorts', error = new TypeError('
     startAutomaticDownloadsForChannel: async () => {},
     getChannelPlaylistId: id => id,
     showApiErrorToast: (...args) => toasts.push(args),
+    copyToClipboard: text => copied.push(text),
     showToast: (...args) => toasts.push(args),
     localApiFetch: fetchLocal,
     fetch: webCors ? async () => { throw new TypeError('Failed to fetch') } : fetchChannel,
     invidiousFetch: fetchInvidious,
-    getLocalChannelVideos: fetchLocal,
-    getLocalChannelLiveStreams: fetchLocal,
+    getLocalChannelVideos: async url => { if (scraperError) throw scraperError; return fetchLocal(url) },
+    getLocalChannelLiveStreams: async url => { if (scraperError) throw scraperError; return fetchLocal(url) },
+    getInvidiousChannelVideos: async url => { if (scraperError) throw scraperError; return fetchInvidious(url) },
+    getInvidiousChannelLive: async url => { if (scraperError) throw scraperError; return fetchInvidious(url) },
     getLocalChannelCommunity: async id => (await fetchLocal(id)).posts,
     invidiousGetCommunityPosts: fetchInvidious,
     getLocalChannel: async () => channelInfo,
@@ -103,7 +107,7 @@ function createRefresh({ online = true, feed = 'Shorts', error = new TypeError('
   }
   vm.runInContext(`${source}\nglobalThis.api = { refreshSubscriptionVideosFromRemote, refreshSubscriptionShortsFromRemote, refreshSubscriptionLiveFromRemote, refreshSubscriptionPostsFromRemote, cancelSubscriptionRefresh }`, context)
   return {
-    ...context.api, refresh: context.api[`refreshSubscription${feed}FromRemote`], navigator, requests, fallbackRequests, toasts, writes, events, getters,
+    ...context.api, refresh: context.api[`refreshSubscription${feed}FromRemote`], navigator, requests, fallbackRequests, toasts, copied, writes, events, getters, recovery: sharedRecovery,
     reconnect() {
       fail = false
       navigator.onLine = true
@@ -140,6 +144,7 @@ for (const feed of ['Videos', 'Shorts', 'Live', 'Posts']) {
     try {
       await settle()
       assert.equal(app.requests.length, 8, 'only already-running channel requests may fail')
+      assert.equal(app.recovery.state, 'online', 'a failed refresh is not a device-wide outage')
       assert.equal(app.toasts.length, 0)
       assert.equal(app.writes.length, 0)
       assert.deepEqual(app.events, [])
@@ -177,12 +182,13 @@ for (const online of [false, true]) {
   })
 }
 
-for (const error of [Object.assign(new Error('HTTP 503'), { status: 503 }), new SyntaxError('Invalid JSON')]) {
+for (const error of [404, 500, 503].map(status => Object.assign(new Error(`HTTP ${status}`), { status })).concat(new SyntaxError('Invalid JSON'))) {
   test(`${error.message} keeps the existing error and fallback behavior`, async () => {
     const app = createRefresh({ error })
     await app.refresh({ t: key => key })
     assert.equal(app.requests.length, 40)
-    assert.ok(app.toasts.length > 0)
+    assert.equal(app.toasts.length, 1)
+    assert.equal(app.recovery.state, 'online')
     assert.deepEqual(app.events, ['completed', 'finished'])
   })
 }
@@ -345,3 +351,109 @@ for (const feed of ['Videos', 'Shorts', 'Live']) {
     assert.deepEqual(app.events, ['finished'])
   })
 }
+
+for (const feed of ['Videos', 'Shorts', 'Live']) {
+  for (const backend of ['local', 'invidious']) {
+    for (const status of [403, 500, 503]) {
+      test(`${backend} ${feed} RSS HTTP ${status} produces one error toast without a connection banner`, async () => {
+        const app = createRefresh({ feed, backend, rssStatus: status, scraperError: Object.assign(new Error(`HTTP ${status}`), { status }) })
+        app.reconnect()
+        await app.refresh({ t: key => key, errorChannels: [] })
+        assert.equal(app.toasts.length, 1)
+        app.toasts[0][0].action()
+        assert.match(app.copied[0], new RegExp(`HTTP ${status}`))
+        assert.equal(app.recovery.state, 'online')
+        assert.deepEqual(app.events, ['completed', 'finished'])
+      })
+    }
+  }
+}
+
+for (const feed of ['Videos', 'Shorts', 'Live']) {
+  for (const status of [404, 500]) {
+    test(`${feed} failed Invidious channel verification HTTP ${status} reports one toast`, async () => {
+      const app = createRefresh({ feed, backend: 'invidious', rssStatus: 404, channelStatus: status, scraperError: Object.assign(new Error(`HTTP ${status}`), { status }) })
+      app.getters.getBackendFallback = false
+      app.reconnect()
+      const errorChannels = []
+      await app.refresh({ t: key => key, errorChannels })
+      assert.equal(app.toasts.length, 1)
+      app.toasts[0][0].action()
+      assert.match(app.copied[0], new RegExp(`HTTP ${status}`))
+      assert.equal(app.recovery.state, 'online')
+      assert.equal(errorChannels.length, status === 404 ? 20 : 0)
+    })
+  }
+}
+
+const translateSummary = (key, values) => values ? `${key}: ${values.count}` : key
+
+test('one compact refresh notification retains every failed channel and distinct diagnostic', async () => {
+  const app = createRefresh({ error: Object.assign(new Error('HTTP 500'), { status: 500 }) })
+  await app.refresh({ t: translateSummary })
+  assert.equal(app.toasts.length, 1)
+  const toast = app.toasts[0][0]
+  assert.equal(toast.message(), 'Subscriptions.Refresh Errors: 20')
+  assert.ok(toast.message().length < 100)
+  toast.action()
+  for (let i = 0; i < 20; i++) assert.match(app.copied[0], new RegExp(`UC${i}:`))
+  assert.match(app.copied[0], /HTTP 500/)
+  assert.match(app.copied[0], /backend=YouTube RSS/)
+  assert.match(app.copied[0], /backend=Invidious RSS/)
+  assert.equal(new Set(app.copied[0].split('\n')).size, app.copied[0].split('\n').length)
+})
+
+for (const feed of ['Videos', 'Shorts', 'Live', 'Posts']) {
+  test(`${feed} HTTP failures recovered by fallback do not appear in the summary`, async () => {
+    const app = createRefresh({ feed, error: Object.assign(new Error('HTTP 500'), { status: 500 }), fallbackWorks: true })
+    await app.refresh({ t: translateSummary })
+    assert.equal(app.toasts.length, 0)
+    assert.equal(app.writes.filter(write => write.key.endsWith('CacheByChannel')).length, 20)
+  })
+}
+
+test('two confirmed unavailable channels are both included in the copied summary', async () => {
+  const app = createRefresh({ rssStatus: 404, channelInfo: { alert: 'This channel does not exist.' } })
+  app.getters.getActiveProfile.subscriptions = [{ id: 'UCfirst', name: 'First channel' }, { id: 'UCsecond', name: 'Second channel' }]
+  app.reconnect()
+  await app.refresh({ t: translateSummary })
+  assert.equal(app.toasts.length, 1)
+  assert.equal(app.toasts[0][0].message(), 'Subscriptions.Refresh Errors: 2')
+  app.toasts[0][0].action()
+  assert.match(app.copied[0], /First channel \(UCfirst\)/)
+  assert.match(app.copied[0], /Second channel \(UCsecond\)/)
+})
+
+for (const feed of ['Videos', 'Shorts', 'Live', 'Posts']) {
+  test(`${feed} unrecovered failures preserve cached entries and report all channels`, async () => {
+    const app = createRefresh({ feed, error: Object.assign(new Error('HTTP 500'), { status: 500 }) })
+    await app.refresh({ t: translateSummary })
+    assert.equal(app.writes.filter(write => write.key.endsWith('CacheByChannel')).length, 0)
+    assert.equal(app.toasts.length, 1)
+    assert.equal(app.toasts[0][0].message(), 'Subscriptions.Refresh Errors: 20')
+  })
+}
+
+
+test('confirmed HTTP failures stay accessible while another channel retries and after cancellation', async () => {
+  const app = createRefresh({ error: url => url.includes('UC0')
+    ? Object.assign(new Error('HTTP 500'), { status: 500 })
+    : new TypeError('Failed to fetch') })
+  app.getters.getActiveProfile.subscriptions = [{ id: 'UC0' }, { id: 'UC1' }]
+  const refresh = app.refresh({ t: translateSummary })
+  try {
+    await settle()
+    assert.deepEqual(app.events, [])
+    assert.equal(app.toasts.length, 1, 'the finished HTTP failure must not wait for network recovery')
+    app.toasts[0][0].action()
+    assert.match(app.copied[0], /UC0:/)
+    assert.doesNotMatch(app.copied[0], /UC1:/)
+    app.cancelSubscriptionRefresh()
+    await refresh
+    assert.equal(app.toasts.length, 1)
+    assert.equal(app.toasts[0][0].abortSignal.aborted, false, 'cancellation must retain the confirmed failures')
+  } finally {
+    app.cancelSubscriptionRefresh()
+    await refresh
+  }
+})

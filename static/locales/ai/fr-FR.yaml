@@ -142,6 +142,7 @@ Home Page:
   All sections hidden: Toutes les sections sont masquées
   All sections hidden description: Personnalisez l’accueil pour afficher à nouveau une section.
 Subscriptions:
+  Refresh Errors: "Chaînes qui n'ont pas pu être actualisées : {count}. Cliquez pour copier les détails."
   Never show {type} from this channel in feeds again: Ne plus jamais afficher les contenus de type {type} de cette chaîne dans les flux
   Refreshing Subscription Videos: Actualisation des vidéos des abonnements
   Refreshing Subscription Shorts: Actualisation des Shorts des abonnements

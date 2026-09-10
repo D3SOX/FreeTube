@@ -148,6 +148,7 @@ Home Page:
   All sections hidden: Alle delar er gøymde
   All sections hidden description: Tilpass heimesida for å vise ein del igjen.
 Subscriptions:
+  Refresh Errors: "Kanalar som ikkje kunne oppdaterast: {count}. Klikk for å kopiere detaljar."
   Never show {type} from this channel in feeds again: Vis aldri {type} frå denne kanalen i straumar igjen
   Subscriptions Tabs: Abonnementsfaner
   All Subscription Tabs Hidden: Alle abonnementsfanene er gøymde. Vis nokre faner i delen "{subsection}" under "{settingsSection}" for å sjå innhald her.

@@ -36,7 +36,7 @@ test('a stalled route pauses concurrent requests, probes with backoff, and resum
   const second = recovery.run('https://www.youtube.com', task)
   await flush()
   assert.equal(calls, 1)
-  assert.equal(states.at(-1), 'offline')
+  assert.equal(states.at(-1), 'online')
   t.mock.timers.tick(5000)
   await flush()
   assert.equal(calls, 2)
@@ -44,7 +44,7 @@ test('a stalled route pauses concurrent requests, probes with backoff, and resum
   t.mock.timers.tick(10000)
   await flush()
   assert.deepEqual(await Promise.all([first, second]), [42, 42])
-  assert.equal(states.at(-1), 'restored')
+  assert.equal(states.at(-1), 'online')
 })
 
 test('an unavailable optional host does not block other services or mistake their responses for its recovery', async t => {
@@ -54,7 +54,7 @@ test('an unavailable optional host does not block other services or mistake thei
   const rejected = assert.rejects(failed, { name: 'AbortError' })
   await flush()
   assert.equal(await recovery.run('https://www.youtube.com', async () => 'ok'), 'ok')
-  assert.equal(states.at(-1), 'offline')
+  assert.equal(states.at(-1), 'online')
   controller.abort()
   await rejected
 })
@@ -93,7 +93,7 @@ test('non-idempotent operations wait offline but are never automatically replaye
   t.mock.timers.tick(60000)
   await flush()
   assert.equal(calls, 1)
-  assert.equal(states.includes('restored'), false, 'a failed write is not proof of recovery')
+  assert.equal(states.includes('restored'), true, 'the online event restores the device status independently of a failed write')
 })
 
 async function loadAppNetwork(t, fetch, nativeRequest, options = {}) {
@@ -135,14 +135,14 @@ test('native API and WebView requests share recovery, including an unreported ro
   const web = app.window.fetch('https://www.youtube.com/oembed')
   await flush()
   assert.equal(webCalls, 0)
-  assert.equal(app.recovery.state, 'offline')
+  assert.equal(app.recovery.state, 'online')
   fail = false
   t.mock.timers.tick(5000)
   await flush()
   assert.equal(await (await native).text(), 'native')
   assert.equal(await (await web).text(), 'web')
   assert.equal(nativeCalls, 2)
-  assert.equal(app.recovery.state, 'restored')
+  assert.equal(app.recovery.state, 'online')
 })
 
 test('a browser CORS failure does not enter endless recovery when native HTTP reaches the server', async t => {
@@ -172,11 +172,11 @@ test('Electron route failures recover while the OS still reports online', async 
   }, undefined, { corsDisabled: true, verifyConnection: undefined })
   const pending = app.window.fetch('https://www.youtube.com/feeds/videos.xml')
   await flush()
-  assert.equal(app.recovery.state, 'offline')
+  assert.equal(app.recovery.state, 'online')
   fail = false
   t.mock.timers.tick(5000)
   assert.equal(await (await pending).text(), 'recovered')
-  assert.equal(app.recovery.state, 'restored')
+  assert.equal(app.recovery.state, 'online')
 })
 
 test('delegated subscription transport retains browser CORS classification', async t => {
@@ -202,3 +202,29 @@ for (const transport of ['native', 'browser']) {
     await assert.rejects(pending, { name: 'TypeError' })
   })
 }
+
+test('device reconnection clears the banner while an optional service keeps retrying', async t => {
+  const { recovery, states, connect } = setup(t)
+  const controller = new AbortController()
+  let calls = 0
+  const pending = recovery.run('https://optional.example', async () => {
+    calls++
+    throw new TypeError('Failed to fetch')
+  }, { signal: controller.signal })
+  const rejected = assert.rejects(pending, { name: 'AbortError' })
+  await flush()
+  connect(false)
+  assert.equal(recovery.state, 'offline')
+  connect(true)
+  await flush()
+  assert.equal(recovery.state, 'restored')
+  assert.equal(calls, 2)
+  t.mock.timers.tick(3000)
+  assert.equal(recovery.state, 'online')
+  t.mock.timers.tick(7000)
+  await flush()
+  assert.equal(calls, 3, 'the failed service still retries after the banner clears')
+  assert.deepEqual(states, ['online', 'offline', 'restored', 'online'])
+  controller.abort()
+  await rejected
+})

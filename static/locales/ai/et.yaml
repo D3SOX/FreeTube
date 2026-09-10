@@ -142,6 +142,7 @@ Home Page:
   All sections hidden: Kõik jaotised on peidetud
   All sections hidden description: Kohanda avalehte, et mõni jaotis uuesti kuvada.
 Subscriptions:
+  Refresh Errors: "Kanalid, mida ei saanud värskendada: {count}. Klõpsa üksikasjade kopeerimiseks."
   Never show {type} from this channel in feeds again: Ära enam näita selle kanali sisu tüübiga {type} voogudes
   Refreshing Subscription Videos: Tellimuste videote värskendamine
   Refreshing Subscription Shorts: Tellimuste Shorts-videote värskendamine

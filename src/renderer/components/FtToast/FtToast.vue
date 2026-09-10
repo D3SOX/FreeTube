@@ -76,6 +76,7 @@ const { t } = useI18n()
  * @typedef ToastState the live state handed to {@link FtToastItem}
  * @property {string} message
  * @property {Function | null} action
+ * @property {boolean} dismissOnAction whether the main action closes the toast
  * @property {{ label: string, action?: Function, primary?: boolean, icon?: [string, string] }[]} buttons
  * @property {boolean} verticalButtons whether buttons should be stacked vertically
  * @property {boolean} dismissible whether Escape and swipe gestures can dismiss the toast
@@ -407,9 +408,9 @@ function stopProgressToastPointerTracking() {
 }
 
 /**
- * @param {CustomEvent<{ message: string | (({elapsedMs: number, remainingMs: number}) => string), time: number | null, action: Function | null, abortSignal: AbortSignal | null, image: string | null, icon: [string, string] | null, buttons: { label: string, action?: Function, primary?: boolean, icon?: [string, string] }[], buttonAction: 'open-sync-settings' | null, verticalButtons: boolean, dismissible: boolean }>} event
+ * @param {CustomEvent<{ message: string | (({elapsedMs: number, remainingMs: number}) => string), time: number | null, action: Function | null, abortSignal: AbortSignal | null, image: string | null, icon: [string, string] | null, buttons: { label: string, action?: Function, primary?: boolean, icon?: [string, string] }[], buttonAction: 'open-sync-settings' | null, verticalButtons: boolean, dismissible: boolean, dismissOnAction?: boolean }>} event
  */
-function open({ detail: { message, time, action, abortSignal, image, icon, buttons, buttonAction, verticalButtons, dismissible } }) {
+function open({ detail: { message, time, action, abortSignal, image, icon, buttons, buttonAction, verticalButtons, dismissible, dismissOnAction } }) {
   if (buttonAction === 'open-sync-settings') {
     buttons = [{
       label: t('Settings.Sync Settings.Sync Settings'),
@@ -429,6 +430,7 @@ function open({ detail: { message, time, action, abortSignal, image, icon, butto
   const state = reactive({
     message: typeof message === 'function' ? message({ elapsedMs: 0, remainingMs: time }) : message,
     action: action ?? null,
+    dismissOnAction: dismissOnAction ?? true,
     buttons: buttons ?? [],
     verticalButtons: verticalButtons ?? false,
     dismissible: dismissible ?? true,
