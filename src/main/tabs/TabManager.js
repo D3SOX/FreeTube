@@ -2548,6 +2548,7 @@ export class TabManager {
     const tab = this.tabs.get(tabId)
     if (!tab) return
 
+    this._deferredStartupWatchTabIds.delete(tabId)
     tab.mountDeferred = false
     this._startupMountQueue.delete(tabId)
     tab.loadState = 'mounting'
@@ -2569,6 +2570,7 @@ export class TabManager {
       return false
     }
 
+    this._deferredStartupWatchTabIds.delete(tabId)
     tab.loadState = 'mounting'
     tab.mountDeferred = deferMount
     if (deferMount) this._startupMountQueue.add(tabId)
@@ -2586,6 +2588,10 @@ export class TabManager {
    */
   async unloadTab(tabId) {
     const tab = this.tabs.get(tabId)
+    if (tab?.loadState === 'unloaded' && this._deferredStartupWatchTabIds.delete(tabId)) {
+      await this._saveSession()
+      return true
+    }
     if (!tab || tab.loadState === 'unloaded' || tab.loadState === 'unloading') {
       return false
     }
@@ -3152,7 +3158,9 @@ export class TabManager {
           color: TabManager.normalizeTabColor(tab.color),
           groupId: tab.groupId,
           skipSilence: tab.skipSilence === true,
-          isUnloaded: tab.loadState === 'unloaded' || this._deferredUnloadTabIds.has(tab.id),
+          // Startup deferral delays mounting without changing the saved load intent.
+          isUnloaded: (tab.loadState === 'unloaded' && !this._deferredStartupWatchTabIds.has(tab.id)) ||
+            this._deferredUnloadTabIds.has(tab.id),
           ...(tab.placementOpenerTabId != null && {
             placementOpenerTabId: tab.placementOpenerTabId
           })
@@ -3204,7 +3212,8 @@ export class TabManager {
         isPinned: tab.isPinned,
         color: tab.color,
         groupId: tab.groupId,
-        isUnloaded: tab.isUnloaded || this._deferredUnloadTabIds.has(tab.id),
+        isUnloaded: (tab.isUnloaded && !this._deferredStartupWatchTabIds.has(tab.id)) ||
+          this._deferredUnloadTabIds.has(tab.id),
         ...(this.tabs.get(tab.id)?.placementOpenerTabId != null && {
           placementOpenerTabId: this.tabs.get(tab.id).placementOpenerTabId
         }),
