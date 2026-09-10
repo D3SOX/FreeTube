@@ -35,12 +35,15 @@ test('zero watched threshold preserves actual thumbnail progress', () => {
   assert.equal(thumbnailProgress({ progress: 700 }), 100)
 })
 
-test('nonzero watched thresholds retain completed bars for watched videos', () => {
-  assert.equal(thumbnailProgress({ threshold: 90, progress: 540 }), 100)
-  assert.equal(thumbnailProgress({ threshold: 90 }), 25)
-  assert.equal(thumbnailProgress({ threshold: 90, watched: true }), 100)
-  assert.equal(thumbnailProgress({ threshold: 100, progress: 540 }), 90)
-})
+for (const threshold of [0, 1, 50, 90, 100]) {
+  test(`watched status does not override saved progress at threshold ${threshold}`, () => {
+    assert.equal(thumbnailProgress({ threshold, progress: 540 }), 90)
+    assert.equal(thumbnailProgress({ threshold, watched: true }), 25)
+    assert.equal(thumbnailProgress({ threshold, watched: false }), 25)
+    assert.equal(thumbnailProgress({ threshold, progress: 0, watched: true }), 0)
+    assert.equal(thumbnailProgress({ threshold, progress: 600, watched: true }), 100)
+  })
+}
 
 test('unknown or zero durations do not show thumbnail progress', () => {
   assert.equal(thumbnailProgress({ duration: null, watched: true }), 0)

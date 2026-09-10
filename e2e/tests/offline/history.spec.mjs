@@ -541,7 +541,7 @@ test.describe('watch history with an immediate watched threshold', () => {
       const records = contents.trim().split('\n').filter(Boolean).map(line => JSON.parse(line))
       return records.filter(record => record.videoId === 'ddddddddddd').at(-1)?.watchProgress
     }).toBe(0)
-    await expect(video.locator('.watchedProgressBar')).toHaveAttribute('data-progress', '100')
+    await expect(video.locator('.watchedProgressBar')).toHaveCount(0)
   })
 })
 

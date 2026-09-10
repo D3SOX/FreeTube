@@ -864,10 +864,6 @@ const progressPercentage = computed(() => {
     return 0
   }
 
-  if (isWatched.value && watchedPercentageThreshold.value !== 0) {
-    return 100
-  }
-
   const percentage = (Math.ceil(watchProgress.value) / lengthSeconds.value) * 100
   return Math.min(percentage, 100)
 })
