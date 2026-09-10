@@ -732,6 +732,8 @@ Settings:
     Restricted Playback Authentication Warning: Коришћење програма yt-dlp са Google налогом може довести до привременог или трајног ограничења налога.
     Use cookies for subtitles: "Користи колачиће за титлове"
   Privacy Settings:
+    Internet Connectivity Checks: "Провере интернет везе"
+    Internet Connectivity Checks Tooltip: "Шаље мале захтеве серверу који хостује GrapheneOS ради провере приступа интернету."
     Automatic History Retention: Аутоматско чување историје (у данима)
     Automatic History Retention Placeholder: Оставите празно да би се чувала заувек
     Automatic History Retention Tooltip: Оставите празно да би се историја чувала заувек. Чувањем броја старији уноси се уклањају одмах, а затим и аутоматски док је апликација отворена.
@@ -1796,6 +1798,7 @@ Theme Discovery:
   Update and Apply: "Ажурирај и примени"
 
 Connection:
+  Offline: Ван мреже
   Reconnecting: "Веза је прекинута. Покушавам поновно повезивање…"
   Back Online: "Поново на мрежи"
 

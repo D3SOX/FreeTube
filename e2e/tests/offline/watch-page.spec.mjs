@@ -1,5 +1,5 @@
 import crypto from 'node:crypto'
-import { sel, setPlayerFullscreen, setWindowSize, test, expect } from '../../helpers/app.mjs'
+import { abortUnmockedRequest, sel, setPlayerFullscreen, setWindowSize, test, expect } from '../../helpers/app.mjs'
 import { activeTab, findWatchComponent, openMockedVideo, waitForPlayback } from '../../helpers/player.mjs'
 import { mockPlayableWatchPage, watchViewHandle } from '../../helpers/watch.mjs'
 import {
@@ -533,7 +533,7 @@ for (const { label, musicVideoType } of [
 
 test('detects Invidious audio tracks from artist topic channels', async ({ page }) => {
   const instanceUrl = 'https://invidious.test'
-  await page.route(/^https?:\/\//, route => route.abort())
+  await page.route(/^https?:\/\//, abortUnmockedRequest)
   await page.route(`${instanceUrl}/api/v1/videos/**`, route => route.fulfill({
     json: {
       title: 'Invidious audio track',

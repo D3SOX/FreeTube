@@ -3,7 +3,7 @@ import { readFile, readdir } from 'node:fs/promises'
 import path from 'node:path'
 import { gunzipSync } from 'node:zlib'
 
-import { goTo, repoRoot, sel, test, expect } from '../../helpers/app.mjs'
+import { abortUnmockedRequest, goTo, repoRoot, sel, test, expect } from '../../helpers/app.mjs'
 import { fixtureKey } from '../../helpers/innertube.mjs'
 import { demoPlayerResponse, routeWatchPageHtml } from '../../helpers/media.mjs'
 import { watchViewHandle } from '../../helpers/watch.mjs'
@@ -51,7 +51,7 @@ async function mockBlockedVideo({
     ipcMain.handle('generate-po-token', () => 'test-po-token')
   })
 
-  await page.route(/^https?:\/\//, (route) => route.abort())
+  await page.route(/^https?:\/\//, abortUnmockedRequest)
   await routeWatchPageHtml(page)
   await page.route(/^https?:\/\//, async (route, request) => {
     const url = request.url()

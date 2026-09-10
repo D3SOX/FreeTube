@@ -3,7 +3,7 @@ import { readFile, readdir } from 'node:fs/promises'
 import path from 'node:path'
 import { gunzipSync } from 'node:zlib'
 
-import { repoRoot } from './app.mjs'
+import { abortUnmockedRequest, repoRoot } from './app.mjs'
 import { fixtureKey, SHARED_PLAYER_SCRIPT } from './innertube.mjs'
 import { demoPlayerResponse, routeDemoMedia, routeIframeApi, routeWatchPageHtml, stubPoToken } from './media.mjs'
 
@@ -151,7 +151,7 @@ export async function mockWatchPage(app, page, {
 
   await stubPoToken(app.electronApp)
 
-  await page.route(/^https?:\/\//, (route) => route.abort())
+  await page.route(/^https?:\/\//, abortUnmockedRequest)
   // A missing optional label is an HTTP 404, not a lost connection. Aborting
   // it would leave other SponsorBlock requests waiting for network recovery.
   await page.route('**/api/videoLabels/**', route => route.fulfill({ status: 404, body: '' }))

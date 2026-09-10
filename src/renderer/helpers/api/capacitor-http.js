@@ -1,6 +1,5 @@
 import { CapacitorHttp } from '@capacitor/core'
 
-import { classifyRequestFailure } from './requestDiagnostics.js'
 import { withNetworkRecovery } from '../networkRecovery.js'
 import { createAbortError } from './requestErrors.js'
 
@@ -218,20 +217,4 @@ export async function fetchCapacitorAvatarDataUrl(src) {
   }
 
   return `data:${mimeType};base64,${response.data}`
-}
-
-/** Checks transport reachability without WebView CORS or the recovery queue. */
-export async function verifyCapacitorConnection(input) {
-  try {
-    await CapacitorHttp.request({
-      url: input instanceof Request ? input.url : input.toString(),
-      method: 'HEAD',
-      responseType: 'text',
-      connectTimeout: 5000,
-      readTimeout: 5000,
-    })
-    return true
-  } catch (error) {
-    return classifyRequestFailure(error) !== 'network'
-  }
 }

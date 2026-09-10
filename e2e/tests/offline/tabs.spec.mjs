@@ -1,6 +1,6 @@
 import { randomBytes } from 'node:crypto'
 
-import { test, expect, sel, goTo, goToSettingsSection } from '../../helpers/app.mjs'
+import { abortUnmockedRequest, test, expect, sel, goTo, goToSettingsSection } from '../../helpers/app.mjs'
 import {
   encryptSyncServerDeviceInfo,
   randomSyncServerDeviceId,
@@ -2166,7 +2166,7 @@ test.describe('background tab shortcuts', () => {
   for (const [label, shortcut] of [['Ctrl+R', 'Control+r'], ['F5', 'F5']]) {
     test(`${label} refreshes the current feed on an active subscriptions tab`, async ({ page }) => {
       await expect(page.getByText(/disabled automatic subscription fetching/i)).toBeVisible()
-      await page.route(/^https?:\/\//, (route) => route.abort())
+      await page.route(/^https?:\/\//, abortUnmockedRequest)
 
       const beforeRefresh = await page.evaluate(() => window.ftElectron.tabs.getState())
       const refreshKey = beforeRefresh.tabs.find(tab => tab.id === beforeRefresh.activeTabId).refreshKey

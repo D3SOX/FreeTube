@@ -723,6 +723,8 @@ Settings:
     Restricted Playback Authentication Warning: Als je yt-dlp met een Google-account gebruikt, kan je account tijdelijk of permanent worden beperkt.
     Use cookies for subtitles: "Cookies gebruiken voor ondertitels"
   Privacy Settings:
+    Internet Connectivity Checks: "Internetverbinding controleren"
+    Internet Connectivity Checks Tooltip: "Stuurt kleine verzoeken naar een server gehost door GrapheneOS om internettoegang te controleren."
     Automatic History Retention: Geschiedenis automatisch bewaren (dagen)
     Automatic History Retention Placeholder: Leeg laten om onbeperkt te bewaren
     Automatic History Retention Tooltip: Laat dit leeg om de geschiedenis onbeperkt te bewaren. Als je een getal opslaat, worden oudere items nu en automatisch verwijderd zolang de app geopend is.
@@ -1779,6 +1781,7 @@ Theme Discovery:
   Update and Apply: "Bijwerken en toepassen"
 
 Connection:
+  Offline: Offline
   Reconnecting: "Verbinding verbroken. Bezig met opnieuw verbinden…"
   Back Online: "Weer online"
 

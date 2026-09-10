@@ -712,6 +712,8 @@ Settings:
     Restricted Playback Authentication Warning: yt-dlp Google kontu batekin erabiltzeak kontua aldi baterako edo behin betiko mugatzea eragin dezake.
     Use cookies for subtitles: "Erabili cookieak azpitituluetarako"
   Privacy Settings:
+    Internet Connectivity Checks: "Interneteko konexioaren egiaztapenak"
+    Internet Connectivity Checks Tooltip: "Eskaera txikiak bidaltzen dizkio GrapheneOSek ostatatutako zerbitzari bati Interneterako sarbidea egiaztatzeko."
     Automatic History Retention: Historiaren atxikipen automatikoa (egunak)
     Automatic History Retention Placeholder: Utzi hutsik betiko gordetzeko
     Automatic History Retention Tooltip: Utzi hutsik historia betiko gordetzeko. Zenbaki bat gordetzean, sarrera zaharragoak orain eta automatikoki kenduko dira aplikazioa irekita dagoen bitartean.
@@ -1751,6 +1753,7 @@ Theme Discovery:
   Update and Apply: "Eguneratu eta aplikatu"
 
 Connection:
+  Offline: Lineaz kanpo
   Reconnecting: "Konexioa galdu da. Berriz konektatzen saiatzen…"
   Back Online: "Berriro konektatuta"
 

@@ -76,7 +76,7 @@
 .toast-holder.position-bottom-left[data-sonner-toaster],
 .toast-holder.position-bottom-center[data-sonner-toaster],
 .toast-holder.position-bottom-right[data-sonner-toaster] {
-  inset-block: auto var(--offset-bottom);
+  inset-block: auto calc(var(--offset-bottom) + var(--mobile-toast-inset, 0px) + var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)));
 }
 
 /* Toasts stack away from the edge they are anchored to, which for the top
@@ -190,6 +190,8 @@
    readout with its own lifetime, so it is anchored to the same edge on its own
    and the toaster is offset past it. */
 .progress-toast-holder {
+  flex-direction: column;
+  gap: 10px;
   position: fixed;
   z-index: 300;
   display: flex;
@@ -207,7 +209,7 @@
 .progress-toast-holder.position-bottom-left,
 .progress-toast-holder.position-bottom-center,
 .progress-toast-holder.position-bottom-right {
-  inset-block-end: 24px;
+  inset-block-end: calc(24px + var(--mobile-toast-inset, 0px) + var(--connection-height, 0px));
 }
 
 .progress-toast-holder.position-top-left,
@@ -222,6 +224,7 @@
 .progress-toast-holder.position-top-left {
   left: calc(24px + var(--left-tab-bar-offset, 0px));
   justify-content: flex-start;
+  align-items: flex-start;
 }
 
 .progress-toast-holder.position-bottom-center,
@@ -229,12 +232,14 @@
   right: 0;
   left: 0;
   justify-content: center;
+  align-items: center;
 }
 
 .progress-toast-holder.position-bottom-right,
 .progress-toast-holder.position-top-right {
   right: calc(24px + var(--right-tab-bar-offset, 0px));
   justify-content: flex-end;
+  align-items: flex-end;
 }
 /* stylelint-enable liberty/use-logical-spec */
 
@@ -249,7 +254,7 @@
 .progress-toast-holder.bottom-tabs.position-bottom-left,
 .progress-toast-holder.bottom-tabs.position-bottom-center,
 .progress-toast-holder.bottom-tabs.position-bottom-right {
-  inset-block-end: 58px;
+  inset-block-end: calc(58px + var(--mobile-toast-inset, 0px) + var(--connection-height, 0px));
 }
 
 :is(.toast-holder, .progress-toast-holder) .toast-slot {
@@ -372,7 +377,7 @@
   /* Stay within the viewport on narrow windows, accounting for the holder's
      inline inset and this element's own margins */
   max-inline-size: min(400px, calc(100vw - 60px));
-  inline-size: max-content;
+  inline-size: var(--toast-natural-width, max-content);
   padding-block: 12px;
   padding-inline: 18px;
   text-align: start;
@@ -676,27 +681,8 @@
   }
 }
 
-/* Teleport puts the holders beside `.app`, hence the body queries. Bottom
-   positions stay above the phone navigation; top positions stay below the app
-   header. The shared position rules keep control of the horizontal edge. The
-   toaster offsets already include the regular 29px edge inset and any progress
-   toast clearance, so its rules add the remaining 43px of phone chrome space.
-   The progress holder's 5px padding needs the matching 67px holder inset. */
-/* stylelint-disable liberty/use-logical-spec -- overrides sonner's physical mobile insets */
-body:has(.app.capacitorPhoneLayout) .toast-holder.position-bottom-left[data-sonner-toaster],
-body:has(.app.capacitorPhoneLayout) .toast-holder.position-bottom-center[data-sonner-toaster],
-body:has(.app.capacitorPhoneLayout) .toast-holder.position-bottom-right[data-sonner-toaster] {
-  top: auto;
-  bottom: calc(var(--offset-bottom) + 43px + var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)));
-}
-/* stylelint-enable liberty/use-logical-spec */
-
-body:has(.app.capacitorPhoneLayout) .progress-toast-holder.position-bottom-left,
-body:has(.app.capacitorPhoneLayout) .progress-toast-holder.position-bottom-center,
-body:has(.app.capacitorPhoneLayout) .progress-toast-holder.position-bottom-right {
-  inset-block: auto calc(60px + var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)) + 7px);
-}
-
+/* Teleport puts the holders beside `.app`, hence the body queries.
+   Top positions stay below the app header. */
 body:has(.app.capacitorPhoneLayout) .toast-holder.position-top-left[data-sonner-toaster],
 body:has(.app.capacitorPhoneLayout) .toast-holder.position-top-center[data-sonner-toaster],
 body:has(.app.capacitorPhoneLayout) .toast-holder.position-top-right[data-sonner-toaster] {
@@ -721,4 +707,45 @@ body:has(.app.capacitorTabletLayout) .progress-toast-holder.position-top-left,
 body:has(.app.capacitorTabletLayout) .progress-toast-holder.position-top-center,
 body:has(.app.capacitorTabletLayout) .progress-toast-holder.position-top-right {
   inset-block-start: calc(var(--safe-area-inset-top, env(safe-area-inset-top, 0px)) + 48px + var(--top-nav-height, 60px) + 12px);
+}
+
+.connection-status-holder {
+  position: fixed;
+  z-index: 1002;
+  inset-inline: 0;
+  inset-block-end: calc(var(--connection-navigation-inset, 0px) + var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)));
+  pointer-events: none;
+}
+
+.connection-status-holder.bottom-tabs {
+  inset-block-end: calc(34px + var(--connection-navigation-inset, 0px) + var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)));
+}
+
+body:has(.app.capacitorPhoneLayout) {
+  --connection-navigation-inset: 60px;
+  --mobile-toast-inset: 43px;
+}
+
+@media (width <= 680px) {
+  body:has(.app) {
+    --connection-navigation-inset: 60px;
+    --mobile-toast-inset: 43px;
+  }
+}
+
+body:has(.app) :fullscreen .connection-status-holder {
+  inset-block-end: var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0));
+}
+
+/* Use the available width in short landscape windows so wrapped messages
+   leave room for the navigation and connection banner below them. */
+@media (height <= 450px) and (orientation: landscape) {
+  .toast-holder .toast {
+    inline-size: max-content;
+    max-inline-size: calc(100vw - var(--offset-left) - var(--offset-right));
+  }
+
+  .progress-toast-holder .toast {
+    max-inline-size: calc(100vw - 60px - var(--left-tab-bar-offset, 0px) - var(--right-tab-bar-offset, 0px));
+  }
 }

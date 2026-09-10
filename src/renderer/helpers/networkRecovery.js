@@ -1,3 +1,5 @@
+import { isAppHidden } from './appVisibility.js'
+import { createInternetConnectivity, createInternetProbe } from './internetConnectivity.js'
 import { classifyRequestFailure } from './api/requestDiagnostics.js'
 import { createAbortError } from './api/requestErrors.js'
 
@@ -10,7 +12,12 @@ export function isRecoverableNetworkError(error) {
  * One connectivity listener for the app. Each origin gets one recovery probe,
  * so an unavailable optional service cannot block YouTube or another backend.
  */
-export function createNetworkRecovery({ eventTarget, isOnline, onChange = () => {} }) {
+export function createNetworkRecovery({ eventTarget, isOnline, visibilityTarget, isVisible, checkInternet, internetChecksEnabled = true, onChange = () => {} }) {
+  const connectivity = checkInternet ? createInternetConnectivity({ eventTarget, isOnline, probe: checkInternet, enabled: internetChecksEnabled, visibilityTarget, isVisible }) : null
+  if (connectivity) {
+    eventTarget = connectivity.events
+    isOnline = () => connectivity.online
+  }
   const shutdown = new AbortController()
   const origins = new Map()
   const delegatedSignals = new WeakSet()
@@ -27,8 +34,8 @@ export function createNetworkRecovery({ eventTarget, isOnline, onChange = () => 
   }
 
   function update() {
-    // A failed origin or subscription refresh is not a device-wide outage.
-    // Keep request recovery independent from the global connection banner.
+    // Only OS status and independent reachability checks set global status.
+    // An individual origin can keep retrying without declaring an outage.
     if (!online) publish('offline')
     else if (state === 'offline') publish('restored')
     else if (!state) publish('online')
@@ -64,8 +71,19 @@ export function createNetworkRecovery({ eventTarget, isOnline, onChange = () => 
     })
   }
 
+  function waitForPromise(promise, signal) {
+    return new Promise((resolve, reject) => {
+      const aborted = () => reject(createAbortError())
+      signal.addEventListener('abort', aborted, { once: true })
+      promise.then(resolve, reject).finally(() => signal.removeEventListener('abort', aborted))
+      if (signal.aborted) aborted()
+    })
+  }
+
   async function run(originKey, task, { signal: callerSignal, retry = true, isNetworkError = error => classifyRequestFailure(error) === 'network' } = {}) {
     const signal = callerSignal ? AbortSignal.any([callerSignal, shutdown.signal]) : shutdown.signal
+    if (signal.aborted) throw createAbortError()
+    if (connectivity) await waitForPromise(connectivity.ready, signal)
     if (signal.aborted) throw createAbortError()
     let origin = origins.get(originKey)
     if (!origin) {
@@ -78,11 +96,7 @@ export function createNetworkRecovery({ eventTarget, isOnline, onChange = () => 
         if (signal.aborted) throw createAbortError()
         if (origin.probe) {
           // A cancelled probe must release its followers, not cancel them.
-          await Promise.race([origin.probe, new Promise((resolve, reject) => {
-            const aborted = () => reject(createAbortError())
-            signal.addEventListener('abort', aborted, { once: true })
-            origin.probe.finally(() => signal.removeEventListener('abort', aborted))
-          })])
+          await waitForPromise(origin.probe, signal)
           continue
         }
         if (!online || origin.failed) {
@@ -105,6 +119,7 @@ export function createNetworkRecovery({ eventTarget, isOnline, onChange = () => 
                   origin.failed = false
                   throw error
                 }
+                if (online && connectivity) await waitForPromise(connectivity.check(), signal)
                 if (!retry) throw error
                 origin.failed = true
                 delay = Math.min(delay * 2, 60000)
@@ -118,7 +133,9 @@ export function createNetworkRecovery({ eventTarget, isOnline, onChange = () => 
         try {
           return await task(signal)
         } catch (error) {
-          if (signal.aborted || !retry || !await isNetworkError(error)) throw error
+          if (signal.aborted || !await isNetworkError(error)) throw error
+          if (online && connectivity) await waitForPromise(connectivity.check(), signal)
+          if (!retry) throw error
           origin.failed = true
         }
       }
@@ -132,6 +149,12 @@ export function createNetworkRecovery({ eventTarget, isOnline, onChange = () => 
 
   return {
     run,
+    setInternetChecksEnabled(enabled) {
+      connectivity?.setEnabled(enabled)
+      if (!enabled && online) publish('online')
+    },
+    get ready() { return connectivity?.ready ?? Promise.resolve(online) },
+    checkConnection: () => connectivity?.check() ?? Promise.resolve(online),
     // A whole-operation retry can own its transport calls, including backend
     // fallback. Those calls must not wait in a second, nested recovery queue.
     delegateRequests(signal) {
@@ -142,6 +165,7 @@ export function createNetworkRecovery({ eventTarget, isOnline, onChange = () => 
     get state() { return state },
     dispose() {
       shutdown.abort()
+      connectivity?.dispose()
       clearTimeout(restoredTimer)
       eventTarget.removeEventListener('online', connectivityChanged)
       eventTarget.removeEventListener('offline', connectivityChanged)
@@ -153,10 +177,14 @@ let appRecovery
 export const connectionEvents = new EventTarget()
 export function getConnectionState() { return appRecovery?.state ?? 'online' }
 
-export function initializeNetworkRecovery() {
+export function initializeNetworkRecovery({ checkInternet, internetChecksEnabled } = {}) {
   if (!appRecovery) {
     appRecovery = createNetworkRecovery({
+      checkInternet,
+      internetChecksEnabled,
       eventTarget: window,
+      visibilityTarget: typeof document === 'undefined' ? undefined : document,
+      isVisible: () => !isAppHidden(),
       isOnline: () => navigator.onLine !== false,
       onChange: state => connectionEvents.dispatchEvent(new CustomEvent('change', { detail: state }))
     })
@@ -186,9 +214,9 @@ export function withNetworkRecovery(input, init, task, options = {}) {
   return initializeNetworkRecovery().run(url.origin, task, { ...options, signal: init?.signal ?? request?.signal, retry })
 }
 
-export function installNetworkFetch({ verifyConnection, corsDisabled = false } = {}) {
-  initializeNetworkRecovery()
+export function installNetworkFetch({ corsDisabled = false, checkInternet = false, internetChecksEnabled = true } = {}) {
   const fetch = window.fetch.bind(window)
+  initializeNetworkRecovery({ checkInternet: checkInternet ? createInternetProbe(fetch) : undefined, internetChecksEnabled })
   window.fetch = async (input, init) => withNetworkRecovery(input, init, async signal => {
     // A fetch can stall while the OS still reports online. Bound the wait for
     // response headers; media response bodies keep their streaming behavior.
@@ -207,9 +235,8 @@ export function installNetworkFetch({ verifyConnection, corsDisabled = false } =
       if (classifyRequestFailure(error) !== 'network') return false
       if (error.name !== 'TypeError' || navigator.onLine === false || corsDisabled) return true
       // Browsers hide CORS failures behind the same TypeError as a lost route.
-      // On Android verify through native HTTP before pausing the whole origin.
-      // Elsewhere let the caller handle an ambiguous browser failure.
-      const networkError = verifyConnection ? !await verifyConnection(input) : false
+      // Use the shared connectivity check to distinguish an internet outage.
+      const networkError = !await appRecovery.checkConnection()
       if (!networkError) nonNetworkErrors.add(error)
       return networkError
     }

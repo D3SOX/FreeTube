@@ -710,6 +710,8 @@ Settings:
     Restricted Playback Authentication Warning: Googleアカウントでyt-dlpを使用すると、アカウントが一時的または永久に制限される場合があります。
     Use cookies for subtitles: "字幕に Cookie を使用"
   Privacy Settings:
+    Internet Connectivity Checks: "インターネット接続の確認"
+    Internet Connectivity Checks Tooltip: "GrapheneOS がホストするサーバーに小さなリクエストを送り、インターネット接続を確認します。"
     Automatic History Retention: 履歴の自動保持期間（日）
     Automatic History Retention Placeholder: 無期限に保持する場合は空欄
     Automatic History Retention Tooltip: 履歴を無期限に保持する場合は空欄にしてください。日数を保存すると、それより古い履歴を今すぐ削除し、アプリの起動中も自動的に削除します。
@@ -1724,6 +1726,7 @@ Theme Discovery:
   Update and Apply: "更新して適用"
 
 Connection:
+  Offline: オフライン
   Reconnecting: "接続が切れました。再接続しています…"
   Back Online: "オンラインに戻りました"
 

@@ -886,6 +886,8 @@ Settings:
     Restricted Playback Authentication Warning: Google 계정과 함께 yt-dlp를 사용하면 계정이 일시적 또는 영구적으로 제한될 수 있습니다.
     Use cookies for subtitles: "자막에 쿠키 사용"
   Privacy Settings:
+    Internet Connectivity Checks: "인터넷 연결 확인"
+    Internet Connectivity Checks Tooltip: "GrapheneOS가 호스팅하는 서버에 작은 요청을 보내 인터넷 연결을 확인합니다."
     Automatic History Retention: 시청 기록 자동 보관 기간 (일)
     Automatic History Retention Placeholder: 영구 보관하려면 비워 두세요
     Automatic History Retention Tooltip: 시청 기록을 영구 보관하려면 비워 두세요. 숫자를 저장하면 오래된 기록을 즉시 제거하고 앱이 열려 있는 동안에도 자동으로 제거합니다.
@@ -2174,6 +2176,7 @@ Theme Discovery:
   Update and Apply: "업데이트 및 적용"
 
 Connection:
+  Offline: 오프라인
   Reconnecting: "연결이 끊어졌습니다. 다시 연결하는 중…"
   Back Online: "다시 온라인 상태입니다"
 

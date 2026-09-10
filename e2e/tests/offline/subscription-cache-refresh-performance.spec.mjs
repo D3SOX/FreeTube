@@ -1,11 +1,11 @@
-import { test, expect, goTo } from '../../helpers/app.mjs'
+import { abortUnmockedRequest, test, expect, goTo } from '../../helpers/app.mjs'
 import { largeSubscriptionsSeed } from '../../performance/subscriptions.mjs'
 
 test.use({ seed: largeSubscriptionsSeed })
 
 for (const feed of ['videos', 'new']) {
   test(`refreshes cached channels efficiently with the ${feed} feed visible`, async ({ page }, testInfo) => {
-    await page.route(/^https?:\/\//, route => route.abort())
+    await page.route(/^https?:\/\//, abortUnmockedRequest)
     await goTo(page, 'subscriptions')
     await page.locator(`[data-subscription-feed-tab="${feed === 'new' ? 'all' : 'videos'}"]`).click()
     if (feed === 'new') await expect(page.locator('#subscriptionsPanel.newFeed')).toBeVisible()

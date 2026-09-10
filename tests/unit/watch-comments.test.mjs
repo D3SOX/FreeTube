@@ -20,3 +20,8 @@ test('shows comments for videos and active premieres but not live streams', () =
 test('respects the hide comments preference for premieres', () => {
   assert.equal(areCommentsAvailable({ isLive: true, isPremiere: true, hideComments: true }), false)
 })
+
+test('downloaded playback without online metadata does not mount a comments request that waits forever offline', () => {
+  assert.equal(areCommentsAvailable({ isLive: false, hideComments: false, localFilePlayback: true, channelId: '' }), false)
+  assert.equal(areCommentsAvailable({ isLive: false, hideComments: false, localFilePlayback: true, channelId: 'UCchannel' }), true)
+})

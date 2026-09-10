@@ -1,49 +1,45 @@
 .connectionStatus {
-  position: fixed;
-  z-index: 10000;
-  inset-inline: 12px;
-  inset-block-end: calc(12px + var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)));
-  inline-size: fit-content;
-  max-inline-size: calc(100% - 48px);
-  margin-inline: auto;
-  padding-block: 10px;
+  position: relative;
+  box-sizing: border-box;
+  inline-size: 100%;
+  padding-block: 6px;
   padding-inline: 16px;
-  border-radius: 8px;
-  background-color: #303030;
-  color: #fff;
-  font-size: 14px;
+  background-color: color-mix(in srgb, var(--primary-text-color) 12%, var(--card-bg-color));
+  color: var(--primary-text-color);
+  font-size: 13px;
   line-height: 1.5;
   overflow-wrap: anywhere;
   text-align: center;
   pointer-events: none;
+  overflow: clip;
 }
 
 .connectionStatus.restored {
   background-color: #216e39;
+  color: #fff;
 }
 
-.connectionStatus.hidden {
-  visibility: hidden;
+.connectionStatus.reconnecting::after {
+  content: '';
+  position: absolute;
+  inset-inline-start: 0;
+  inset-block-end: 0;
+  inline-size: 25%;
+  block-size: 2px;
+  background-color: currentcolor;
+  opacity: 0.6;
+  animation: connection-sweep 1.8s ease-in-out infinite;
 }
 
-body:has(.app.bottomTabs) .connectionStatus {
-  inset-block-end: 46px;
+@keyframes connection-sweep {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(400%); }
 }
 
-@media (width <= 680px) {
-  body:has(.app) .connectionStatus {
-    inset-block-end: calc(72px + var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)));
+@media (prefers-reduced-motion: reduce) {
+  .connectionStatus.reconnecting::after {
+    animation: none;
+    inline-size: 100%;
+    opacity: 0.25;
   }
-
-  body:has(.app.bottomTabs) .connectionStatus {
-    inset-block-end: calc(106px + var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)));
-  }
-}
-
-body:has(.app.capacitorPhoneLayout) .connectionStatus {
-  inset-block-end: calc(72px + var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)));
-}
-
-body:has(.app) :fullscreen .connectionStatus {
-  inset-block-end: calc(12px + var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)));
 }

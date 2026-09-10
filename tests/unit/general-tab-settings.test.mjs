@@ -46,22 +46,30 @@ test('mobile startup waits for saved settings before restoring tabs', async () =
   let finishSettings
   const settingsReady = new Promise(resolve => { finishSettings = resolve })
   let restored = false
+  const connectivityChoices = []
   const { tabsReady } = vm.runInNewContext(`${initialization}; ({ tabsReady })`, {
     isElectron: false,
     isCapacitor: true,
     route: {},
     ytDlp: { addYtDlpBinaryUpdatedListener: () => {} },
     invalidateAllYtDlpPlaybackSources: () => {},
-    store: { dispatch: () => settingsReady },
+    store: {
+      dispatch: () => settingsReady,
+      getters: { getInternetConnectivityChecks: false },
+      watch(getter, callback) { callback(getter()); return () => {} },
+    },
+    initializeNetworkRecovery: () => ({ setInternetChecksEnabled: value => connectivityChoices.push(value) }),
     initializeAndroidYtDlp: () => {},
     initializeCapacitorTabPreviews: () => {},
     capacitorTabService: { initialize: async () => { restored = true } },
   })
   await Promise.resolve()
   assert.equal(restored, false)
+  assert.deepEqual(connectivityChoices, [])
   finishSettings({})
   await tabsReady
   assert.equal(restored, true)
+  assert.deepEqual(connectivityChoices, [false])
 })
 
 const privacySource = await readFile(new URL('../../src/renderer/components/PrivacySettings.vue', import.meta.url), 'utf8')

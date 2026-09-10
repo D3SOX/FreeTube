@@ -474,7 +474,6 @@
       </div>
     </div>
   </div>
-  <FtConnectionStatus />
 </template>
 
 <script setup>
@@ -503,7 +502,7 @@ import FtPrompt from './components/FtPrompt/FtPrompt.vue'
 import SubscriptionRefreshErrors from './components/SubscriptionRefreshErrors.vue'
 import FtButton from './components/FtButton/FtButton.vue'
 import FtToast from './components/FtToast/FtToast.vue'
-import FtConnectionStatus from './components/FtConnectionStatus/FtConnectionStatus.vue'
+import { initializeNetworkRecovery } from './helpers/networkRecovery'
 import FtProgressBar from './components/FtProgressBar/FtProgressBar.vue'
 import FtContextMenu from './components/FtContextMenu/FtContextMenu.vue'
 import { lockBodyScroll, unlockBodyScroll } from './components/FtPrompt/scrollLock'
@@ -1043,6 +1042,11 @@ async function initializeManagedExternalSoftware(requestedUpdates = null) {
     return
   }
 
+  const recovery = initializeNetworkRecovery()
+  // Native tool downloads do not pass through the renderer fetch wrapper.
+  // Wait before displaying download progress or checking for updates.
+  await recovery.run('managed-tools', async () => {})
+
   const info = await ytDlp.ytDlpGetInfo()
   if (info === null) {
     return
@@ -1111,6 +1115,8 @@ async function initializeManagedExternalSoftware(requestedUpdates = null) {
     return
   }
 
+  await recovery.run('managed-tools', async () => {})
+
   let downloadStarted = missingManagedBinaries.length > 0
   let toolProgressPercentage = 0
   let progressOperation = null
@@ -1165,7 +1171,14 @@ async function initializeManagedExternalSoftware(requestedUpdates = null) {
   try {
     const results = await Promise.all(binariesToUpdate.map(async binary => {
       try {
-        return { binary, result: await ytDlp.ytDlpDownloadBinary(binary) }
+        const result = await recovery.run('managed-tools', async () => {
+          const result = await ytDlp.ytDlpDownloadBinary(binary)
+          if (result === null || 'error' in result) {
+            throw new Error(result?.error ?? '')
+          }
+          return result
+        }, { isNetworkError: async () => !await recovery.checkConnection() })
+        return { binary, result }
       } catch (error) {
         return { binary, result: { error: String(error) } }
       }
@@ -1209,6 +1222,7 @@ async function initializeManagedExternalSoftware(requestedUpdates = null) {
  * @param {('yt-dlp' | 'ffmpeg' | 'ffprobe')[]} binariesInstalledThisRun
  */
 async function notifyAboutManagedExternalSoftwareUpdates(binariesInstalledThisRun) {
+  await initializeNetworkRecovery().run('managed-tools', async () => {})
   const candidates = []
   if ((isCapacitor || store.getters.getYtDlpSource === 'managed') && !binariesInstalledThisRun.includes('yt-dlp')) {
     candidates.push('yt-dlp')
@@ -1310,6 +1324,8 @@ async function completeTutorial() {
   }
 }
 
+let removeInternetConnectivitySettingsListener = null
+
 onMounted(async () => {
   removeGamepadNavigation = initializeGamepadNavigation({
     onBack: handleGamepadBack,
@@ -1338,6 +1354,11 @@ onMounted(async () => {
         })
       })
     }
+    removeInternetConnectivitySettingsListener = store.watch(
+      () => store.getters.getInternetConnectivityChecks,
+      enabled => initializeNetworkRecovery().setInternetChecksEnabled(enabled),
+      { immediate: true, flush: 'sync' }
+    )
     removeAndroidYtDlpSettingsListener = initializeAndroidYtDlp()
     return tutorialState
   })
@@ -1563,6 +1584,7 @@ onMounted(async () => {
 })
 
 onBeforeUnmount(() => {
+  removeInternetConnectivitySettingsListener?.()
   if (mobileLinkActionsLocked) {
     store.commit('removeOpenPrompt', mobileLinkActionsPromptId)
     unlockBodyScroll()

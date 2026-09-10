@@ -710,6 +710,8 @@ Settings:
     Restricted Playback Authentication Warning: Použití nástroje yt-dlp s účtem Google může vést k dočasnému nebo trvalému omezení účtu.
     Use cookies for subtitles: "Používat cookies pro titulky"
   Privacy Settings:
+    Internet Connectivity Checks: "Kontroly připojení k internetu"
+    Internet Connectivity Checks Tooltip: "Odesílá malé požadavky na server hostovaný GrapheneOS pro ověření přístupu k internetu."
     Automatic History Retention: Automatické uchovávání historie (dny)
     Automatic History Retention Placeholder: Chcete-li historii zachovat navždy, ponechte prázdné
     Automatic History Retention Tooltip: Chcete-li historii zachovat navždy, ponechte pole prázdné. Uložením čísla odstraníte starší záznamy ihned a poté automaticky, když je aplikace otevřená.
@@ -1724,6 +1726,7 @@ Theme Discovery:
   Update and Apply: "Aktualizovat a použít"
 
 Connection:
+  Offline: Offline
   Reconnecting: "Připojení ztraceno. Probíhá pokus o obnovení…"
   Back Online: "Znovu online"
 

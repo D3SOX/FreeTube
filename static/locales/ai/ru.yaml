@@ -695,6 +695,8 @@ Settings:
     Restricted Playback Authentication Warning: Использование yt-dlp с аккаунтом Google может привести к временным или постоянным ограничениям аккаунта.
     Use cookies for subtitles: "Использовать cookie для субтитров"
   Privacy Settings:
+    Internet Connectivity Checks: "Проверка подключения к интернету"
+    Internet Connectivity Checks Tooltip: "Отправляет небольшие запросы на сервер, размещённый GrapheneOS, для проверки доступа к интернету."
     Automatic History Retention: Автоматическое хранение истории (дней)
     Automatic History Retention Placeholder: Оставьте пустым для бессрочного хранения
     Automatic History Retention Tooltip: Оставьте поле пустым, чтобы хранить историю бессрочно. Если сохранить число, старые записи будут удалены сразу, а затем будут удаляться автоматически, пока приложение открыто.
@@ -1736,6 +1738,7 @@ Theme Discovery:
   Update and Apply: "Обновить и применить"
 
 Connection:
+  Offline: Не в сети
   Reconnecting: "Соединение потеряно. Попытка переподключения…"
   Back Online: "Снова в сети"
 

@@ -920,6 +920,8 @@ Settings:
     Posts Auto Refresh Interval: Automatisches Aktualisierungsinterval für Beiträge
     Refresh Subscriptions While App Is Closed: Abos bei geschlossener App aktualisieren
   Privacy Settings:
+    Internet Connectivity Checks: "Internetverbindung prüfen"
+    Internet Connectivity Checks Tooltip: "Prüft den Internetzugang mit kleinen Anfragen an einen von GrapheneOS gehosteten Server."
     Watch history has been cleared: Wiedergabeverlauf wurde gelöscht
     Are you sure you want to remove your entire watch history?: Bist du sicher, dass du deinen gesamten Wiedergabeverlauf löschen willst?
     Remove Watch History: Wiedergabeverlauf löschen
@@ -2917,6 +2919,7 @@ Theme Discovery:
   Update and Apply: "Aktualisieren und anwenden"
 
 Connection:
+  Offline: Offline
   Reconnecting: "Verbindung verloren. Verbindung wird wiederhergestellt…"
   Back Online: "Wieder online"
 

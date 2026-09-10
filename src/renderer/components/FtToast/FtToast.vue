@@ -16,11 +16,13 @@
     />
     <div
       v-if="showProgressToast"
+      ref="persistentHolder"
       class="progress-toast-holder"
       :class="[`position-${toastPosition}`, tabBarToastClasses]"
       :style="progressToastHolderStyle"
     >
       <div
+        v-if="showProgressToast"
         ref="progressToast"
         class="toast-slot persistent-slot"
         :class="{ minimized: progressToastMinimized }"
@@ -54,6 +56,14 @@
         </div>
       </div>
     </div>
+    <div
+      v-if="connectionState !== 'online'"
+      ref="connectionHolder"
+      class="connection-status-holder"
+      :class="tabBarToastClasses"
+    >
+      <FtConnectionStatus :state="connectionState" />
+    </div>
   </Teleport>
 </template>
 
@@ -68,6 +78,19 @@ import { showToast, ToastEventBus } from '../../helpers/utils'
 import store from '../../store'
 import FtEmbeddedProgress from '../FtEmbeddedProgress/FtEmbeddedProgress.vue'
 import FtToastItem from './FtToastItem.vue'
+import FtConnectionStatus from '../FtConnectionStatus/FtConnectionStatus.vue'
+import { connectionEvents, getConnectionState } from '../../helpers/networkRecovery'
+
+const connectionState = ref(getConnectionState())
+const connectionHolder = useTemplateRef('connectionHolder')
+const connectionHeight = ref(0)
+let connectionResizeObserver = null
+const updateConnectionState = event => { connectionState.value = event.detail }
+connectionEvents.addEventListener('change', updateConnectionState)
+/** @type {import('vue').Ref<HTMLElement|null>} */
+const persistentHolder = useTemplateRef('persistentHolder')
+/** @type {ResizeObserver|null} */
+let persistentHolderResizeObserver = null
 
 let removeShowToastListener = null
 const { t } = useI18n()
@@ -144,7 +167,7 @@ const fullscreenTarget = ref(null)
 /** @type {import('vue').Ref<HTMLElement|null>} */
 const progressToast = useTemplateRef('progressToast')
 const progressToastMinimized = ref(false)
-const progressToastHeight = ref(0)
+const persistentContentHeight = ref(0)
 /**
  * Width of the toast at the front of the stack, as a CSS length. Sonner records
  * the front toast's height so it can lay the collapsed stack out from it, but
@@ -180,8 +203,6 @@ const stackWidth = ref(null)
 let frontToastResizeObserver = null
 /** @type {MutationObserver|null} */
 let toastListObserver = null
-/** @type {ResizeObserver|null} */
-let progressToastResizeObserver = null
 /** @type {DOMRect|null} */
 let progressToastBounds = null
 /** @type {HTMLElement|null} */
@@ -205,6 +226,7 @@ const tabBarToastClasses = computed(() => ({
 }))
 const tabBarInlineOffset = computed(() => `${store.getters.getVerticalTabBarWidth}px`)
 const progressToastHolderStyle = computed(() => ({
+  '--connection-height': `${connectionHeight.value}px`,
   '--left-tab-bar-offset': tabBarPosition.value === 'left' ? tabBarInlineOffset.value : '0px',
   '--right-tab-bar-offset': tabBarPosition.value === 'right' ? tabBarInlineOffset.value : '0px'
 }))
@@ -222,16 +244,16 @@ const swipeDirections = computed(() => {
 })
 
 /**
- * Keeps the toast column clear of the persistent progress toast, which is
- * anchored to the same corner but sits outside the toaster.
+ * Keeps the toast column clear of connection status and progress messages
+ * sharing its configured corner.
  */
 const toasterOffset = computed(() => {
-  const progressInset = showProgressToast.value ? progressToastHeight.value + TOAST_GAP : 0
+  const progressInset = showProgressToast.value ? persistentContentHeight.value + TOAST_GAP : 0
 
   return {
     left: VIEWPORT_INSET + (tabBarPosition.value === 'left' ? store.getters.getVerticalTabBarWidth : 0),
     right: VIEWPORT_INSET + (tabBarPosition.value === 'right' ? store.getters.getVerticalTabBarWidth : 0),
-    bottom: (tabBarPosition.value === 'bottom' ? BOTTOM_TAB_BAR_INSET : VIEWPORT_INSET) + progressInset,
+    bottom: (tabBarPosition.value === 'bottom' ? BOTTOM_TAB_BAR_INSET : VIEWPORT_INSET) + progressInset + connectionHeight.value,
     top: (tabBarPosition.value === 'top' ? TAB_BAR_INSET : VIEWPORT_INSET) + progressInset
   }
 })
@@ -522,21 +544,40 @@ function clearMessageInterval(id) {
   }
 }
 
-// The toaster is anchored past the progress toast, so its height has to be
-// known before the toasts can be laid out clear of it.
+// Measure the banner independently of toast placement so it stays full width
+// while bottom-positioned notifications and progress stay above it.
+watch(connectionHolder, element => {
+  connectionResizeObserver?.disconnect()
+  if (!element) {
+    connectionHeight.value = 0
+    return
+  }
+  connectionResizeObserver ??= new ResizeObserver(([entry]) => {
+    connectionHeight.value = entry.contentRect.height
+  })
+  connectionResizeObserver.observe(element)
+})
+
+// Keep ordinary toasts clear of the progress message.
+watch(persistentHolder, element => {
+  persistentHolderResizeObserver?.disconnect()
+  if (!element) {
+    persistentContentHeight.value = 0
+    return
+  }
+  persistentHolderResizeObserver ??= new ResizeObserver(([entry]) => {
+    persistentContentHeight.value = entry.contentRect.height
+  })
+  persistentHolderResizeObserver.observe(element)
+})
+
 watch(progressToast, (element) => {
-  progressToastResizeObserver?.disconnect()
   stopProgressToastPointerTracking()
 
   if (!element) {
-    progressToastHeight.value = 0
     return
   }
 
-  progressToastResizeObserver ??= new ResizeObserver(([entry]) => {
-    progressToastHeight.value = entry.target.getBoundingClientRect().height
-  })
-  progressToastResizeObserver.observe(element)
   window.addEventListener('mousemove', onProgressToastPointerMove, { passive: true })
   window.addEventListener('resize', resetProgressToastProximity)
 })
@@ -575,7 +616,9 @@ onBeforeUnmount(() => {
   ToastEventBus.removeEventListener('toast-open', open)
   document.removeEventListener('fullscreenchange', updateFullscreenTarget)
   stopProgressToastPointerTracking()
-  progressToastResizeObserver?.disconnect()
+  persistentHolderResizeObserver?.disconnect()
+  connectionResizeObserver?.disconnect()
+  connectionEvents.removeEventListener('change', updateConnectionState)
   frontToastResizeObserver?.disconnect()
   toastListObserver?.disconnect()
   removeShowToastListener?.()

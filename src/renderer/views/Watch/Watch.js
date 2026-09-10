@@ -1,4 +1,4 @@
-import { connectionEvents, getConnectionState } from '../../helpers/networkRecovery'
+import { connectionEvents, initializeNetworkRecovery, getConnectionState } from '../../helpers/networkRecovery'
 import { ytDlp } from '../../helpers/ytDlp'
 import { supportsYtDlp } from '../../helpers/ytDlpCapabilities'
 import { isAppHidden } from '../../helpers/appVisibility.js'
@@ -2748,14 +2748,14 @@ export default defineComponent({
     },
 
     getVideoInformationLocal: async function (loadGeneration = ++this.videoLoadGeneration) {
-      // Keep online metadata when available, but never wait for reconnection to play a download.
-      if (getConnectionState() === 'offline' && this.finishDownloadedPlaybackWithoutMetadata()) return
-
       if (this.firstLoad) {
         this.isLoading = true
       }
 
       const videoId = this.tabRoute.params.id
+      await initializeNetworkRecovery().ready
+      if (!this.isCurrentVideoLoad(loadGeneration, videoId)) return
+      if (getConnectionState() === 'offline' && this.finishDownloadedPlaybackWithoutMetadata()) return
 
       try {
         const videoInfo = await getLocalVideoInfo(videoId)
@@ -3377,15 +3377,15 @@ export default defineComponent({
       }
     },
 
-    getVideoInformationInvidious: function (loadGeneration = ++this.videoLoadGeneration) {
-      // Keep online metadata when available, but never wait for reconnection to play a download.
-      if (getConnectionState() === 'offline' && this.finishDownloadedPlaybackWithoutMetadata()) return
-
+    getVideoInformationInvidious: async function (loadGeneration = ++this.videoLoadGeneration) {
       if (this.firstLoad) {
         this.isLoading = true
       }
 
       const videoId = this.tabRoute.params.id
+      await initializeNetworkRecovery().ready
+      if (!this.isCurrentVideoLoad(loadGeneration, videoId)) return
+      if (getConnectionState() === 'offline' && this.finishDownloadedPlaybackWithoutMetadata()) return
 
       invidiousGetVideoInformation(videoId)
         .then(async result => {

@@ -1,3 +1,4 @@
+import { createInternetConnectivity, createInternetProbe, INTERNET_CHECK_URL } from '../../src/renderer/helpers/internetConnectivity.js'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { createNetworkRecovery } from '../../src/renderer/helpers/networkRecovery.js'
@@ -104,7 +105,7 @@ async function loadAppNetwork(t, fetch, nativeRequest, options = {}) {
   const window = new EventTarget()
   window.fetch = fetch
   const context = vm.createContext({
-    options, window, navigator: { onLine: true }, location: { href: 'https://localhost/', origin: 'https://localhost' },
+    createInternetConnectivity, createInternetProbe, options, window, navigator: { onLine: true }, location: { href: 'https://localhost/', origin: 'https://localhost' },
     classifyRequestFailure, createAbortError, CapacitorHttp: { request: nativeRequest },
     AbortController, AbortSignal, DOMException, EventTarget, CustomEvent, Request, Response, Headers, URL, URLSearchParams, setTimeout, clearTimeout,
   })
@@ -113,7 +114,7 @@ async function loadAppNetwork(t, fetch, nativeRequest, options = {}) {
       .replace(/^import .* from .*\n/gm, '').replace(/^export /gm, '')
     vm.runInContext(source, context)
   }
-  vm.runInContext('installNetworkFetch({ verifyConnection: verifyCapacitorConnection, ...options }); globalThis.nativeFetch = capacitorHttpFetch; globalThis.recovery = appRecovery;', context)
+  vm.runInContext('installNetworkFetch(options); globalThis.nativeFetch = capacitorHttpFetch; globalThis.recovery = appRecovery;', context)
   t.after(() => context.recovery.dispose())
   return context
 }
@@ -145,12 +146,23 @@ test('native API and WebView requests share recovery, including an unreported ro
   assert.equal(app.recovery.state, 'online')
 })
 
-test('a browser CORS failure does not enter endless recovery when native HTTP reaches the server', async t => {
+test('a browser CORS failure checks only GrapheneOS without a native website probe', async t => {
+  let nativeCalls = 0
+  const checkedUrls = []
   const app = await loadAppNetwork(t,
-    async () => { throw new TypeError('Failed to fetch') },
-    async () => ({ status: 404, data: '', headers: {} }))
+    async input => {
+      if (input === INTERNET_CHECK_URL) {
+        checkedUrls.push(input)
+        return new Response(null, { status: 204 })
+      }
+      throw new TypeError('Failed to fetch')
+    },
+    async () => { nativeCalls++; return { status: 404, data: '', headers: {} } },
+    { checkInternet: true })
   await assert.rejects(app.window.fetch('https://www.youtube.com/oembed'), { message: 'Failed to fetch' })
   assert.equal(app.recovery.state, 'online')
+  assert.equal(nativeCalls, 0)
+  assert.deepEqual(checkedUrls, [INTERNET_CHECK_URL, INTERNET_CHECK_URL])
 })
 
 test('the connection timeout stops after headers and does not abort streaming video bodies', async t => {
@@ -169,7 +181,7 @@ test('Electron route failures recover while the OS still reports online', async 
   const app = await loadAppNetwork(t, async () => {
     if (fail) throw new TypeError('Failed to fetch')
     return new Response('recovered')
-  }, undefined, { corsDisabled: true, verifyConnection: undefined })
+  }, undefined, { corsDisabled: true })
   const pending = app.window.fetch('https://www.youtube.com/feeds/videos.xml')
   await flush()
   assert.equal(app.recovery.state, 'online')
@@ -180,7 +192,7 @@ test('Electron route failures recover while the OS still reports online', async 
 })
 
 test('delegated subscription transport retains browser CORS classification', async t => {
-  const app = await loadAppNetwork(t, async () => { throw new TypeError('Failed to fetch') }, undefined, { verifyConnection: undefined })
+  const app = await loadAppNetwork(t, async () => { throw new TypeError('Failed to fetch') }, undefined)
   const controller = new AbortController()
   const release = app.recovery.delegateRequests(controller.signal)
   t.after(release)
@@ -227,4 +239,124 @@ test('device reconnection clears the banner while an optional service keeps retr
   assert.deepEqual(states, ['online', 'offline', 'restored', 'online'])
   controller.abort()
   await rejected
+})
+
+test('LAN without internet pauses startup work and recovers without an OS online event', async t => {
+  t.mock.timers.enable({ apis: ['setTimeout'] })
+  let reachable = false
+  let probes = 0
+  let calls = 0
+  const recovery = createNetworkRecovery({
+    eventTarget: new EventTarget(), isOnline: () => true,
+    checkInternet: async () => { probes++; return reachable },
+  })
+  t.after(() => recovery.dispose())
+  const pending = recovery.run('managed-tools', async () => { calls++; return 'downloaded' })
+  await flush()
+  assert.equal(recovery.state, 'offline')
+  assert.equal(calls, 0)
+  assert.equal(probes, 1)
+  reachable = true
+  t.mock.timers.tick(5000)
+  await flush()
+  assert.equal(await pending, 'downloaded')
+  assert.equal(recovery.state, 'restored')
+})
+
+test('app resume detects a router losing internet without polling while healthy', async t => {
+  t.mock.timers.enable({ apis: ['setTimeout'] })
+  let reachable = true
+  const visibilityTarget = new EventTarget()
+  const recovery = createNetworkRecovery({
+    eventTarget: new EventTarget(), isOnline: () => true, visibilityTarget,
+    checkInternet: async () => reachable,
+  })
+  t.after(() => recovery.dispose())
+  await flush()
+  assert.equal(recovery.state, 'online')
+  reachable = false
+  t.mock.timers.tick(60000)
+  await flush()
+  assert.equal(recovery.state, 'online', 'healthy connections do not poll')
+  visibilityTarget.dispatchEvent(new Event('visibilitychange'))
+  await flush()
+  assert.equal(recovery.state, 'offline')
+})
+
+test('the installed fetch checks internet outside its own queue and resumes startup after WAN recovery', async t => {
+  t.mock.timers.enable({ apis: ['setTimeout'] })
+  let reachable = false
+  let requests = 0
+  const probes = []
+  const app = await loadAppNetwork(t, async (input, init) => {
+    if (input === INTERNET_CHECK_URL) {
+      probes.push(input)
+      assert.equal(init.method, 'HEAD')
+      if (!reachable) throw new TypeError('Failed to fetch')
+      return new Response(null, { status: 204 })
+    }
+    requests++
+    return new Response('startup')
+  }, undefined, { checkInternet: true, corsDisabled: true })
+  const pending = app.window.fetch('https://api.github.com/startup')
+  await flush()
+  assert.equal(app.recovery.state, 'offline')
+  assert.equal(requests, 0)
+  assert.deepEqual(probes, [INTERNET_CHECK_URL])
+  reachable = true
+  t.mock.timers.tick(5000)
+  assert.equal(await (await pending).text(), 'startup')
+  assert.equal(requests, 1)
+  assert.equal(app.recovery.state, 'restored')
+})
+
+test('a failed request checks reachability and pauses every origin on a WAN outage', async t => {
+  t.mock.timers.enable({ apis: ['setTimeout'] })
+  let reachable = true
+  const app = await loadAppNetwork(t, async input => {
+    if (!reachable) throw new TypeError('Failed to fetch')
+    return new Response(input === INTERNET_CHECK_URL ? null : 'recovered', { status: input === INTERNET_CHECK_URL ? 204 : 200 })
+  }, undefined, { checkInternet: true, corsDisabled: true })
+  await flush()
+  reachable = false
+  const pending = app.window.fetch('https://service.example/data')
+  await flush()
+  assert.equal(app.recovery.state, 'offline')
+  reachable = true
+  t.mock.timers.tick(5000)
+  assert.equal(await (await pending).text(), 'recovered')
+})
+
+test('a caller can cancel while the shared startup internet probe is still pending', async t => {
+  const recovery = createNetworkRecovery({ eventTarget: new EventTarget(), isOnline: () => true,
+    checkInternet: () => new Promise(() => {}) })
+  t.after(() => recovery.dispose())
+  const controller = new AbortController()
+  const pending = recovery.run('test', () => assert.fail('Cancelled task ran'), { signal: controller.signal })
+  controller.abort()
+  await assert.rejects(pending, { name: 'AbortError' })
+})
+
+test('a saved opt-out sends no startup probes and remains cancellable when later enabled', async t => {
+  t.mock.timers.enable({ apis: ['setTimeout'] })
+  let probes = 0
+  const app = await loadAppNetwork(t, async input => {
+    if (input === INTERNET_CHECK_URL) { probes++; throw new TypeError('Failed to fetch') }
+    return new Response('data')
+  }, undefined, { checkInternet: true, internetChecksEnabled: false })
+  assert.equal(await (await app.window.fetch('https://service.example/')).text(), 'data')
+  t.mock.timers.tick(3600000)
+  await flush()
+  assert.equal(probes, 0)
+  app.recovery.setInternetChecksEnabled(true)
+  await flush()
+  assert.equal(app.recovery.state, 'offline')
+  const waiting = app.window.fetch('https://service.example/')
+  app.recovery.setInternetChecksEnabled(false)
+  assert.equal(await (await waiting).text(), 'data')
+  assert.equal(app.recovery.state, 'online')
+  const count = probes
+  t.mock.timers.tick(3600000)
+  await flush()
+  assert.equal(probes, count)
 })

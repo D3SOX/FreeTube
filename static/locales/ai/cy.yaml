@@ -712,6 +712,8 @@ Settings:
     Restricted Playback Authentication Warning: Gall defnyddio yt-dlp gyda chyfrif Google arwain at gyfyngiadau dros dro neu barhaol ar y cyfrif.
     Use cookies for subtitles: "Defnyddio cwcis ar gyfer isdeitlau"
   Privacy Settings:
+    Internet Connectivity Checks: "Gwiriadau cysylltiad rhyngrwyd"
+    Internet Connectivity Checks Tooltip: "Yn anfon ceisiadau bach at weinydd a gynhelir gan GrapheneOS i wirio mynediad i’r rhyngrwyd."
     Automatic History Retention: Cadw hanes yn awtomatig (diwrnodau)
     Automatic History Retention Placeholder: Gadewch yn wag i'w gadw am byth
     Automatic History Retention Tooltip: Gadewch yn wag i gadw'r hanes am byth. Bydd cadw rhif yn dileu cofnodion hŷn nawr ac yn awtomatig tra bo'r ap ar agor.
@@ -1751,6 +1753,7 @@ Theme Discovery:
   Update and Apply: "Diweddaru a chymhwyso"
 
 Connection:
+  Offline: All-lein
   Reconnecting: "Cysylltiad wedi’i golli. Yn ceisio ailgysylltu…"
   Back Online: "Ar-lein eto"
 

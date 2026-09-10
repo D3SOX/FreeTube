@@ -722,6 +722,8 @@ Settings:
     Restricted Playback Authentication Warning: Google கணக்குடன் yt-dlp-ஐப் பயன்படுத்துவது தற்காலிக அல்லது நிரந்தரக் கணக்குக் கட்டுப்பாடுகளுக்கு வழிவகுக்கலாம்.
     Use cookies for subtitles: "வசன வரிகளுக்கு குக்கீகளைப் பயன்படுத்து"
   Privacy Settings:
+    Internet Connectivity Checks: "இணைய இணைப்புச் சோதனைகள்"
+    Internet Connectivity Checks Tooltip: "இணைய அணுகலைச் சரிபார்க்க GrapheneOS வழங்கும் சேவையகத்திற்கு சிறிய கோரிக்கைகளை அனுப்புகிறது."
     Automatic History Retention: தானியக்க வரலாற்றுத் தக்கவைப்பு (நாட்கள்)
     Automatic History Retention Placeholder: நிரந்தரமாக வைத்திருக்கக் காலியாக விடவும்
     Automatic History Retention Tooltip: வரலாற்றை நிரந்தரமாக வைத்திருக்கக் காலியாக விடவும். ஓர் எண்ணைச் சேமித்தால், பழைய உள்ளீடுகள் இப்போதும் செயலி திறந்திருக்கும் போதும் தானாக நீக்கப்படும்.
@@ -1773,6 +1775,7 @@ Theme Discovery:
   Update and Apply: "புதுப்பித்துப் பயன்படுத்து"
 
 Connection:
+  Offline: இணைய இணைப்பு இல்லை
   Reconnecting: "இணைப்பு துண்டிக்கப்பட்டது. மீண்டும் இணைக்க முயல்கிறது…"
   Back Online: "மீண்டும் இணையத்தில்"
 

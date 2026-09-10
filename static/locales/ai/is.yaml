@@ -718,6 +718,8 @@ Settings:
     Restricted Playback Authentication Warning: Notkun yt-dlp með Google-reikningi getur leitt til tímabundinna eða varanlegra takmarkana á reikningnum.
     Use cookies for subtitles: "Nota vafrakökur fyrir skjátexta"
   Privacy Settings:
+    Internet Connectivity Checks: "Athuganir á nettengingu"
+    Internet Connectivity Checks Tooltip: "Sendir litlar beiðnir til netþjóns sem GrapheneOS hýsir til að athuga netaðgang."
     Automatic History Retention: Sjálfvirk varðveisla ferils (dagar)
     Automatic History Retention Placeholder: Skildu eftir autt til að geyma að eilífu
     Automatic History Retention Tooltip: Skildu eftir autt til að geyma ferilinn að eilífu. Þegar tala er vistuð eru eldri færslur fjarlægðar strax og síðan sjálfkrafa meðan forritið er opið.
@@ -1767,6 +1769,7 @@ Theme Discovery:
   Update and Apply: "Uppfæra og virkja"
 
 Connection:
+  Offline: Ótengt
   Reconnecting: "Tenging rofnaði. Reyni að tengjast aftur…"
   Back Online: "Aftur á netinu"
 

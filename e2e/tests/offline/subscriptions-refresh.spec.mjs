@@ -1,4 +1,4 @@
-import { test, expect, goTo, sel } from '../../helpers/app.mjs'
+import { abortUnmockedRequest, test, expect, goTo, sel } from '../../helpers/app.mjs'
 
 const HOUR = 3_600_000
 const now = Date.now()
@@ -111,7 +111,7 @@ function profileWithDailyLimit(limit) {
  * @param {(index: number) => number} delayFor per channel response delay
  */
 async function routeFeeds(page, delayFor, feedFor = rssFeed) {
-  await page.route(/^https?:\/\//, (route) => route.abort())
+  await page.route(/^https?:\/\//, abortUnmockedRequest)
 
   await page.route('**/feeds/videos.xml**', async (route, request) => {
     const index = channelIndexFromUrl(request.url())
@@ -550,7 +550,7 @@ test.describe('subscription feed refresh controls', () => {
 
     for (const feed of ['shorts', 'live']) {
       test(`keeps Mark all as seen enabled for New ${feed} while Videos refreshes`, async ({ page }) => {
-        await page.route(/^https?:\/\//, route => route.abort())
+        await page.route(/^https?:\/\//, abortUnmockedRequest)
         // Leave the refresh pending until the test window closes.
         const pendingRequest = page.waitForRequest('**/feeds/videos.xml**')
         await page.route('**/feeds/videos.xml**', () => {})
