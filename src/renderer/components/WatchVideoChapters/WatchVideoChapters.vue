@@ -7,8 +7,9 @@
     :class="{ compact }"
     role="list"
     @wheel.passive="followCurrentChapter = false"
-    @pointerdown="followCurrentChapter = false"
-    @keydown="followCurrentChapter = false"
+    @pointerdown="handlePointerDown"
+    @touchmove.passive="followCurrentChapter = false"
+    @keydown="handleKeydown"
     @keydown.arrow-up.stop.prevent="navigateChapters('up')"
     @keydown.arrow-down.stop.prevent="navigateChapters('down')"
   >
@@ -95,6 +96,20 @@ const chaptersContent = useTemplateRef('chaptersContent')
 let scrollFrame = null
 let followCurrentChapter = true
 const resizeObserver = new ResizeObserver(scheduleScrollClamp)
+
+/** @param {PointerEvent} event */
+function handlePointerDown(event) {
+  if (event.button === 1 || event.target.closest('.os-scrollbar')) {
+    followCurrentChapter = false
+  }
+}
+
+/** @param {KeyboardEvent} event */
+function handleKeydown(event) {
+  if (['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End'].includes(event.key)) {
+    followCurrentChapter = false
+  }
+}
 
 function scheduleScrollClamp() {
   if (scrollFrame !== null) return
@@ -196,6 +211,7 @@ const observeVisibilityOptions = {
  * @param {number} index
  */
 function changeChapter(index) {
+  followCurrentChapter = true
   currentIndex.value = index
   emit('timestamp-event', props.chapters[index].startSeconds)
 }
