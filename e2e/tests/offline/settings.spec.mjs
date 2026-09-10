@@ -3564,6 +3564,7 @@ test.describe('settings', () => {
 
   test('honors the configured toast position on Android phones', async ({ app, page }) => {
     const phoneSafeArea = { top: 24, bottom: 16 }
+    const layoutTolerance = 0.05
     await setWindowSize(app, page, { width: 375, height: 700 })
     await goTo(page, 'settings')
     await page.locator('.settingsMenu [data-section="appearance"]').click()
@@ -3608,13 +3609,14 @@ test.describe('settings', () => {
         : null
       const progressInset = progressBounds ? progressBounds.height + 10 : 0
       const expectedOffset = 29 + progressInset
+      // Layout rounds fractional CSS pixels differently from computed values.
       await expect.poll(() => holder.evaluate((element, { edge, expectedOffset }) => {
         const style = getComputedStyle(element)
         return Math.max(
           Math.abs(Number.parseFloat(style.getPropertyValue(`--offset-${edge}`)) - expectedOffset),
           Math.abs(Number.parseFloat(style.getPropertyValue(`--mobile-offset-${edge}`)) - expectedOffset)
         )
-      }, { edge, expectedOffset })).toBeLessThan(0.01)
+      }, { edge, expectedOffset })).toBeLessThan(layoutTolerance)
       return progressInset
     }
 
@@ -3664,7 +3666,7 @@ test.describe('settings', () => {
         viewportSize()
       ])
       expect.soft(bounds.x + bounds.width).toBeGreaterThan(viewport.width - 30)
-      expect.soft(bounds.y).toBeGreaterThanOrEqual(topNavBounds.y + topNavBounds.height + 12 + progressInset)
+      expect.soft(bounds.y).toBeGreaterThanOrEqual(topNavBounds.y + topNavBounds.height + 12 + progressInset - layoutTolerance)
       expect.soft(bounds.y).toBeLessThan(viewport.height / 2)
       if (await progressToast.count() === 1) {
         const progressBounds = await progressToast.boundingBox()
@@ -4548,9 +4550,9 @@ test.describe('sync settings', () => {
         Object.defineProperty(navigator, 'onLine', { configurable: true, value: false })
         window.dispatchEvent(new Event('offline'))
       })
-      const banner = page.getByRole('status').filter({ hasText: 'Connection lost.' })
+      const banner = page.getByRole('status').filter({ hasText: /^Offline$/ })
       await expect(banner).toBeVisible()
-      await expect(banner).toHaveCSS('position', 'fixed')
+      await expect(page.locator('.connection-status-holder')).toHaveCSS('position', 'fixed')
       await expect(label).toHaveCSS('position', 'static')
       await expect(label).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)')
     })

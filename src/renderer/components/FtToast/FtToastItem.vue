@@ -148,7 +148,7 @@ onMounted(() => {
   // rewrapping the message while toasts enter or leave the stack. Use the
   // computed content-box size: offsetWidth also includes the inline padding,
   // which content-box sizing would add a second time once assigned as a width.
-  toastElement.value.style.inlineSize = getComputedStyle(toastElement.value).inlineSize
+  toastElement.value.style.setProperty('--toast-natural-width', getComputedStyle(toastElement.value).inlineSize)
   row = slot.value?.parentElement ?? null
   row?.addEventListener('keydown', onRowKeydown)
 })

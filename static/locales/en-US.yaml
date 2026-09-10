@@ -1208,6 +1208,8 @@ Settings:
     Restricted Playback Authentication Warning: Using yt-dlp with a Google account can lead to temporary or permanent account restrictions.
     Use cookies for subtitles: "Use cookies for subtitles"
   Privacy Settings:
+    Internet Connectivity Checks: "Internet connectivity checks"
+    Internet Connectivity Checks Tooltip: "Sends small requests to a server hosted by GrapheneOS to check internet access."
     Privacy Settings: Privacy
     Remember History: Remember Watch History
     Automatic History Retention: Automatic History Retention (Days)
@@ -2940,6 +2942,7 @@ Theme Discovery:
   Update and Apply: "Update and apply"
 
 Connection:
+  Offline: Offline
   Reconnecting: "Connection lost. Trying to reconnect…"
   Back Online: "Back online"
 

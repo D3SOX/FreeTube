@@ -24,6 +24,7 @@ for (const android of [false, true]) {
           Capacitor: { convertFileSrc: path => `https://localhost/_capacitor_file_${path}` },
           DOWNLOADED_MEDIA_MIME_TYPES: { mp4: 'video/mp4' },
           getConnectionState: () => 'offline',
+          initializeNetworkRecovery: () => ({ ready: Promise.resolve(false) }),
           getLocalVideoInfo: pendingMetadata,
           invidiousGetVideoInformation: pendingMetadata,
         })
@@ -39,12 +40,12 @@ for (const android of [false, true]) {
             files: [{ path: android ? 'content://downloads/document/1' : '/downloads/video.mp4', videoId: 'downloaded1', extension: 'mp4', duration: 42 }],
           } } } },
           playbackSourceKey: 0,
+          isCurrentVideoLoad(generation) { return generation === this.videoLoadGeneration },
           cacheOnlinePlaybackSource() {},
           updateTitle() {},
           t: key => key,
         }
-        watch[`getVideoInformation${backend}`]()
-        await Promise.resolve()
+        await watch[`getVideoInformation${backend}`]()
         assert.equal(watch.isLoading, false, 'local playback must not wait for a metadata request that stays queued offline')
         assert.equal(watch.localFilePlayback, true)
         assert.equal(watch.videoTitle, 'Offline video')
@@ -60,14 +61,17 @@ for (const android of [false, true]) {
 for (const backend of ['Local', 'Invidious']) {
   test(`${backend} keeps online metadata and switches to the download if the connection fails`, async () => {
     let resolveMetadata
+    let metadataStarted
+    const started = new Promise(resolve => { metadataStarted = resolve })
     let requests = 0
-    const pendingMetadata = () => { requests++; return new Promise(resolve => { resolveMetadata = resolve }) }
+    const pendingMetadata = () => { requests++; metadataStarted(); return new Promise(resolve => { resolveMetadata = resolve }) }
     const methods = runInNewContext(`({
       ${method('getVideoInformationLocal', 'getVideoInformationInvidious')}
       ${method('getVideoInformationInvidious', 'async runIpBlockRecoveryScriptAndReload()')}
       ${source.slice(source.indexOf('    handleDownloadConnectionChange('), source.indexOf('    updateAndroidBackgroundPlaybackFormat()'))}
     })`, {
       getConnectionState: () => 'online',
+      initializeNetworkRecovery: () => ({ ready: Promise.resolve(true) }),
       getLocalVideoInfo: pendingMetadata,
       invidiousGetVideoInformation: pendingMetadata,
     })
@@ -82,7 +86,7 @@ for (const backend of ['Local', 'Invidious']) {
       isCurrentVideoLoad(generation) { return generation === this.videoLoadGeneration },
     }
     watch[`getVideoInformation${backend}`]()
-    await Promise.resolve()
+    await started
     assert.equal(requests, 1, 'online downloads retain their normal metadata request')
     assert.equal(localLoads, 0)
     watch.handleDownloadConnectionChange({ detail: 'offline' })

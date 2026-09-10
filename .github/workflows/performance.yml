@@ -106,6 +106,12 @@ jobs:
       run: pnpm --dir candidate run test:e2e:pack
       shell: bash
 
+    # Keep the benchmark scenarios and thresholds from base, but share current
+    # API mocks so new candidate requests do not become artificial outages.
+    - name: Use current shared test helpers
+      run: cp -a candidate/e2e/helpers/. base/e2e/helpers/
+      shell: bash
+
     - name: Compare performance
       run: |
         xvfb-run -a -s "-screen 0 1920x1080x24" \

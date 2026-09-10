@@ -232,6 +232,7 @@ const state = {
   backendPreference: !process.env.SUPPORTS_LOCAL_API ? 'invidious' : 'local',
   barColor: false,
   checkForUpdates: true,
+  internetConnectivityChecks: true,
   capacitorLayoutMode: 'auto',
   commentTranslationIgnoredLanguages: [],
   confirmCloseApp: true,

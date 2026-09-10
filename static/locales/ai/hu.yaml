@@ -711,6 +711,8 @@ Settings:
     Restricted Playback Authentication Warning: Ha az yt-dlp programot Google-fiókkal használja, a fiókot ideiglenesen vagy véglegesen korlátozhatják.
     Use cookies for subtitles: "Sütik használata a feliratokhoz"
   Privacy Settings:
+    Internet Connectivity Checks: "Internetkapcsolat ellenőrzése"
+    Internet Connectivity Checks Tooltip: "Kis kéréseket küld egy GrapheneOS által üzemeltetett kiszolgálónak az internetelérés ellenőrzéséhez."
     Automatic History Retention: Előzmények automatikus megőrzése (nap)
     Automatic History Retention Placeholder: Hagyja üresen a korlátlan megőrzéshez
     Automatic History Retention Tooltip: Hagyja üresen az előzmények korlátlan megőrzéséhez. Egy szám mentése azonnal törli a régebbi bejegyzéseket, és ezt az alkalmazás futása közben automatikusan megismétli.
@@ -1725,6 +1727,7 @@ Theme Discovery:
   Update and Apply: "Frissítés és alkalmazás"
 
 Connection:
+  Offline: Offline
   Reconnecting: "Megszakadt a kapcsolat. Újracsatlakozás folyamatban…"
   Back Online: "Újra online"
 

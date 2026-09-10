@@ -83,22 +83,23 @@ test('shows fallback metadata for unavailable channels', async ({ page }) => {
     json: { error: 'This channel is unavailable' }
   }))
 
-  await openChannelTab(page, CACHED_CHANNEL_ID)
-
-  const cachedChannel = page.locator('.channelDetails:visible')
-  await expect(cachedChannel.locator('.name')).toHaveText('Deleted Channel')
-  await expect(cachedChannel.locator('img.thumbnail')).toHaveCount(0)
-  const fallbackAvatar = cachedChannel.locator('.thumbnail:not(img)')
-  await expect(fallbackAvatar).toBeVisible()
-  await expect(fallbackAvatar).toHaveCSS('font-size', '100px')
-
-  const cachedChannelTab = page.locator(sel.activeTab)
-  await expect(cachedChannelTab.locator('.tabAvatar')).toHaveCount(0)
-  await expect(cachedChannelTab.locator('.tabPageIcon'))
-    .toHaveAttribute('data-icon', 'circle-user')
-
+  // Pause before opening the tab so no screenshot can replace its fallback icon.
   await page.evaluate(() => window.ftElectron.tabs.setPreviewCapturePaused(true))
   try {
+    await openChannelTab(page, CACHED_CHANNEL_ID)
+
+    const cachedChannel = page.locator('.channelDetails:visible')
+    await expect(cachedChannel.locator('.name')).toHaveText('Deleted Channel')
+    await expect(cachedChannel.locator('img.thumbnail')).toHaveCount(0)
+    const fallbackAvatar = cachedChannel.locator('.thumbnail:not(img)')
+    await expect(fallbackAvatar).toBeVisible()
+    await expect(fallbackAvatar).toHaveCSS('font-size', '100px')
+
+    const cachedChannelTab = page.locator(sel.activeTab)
+    await expect(cachedChannelTab.locator('.tabAvatar')).toHaveCount(0)
+    await expect(cachedChannelTab.locator('.tabPageIcon'))
+      .toHaveAttribute('data-icon', 'circle-user')
+
     await cachedChannel.hover()
     await cachedChannelTab.hover()
     const tooltipPreview = page.locator('.tabTooltipPreview')

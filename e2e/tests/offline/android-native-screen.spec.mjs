@@ -1463,6 +1463,7 @@ for (const uiScale of [100, 125]) {
           if (gesture === 'drag') {
             window.dispatchEvent(new PointerEvent('pointermove', { pointerId: 1, clientX: x - 80, clientY: y }))
             await new Promise(requestAnimationFrame)
+            bouncePositions.push(player.getBoundingClientRect().x)
           }
           window.dispatchEvent(new PointerEvent('pointerup', { pointerId: 1, clientX: gesture === 'drag' ? x - 80 : x, clientY: y }))
           if (gesture === 'drag') {

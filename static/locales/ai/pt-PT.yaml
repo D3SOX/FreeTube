@@ -719,6 +719,8 @@ Settings:
     Restricted Playback Authentication Warning: Usar o yt-dlp com uma conta Google pode causar restrições temporárias ou permanentes à conta.
     Use cookies for subtitles: "Usar cookies para legendas"
   Privacy Settings:
+    Internet Connectivity Checks: "Verificações da ligação à Internet"
+    Internet Connectivity Checks Tooltip: "Envia pequenos pedidos a um servidor alojado pelo GrapheneOS para verificar o acesso à Internet."
     Automatic History Retention: Retenção automática do histórico (dias)
     Automatic History Retention Placeholder: Deixar em branco para manter para sempre
     Automatic History Retention Tooltip: Deixe em branco para manter o histórico para sempre. Guardar um número remove agora as entradas mais antigas e passa a removê-las automaticamente enquanto a aplicação estiver aberta.
@@ -1758,6 +1760,7 @@ Theme Discovery:
   Update and Apply: "Atualizar e aplicar"
 
 Connection:
+  Offline: Sem ligação
   Reconnecting: "Ligação perdida. A tentar restabelecer a ligação…"
   Back Online: "Novamente online"
 

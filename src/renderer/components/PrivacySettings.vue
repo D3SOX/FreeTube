@@ -5,6 +5,14 @@
     <div class="switchColumnGrid">
       <div class="switchColumn">
         <FtToggleSwitch
+          :label="$t('Settings.Privacy Settings.Internet Connectivity Checks')"
+          :tooltip="$t('Settings.Privacy Settings.Internet Connectivity Checks Tooltip')"
+          compact
+          :default-value="internetConnectivityChecks"
+          setting-key="internetConnectivityChecks"
+          @change="updateInternetConnectivityChecks"
+        />
+        <FtToggleSwitch
           :label="$t('Settings.Privacy Settings.Remember History')"
           compact
           :default-value="rememberHistory"
@@ -119,6 +127,11 @@ import FtSlider from './FtSlider/FtSlider.vue'
 import FtToggleSwitch from './FtToggleSwitch/FtToggleSwitch.vue'
 
 import store from '../store/index'
+
+const internetConnectivityChecks = computed(() => store.getters.getInternetConnectivityChecks)
+function updateInternetConnectivityChecks(value) {
+  store.dispatch('updateInternetConnectivityChecks', value)
+}
 
 const { locale, t } = useI18n()
 const USING_ELECTRON = process.env.IS_ELECTRON

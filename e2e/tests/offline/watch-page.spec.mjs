@@ -1,5 +1,5 @@
 import crypto from 'node:crypto'
-import { sel, setPlayerFullscreen, setWindowSize, test, expect } from '../../helpers/app.mjs'
+import { abortUnmockedRequest, sel, setPlayerFullscreen, setWindowSize, test, expect } from '../../helpers/app.mjs'
 import { activeTab, findWatchComponent, openMockedVideo, waitForPlayback } from '../../helpers/player.mjs'
 import { mockPlayableWatchPage, watchViewHandle } from '../../helpers/watch.mjs'
 import {
@@ -533,7 +533,8 @@ for (const { label, musicVideoType } of [
 
 test('detects Invidious audio tracks from artist topic channels', async ({ page }) => {
   const instanceUrl = 'https://invidious.test'
-  await page.route(/^https?:\/\//, route => route.abort())
+  await page.route(/^https?:\/\//, abortUnmockedRequest)
+  await routePostLiveMedia(page)
   await page.route(`${instanceUrl}/api/v1/videos/**`, route => route.fulfill({
     json: {
       title: 'Invidious audio track',
@@ -557,6 +558,19 @@ test('detects Invidious audio tracks from artist topic channels', async ({ page 
       isPostLiveDvr: false,
       isListed: true,
       captions: [],
+      lengthSeconds: 1,
+      formatStreams: [],
+      adaptiveFormats: [{
+        itag: 140,
+        url: `${POST_LIVE_AUDIO_URL}&dur=1`,
+        type: 'audio/mp4; codecs="mp4a.40.2"',
+        bitrate: '128000',
+        init: '0-700',
+        index: '701-800',
+        audioQuality: 'AUDIO_QUALITY_MEDIUM',
+        audioSampleRate: '48000',
+        audioChannels: 2,
+      }],
       videoThumbnails: [{ url: '/vi/jNQXAC9IVRw/hqdefault.jpg', width: 480, height: 360 }],
     }
   }))
@@ -3685,7 +3699,8 @@ test.describe('watch page', () => {
     })
     expect(reopenedSeekLeft).toBeLessThan(closedSeekLeft)
 
-    await moreOptions.click({ force: true })
+    await player.locator('.shortsFullscreenVideoSpace').hover({ force: true })
+    await moreOptions.click()
     await expect(overflowMenu).toBeVisible()
     await expect.poll(async () => {
       const [buttonBounds, menuBounds] = await Promise.all([
@@ -3729,11 +3744,16 @@ test.describe('watch page', () => {
     await expect(auxPanel).not.toHaveClass(/shortsAuxPanelOpen/)
 
     await setPlayerFullscreen(page, true)
-    await moreOptions.click({ force: true })
+    await player.locator('.shortsFullscreenVideoSpace').hover({ force: true })
+    await moreOptions.click()
     await overflowMenu.getByRole('button', { name: 'Video information' }).click()
     await expect(player.locator('.fullscreenMetadataOverlay.open')).toBeVisible()
 
-    await moreOptions.click({ force: true })
+    // Cover reopening the menu after playback controls have auto-hidden.
+    await page.mouse.move(0, 0)
+    await expect(player.locator('.shortsTopControls')).toBeHidden()
+    await player.locator('.shortsFullscreenVideoSpace').hover({ force: true })
+    await moreOptions.click()
     await expect(overflowMenu).toBeVisible()
     await setPlayerFullscreen(page, false)
     await expect(overflowMenu).toBeHidden()

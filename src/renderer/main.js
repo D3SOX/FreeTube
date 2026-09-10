@@ -21,13 +21,10 @@ import { ObserveVisibility } from 'vue-observe-visibility'
 import { FtIcon, FtIconLayers } from './icons/iconComponents'
 
 installNetworkFetch({
-  corsDisabled: process.env.IS_ELECTRON,
-  verifyConnection: process.env.IS_CAPACITOR
-    ? async input => {
-      const { verifyCapacitorConnection } = await import('./helpers/api/capacitor-http')
-      return verifyCapacitorConnection(input)
-    }
-    : undefined
+  checkInternet: true,
+  // Load the persisted privacy choice before sending the first probe.
+  internetChecksEnabled: false,
+  corsDisabled: process.env.IS_ELECTRON
 })
 
 const app = createApp(App)

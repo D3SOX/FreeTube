@@ -740,6 +740,8 @@ Settings:
     Restricted Playback Authentication Warning: Выкарыстанне yt-dlp з уліковым запісам Google можа прывесці да часовых або пастаянных абмежаванняў уліковага запісу.
     Use cookies for subtitles: "Выкарыстоўваць кукі для субцітраў"
   Privacy Settings:
+    Internet Connectivity Checks: "Праверка інтэрнэт-злучэння"
+    Internet Connectivity Checks Tooltip: "Адпраўляе невялікія запыты да сервера, размешчанага арганізацыяй GrapheneOS, для праверкі доступу да інтэрнэту."
     Automatic History Retention: Аўтаматычны тэрмін захоўвання гісторыі (у днях)
     Automatic History Retention Placeholder: Пакіньце пустым, каб захоўваць заўсёды
     Automatic History Retention Tooltip: Пакіньце пустым, каб захоўваць гісторыю заўсёды. Калі захаваць лік, старыя запісы будуць выдалены цяпер і надалей будуць выдаляцца аўтаматычна, пакуль праграма адкрыта.
@@ -1817,6 +1819,7 @@ Theme Discovery:
   Update and Apply: "Абнавіць і ўжыць"
 
 Connection:
+  Offline: Па-за сеткай
   Reconnecting: "Злучэнне страчана. Спроба аднавіць злучэнне…"
   Back Online: "Зноў у сетцы"
 

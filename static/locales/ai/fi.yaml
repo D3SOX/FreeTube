@@ -724,6 +724,8 @@ Settings:
     Restricted Playback Authentication Warning: yt-dlp:n käyttäminen Google-tilillä voi johtaa tilin tilapäisiin tai pysyviin rajoituksiin.
     Use cookies for subtitles: "Käytä evästeitä tekstityksiin"
   Privacy Settings:
+    Internet Connectivity Checks: "Internet-yhteyden tarkistukset"
+    Internet Connectivity Checks Tooltip: "Lähettää pieniä pyyntöjä GrapheneOS:n ylläpitämälle palvelimelle internet-yhteyden tarkistamiseksi."
     Automatic History Retention: Historian automaattinen säilytysaika (päivää)
     Automatic History Retention Placeholder: Jätä tyhjäksi säilyttääksesi historian pysyvästi
     Automatic History Retention Tooltip: Jätä tyhjäksi, jos haluat säilyttää historian pysyvästi. Kun tallennat luvun, sitä vanhemmat merkinnät poistetaan heti ja jatkossa automaattisesti sovelluksen ollessa avoinna.
@@ -1769,6 +1771,7 @@ Theme Discovery:
   Update and Apply: "Päivitä ja ota käyttöön"
 
 Connection:
+  Offline: Offline
   Reconnecting: "Yhteys katkesi. Yritetään yhdistää uudelleen…"
   Back Online: "Jälleen verkossa"
 

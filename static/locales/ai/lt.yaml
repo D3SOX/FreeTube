@@ -912,6 +912,8 @@ Settings:
     Restricted Playback Authentication Warning: Naudojant yt-dlp su Google paskyra, paskyra gali būti laikinai arba visam laikui apribota.
     Use cookies for subtitles: "Naudoti slapukus subtitrams"
   Privacy Settings:
+    Internet Connectivity Checks: "Interneto ryšio tikrinimas"
+    Internet Connectivity Checks Tooltip: "Siunčia mažas užklausas į GrapheneOS talpinamą serverį, kad patikrintų interneto prieigą."
     Automatic History Retention: Automatinis istorijos saugojimas (dienomis)
     Automatic History Retention Placeholder: Palikite tuščią, kad būtų saugoma neribotai
     Automatic History Retention Tooltip: Palikite tuščią, kad istorija būtų saugoma neribotai. Išsaugojus skaičių, senesni įrašai pašalinami dabar ir automatiškai, kol programa atidaryta.
@@ -2222,6 +2224,7 @@ Theme Discovery:
   Update and Apply: "Atnaujinti ir taikyti"
 
 Connection:
+  Offline: Neprisijungta
   Reconnecting: "Ryšys nutrūko. Bandoma prisijungti iš naujo…"
   Back Online: "Vėl prisijungta"
 

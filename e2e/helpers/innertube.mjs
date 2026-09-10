@@ -4,7 +4,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { gzipSync, gunzipSync } from 'node:zlib'
 
-import { test as baseAppTest, expect, setPlayerFullscreen } from './app.mjs'
+import { abortUnmockedRequest, test as baseAppTest, expect, setPlayerFullscreen } from './app.mjs'
 import { demoPlayerResponse, routeDemoMedia, routeIframeApi, routeWatchPageHtml, stubPoToken } from './media.mjs'
 
 const fixturesRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', 'fixtures', 'innertube')
@@ -140,7 +140,7 @@ export async function setupInnertube(app, testInfo) {
   if (replay) {
     // Registered first = lowest priority: blocks all external requests
     // that the more specific routes below don't handle.
-    await page.route(/^https?:\/\//, (route) => route.abort())
+    await page.route(/^https?:\/\//, abortUnmockedRequest)
 
     // BotGuard can't run without YouTube's attestation servers, and the video
     // load aborts when the poToken is missing.

@@ -715,6 +715,8 @@ Settings:
     Restricted Playback Authentication Warning: Folosirea yt-dlp cu un cont Google poate duce la restricționarea temporară sau permanentă a contului.
     Use cookies for subtitles: "Folosește cookie-uri pentru subtitrări"
   Privacy Settings:
+    Internet Connectivity Checks: "Verificări ale conexiunii la internet"
+    Internet Connectivity Checks Tooltip: "Trimite cereri mici către un server găzduit de GrapheneOS pentru a verifica accesul la internet."
     Automatic History Retention: Păstrarea automată a istoricului (zile)
     Automatic History Retention Placeholder: Lăsați necompletat pentru păstrare permanentă
     Automatic History Retention Tooltip: Lăsați necompletat pentru a păstra istoricul permanent. Salvarea unui număr elimină înregistrările mai vechi acum și automat cât timp aplicația este deschisă.
@@ -1771,6 +1773,7 @@ Theme Discovery:
   Update and Apply: "Actualizează și aplică"
 
 Connection:
+  Offline: Offline
   Reconnecting: "Conexiune pierdută. Se încearcă reconectarea…"
   Back Online: "Din nou online"
 

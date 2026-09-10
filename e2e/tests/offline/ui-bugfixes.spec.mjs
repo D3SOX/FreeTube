@@ -463,12 +463,15 @@ for (const iconPack of ['material', 'remix']) {
     await setWindowSize(app, page, { width: 375, height: 760 })
     await enablePhoneTabSwitcher(page)
     const avatar = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"><rect width="24" height="24" fill="green"/></svg>')
-    await page.route('https://example.com/retry-avatar.svg*', route => route.fulfill({
-      contentType: 'image/svg+xml',
-      body: route.request().url().includes('opentubex_retry=')
-        ? decodeURIComponent(avatar.split(',')[1])
-        : 'invalid image',
-    }))
+    let captureRetry
+    const retryRequest = new Promise(resolve => { captureRetry = resolve })
+    await page.route('https://example.com/retry-avatar.svg*', route => {
+      if (route.request().url().includes('opentubex_retry=')) {
+        captureRetry(route)
+        return
+      }
+      return route.fulfill({ contentType: 'image/svg+xml', body: 'invalid image' })
+    })
     await page.evaluate(async ({ pack, avatarUrl }) => {
       const store = document.querySelector('#app')._vnode.component.appContext.config.globalProperties.$store
       await store.dispatch('updateIconPack', pack)
@@ -510,7 +513,14 @@ for (const iconPack of ['material', 'remix']) {
       await expect.poll(() => row(title).locator('img').evaluate(image => image.naturalWidth)).toBe(24)
     }
     await expect(row('Broken avatar').locator('img')).toBeHidden()
-    await expect(row('Retry avatar').locator('[data-icon="clapperboard"]')).toBeVisible()
+    // Keep the retry pending to check that only exhausted retries show a fallback.
+    const retryRoute = await retryRequest
+    await expect(row('Retry avatar').locator('img')).toBeVisible()
+    await expect(row('Retry avatar').locator('[data-icon="clapperboard"]')).toHaveCount(0)
+    await retryRoute.fulfill({
+      contentType: 'image/svg+xml',
+      body: decodeURIComponent(avatar.split(',')[1]),
+    })
     await expect(row('Retry avatar').locator('img')).toBeVisible()
     await expect.poll(() => row('Retry avatar').locator('img').evaluate(image => image.naturalWidth)).toBe(24)
     await expect(row('Retry avatar').locator('[data-icon="clapperboard"]')).toHaveCount(0)

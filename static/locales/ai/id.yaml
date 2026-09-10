@@ -719,6 +719,8 @@ Settings:
     Restricted Playback Authentication Warning: Menggunakan yt-dlp dengan akun Google dapat menyebabkan pembatasan akun sementara atau permanen.
     Use cookies for subtitles: "Gunakan kuki untuk takarir"
   Privacy Settings:
+    Internet Connectivity Checks: "Pemeriksaan koneksi internet"
+    Internet Connectivity Checks Tooltip: "Mengirim permintaan kecil ke server yang dihosting oleh GrapheneOS untuk memeriksa akses internet."
     Automatic History Retention: Penyimpanan Riwayat Otomatis (Hari)
     Automatic History Retention Placeholder: Biarkan kosong untuk menyimpan selamanya
     Automatic History Retention Tooltip: Biarkan kosong untuk menyimpan riwayat selamanya. Menyimpan angka akan segera menghapus entri yang lebih lama dan menghapusnya secara otomatis selama aplikasi terbuka.
@@ -1761,6 +1763,7 @@ Theme Discovery:
   Update and Apply: "Perbarui dan terapkan"
 
 Connection:
+  Offline: Luring
   Reconnecting: "Koneksi terputus. Mencoba menghubungkan kembali…"
   Back Online: "Kembali online"
 

@@ -719,6 +719,8 @@ Settings:
     Restricted Playback Authentication Warning: Dùng yt-dlp với tài khoản Google có thể khiến tài khoản bị hạn chế tạm thời hoặc vĩnh viễn.
     Use cookies for subtitles: "Dùng cookie cho phụ đề"
   Privacy Settings:
+    Internet Connectivity Checks: "Kiểm tra kết nối internet"
+    Internet Connectivity Checks Tooltip: "Gửi yêu cầu nhỏ đến máy chủ do GrapheneOS lưu trữ để kiểm tra khả năng truy cập internet."
     Automatic History Retention: Tự động lưu giữ lịch sử (ngày)
     Automatic History Retention Placeholder: Để trống nếu muốn giữ mãi
     Automatic History Retention Tooltip: Để trống để giữ lịch sử mãi mãi. Khi lưu một con số, ứng dụng sẽ xóa ngay các mục cũ hơn và tiếp tục tự động xóa khi đang mở.
@@ -1759,6 +1761,7 @@ Theme Discovery:
   Update and Apply: "Cập nhật và áp dụng"
 
 Connection:
+  Offline: Ngoại tuyến
   Reconnecting: "Mất kết nối. Đang thử kết nối lại…"
   Back Online: "Đã trực tuyến trở lại"
 

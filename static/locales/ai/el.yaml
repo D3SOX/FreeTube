@@ -724,6 +724,8 @@ Settings:
     Restricted Playback Authentication Warning: Η χρήση του yt-dlp με λογαριασμό Google μπορεί να οδηγήσει σε προσωρινούς ή μόνιμους περιορισμούς του λογαριασμού.
     Use cookies for subtitles: "Χρήση cookies για υπότιτλους"
   Privacy Settings:
+    Internet Connectivity Checks: "Έλεγχοι σύνδεσης στο διαδίκτυο"
+    Internet Connectivity Checks Tooltip: "Στέλνει μικρά αιτήματα σε έναν διακομιστή που φιλοξενείται από το GrapheneOS για έλεγχο της πρόσβασης στο διαδίκτυο."
     Automatic History Retention: Αυτόματη διατήρηση ιστορικού (ημέρες)
     Automatic History Retention Placeholder: Αφήστε το κενό για μόνιμη διατήρηση
     Automatic History Retention Tooltip: Αφήστε το κενό για να διατηρείται το ιστορικό για πάντα. Αν αποθηκεύσετε έναν αριθμό, οι παλαιότερες καταχωρίσεις αφαιρούνται τώρα και αυτόματα όσο η εφαρμογή είναι ανοιχτή.
@@ -1769,6 +1771,7 @@ Theme Discovery:
   Update and Apply: "Ενημέρωση και εφαρμογή"
 
 Connection:
+  Offline: Εκτός σύνδεσης
   Reconnecting: "Η σύνδεση χάθηκε. Γίνεται προσπάθεια επανασύνδεσης…"
   Back Online: "Ξανά σε σύνδεση"
 

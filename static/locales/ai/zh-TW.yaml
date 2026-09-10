@@ -711,6 +711,8 @@ Settings:
     Restricted Playback Authentication Warning: 透過 yt-dlp 使用 Google 帳戶可能導致帳戶受到暫時或永久限制。
     Use cookies for subtitles: "使用 Cookie 取得字幕"
   Privacy Settings:
+    Internet Connectivity Checks: "網際網路連線檢查"
+    Internet Connectivity Checks Tooltip: "向 GrapheneOS 託管的伺服器傳送小型請求以檢查網際網路連線。"
     Automatic History Retention: 自動保留觀看記錄（天）
     Automatic History Retention Placeholder: 留空則永久保留
     Automatic History Retention Tooltip: 留空會永久保留記錄。儲存天數後，系統會立即移除較舊的項目，並在應用程式開啟期間自動清除。
@@ -1741,6 +1743,7 @@ Theme Discovery:
   Update and Apply: "更新並套用"
 
 Connection:
+  Offline: 離線
   Reconnecting: "連線已中斷，正在嘗試重新連線…"
   Back Online: "已恢復網路連線"
 

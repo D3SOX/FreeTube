@@ -217,10 +217,12 @@ test('uses original recommendation titles only for the entire-app preference and
   })
   await expect.poll(() => requests.length).toBe(2)
   await expect(card).toHaveAttribute('title', 'Another original title')
+  // A failed title can be requested by both sidebar and end-screen cards.
+  const missingTitleResponse = page.waitForResponse('https://www.youtube.com/oembed**video000010**')
   await watch.evaluate(component => {
     component.proxy.recommendedVideos = [{ videoId: 'video000010', title: 'Fallback title', type: 'video' }]
   })
-  await expect.poll(() => requests.length).toBe(3)
+  await (await missingTitleResponse).finished()
   await expect(card).toHaveAttribute('title', 'Fallback title')
 })
 

@@ -713,6 +713,8 @@ Settings:
     Restricted Playback Authentication Warning: yt-dlp proqramını Google hesabı ilə istifadə etmək hesabın müvəqqəti və ya daimi məhdudlaşdırılmasına səbəb ola bilər.
     Use cookies for subtitles: Titrlər üçün kukilərdən istifadə et
   Privacy Settings:
+    Internet Connectivity Checks: "İnternet bağlantısının yoxlanılması"
+    Internet Connectivity Checks Tooltip: "İnternetə çıxışı yoxlamaq üçün GrapheneOS tərəfindən yerləşdirilən serverə kiçik sorğular göndərir."
     Automatic History Retention: Tarixçənin avtomatik saxlanma müddəti (gün)
     Automatic History Retention Placeholder: Həmişəlik saxlamaq üçün boş buraxın
     Automatic History Retention Tooltip: Tarixçəni həmişəlik saxlamaq üçün boş buraxın. Rəqəm yadda saxlandıqda köhnə qeydlər dərhal və tətbiq açıq olduğu müddətdə avtomatik silinir.
@@ -1735,6 +1737,7 @@ Theme Discovery:
   Install and Apply: Quraşdır və tətbiq et
   Update and Apply: Yenilə və tətbiq et
 Connection:
+  Offline: Oflayn
   Reconnecting: Bağlantı kəsildi. Yenidən qoşulmağa cəhd edilir…
   Back Online: Yenidən onlayndır
 

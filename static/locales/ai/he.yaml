@@ -724,6 +724,8 @@ Settings:
     Restricted Playback Authentication Warning: שימוש ב-yt-dlp עם חשבון Google עלול להוביל להגבלות זמניות או קבועות על החשבון.
     Use cookies for subtitles: "שימוש בעוגיות לכתוביות"
   Privacy Settings:
+    Internet Connectivity Checks: "בדיקות חיבור לאינטרנט"
+    Internet Connectivity Checks Tooltip: "שולח בקשות קטנות לשרת המתארח אצל GrapheneOS כדי לבדוק גישה לאינטרנט."
     Automatic History Retention: תקופת שמירה אוטומטית של ההיסטוריה (ימים)
     Automatic History Retention Placeholder: השאירו ריק כדי לשמור לתמיד
     Automatic History Retention Tooltip: השאירו ריק כדי לשמור את ההיסטוריה לתמיד. הזנת מספר מוחקת כעת רשומות ישנות יותר וממשיכה למחוק אותן אוטומטית כל עוד היישום פתוח.
@@ -1771,6 +1773,7 @@ Theme Discovery:
   Update and Apply: "עדכון והחלה"
 
 Connection:
+  Offline: לא מקוון
   Reconnecting: "החיבור אבד. מנסה להתחבר מחדש…"
   Back Online: "החיבור חזר"
 

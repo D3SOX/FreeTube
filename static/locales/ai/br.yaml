@@ -711,6 +711,8 @@ Settings:
     Restricted Playback Authentication Warning: "Implijout yt-dlp gant ur gont Google a c'hall degas bevennoù padennek pe da viken war ar gont."
     Use cookies for subtitles: "Implijout toupinoù evit an istitloù"
   Privacy Settings:
+    Internet Connectivity Checks: "Gwiriañ ar genrouedad"
+    Internet Connectivity Checks Tooltip: "Kas a ra goulennoù bihan da ur servijer herberc’hiet gant GrapheneOS evit gwiriañ ar moned d’ar genrouedad."
     Automatic History Retention: "Mirout an istor ent emgefreek (devezhioù)"
     Automatic History Retention Placeholder: "Leuskel goullo evit mirout da viken"
     Automatic History Retention Tooltip: "Leuskit goullo evit mirout an istor da viken. Enrollañ un niver a zilam an elfennoù koshoc'h bremañ, hag ent emgefreek pa vez digor an arload."
@@ -1741,6 +1743,7 @@ Theme Discovery:
   Update and Apply: "Hizivaat hag arloañ"
 
 Connection:
+  Offline: Ezlinenn
   Reconnecting: "Kollet eo ar cʼhennask. O klask adkennaskañ…"
   Back Online: "Enlinenn en-dro"
 

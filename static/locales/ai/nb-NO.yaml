@@ -711,6 +711,8 @@ Settings:
     Restricted Playback Authentication Warning: Bruk av yt-dlp med en Google-konto kan føre til midlertidige eller permanente kontobegrensninger.
     Use cookies for subtitles: "Bruk informasjonskapsler for undertekster"
   Privacy Settings:
+    Internet Connectivity Checks: "Kontroll av internettforbindelse"
+    Internet Connectivity Checks Tooltip: "Sender små forespørsler til en server driftet av GrapheneOS for å sjekke internettilgang."
     Automatic History Retention: Automatisk oppbevaring av historikk (dager)
     Automatic History Retention Placeholder: La stå tomt for å beholde for alltid
     Automatic History Retention Tooltip: La feltet stå tomt for å beholde historikken for alltid. Når du lagrer et tall, fjernes eldre oppføringer nå og automatisk mens programmet er åpent.
@@ -1743,6 +1745,7 @@ Theme Discovery:
   Update and Apply: "Oppdater og bruk"
 
 Connection:
+  Offline: Frakoblet
   Reconnecting: "Tilkoblingen ble brutt. Prøver å koble til igjen…"
   Back Online: "På nett igjen"
 

@@ -137,7 +137,6 @@ test('shows a new window before its renderer loads and respects hiding during st
     await expect(nextPage.locator('.topNav')).toBeVisible()
     await expect(nextPage.locator('#startup-splash')).toHaveCount(0)
     expect(await browserWindow.evaluate(window => window.isVisible())).toBe(false)
-    await browserWindow.evaluate(window => window.destroy())
   } finally {
     releaseRenderer()
     await context.unrouteAll({ behavior: 'wait' })
@@ -172,8 +171,6 @@ test.describe('startup splash with a system-selected OpenTubeX theme', () => {
           .toBe(background)
         releaseRenderer()
         await expect(nextPage.locator('#startup-splash')).toHaveCount(0)
-        const browserWindow = await app.electronApp.browserWindow(nextPage)
-        await browserWindow.evaluate(window => window.destroy())
       } finally {
         releaseRenderer()
         await context.unrouteAll({ behavior: 'wait' })

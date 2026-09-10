@@ -1,4 +1,4 @@
-import { test, expect, goTo } from '../../helpers/app.mjs'
+import { abortUnmockedRequest, test, expect, goTo } from '../../helpers/app.mjs'
 
 const CHANNEL_ID = 'UCaaaaaaaaaaaaaaaaaaaaaa'
 
@@ -101,7 +101,7 @@ test('holding a subscription tab opens its mobile bottom menu without selecting 
       if (refreshing) window.__mobileFeedRefreshStarted = true
     })
   })
-  await page.route(/^https?:\/\//, route => route.abort())
+  await page.route(/^https?:\/\//, abortUnmockedRequest)
   await menu.getByRole('menuitem', { name: 'Reload Shorts', exact: true }).click()
   await expect(menu).toHaveCount(0)
   await expect.poll(() => page.evaluate(() => window.__mobileFeedRefreshStarted)).toBe(true)
@@ -110,7 +110,7 @@ test('holding a subscription tab opens its mobile bottom menu without selecting 
 
 test('a mobile Cancel Refresh action never reloads after the refresh finishes', async ({ app, page }) => {
   await goTo(page, 'subscriptions')
-  await page.route(/^https?:\/\//, route => route.abort())
+  await page.route(/^https?:\/\//, abortUnmockedRequest)
   await page.evaluate(() => {
     const store = document.querySelector('#app').__vue_app__.config.globalProperties.$store
     store.commit('setSubscriptionFeedRefreshInProgress', true)

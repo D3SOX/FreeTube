@@ -278,6 +278,8 @@ Settings:
     Restricted Playback Authentication Warning: Używanie yt-dlp z kontem Google może spowodować jego tymczasowe lub trwałe ograniczenie.
     Use cookies for subtitles: "Używaj plików cookie do napisów"
   Privacy Settings:
+    Internet Connectivity Checks: "Sprawdzanie połączenia z internetem"
+    Internet Connectivity Checks Tooltip: "Wysyła niewielkie żądania do serwera hostowanego przez GrapheneOS w celu sprawdzenia dostępu do internetu."
     Cache Video Metadata: Historia metadanych
     Cache Video Metadata Tooltip: Zachowuje wszystkie obsługiwane wersje metadanych odwiedzonych filmów, w tym tytuły, miniatury i opisy. Funkcja jest domyślnie wyłączona, ponieważ historia metadanych zajmuje dodatkowe miejsce na dysku.
     Clear Video Metadata Cache: Wyczyść pamięć podręczną metadanych filmów
@@ -940,6 +942,7 @@ Theme Discovery:
   Update and Apply: "Zaktualizuj i zastosuj"
 
 Connection:
+  Offline: Offline
   Reconnecting: "Utracono połączenie. Próba ponownego połączenia…"
   Back Online: "Ponownie online"
 
