@@ -680,6 +680,7 @@ Settings:
     yt-dlp Download Error Template: 'Downloaden van yt-dlp mislukt: {error}'
     FFmpeg Source: FFmpeg-bron
     Detected FFmpeg Version Template: 'Gedetecteerde FFmpeg-versie: {version}'
+    Detected FFmpeg and FFprobe Version Template: 'Gedetecteerde FFmpeg/FFprobe-versie: {version}'
     FFmpeg Managed Not Downloaded: FFmpeg is nog niet gedownload. Klik op de knop hieronder om het te downloaden.
     System FFmpeg Missing Warning: FFmpeg is niet op je systeem gevonden. Het is vereist om video en audio samen te voegen en audio te converteren. Installeer het, stel hieronder een aangepast pad in of wijzig de bron in "Beheerd door OpenTubeX".
     Download FFmpeg: FFmpeg downloaden

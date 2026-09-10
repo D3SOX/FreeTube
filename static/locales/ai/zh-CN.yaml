@@ -667,6 +667,7 @@ Settings:
     yt-dlp Download Error Template: '下载 yt-dlp 失败：{error}'
     FFmpeg Source: FFmpeg 来源
     Detected FFmpeg Version Template: '检测到的 FFmpeg 版本：{version}'
+    Detected FFmpeg and FFprobe Version Template: '检测到的 FFmpeg/FFprobe 版本：{version}'
     FFmpeg Managed Not Downloaded: 尚未下载 FFmpeg。点击下方按钮进行下载。
     System FFmpeg Missing Warning: 系统中未找到 FFmpeg。合并视频和音频以及转换音频时需要该工具。请安装该工具，在下方设置自定义路径，或将来源切换为“由 OpenTubeX 管理”。
     Download FFmpeg: 下载 FFmpeg

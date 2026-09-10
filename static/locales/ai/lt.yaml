@@ -868,6 +868,7 @@ Settings:
     yt-dlp Download Error Template: 'Nepavyko atsisiųsti yt-dlp: {error}'
     FFmpeg Source: FFmpeg šaltinis
     Detected FFmpeg Version Template: 'Aptikta FFmpeg versija: {version}'
+    Detected FFmpeg and FFprobe Version Template: 'Aptikta FFmpeg/FFprobe versija: {version}'
     FFmpeg Managed Not Downloaded: FFmpeg dar neatsisiųsta. Norėdami atsisiųsti, spustelėkite toliau esantį mygtuką.
     System FFmpeg Missing Warning: Sistemoje nerasta FFmpeg. Ji būtina vaizdo ir garso failams sujungti bei garsui konvertuoti. Įdiekite ją, toliau nurodykite pasirinktinį kelią arba kaip šaltinį pasirinkite „Valdo OpenTubeX“.
     Download FFmpeg: Atsisiųsti FFmpeg

@@ -675,6 +675,7 @@ Settings:
     yt-dlp Download Error Template: 'Không tải được yt-dlp: {error}'
     FFmpeg Source: Nguồn FFmpeg
     Detected FFmpeg Version Template: 'Phiên bản FFmpeg đã phát hiện: {version}'
+    Detected FFmpeg and FFprobe Version Template: 'Phiên bản FFmpeg/FFprobe đã phát hiện: {version}'
     FFmpeg Managed Not Downloaded: Chưa tải FFmpeg. Nhấp vào nút bên dưới để tải.
     System FFmpeg Missing Warning: Không tìm thấy FFmpeg trên hệ thống. Công cụ này cần thiết để ghép video với âm thanh và chuyển đổi âm thanh. Hãy cài đặt, đặt đường dẫn tùy chỉnh bên dưới hoặc chuyển nguồn sang "Do OpenTubeX quản lý".
     Download FFmpeg: Tải FFmpeg

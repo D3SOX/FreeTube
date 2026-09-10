@@ -843,6 +843,7 @@ Settings:
     yt-dlp Download Error Template: 'yt-dlp 다운로드 실패: {error}'
     FFmpeg Source: FFmpeg 소스
     Detected FFmpeg Version Template: '감지된 FFmpeg 버전: {version}'
+    Detected FFmpeg and FFprobe Version Template: '감지된 FFmpeg/FFprobe 버전: {version}'
     FFmpeg Managed Not Downloaded: 아직 FFmpeg를 다운로드하지 않았습니다. 아래 버튼을 클릭하여 다운로드하세요.
     System FFmpeg Missing Warning: 시스템에서 FFmpeg를 찾을 수 없습니다. 동영상과 오디오 병합 및 오디오 변환에 필요합니다. 설치하거나 아래에서 사용자 지정 경로를 설정하거나 소스를 "OpenTubeX에서 관리"로 변경하세요.
     Download FFmpeg: FFmpeg 다운로드

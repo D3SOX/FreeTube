@@ -680,6 +680,7 @@ Settings:
     yt-dlp Download Error Template: 'yt-dlp:n lataus epäonnistui: {error}'
     FFmpeg Source: FFmpeg-lähde
     Detected FFmpeg Version Template: 'Havaittu FFmpeg-versio: {version}'
+    Detected FFmpeg and FFprobe Version Template: 'Havaittu FFmpeg-/FFprobe-versio: {version}'
     FFmpeg Managed Not Downloaded: FFmpeg-ohjelmaa ei ole vielä ladattu. Lataa se napsauttamalla alla olevaa painiketta.
     System FFmpeg Missing Warning: FFmpeg-ohjelmaa ei löytynyt järjestelmästä. Sitä tarvitaan videon ja äänen yhdistämiseen sekä äänen muuntamiseen. Asenna se, määritä mukautettu polku alla tai vaihda lähteeksi "OpenTubeX:n hallitsema".
     Download FFmpeg: Lataa FFmpeg

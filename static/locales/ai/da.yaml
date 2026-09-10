@@ -691,6 +691,7 @@ Settings:
     yt-dlp Download Error Template: 'Download af yt-dlp mislykkedes: {error}'
     FFmpeg Source: Kilde til FFmpeg
     Detected FFmpeg Version Template: 'Registreret FFmpeg-version: {version}'
+    Detected FFmpeg and FFprobe Version Template: 'Registreret FFmpeg/FFprobe-version: {version}'
     FFmpeg Managed Not Downloaded: FFmpeg er ikke downloadet endnu. Klik på knappen nedenfor for at downloade det.
     System FFmpeg Missing Warning: FFmpeg blev ikke fundet på dit system. Det kræves for at flette video og lyd og konvertere lyd. Installer det, angiv en brugerdefineret sti nedenfor, eller skift kilden til "Administreret af OpenTubeX".
     Download FFmpeg: Download FFmpeg

@@ -679,6 +679,7 @@ Settings:
     yt-dlp Download Error Template: 'yt-dlp பதிவிறக்கம் தோல்வியடைந்தது: {error}'
     FFmpeg Source: FFmpeg மூலம்
     Detected FFmpeg Version Template: 'கண்டறிந்த FFmpeg பதிப்பு: {version}'
+    Detected FFmpeg and FFprobe Version Template: 'கண்டறிந்த FFmpeg/FFprobe பதிப்பு: {version}'
     FFmpeg Managed Not Downloaded: FFmpeg இன்னும் பதிவிறக்கப்படவில்லை. அதைப் பதிவிறக்கக் கீழுள்ள பொத்தானைக் கிளிக் செய்யவும்.
     System FFmpeg Missing Warning: உங்கள் கணினியில் FFmpeg கிடைக்கவில்லை. காணொளியையும் ஒலியையும் ஒன்றிணைக்கவும் ஒலியை மாற்றவும் இது தேவை. அதை நிறுவவும், கீழே தனிப்பயன் பாதையை அமைக்கவும் அல்லது மூலத்தை "OpenTubeX நிர்வகிப்பது" என மாற்றவும்.
     Download FFmpeg: FFmpeg-ஐப் பதிவிறக்கு

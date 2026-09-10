@@ -680,6 +680,7 @@ Settings:
     yt-dlp Download Error Template: 'הורדת yt-dlp נכשלה: {error}'
     FFmpeg Source: מקור FFmpeg
     Detected FFmpeg Version Template: 'גרסת FFmpeg שזוהתה: {version}'
+    Detected FFmpeg and FFprobe Version Template: 'גרסת FFmpeg/FFprobe שזוהתה: {version}'
     FFmpeg Managed Not Downloaded: FFmpeg עדיין לא הורד. לחצו על הכפתור למטה כדי להוריד אותו.
     System FFmpeg Missing Warning: FFmpeg לא נמצא במערכת. הוא דרוש למיזוג וידאו ושמע ולהמרת שמע. התקינו אותו, הגדירו נתיב מותאם אישית למטה או החליפו את המקור ל"מנוהל בידי OpenTubeX".
     Download FFmpeg: הורדת FFmpeg

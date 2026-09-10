@@ -680,6 +680,7 @@ Settings:
     yt-dlp Download Error Template: 'Η λήψη του yt-dlp απέτυχε: {error}'
     FFmpeg Source: Προέλευση FFmpeg
     Detected FFmpeg Version Template: 'Εντοπίστηκε έκδοση FFmpeg: {version}'
+    Detected FFmpeg and FFprobe Version Template: 'Εντοπίστηκε έκδοση FFmpeg/FFprobe: {version}'
     FFmpeg Managed Not Downloaded: Δεν έχει γίνει ακόμη λήψη του FFmpeg. Κάντε κλικ στο παρακάτω κουμπί για να το κατεβάσετε.
     System FFmpeg Missing Warning: Το FFmpeg δεν βρέθηκε στο σύστημά σας. Απαιτείται για τη συγχώνευση βίντεο και ήχου, καθώς και για τη μετατροπή ήχου. Εγκαταστήστε το, ορίστε παρακάτω μια προσαρμοσμένη διαδρομή ή αλλάξτε την προέλευση σε «Διαχείριση από το OpenTubeX».
     Download FFmpeg: Λήψη FFmpeg

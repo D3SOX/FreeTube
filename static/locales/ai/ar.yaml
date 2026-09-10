@@ -675,6 +675,7 @@ Settings:
     yt-dlp Download Error Template: 'فشل تنزيل yt-dlp: {error}'
     FFmpeg Source: مصدر إف إف إم بي إي جي
     Detected FFmpeg Version Template: 'تم اكتشاف إصدار FFmpeg: {version}'
+    Detected FFmpeg and FFprobe Version Template: 'تم اكتشاف إصدار FFmpeg/FFprobe: {version}'
     FFmpeg Managed Not Downloaded: لم يتم تنزيل FFmpeg بعد. انقر على الزر أدناه لتنزيله.
     System FFmpeg Missing Warning: لم يتم العثور على FFmpeg على نظامك. مطلوب لدمج الفيديو والصوت وتحويل الصوت. قم بتثبيته، أو قم بتعيين مسار مخصص أدناه، أو قم بتبديل المصدر إلى "Managed by OpenTubeX".
     Download FFmpeg: تحميل برنامج FFmpeg

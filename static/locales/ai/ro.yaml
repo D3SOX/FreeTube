@@ -671,6 +671,7 @@ Settings:
     yt-dlp Download Error Template: 'Descărcarea yt-dlp a eșuat: {error}'
     FFmpeg Source: Sursa FFmpeg
     Detected FFmpeg Version Template: 'Versiune FFmpeg detectată: {version}'
+    Detected FFmpeg and FFprobe Version Template: 'Versiune FFmpeg/FFprobe detectată: {version}'
     FFmpeg Managed Not Downloaded: FFmpeg nu a fost descărcat încă. Apăsați butonul de mai jos pentru a-l descărca.
     System FFmpeg Missing Warning: FFmpeg nu a fost găsit în sistem. Este necesar pentru îmbinarea imaginii cu sunetul și pentru conversia audio. Instalați-l, setați mai jos o cale personalizată sau schimbați sursa la „Gestionată de OpenTubeX”.
     Download FFmpeg: Descarcă FFmpeg

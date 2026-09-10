@@ -675,6 +675,7 @@ Settings:
     yt-dlp Download Error Template: 'Ekki tókst að hlaða niður yt-dlp: {error}'
     FFmpeg Source: Uppruni FFmpeg
     Detected FFmpeg Version Template: 'Útgáfa FFmpeg fannst: {version}'
+    Detected FFmpeg and FFprobe Version Template: 'Útgáfa FFmpeg/FFprobe fannst: {version}'
     FFmpeg Managed Not Downloaded: FFmpeg hefur ekki verið hlaðið niður enn. Smelltu á hnappinn fyrir neðan til að hlaða því niður.
     System FFmpeg Missing Warning: FFmpeg fannst ekki í kerfinu. Það er nauðsynlegt til að sameina mynd og hljóð og til að umbreyta hljóði. Settu það upp, tilgreindu sérsniðna slóð fyrir neðan eða veldu "Umsjón OpenTubeX" sem uppruna.
     Download FFmpeg: Hlaða niður FFmpeg

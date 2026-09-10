@@ -669,6 +669,7 @@ Settings:
     yt-dlp Download Error Template: 'Preuzimanje alata yt-dlp nije uspjelo: {error}'
     FFmpeg Source: Izvor za FFmpeg
     Detected FFmpeg Version Template: 'Otkrivena verzija alata FFmpeg: {version}'
+    Detected FFmpeg and FFprobe Version Template: 'Otkrivena verzija alata FFmpeg/FFprobe: {version}'
     FFmpeg Managed Not Downloaded: FFmpeg još nije preuzet. Kliknite gumb u nastavku da biste ga preuzeli.
     System FFmpeg Missing Warning: FFmpeg nije pronađen na sustavu. Potreban je za spajanje videozapisa i zvuka te za pretvorbu zvuka. Instalirajte ga, u nastavku postavite prilagođenu putanju ili promijenite izvor na "Upravlja OpenTubeX".
     Download FFmpeg: Preuzmi FFmpeg

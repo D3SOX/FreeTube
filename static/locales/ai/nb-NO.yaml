@@ -667,6 +667,7 @@ Settings:
     yt-dlp Download Error Template: 'Kunne ikke laste ned yt-dlp: {error}'
     FFmpeg Source: Kilde for FFmpeg
     Detected FFmpeg Version Template: 'Oppdaget FFmpeg-versjon: {version}'
+    Detected FFmpeg and FFprobe Version Template: 'Oppdaget FFmpeg/FFprobe-versjon: {version}'
     FFmpeg Managed Not Downloaded: FFmpeg er ikke lastet ned ennå. Klikk på knappen nedenfor for å laste det ned.
     System FFmpeg Missing Warning: Fant ikke FFmpeg på systemet. Det kreves for å slå sammen video og lyd og for å konvertere lyd. Installer det, angi en egendefinert bane nedenfor eller bytt kilde til «Administrert av OpenTubeX».
     Download FFmpeg: Last ned FFmpeg

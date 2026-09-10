@@ -144,19 +144,25 @@
               : t('Settings.External Software Settings.System FFmpeg Missing Warning') }}
           </p>
           <p
+            v-else-if="ffmpegVersionsMatch"
+            class="ytDlpStatus"
+          >
+            {{ t('Settings.External Software Settings.Detected FFmpeg and FFprobe Version Template', { version: ffmpegInfo.version }) }}
+          </p>
+          <p
             v-else
             class="ytDlpStatus"
           >
             {{ t('Settings.External Software Settings.Detected FFmpeg Version Template', { version: ffmpegInfo.version }) }}
           </p>
           <p
-            v-if="ffprobeInfo === null"
+            v-if="!ffmpegVersionsMatch && ffprobeInfo === null"
             class="ytDlpStatus"
           >
             {{ t('Settings.External Software Settings.Checking FFprobe') }}
           </p>
           <p
-            v-else-if="!ffprobeInfo.available"
+            v-else-if="!ffmpegVersionsMatch && !ffprobeInfo.available"
             class="ytDlpStatus ytDlpWarning"
           >
             <FtIcon :icon="['fas', 'circle-exclamation']" />
@@ -165,7 +171,7 @@
               : t('Settings.External Software Settings.System FFprobe Missing Warning') }}
           </p>
           <p
-            v-else
+            v-else-if="!ffmpegVersionsMatch"
             class="ytDlpStatus"
           >
             {{ t('Settings.External Software Settings.Detected FFprobe Version Template', { version: ffprobeInfo.version }) }}
@@ -449,6 +455,7 @@ const ffprobeInfo = computed(() => ytDlpFfmpegSource.value === 'managed'
     : null)
 
 const ffmpegToolsAvailable = computed(() => ffmpegInfo.value?.available === true && ffprobeInfo.value?.available === true)
+const ffmpegVersionsMatch = computed(() => ffmpegToolsAvailable.value && ffmpegInfo.value.version === ffprobeInfo.value.version)
 
 const ytDlpBinaryDownloadInProgress = ref(false)
 const ffmpegBinaryDownloadInProgress = ref(false)

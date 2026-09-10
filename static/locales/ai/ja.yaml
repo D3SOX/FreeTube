@@ -667,6 +667,7 @@ Settings:
     yt-dlp Download Error Template: 'yt-dlpのダウンロードに失敗しました: {error}'
     FFmpeg Source: FFmpegの入手元
     Detected FFmpeg Version Template: '検出したFFmpegのバージョン: {version}'
+    Detected FFmpeg and FFprobe Version Template: '検出したFFmpeg/FFprobeのバージョン: {version}'
     FFmpeg Managed Not Downloaded: FFmpegはまだダウンロードされていません。下のボタンをクリックしてダウンロードしてください。
     System FFmpeg Missing Warning: システムにFFmpegが見つかりません。動画と音声の結合や音声変換に必要です。インストールするか、下でカスタムパスを指定するか、入手元を「OpenTubeXで管理」に変更してください。
     Download FFmpeg: FFmpegをダウンロード

@@ -884,6 +884,7 @@ Settings:
     yt-dlp Download Error Template: 'Prenos yt-dlp ni uspel: {error}'
     FFmpeg Source: Vir za FFmpeg
     Detected FFmpeg Version Template: 'Zaznana različica FFmpeg: {version}'
+    Detected FFmpeg and FFprobe Version Template: 'Zaznana različica FFmpeg/FFprobe: {version}'
     FFmpeg Managed Not Downloaded: FFmpeg še ni prenesen. Za prenos kliknite spodnji gumb.
     System FFmpeg Missing Warning: Orodja FFmpeg ni bilo mogoče najti v sistemu. Potrebno je za združevanje slike in zvoka ter pretvorbo zvoka. Namestite ga, spodaj nastavite pot po meri ali kot vir izberite »Upravlja OpenTubeX«.
     Download FFmpeg: Prenesi FFmpeg

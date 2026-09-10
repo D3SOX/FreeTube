@@ -249,6 +249,7 @@ Settings:
     Concurrent Downloads: Jednoczesne pobieranie
     Bandwidth Limit: Limit przepustowości (KiB/s, 0 oznacza brak limitu)
   External Software Settings:
+    Detected FFmpeg and FFprobe Version Template: 'Wykryta wersja FFmpeg/FFprobe: {version}'
     Download FFmpeg and FFprobe: Pobierz FFmpeg i FFprobe
     Update FFmpeg and FFprobe: Zaktualizuj FFmpeg i FFprobe
     Downloading FFmpeg and FFprobe: Pobieranie FFmpeg i FFprobe…
