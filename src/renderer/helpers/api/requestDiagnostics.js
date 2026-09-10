@@ -54,7 +54,7 @@ export function classifyRequestFailure(error) {
   if (/ssl|tls|certificate|certpath|handshake/.test(signature)) return 'tls'
   if (error instanceof SyntaxError || /json|parse|parsing|unexpected token/.test(signature)) return 'parsing'
   if (
-    /unknownhost|gai|addrinfo|eai_|dns|network|socket|timeout|timed out|connect|failed to fetch|load failed/.test(signature)
+    /unknownhost|unable to resolve host|gai|addrinfo|eai_|\b(?:enotfound|etimedout|econnreset|econnrefused|enetunreach|ehostunreach)\b|dns|network|socket|timeout|timed out|connect|failed to fetch|load failed/.test(signature)
   ) {
     return 'network'
   }

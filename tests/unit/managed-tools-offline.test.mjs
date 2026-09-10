@@ -2,6 +2,7 @@ import assert from 'node:assert/strict'
 import { readFile } from 'node:fs/promises'
 import vm from 'node:vm'
 import test from 'node:test'
+import { classifyRequestFailure } from '../../src/renderer/helpers/api/requestDiagnostics.js'
 import { createNetworkRecovery } from '../../src/renderer/helpers/networkRecovery.js'
 
 const source = await readFile(new URL('../../src/renderer/App.vue', import.meta.url), 'utf8')
@@ -18,6 +19,7 @@ function setup(t, online, checkInternet) {
   const context = vm.createContext({
     isElectron: false, isCapacitor: true,
     initializeNetworkRecovery: () => recovery,
+    classifyRequestFailure,
     getConnectionState: () => recovery.state,
     navigator: { get onLine() { return online } },
     store: { getters: { getExternalSoftwareUpdateMode: 'automatic', getYtDlpSource: 'managed', getYtDlpFfmpegSource: 'managed' } },
@@ -137,4 +139,40 @@ test('a native tool failure checks WAN reachability before showing an error', as
   t.mock.timers.tick(5000)
   await pending
   assert.equal(attempts, 2)
+})
+
+for (const failure of [
+  { error: 'Unable to resolve host "api.github.com"' },
+  { code: 'UnknownHostException', message: 'Download failed' },
+  { code: 'ETIMEDOUT', message: 'Download failed' },
+  { code: 'ECONNRESET', message: 'Download failed' },
+]) {
+  test(`managed tool transport failure retries even when GrapheneOS is reachable: ${failure.code ?? failure.error}`, async t => {
+    const app = setup(t, true, async () => true)
+    let attempts = 0
+    app.context.ytDlp.ytDlpDownloadBinary = async () => {
+      if (++attempts === 1) {
+        if (failure.code) throw Object.assign(new Error(failure.message), { code: failure.code })
+        return failure
+      }
+      return { version: '1', updated: true }
+    }
+    const pending = app.context.initializeManagedExternalSoftware()
+    await flush()
+    assert.equal(app.toasts.some(toast => toast.message.includes('Error')), false)
+    t.mock.timers.tick(5000)
+    await pending
+    assert.equal(attempts, 2)
+  })
+}
+
+test('known non-network managed tool errors do not trigger another connectivity probe', async t => {
+  let probes = 0
+  const app = setup(t, true, async () => { probes++; return true })
+  app.context.ytDlp.ytDlpDownloadBinary = async () => {
+    throw Object.assign(new Error('Download failed'), { code: 'SSLHandshakeException' })
+  }
+  await app.context.initializeManagedExternalSoftware()
+  assert.equal(probes, 1)
+  assert.equal(app.toasts.some(toast => toast.message.includes('Error')), true)
 })

@@ -566,7 +566,7 @@ import {
   processAndroidSubscriptionRefreshChannelResult
 } from './helpers/androidSubscriptionRefreshData'
 import { normalizeInvidiousSubscriptionFeed } from './helpers/api/invidious'
-import { formatRequestDiagnostic } from './helpers/api/requestDiagnostics'
+import { classifyRequestFailure, formatRequestDiagnostic } from './helpers/api/requestDiagnostics'
 import { reconcileFetchedSubscriptionEntries } from './helpers/subscription-entries'
 import {
   cancelSubscriptionRefresh,
@@ -1177,7 +1177,12 @@ async function initializeManagedExternalSoftware(requestedUpdates = null) {
             throw new Error(result?.error ?? '')
           }
           return result
-        }, { isNetworkError: async () => !await recovery.checkConnection() })
+        }, {
+          isNetworkError: async error => {
+            const failure = classifyRequestFailure(error)
+            return failure === 'network' || (failure === 'api' && !await recovery.checkConnection())
+          },
+        })
         return { binary, result }
       } catch (error) {
         return { binary, result: { error: String(error) } }

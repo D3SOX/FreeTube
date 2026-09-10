@@ -69,3 +69,11 @@ test('labels foreground, background, and recent resume requests', () => {
   assert.equal(classifyRequestLifecycle('visible', 8000, 10000), 'resume')
   assert.equal(classifyRequestLifecycle('visible', 0, 10000), 'foreground')
 })
+
+test('classifies native download transport codes without relying on their messages', () => {
+  for (const code of ['UnknownHostException', 'ENOTFOUND', 'ETIMEDOUT', 'ECONNRESET', 'ECONNREFUSED', 'ENETUNREACH', 'EHOSTUNREACH']) {
+    assert.equal(classifyRequestFailure({ code, message: 'Download failed' }), 'network', code)
+  }
+  assert.equal(classifyRequestFailure('Unable to resolve host "api.github.com"'), 'network')
+  assert.equal(classifyRequestFailure({ code: 'FileNotFoundException', message: 'Missing feed' }), 'api')
+})
