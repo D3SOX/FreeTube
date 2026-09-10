@@ -16,6 +16,23 @@ gradle.taskGraph.whenReady { graph ->
     }
 }
 
+def appIconOutput = rootProject.file('../build/generated/app-icons')
+def generateAppIconPresets = tasks.register('generateAppIconPresets', Exec) {
+    workingDir rootProject.file('..')
+    commandLine 'node', '_scripts/brand/generate-app-icon-presets.mjs'
+    inputs.files(
+        rootProject.file('../src/appIconPresets.js'),
+        rootProject.file('../_scripts/brand/generate-app-icon-presets.mjs'),
+        file('src/main/AndroidManifest.xml'),
+        file('src/main/res/drawable/ic_launcher_monochrome.xml'),
+        file('src/dev/res/drawable/ic_launcher_dev_monochrome.xml'),
+        file('src/debug/res/drawable/ic_launcher_nightly_monochrome.xml')
+    )
+    inputs.files(rootProject.fileTree('../_scripts/brand') { include 'icon-*.svg' })
+    outputs.dir(appIconOutput)
+}
+tasks.named('preBuild').configure { dependsOn(generateAppIconPresets) }
+
 android {
     namespace = "org.opentubex.app"
     compileSdk = rootProject.ext.compileSdkVersion
@@ -65,8 +82,10 @@ android {
         }
     }
     sourceSets {
-        debug.res.srcDirs = ['src/dev/res']
-        nightly.res.srcDirs = ['src/debug/res']
+        main.manifest.srcFile new File(appIconOutput, 'AndroidManifest.xml')
+        main.res.srcDirs += [new File(appIconOutput, 'android/main/res')]
+        debug.res.srcDirs = ['src/dev/res', new File(appIconOutput, 'android/dev/res')]
+        nightly.res.srcDirs = ['src/debug/res', new File(appIconOutput, 'android/debug/res')]
         androidTest.assets.srcDirs += ['../../e2e/fixtures/media']
     }
     if (project.findProperty('testBuildType') == 'nightly') {
