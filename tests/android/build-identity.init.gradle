@@ -9,12 +9,27 @@ gradle.projectsEvaluated {
             def production = variants.find { it.name == 'release' }
             assert production.applicationId == 'org.opentubex.app'
             for (entry in [
-                [variant: 'debug', suffix: 'dev', label: 'OpenTubeX Dev', resources: 'src/dev/res'],
-                [variant: 'nightly', suffix: 'nightly', label: 'OpenTubeX Nightly', resources: 'src/debug/res']
+                [
+                    variant: 'debug',
+                    suffix: 'dev',
+                    label: 'OpenTubeX Dev',
+                    resources: 'src/dev/res',
+                    generatedResources: 'android/dev/res'
+                ],
+                [
+                    variant: 'nightly',
+                    suffix: 'nightly',
+                    label: 'OpenTubeX Nightly',
+                    resources: 'src/debug/res',
+                    generatedResources: 'android/debug/res'
+                ]
             ]) {
                 def variant = variants.find { it.name == entry.variant }
                 assert variant.applicationId == "org.opentubex.app.${entry.suffix}"
-                assert app.android.sourceSets[entry.variant].res.srcDirs == [app.file(entry.resources)] as Set
+                assert app.android.sourceSets[entry.variant].res.srcDirs == [
+                    app.file(entry.resources),
+                    app.rootProject.file("../build/generated/app-icons/${entry.generatedResources}")
+                ] as Set
                 for (name in ['app_name', 'title_activity_main']) {
                     assert variant.buildType.resValues["string/${name}"]?.value == entry.label
                 }
