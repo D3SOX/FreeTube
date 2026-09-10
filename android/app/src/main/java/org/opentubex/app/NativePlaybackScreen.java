@@ -57,6 +57,7 @@ final class NativePlaybackScreen extends FrameLayout implements TextureView.Surf
     private boolean miniPlayer;
     private float miniRadius;
     private boolean scrollingPage;
+    private boolean gestureActive;
     private boolean scrollEndRequested;
     private boolean pageTouchDown;
     private float pageTouchY;
@@ -308,6 +309,7 @@ final class NativePlaybackScreen extends FrameLayout implements TextureView.Surf
 
     void setFullscreen(boolean enabled) {
         fullscreen = enabled;
+        if (enabled) setGestureActive(false);
         controls.updateIsFullscreen(enabled);
         // Inline phone players reserve their center row for play and seeking.
         updateQueueButtons();
@@ -384,6 +386,7 @@ final class NativePlaybackScreen extends FrameLayout implements TextureView.Surf
     void setMiniPlayer(boolean enabled, float radius) {
         miniPlayer = enabled;
         miniRadius = radius;
+        if (!enabled) setGestureActive(false);
         if (!enabled && scrollingPage) {
             scrollingPage = false;
             pageTouchDown = false;
@@ -391,6 +394,25 @@ final class NativePlaybackScreen extends FrameLayout implements TextureView.Surf
             action.accept("scroll-end");
             finishVideoTransition();
         }
+    }
+
+    void setGestureActive(boolean enabled) {
+        enabled = enabled && miniPlayer && !fullscreen && !pictureInPicture && inlineVisible && videoBounds != null;
+        if (gestureActive == enabled) return;
+        gestureActive = enabled;
+        if (!enabled) {
+            finishVideoTransition();
+            return;
+        }
+        // Live gestures move the existing texture above the WebView so Chromium
+        // only needs to paint the page opening at the end of the gesture.
+        transitionSequence++;
+        if (videoAnimation != null) videoAnimation.cancel();
+        transitioning = true;
+        updateScrollBounds();
+        refreshVideoLayout();
+        videoFrame.bringToFront();
+        updatePresentation();
     }
 
     private void onPageScroll() {
@@ -448,14 +470,15 @@ final class NativePlaybackScreen extends FrameLayout implements TextureView.Surf
     void setInlineVisible(boolean visible) {
         if (inlineVisible == visible) return;
         inlineVisible = visible;
+        if (!visible) setGestureActive(false);
         updatePresentation();
     }
 
     void layoutVideo(double x, double y, double width, double height, double viewportWidth) {
         videoBounds = new double[] { x, y, width, height, viewportWidth };
-        if (transitioning && !pictureInPicture && !(scrollingPage && videoAnimation == null)) return;
+        if (transitioning && !pictureInPicture && !((scrollingPage || gestureActive) && videoAnimation == null)) return;
         positionVideo(x, y + pageScrollDelta(viewportWidth), width, height, viewportWidth);
-        if (scrollingPage && videoAnimation == null) updateScrollBounds();
+        if ((scrollingPage || gestureActive) && videoAnimation == null) updateScrollBounds();
     }
 
     private void positionVideo(double x, double y, double width, double height, double viewportWidth) {
@@ -491,6 +514,7 @@ final class NativePlaybackScreen extends FrameLayout implements TextureView.Surf
 
     void animateVideo(double[] from, double[] to, long duration, float radius, Runnable finished) {
         followsPageScroll = false;
+        gestureActive = false;
         double scale = getWidth() / to[4];
         // A reversal starts where the native frame is actually being drawn,
         // even though the shared DOM already has the previous destination.
@@ -529,7 +553,7 @@ final class NativePlaybackScreen extends FrameLayout implements TextureView.Surf
     }
 
     void finishVideoTransition() {
-        if (scrollingPage) return;
+        if (scrollingPage || gestureActive) return;
         long sequence = ++transitionSequence;
         if (videoAnimation != null) videoAnimation.cancel();
         // Wait for the WebView's destination clip and controls to be committed
@@ -554,6 +578,7 @@ final class NativePlaybackScreen extends FrameLayout implements TextureView.Surf
 
     void setPictureInPicture(boolean enabled) {
         pictureInPicture = enabled;
+        if (enabled) setGestureActive(false);
         updatePresentation();
         if (webOverlayHost != null) webOverlayHost.setAlpha(enabled ? 0 : 1);
         refreshVideoLayout();

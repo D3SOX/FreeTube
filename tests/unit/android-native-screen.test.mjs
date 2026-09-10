@@ -15,6 +15,8 @@ async function fixture({ fullscreen = true, chrome = [], deferTransitions = fals
   const completeFullscreen = []
   const fullscreenEvents = []
   const observers = []
+  const styleWrites = []
+  const window = Object.assign(new EventTarget(), { innerWidth: 1000, innerHeight: 700, scrollX: 0, scrollY: 0 })
   let shown = true
   let menu = false
   let panel = false
@@ -39,7 +41,7 @@ async function fixture({ fullscreen = true, chrome = [], deferTransitions = fals
   const element = Object.assign(new EventTarget(), {
     getBoundingClientRect: () => bounds, getAnimations: () => [],
   })
-  const document = Object.assign(new EventTarget(), { body: { getBoundingClientRect: () => ({ height: 2000 }) }, elementFromPoint: () => null, querySelectorAll: selector => selector.includes('.topNav') ? chrome : [], documentElement: { classList: { toggle() {} }, style: { getPropertyValue() { return '' }, setProperty() {}, removeProperty() {} } } })
+  const document = Object.assign(new EventTarget(), { body: { append() {}, getBoundingClientRect: () => ({ height: 2000 }) }, createElement: () => ({ setAttribute() {}, remove() {}, style: { getPropertyValue() { return '' }, setProperty(name, value) { styleWrites.push({ name, value }) } } }), elementFromPoint: () => null, querySelectorAll: selector => selector.includes('.topNav') ? chrome : [], documentElement: { classList: { toggle() {} }, style: { getPropertyValue() { return '' }, setProperty(name, value) { styleWrites.push({ name, value }) }, removeProperty() {} } } })
   document.addEventListener('fullscreenchange', () => fullscreenEvents.push(presentations.length))
   class Observer {
     constructor(callback) { this.callback = callback; observers.push(this) }
@@ -47,7 +49,7 @@ async function fixture({ fullscreen = true, chrome = [], deferTransitions = fals
     disconnect() {}
   }
   const create = vm.runInNewContext(`${source}\ncreateAndroidNativeScreen`, {
-    document, window: Object.assign(new EventTarget(), { innerWidth: 1000, innerHeight: 700, scrollX: 0, scrollY: 0 }), Event,
+    document, window, Event,
     ResizeObserver: Observer, MutationObserver: Observer, overrideShakaMethods,
     getComputedStyle: () => ({ borderTopLeftRadius: '12px' }),
     requestAnimationFrame(callback) { frames.set(++id, callback); return id },
@@ -69,13 +71,71 @@ async function fixture({ fullscreen = true, chrome = [], deferTransitions = fals
   if (fullscreen) await screen.show()
   else await screen.attach()
   await flush()
-  return { screen, container, layouts, presentations, completeTransitions, completeFullscreen, fullscreenEvents, bounds, observers, flush, change({ visible = shown, menuOpen = menu, panelOpen = panel, containerAnimating = animating, endedRecommendations = recommendations }) {
+  return { screen, container, layouts, presentations, completeTransitions, completeFullscreen, fullscreenEvents, bounds, observers, window, styleWrites, flush, change({ visible = shown, menuOpen = menu, panelOpen = panel, containerAnimating = animating, endedRecommendations = recommendations }) {
     shown = visible; menu = menuOpen; panel = panelOpen
     recommendations = endedRecommendations
     animating = containerAnimating
-    for (const observer of observers) observer.callback()
+    for (const observer of observers) observer.callback([{ type: 'attributes', attributeName: 'style', target: container }])
   } }
 }
+
+test('fractional Android scrolling does not repaint an unchanged document cutout', async () => {
+  const f = await fixture({ fullscreen: false })
+  f.bounds.y = 111
+  f.bounds.width = 460.79998779296875
+  f.bounds.height = 259.20001220703125
+  f.change({})
+  await f.flush()
+  f.styleWrites.length = 0
+  for (let i = 1; i <= 40; i++) {
+    // WebView returns float32 viewport bounds and fractional CSS scroll offsets.
+    // Adding them back produces small errors even with an unchanged document Y.
+    f.window.scrollY = Math.fround(i * 3.2)
+    f.bounds.y = Math.fround(111 - f.window.scrollY)
+    f.window.dispatchEvent(new Event('scroll'))
+    await f.flush()
+  }
+  assert.equal(f.styleWrites.filter(write => write.name === 'clip-path').length, 0)
+  // Preserve real subpixel layout changes, including fractional UI scaling.
+  f.bounds.y += 0.125
+  f.change({})
+  await f.flush()
+  const clips = f.styleWrites.filter(write => write.name === 'clip-path')
+  assert.equal(clips.length, 1)
+  assert.ok(clips[0].value.includes('111.125'))
+  f.screen.destroy()
+})
+
+test('live dragging and resizing keeps the page cutout fixed and restores its final fractional geometry', async () => {
+  const f = await fixture({ fullscreen: false })
+  const gesture = active => {
+    const event = new Event('native-player-gesture')
+    event.detail = active
+    f.container.dispatchEvent(event)
+  }
+  gesture(true)
+  await f.flush()
+  assert.equal(f.layouts.at(-1).gestureActive, true)
+  f.styleWrites.length = 0
+  for (let i = 0; i < 20; i++) {
+    f.bounds.width += 0.125
+    f.bounds.x += 0.375
+    f.change({})
+    await f.flush()
+  }
+  assert.equal(f.styleWrites.filter(write => write.name === 'clip-path').length, 0)
+  assert.equal(f.layouts.at(-1).width, f.bounds.width)
+  gesture(false)
+  await f.flush()
+  assert.equal(f.layouts.at(-1).gestureActive, false)
+  assert.equal(f.styleWrites.filter(write => write.name === 'clip-path').length, 1)
+  // Replacing the player during a gesture must release native ownership too.
+  gesture(true)
+  await f.flush()
+  f.screen.reset()
+  assert.equal(f.layouts.at(-1).gestureActive, false)
+  f.screen.destroy()
+})
 
 test('mini-player motion is sent as one native animation instead of separate browser frames', async () => {
   const f = await fixture({ fullscreen: false })
@@ -89,6 +149,21 @@ test('mini-player motion is sent as one native animation instead of separate bro
   assert.equal(transitions[0].transition.duration, 300)
   assert.equal(transitions[0].x, 300)
   assert.ok(f.layouts.some(layout => layout.endTransition), 'Return below shared controls only after the final page clip is ready')
+  f.screen.destroy()
+})
+
+test('an edge animation takes over a live gesture without retaining gesture ownership', async () => {
+  const f = await fixture({ fullscreen: false })
+  const gesture = new Event('native-player-gesture')
+  gesture.detail = true
+  f.container.dispatchEvent(gesture)
+  await f.flush()
+  const motion = new Event('native-player-transition', { cancelable: true })
+  motion.detail = { from: f.bounds, to: { ...f.bounds, x: -200 }, duration: 300 }
+  f.container.dispatchEvent(motion)
+  await motion.detail.finished
+  assert.equal(f.layouts.filter(layout => 'gestureActive' in layout).at(-1).gestureActive, false)
+  assert.equal(f.layouts.at(-1).endTransition, true)
   f.screen.destroy()
 })
 
