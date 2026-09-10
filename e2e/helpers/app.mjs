@@ -6,6 +6,9 @@ import { brotliCompressSync } from 'node:zlib'
 
 import { test as base, expect, _electron as electron } from '@playwright/test'
 
+// This fixture also runs against candidate builds from the base checkout.
+const INTERNET_CHECK_URL = 'https://connectivitycheck.grapheneos.network/generate_204'
+
 export const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..')
 
 // Settings that keep tests deterministic and stop the app from phoning home
@@ -22,6 +25,13 @@ const BASE_SETTINGS = {
   // Desktop-sized window so the responsive layout doesn't collapse into
   // its mobile variant (which hides the search bar, among other things).
   bounds: { x: 0, y: 0, width: 1600, height: 900, maximized: false }
+}
+
+/** Blocks unmocked services while keeping the fixture's internet check reachable. */
+export function abortUnmockedRequest(route) {
+  return route.request().url() === INTERNET_CHECK_URL
+    ? route.fulfill({ status: 204 })
+    : route.abort()
 }
 
 /**
@@ -168,6 +178,9 @@ export async function launchApp(userDataDir, extraArgs = [], options = {}) {
       throw error
     }
   }
+  // Tests control WAN reachability independently of the host running them.
+  // Page routes can override these replies to exercise real offline recovery.
+  await electronApp.context().route(INTERNET_CHECK_URL, route => route.fulfill({ status: 204 }))
   await notifyPhase('electronConnected')
 
   const page = await electronApp.firstWindow()
