@@ -1,47 +1,17 @@
+import { PlayerScriptEvaluator } from './player-script-evaluator.js'
+
+const playerScriptEvaluator = new PlayerScriptEvaluator(() => new Worker(
+  new URL('./player-script-worker.js', import.meta.url),
+  { name: 'player-script-worker' }
+))
+
 /**
- * Evaluates youtubei.js player code in the sandboxed deciphering frame shared
- * by the Electron and Capacitor renderers.
+ * Interprets youtubei.js player code in a worker shared by Electron and Capacitor.
  * @param {{ output: string }} data
  * @returns {Promise<unknown>}
  */
 export function evaluatePlayerScript(data) {
-  return new Promise((resolve, reject) => {
-    const iframe = document.getElementById('sigFrame')
-    if (!iframe?.contentWindow) {
-      reject(new Error('The player-script evaluator is unavailable'))
-      return
-    }
-
-    const messageId = typeof crypto.randomUUID === 'function'
-      ? crypto.randomUUID()
-      : `${Date.now()}-${Math.floor(Math.random() * 10000)}`
-
-    /** @param {MessageEvent} event */
-    const listener = (event) => {
-      if (event.source !== iframe.contentWindow || typeof event.data !== 'string') return
-
-      let message
-      try {
-        message = JSON.parse(event.data)
-      } catch {
-        return
-      }
-      if (message.id !== messageId) return
-
-      window.removeEventListener('message', listener)
-      if (message.error) {
-        reject(message.error)
-      } else {
-        resolve(message.result)
-      }
-    }
-
-    window.addEventListener('message', listener)
-    iframe.contentWindow.postMessage(JSON.stringify({
-      id: messageId,
-      code: data.output,
-    }), '*')
-  })
+  return playerScriptEvaluator.evaluate(data.output)
 }
 
 /**

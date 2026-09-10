@@ -56,6 +56,7 @@ import { expandMultipleOnlyPluralMessages, selectPluralForm } from '../renderer/
 import { composeLocaleMessages } from '../localeComposition'
 import { appendYouTubeTimeZonePreference, buildProxyUrl, DEFAULT_PROXY_SETTINGS, isNonPublicNetworkAddress, isOpenTubeXUrl } from './utils'
 import { isInvidiousInstanceUrl } from './invidiousAuthorization'
+import { RendererCors } from './rendererCors'
 import { TabManager, setupTabsIPC } from './tabs/TabManager'
 import { clearAllTabSessions, loadAllTabSessions } from './tabs/TabSessionStore'
 import { isShareableOpenTubeXRoute, transformOpenTubeXRouteUrl } from '../renderer/helpers/share'
@@ -2115,7 +2116,12 @@ function runApp() {
       urls: ['https://*/*', 'http://*/*'],
       types: ['xhr', 'media', 'image']
     }
-    session.defaultSession.webRequest.onBeforeSendHeaders(onBeforeSendHeadersRequestFilter, ({ requestHeaders, url, webContents }, callback) => {
+    const rendererCors = new RendererCors()
+    session.defaultSession.webRequest.onBeforeSendHeaders(onBeforeSendHeadersRequestFilter, (details, callback) => {
+      // Capture the app's original Origin before the YouTube header adjustments.
+      rendererCors.rememberRequest(details)
+      let { requestHeaders } = details
+      const { url, webContents } = details
       const urlObj = new URL(url)
 
       if (webContents && isOpenTubeXUrl(webContents.getURL())) {
@@ -2178,16 +2184,14 @@ function runApp() {
     })
 
     // when we create a real session on the watch page, youtube returns tracking cookies, which we definitely don't want
-    const trackingCookieRequestFilter = {
-      urls: [
-        'https://www.youtube.com/sw.js_data',
-        'https://www.youtube.com/iframe_api',
-        'https://www.youtube.com/watch?*'
-      ]
-    }
-
-    session.defaultSession.webRequest.onHeadersReceived(trackingCookieRequestFilter, ({ responseHeaders }, callback) => {
-      if (responseHeaders) {
+    const httpRequestFilter = { urls: ['https://*/*', 'http://*/*'] }
+    session.defaultSession.webRequest.onHeadersReceived(httpRequestFilter, (details, callback) => {
+      const { url, responseHeaders } = details
+      if (responseHeaders && (
+        url === 'https://www.youtube.com/sw.js_data' ||
+        url === 'https://www.youtube.com/iframe_api' ||
+        url.startsWith('https://www.youtube.com/watch?')
+      )) {
         delete responseHeaders['set-cookie']
         delete responseHeaders['content-security-policy']
         delete responseHeaders['cross-origin-opener-policy']
@@ -2196,8 +2200,10 @@ function runApp() {
       }
 
       // eslint-disable-next-line n/no-callback-literal
-      callback({ responseHeaders })
+      callback({ responseHeaders, ...rendererCors.allowResponse(details) })
     })
+    session.defaultSession.webRequest.onCompleted(httpRequestFilter, details => rendererCors.forgetRequest(details))
+    session.defaultSession.webRequest.onErrorOccurred(httpRequestFilter, details => rendererCors.forgetRequest(details))
 
     protocol.handle('downloadmedia', async (request) => {
       if (!['GET', 'HEAD'].includes(request.method)) {
@@ -2708,7 +2714,6 @@ function runApp() {
       autoHideMenuBar: true,
       // useContentSize: true,
       webPreferences: {
-        webSecurity: false,
         backgroundThrottling: false,
         additionalArguments: [
           `--startup-background=${windowBackground}`,

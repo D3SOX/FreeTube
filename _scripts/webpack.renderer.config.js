@@ -12,7 +12,6 @@ const {
   SHAKA_LOCALES_PREBUNDLED,
   SHAKA_LOCALES_TO_BE_BUNDLED
 } = require('./getShakaLocales')
-const { sigFrameTemplateParameters } = require('./sigFrameConfig')
 
 const isDevMode = process.env.NODE_ENV === 'development'
 const rendererPlatform = process.platform
@@ -190,7 +189,6 @@ const config = {
       filename: 'index.html',
       template: path.resolve(__dirname, '../src/index.ejs'),
       templateParameters: {
-        ...sigFrameTemplateParameters,
         startupSplash: {
           styles: readFileSync(path.join(__dirname, '../src/renderer/startup/splash.css'), 'utf8'),
           script: readFileSync(path.join(__dirname, '../src/renderer/startup/boot.js'), 'utf8'),
