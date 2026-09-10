@@ -148,7 +148,7 @@ public class YtDlpDownloadsTest {
         return DocumentFile.fromTreeUri(context, uri);
     }
 
-    private static void grant(Context context, Uri uri) throws Exception {
+    static void grant(Context context, Uri uri) throws Exception {
         context.sendBroadcast(new android.content.Intent().setComponent(new android.content.ComponentName(InstrumentationRegistry.getInstrumentation().getContext().getPackageName(), YtDlpTestDocumentsProvider.GrantReceiver.class.getName()))
             .addFlags(android.content.Intent.FLAG_INCLUDE_STOPPED_PACKAGES).putExtra("uri", uri.toString()).putExtra("targetPackage", context.getPackageName()));
         long deadline = System.currentTimeMillis() + 5000;
