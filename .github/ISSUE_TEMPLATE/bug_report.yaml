@@ -86,6 +86,7 @@ body:
         - APT repository
         - Flatpak
         - Flatpark
+        - Snap
         - .dmg
         - .exe
         - WinGet
