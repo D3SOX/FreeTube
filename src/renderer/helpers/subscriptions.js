@@ -1444,11 +1444,11 @@ async function getChannelShortsLocal(channel, t, errorChannels, failedAttempts =
         const videos = parseLocalChannelShorts(shortsTab.videos, channel.id, channel.name)
         const cachedVideos = store.getters.getShortsCache[channel.id]?.videos ?? []
         // The Shorts tab omits dates, which subscriptions need for sorting and New badges.
-        for (const video of videos) {
+        await mapConcurrently(videos, RSS_ENRICHMENT_CONCURRENCY, async video => {
           const cached = cachedVideos.find(entry => entry.videoId === video.videoId)
           if (Number.isFinite(cached?.published)) {
             video.published = cached.published
-            continue
+            return
           }
           const response = await localApiFetch(`https://www.youtube.com/watch?v=${video.videoId}`, {
             signal: AbortSignal.any([
@@ -1464,7 +1464,7 @@ async function getChannelShortsLocal(channel, t, errorChannels, failedAttempts =
             throw new Error(`Could not load the publication date for Short ${video.videoId}`, { cause: error })
           }
           video.published = published
-        }
+        })
         return { videos }
       }
     }

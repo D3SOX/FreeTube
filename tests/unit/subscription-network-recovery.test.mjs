@@ -29,7 +29,7 @@ const source = (await readFile(new URL('../../src/renderer/helpers/subscriptions
 
 // Exercise the real refresh, fallback, cache, and notification paths with fake
 // platform APIs. Webpack-only imports are supplied in the isolated context.
-function createRefresh({ online = true, feed = 'Shorts', error = new TypeError('Failed to fetch'), webCors = false, backend = 'local', fallbackWorks = false, rssStatus = 200, channelInfo = { has_shorts: true, getShorts: async () => ({ videos: [] }) }, playlistError = null, stallChannelProbe = false, channelStatus = rssStatus, scraperError = null, shortPublishDate = '2026-09-06T12:00:00Z' } = {}) {
+function createRefresh({ online = true, feed = 'Shorts', error = new TypeError('Failed to fetch'), webCors = false, backend = 'local', fallbackWorks = false, rssStatus = 200, channelInfo = { has_shorts: true, getShorts: async () => ({ videos: [] }) }, playlistError = null, stallChannelProbe = false, channelStatus = rssStatus, scraperError = null, shortPublishDate = '2026-09-06T12:00:00Z', beforeShortMetadata = async () => {} } = {}) {
   const window = new EventTarget()
   const navigator = { onLine: online }
   const toasts = []
@@ -58,6 +58,7 @@ function createRefresh({ online = true, feed = 'Shorts', error = new TypeError('
     requests.push(url)
     if (fail) throw typeof error === 'function' ? error(url) : error
     if (url.includes('/watch?v=')) {
+      await beforeShortMetadata()
       const videoId = new URL(url).searchParams.get('v')
       return { ok: true, status: 200, text: async () => `var ytInitialPlayerResponse = ${JSON.stringify({
         videoDetails: { videoId },
@@ -393,6 +394,39 @@ test('Shorts refresh loads the channel tab when its automatic playlist does not 
     ...update.value.videos
   ])
   assert.equal(sorted.map(video => video.videoId).join(','), 'C9wafAQcub0,middle,cached-short')
+})
+
+test('Shorts fallback overlaps date requests with bounded concurrency and preserves tab order', async () => {
+  let active = 0
+  let peak = 0
+  const videoIds = Array.from({ length: 7 }, (_, i) => `short-${i}`)
+  const app = createRefresh({
+    rssStatus: 404,
+    playlistError: new Error('The playlist does not exist.'),
+    channelInfo: {
+      has_shorts: true,
+      getShorts: async () => ({ videos: videoIds.map(videoId => new YTNodes.ReelItem({
+        videoId, headline: { simpleText: videoId }, thumbnail: { thumbnails: [] }
+      })) })
+    },
+    async beforeShortMetadata() {
+      active++
+      peak = Math.max(peak, active)
+      await new Promise(resolve => setImmediate(resolve))
+      active--
+    }
+  })
+  app.getters.getActiveProfile.subscriptions = [{ id: 'UC-test' }]
+  app.getters.getBackendFallback = false
+  app.reconnect()
+  await app.refresh({ t: key => key })
+  assert.ok(peak > 1, 'date requests should overlap')
+  assert.ok(peak <= 3, 'date requests must respect the enrichment concurrency limit')
+  assert.equal(active, 0)
+  assert.equal(app.toasts.length, 0)
+  const update = app.writes.find(write => write.key === 'updateSubscriptionShortsCacheByChannel')
+  assert.equal(update.value.videos.map(video => video.videoId).join(','), videoIds.join(','))
+  assert.ok(update.value.videos.every(video => Number.isFinite(video.published)))
 })
 
 for (const failure of ['playlist request', 'Shorts tab request', 'publication date']) {
