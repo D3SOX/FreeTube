@@ -172,7 +172,8 @@ Home Page:
   All sections hidden description: Prilagodite domačo stran, da znova prikažete razdelek.
 Subscriptions:
   Copy Error Details: "Kopiraj tehnične podrobnosti"
-  Refresh Errors: "Kanali, ki jih ni bilo mogoče osvežiti: {count}. Kliknite za ogled podrobnosti."
+  Refresh Errors: "Kanali, ki jih ni bilo mogoče osvežiti: {channels}. Kliknite za ogled podrobnosti."
+  Refresh Error Channels More: "{channels} in še {count} | {channels} in še {count} | {channels} in še {count} | {channels} in še {count}"
   Never show {type} from this channel in feeds again: Nikoli več ne prikazuj vsebine vrste {type} s tega kanala v virih
   Empty Posts: Kanali, na katere ste naročeni, trenutno nimajo objav.
   Load More Posts: Naloži več objav

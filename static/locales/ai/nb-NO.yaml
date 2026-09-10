@@ -143,7 +143,8 @@ Home Page:
   All sections hidden description: Tilpass startsiden for å vise en del igjen.
 Subscriptions:
   Copy Error Details: "Kopier tekniske detaljer"
-  Refresh Errors: "Kanaler som ikke kunne oppdateres: {count}. Klikk for å se detaljer."
+  Refresh Errors: "Kanaler som ikke kunne oppdateres: {channels}. Klikk for å se detaljer."
+  Refresh Error Channels More: "{channels} og {count} til | {channels} og {count} til"
   Never show {type} from this channel in feeds again: Vis aldri {type} fra denne kanalen i strømmer igjen
   Refreshing Subscription Videos: Oppdaterer abonnementsvideoer
   Refreshing Subscription Shorts: Oppdaterer Shorts fra abonnementer

@@ -143,7 +143,8 @@ Home Page:
   All sections hidden description: Tùy chỉnh Trang chủ để hiển thị lại một mục.
 Subscriptions:
   Copy Error Details: "Sao chép chi tiết kỹ thuật"
-  Refresh Errors: "Các kênh không thể làm mới: {count}. Nhấp để xem chi tiết."
+  Refresh Errors: "Các kênh không thể làm mới: {channels}. Nhấp để xem chi tiết."
+  Refresh Error Channels More: "{channels} và {count} kênh khác"
   Never show {type} from this channel in feeds again: Không bao giờ hiển thị {type} từ kênh này trong bảng tin nữa
   Refreshing Subscription Videos: Đang làm mới video từ kênh đăng ký
   Refreshing Subscription Shorts: Đang làm mới video ngắn từ kênh đăng ký

@@ -143,7 +143,8 @@ Home Page:
   All sections hidden description: התאימו אישית את דף הבית כדי להציג שוב מקטע.
 Subscriptions:
   Copy Error Details: "העתקת פרטים טכניים"
-  Refresh Errors: "ערוצים שלא ניתן היה לרענן: {count}. יש ללחוץ להצגת הפרטים."
+  Refresh Errors: "ערוצים שלא ניתן היה לרענן: {channels}. יש ללחוץ להצגת הפרטים."
+  Refresh Error Channels More: "{channels} ועוד {count} | {channels} ועוד {count} | {channels} ועוד {count}"
   Never show {type} from this channel in feeds again: לא להציג שוב תוכן מסוג {type} מהערוץ הזה בפידים
   Refreshing Subscription Videos: סרטוני המינויים מתרעננים
   Refreshing Subscription Shorts: הסרטונים הקצרים מהמינויים מתרעננים

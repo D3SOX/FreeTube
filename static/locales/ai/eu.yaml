@@ -143,7 +143,8 @@ Home Page:
   All sections hidden description: Pertsonalizatu hasiera atal bat berriro erakusteko.
 Subscriptions:
   Copy Error Details: "Kopiatu xehetasun teknikoak"
-  Refresh Errors: "Eguneratu ezin izan diren kanalak: {count}. Egin klik xehetasunak ikusteko."
+  Refresh Errors: "Eguneratu ezin izan diren kanalak: {channels}. Egin klik xehetasunak ikusteko."
+  Refresh Error Channels More: "{channels} eta beste {count} | {channels} eta beste {count}"
   Never show {type} from this channel in feeds again: Ez erakutsi berriro kanal honetako {type} jarioetan
   Refreshing Subscription Videos: Harpidetzetako bideoak freskatzen
   Refreshing Subscription Shorts: Harpidetzetako bideo laburrak freskatzen

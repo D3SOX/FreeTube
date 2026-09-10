@@ -165,7 +165,8 @@ Home Page:
   All sections hidden description: Tinkinkite pradžios puslapį, kad vėl būtų rodomas skyrius.
 Subscriptions:
   Copy Error Details: "Kopijuoti techninę informaciją"
-  Refresh Errors: "Kanalai, kurių nepavyko atnaujinti: {count}. Spustelėkite, kad peržiūrėtumėte išsamią informaciją."
+  Refresh Errors: "Kanalai, kurių nepavyko atnaujinti: {channels}. Spustelėkite, kad peržiūrėtumėte išsamią informaciją."
+  Refresh Error Channels More: "{channels} ir dar {count} | {channels} ir dar {count} | {channels} ir dar {count}"
   Never show {type} from this channel in feeds again: Daugiau niekada nerodyti šio kanalo {type} turinio srautuose
   Load More Posts: Įkelti daugiau įrašų
   Subscriptions Tabs: Prenumeratų kortelės

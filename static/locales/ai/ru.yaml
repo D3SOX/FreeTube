@@ -118,7 +118,8 @@ Home Page:
   All sections hidden description: Настройте главную, чтобы снова показать раздел.
 Subscriptions:
   Copy Error Details: "Скопировать технические подробности"
-  Refresh Errors: "Каналы, которые не удалось обновить: {count}. Нажмите, чтобы посмотреть подробности."
+  Refresh Errors: "Каналы, которые не удалось обновить: {channels}. Нажмите, чтобы посмотреть подробности."
+  Refresh Error Channels More: "{channels} и ещё {count} | {channels} и ещё {count} | {channels} и ещё {count}"
   Never show {type} from this channel in feeds again: Больше никогда не показывать {type} с этого канала в лентах
   Refreshing Subscription Videos: Обновление видео из подписок
   Refreshing Subscription Shorts: Обновление Shorts из подписок

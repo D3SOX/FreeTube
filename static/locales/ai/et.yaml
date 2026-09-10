@@ -143,7 +143,8 @@ Home Page:
   All sections hidden description: Kohanda avalehte, et mõni jaotis uuesti kuvada.
 Subscriptions:
   Copy Error Details: "Kopeeri tehnilised üksikasjad"
-  Refresh Errors: "Kanalid, mida ei saanud värskendada: {count}. Klõpsa üksikasjade vaatamiseks."
+  Refresh Errors: "Kanalid, mida ei saanud värskendada: {channels}. Klõpsa üksikasjade vaatamiseks."
+  Refresh Error Channels More: "{channels} ja veel {count} | {channels} ja veel {count}"
   Never show {type} from this channel in feeds again: Ära enam näita selle kanali sisu tüübiga {type} voogudes
   Refreshing Subscription Videos: Tellimuste videote värskendamine
   Refreshing Subscription Shorts: Tellimuste Shorts-videote värskendamine

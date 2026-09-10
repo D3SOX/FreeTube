@@ -143,7 +143,8 @@ Home Page:
   All sections hidden description: Персонализирайте началната страница, за да покажете отново раздел.
 Subscriptions:
   Copy Error Details: "Копиране на техническите подробности"
-  Refresh Errors: "Канали, които не можаха да се обновят: {count}. Натиснете, за да видите подробностите."
+  Refresh Errors: "Канали, които не можаха да се обновят: {channels}. Натиснете, за да видите подробностите."
+  Refresh Error Channels More: "{channels} и още {count} | {channels} и още {count}"
   Never show {type} from this channel in feeds again: Никога повече да не се показват {type} от този канал в емисиите
   Refreshing Subscription Videos: Обновяват се видеоклиповете от абонаментите
   Refreshing Subscription Shorts: Обновяват се кратките видеоклипове от абонаментите

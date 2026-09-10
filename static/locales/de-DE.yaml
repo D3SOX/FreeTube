@@ -142,7 +142,8 @@ Home Page:
 
 Subscriptions:
   Copy Error Details: "Technische Details kopieren"
-  Refresh Errors: "Nicht aktualisierte Kanäle: {count}. Klicken, um Details anzuzeigen."
+  Refresh Errors: "Nicht aktualisierte Kanäle: {channels}. Klicken, um Details anzuzeigen."
+  Refresh Error Channels More: "{channels} und {count} weiterer | {channels} und {count} weitere"
   Never show {type} from this channel in feeds again: Nie wieder {type} von diesem Kanal in Feeds anzeigen
     # On Subscriptions Page
   Subscriptions: Abos

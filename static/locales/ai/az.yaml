@@ -143,7 +143,8 @@ Home Page:
   All sections hidden description: Bölməni yenidən göstərmək üçün ana səhifəni fərdiləşdirin.
 Subscriptions:
   Copy Error Details: "Texniki təfərrüatları kopyala"
-  Refresh Errors: "Yenilənə bilməyən kanallar: {count}. Təfərrüatlara baxmaq üçün klikləyin."
+  Refresh Errors: "Yenilənə bilməyən kanallar: {channels}. Təfərrüatlara baxmaq üçün klikləyin."
+  Refresh Error Channels More: "{channels} və daha {count} kanal | {channels} və daha {count} kanal"
   Never show {type} from this channel in feeds again: Bu kanaldan {type} məzmununu lentlərdə bir daha göstərmə
   Refreshing Subscription Videos: Abunəlik videoları yenilənir
   Refreshing Subscription Shorts: Abunəlik qısa videoları yenilənir

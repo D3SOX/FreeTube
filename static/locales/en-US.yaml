@@ -260,7 +260,8 @@ Home Page:
 
 Subscriptions:
   Copy Error Details: "Copy technical details"
-  Refresh Errors: "Channels that could not be refreshed: {count}. Click to view details."
+  Refresh Errors: "Channels that could not be refreshed: {channels}. Click to view details."
+  Refresh Error Channels More: "{channels} and {count} more | {channels} and {count} more"
   Never show {type} from this channel in feeds again: Never show {type} from this channel in feeds again
     # On Subscriptions Page
   Subscriptions: Subscriptions

@@ -143,7 +143,8 @@ Home Page:
   All sections hidden description: Bir bölümü yeniden göstermek için Ana Sayfayı özelleştirin.
 Subscriptions:
   Copy Error Details: "Teknik ayrıntıları kopyala"
-  Refresh Errors: "Yenilenemeyen kanallar: {count}. Ayrıntıları görmek için tıklayın."
+  Refresh Errors: "Yenilenemeyen kanallar: {channels}. Ayrıntıları görmek için tıklayın."
+  Refresh Error Channels More: "{channels} ve {count} kanal daha | {channels} ve {count} kanal daha"
   Never show {type} from this channel in feeds again: Bu kanalın {type} içeriklerini akışlarda bir daha gösterme
   Refreshing Subscription Videos: Abonelik videoları yenileniyor
   Refreshing Subscription Shorts: Abonelik kısa videoları yenileniyor

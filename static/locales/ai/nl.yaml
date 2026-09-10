@@ -143,7 +143,8 @@ Home Page:
   All sections hidden description: Pas de startpagina aan om weer een sectie te tonen.
 Subscriptions:
   Copy Error Details: "Technische details kopiëren"
-  Refresh Errors: "Kanalen die niet konden worden vernieuwd: {count}. Klik om details te bekijken."
+  Refresh Errors: "Kanalen die niet konden worden vernieuwd: {channels}. Klik om details te bekijken."
+  Refresh Error Channels More: "{channels} en nog {count} | {channels} en nog {count}"
   Never show {type} from this channel in feeds again: Nooit meer {type} van dit kanaal in feeds tonen
   Refreshing Subscription Videos: Abonnementsvideo's vernieuwen
   Refreshing Subscription Shorts: Shorts van abonnementen vernieuwen

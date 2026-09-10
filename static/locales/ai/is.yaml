@@ -143,7 +143,8 @@ Home Page:
   All sections hidden description: Sérsníddu heimasíðuna til að sýna hluta aftur.
 Subscriptions:
   Copy Error Details: "Afrita tæknilegar upplýsingar"
-  Refresh Errors: "Rásir sem ekki tókst að uppfæra: {count}. Smelltu til að sjá upplýsingar."
+  Refresh Errors: "Rásir sem ekki tókst að uppfæra: {channels}. Smelltu til að sjá upplýsingar."
+  Refresh Error Channels More: "{channels} og {count} til viðbótar | {channels} og {count} til viðbótar"
   Never show {type} from this channel in feeds again: Aldrei sýna aftur efni af gerðinni {type} frá þessari rás í straumum
   Refreshing Subscription Videos: Endurnýja myndbönd úr áskriftum
   Refreshing Subscription Shorts: Endurnýja Shorts-myndbönd úr áskriftum

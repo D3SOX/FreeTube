@@ -146,7 +146,8 @@ Home Page:
   All sections hidden description: ஒரு பிரிவை மீண்டும் காட்ட முகப்பைத் தனிப்பயனாக்கவும்.
 Subscriptions:
   Copy Error Details: "தொழில்நுட்ப விவரங்களை நகலெடு"
-  Refresh Errors: "புதுப்பிக்க முடியாத சேனல்கள்: {count}. விவரங்களைக் காண கிளிக் செய்யவும்."
+  Refresh Errors: "புதுப்பிக்க முடியாத சேனல்கள்: {channels}. விவரங்களைக் காண கிளிக் செய்யவும்."
+  Refresh Error Channels More: "{channels} மற்றும் மேலும் {count} | {channels} மற்றும் மேலும் {count}"
   Never show {type} from this channel in feeds again: இந்தச் சேனலின் {type} உள்ளடக்கத்தை ஊட்டங்களில் இனி ஒருபோதும் காட்டாதே
   Refreshing Subscription Videos: சந்தாக்களின் காணொளிகள் புதுப்பிக்கப்படுகின்றன
   Refreshing Subscription Shorts: சந்தாக்களின் Shorts புதுப்பிக்கப்படுகின்றன

@@ -326,7 +326,10 @@ function createSubscriptionErrorSummary(t) {
       showToast({
         message: () => {
           const names = [...errors.values()].slice(0, 3).map(channel => channel.name).join(', ')
-          return `${t('Subscriptions.Refresh Errors', { count: errors.size })}\n${names}${errors.size > 3 ? '…' : ''}`
+          const channels = errors.size > 3
+            ? t('Subscriptions.Refresh Error Channels More', { channels: names, count: errors.size - 3 }, errors.size - 3)
+            : names
+          return t('Subscriptions.Refresh Errors', { channels })
         },
         time: Infinity,
         abortSignal: controller.signal,

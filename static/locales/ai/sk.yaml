@@ -143,7 +143,8 @@ Home Page:
   All sections hidden description: Prispôsobte domovskú stránku a znova zobrazte sekciu.
 Subscriptions:
   Copy Error Details: "Kopírovať technické podrobnosti"
-  Refresh Errors: "Kanály, ktoré sa nepodarilo obnoviť: {count}. Kliknutím zobrazíte podrobnosti."
+  Refresh Errors: "Kanály, ktoré sa nepodarilo obnoviť: {channels}. Kliknutím zobrazíte podrobnosti."
+  Refresh Error Channels More: "{channels} a {count} ďalší | {channels} a ďalších {count} | {channels} a ďalších {count}"
   Never show {type} from this channel in feeds again: Už nikdy nezobrazovať {type} z tohto kanála v kanáloch odberov
   Refreshing Subscription Videos: Obnovujú sa videá z odberov
   Refreshing Subscription Shorts: Obnovujú sa krátke videá z odberov

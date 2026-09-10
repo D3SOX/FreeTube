@@ -143,7 +143,8 @@ Home Page:
   All sections hidden description: Sesuaikan Beranda untuk menampilkan kembali bagian.
 Subscriptions:
   Copy Error Details: "Salin detail teknis"
-  Refresh Errors: "Channel yang tidak dapat diperbarui: {count}. Klik untuk melihat detail."
+  Refresh Errors: "Channel yang tidak dapat diperbarui: {channels}. Klik untuk melihat detail."
+  Refresh Error Channels More: "{channels} dan {count} lainnya"
   Never show {type} from this channel in feeds again: Jangan pernah tampilkan {type} dari channel ini di feed lagi
   Refreshing Subscription Videos: Memperbarui video langganan
   Refreshing Subscription Shorts: Memperbarui Shorts langganan

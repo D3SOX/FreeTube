@@ -173,7 +173,8 @@ Home Page:
   All sections hidden description: Personalitzeu l'inici per tornar a mostrar una secció.
 Subscriptions:
   Copy Error Details: "Copia els detalls tècnics"
-  Refresh Errors: "Canals que no s'han pogut actualitzar: {count}. Feu clic per veure els detalls."
+  Refresh Errors: "Canals que no s'han pogut actualitzar: {channels}. Feu clic per veure els detalls."
+  Refresh Error Channels More: "{channels} i {count} més | {channels} i {count} més | {channels} i {count} més"
   Never show {type} from this channel in feeds again: No tornis a mostrar {type} d’aquest canal als canals de contingut
   Disabled Automatic Fetching: Heu desactivat l'obtenció automàtica de subscripcions. Actualitzeu-les per veure-les aquí.
   Empty Channels: Els canals als quals us heu subscrit no tenen cap vídeo ara mateix.

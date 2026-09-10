@@ -143,7 +143,8 @@ Home Page:
   All sections hidden description: Szabja testre a kezdőlapot egy szakasz újbóli megjelenítéséhez.
 Subscriptions:
   Copy Error Details: "Technikai részletek másolása"
-  Refresh Errors: "Nem frissíthető csatornák: {count}. Kattintson a részletek megtekintéséhez."
+  Refresh Errors: "Nem frissíthető csatornák: {channels}. Kattintson a részletek megtekintéséhez."
+  Refresh Error Channels More: "{channels} és további {count} | {channels} és további {count}"
   Never show {type} from this channel in feeds again: Soha többé ne jelenjen meg {type} típusú tartalom ettől a csatornától a hírcsatornákban
   Refreshing Subscription Videos: Feliratkozások videóinak frissítése
   Refreshing Subscription Shorts: Feliratkozások rövid videóinak frissítése

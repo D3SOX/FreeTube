@@ -143,7 +143,8 @@ Home Page:
   All sections hidden description: Personalizează pagina principală pentru a afișa din nou o secțiune.
 Subscriptions:
   Copy Error Details: "Copiază detaliile tehnice"
-  Refresh Errors: "Canale care nu au putut fi actualizate: {count}. Faceți clic pentru a vedea detaliile."
+  Refresh Errors: "Canale care nu au putut fi actualizate: {channels}. Faceți clic pentru a vedea detaliile."
+  Refresh Error Channels More: "{channels} și încă {count} | {channels} și încă {count} | {channels} și încă {count}"
   Never show {type} from this channel in feeds again: Nu mai afișa niciodată conținut de tip {type} de pe acest canal în fluxuri
   Refreshing Subscription Videos: Se reîmprospătează videoclipurile din abonamente
   Refreshing Subscription Shorts: Se reîmprospătează videoclipurile Shorts din abonamente

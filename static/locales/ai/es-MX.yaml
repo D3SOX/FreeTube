@@ -149,7 +149,8 @@ Home Page:
   All sections hidden description: Personaliza Inicio para volver a mostrar una sección.
 Subscriptions:
   Copy Error Details: "Copiar detalles técnicos"
-  Refresh Errors: "Canales que no se pudieron actualizar: {count}. Haz clic para ver los detalles."
+  Refresh Errors: "Canales que no se pudieron actualizar: {channels}. Haz clic para ver los detalles."
+  Refresh Error Channels More: "{channels} y {count} más | {channels} y {count} más | {channels} y {count} más"
   Never show {type} from this channel in feeds again: No volver a mostrar {type} de este canal en los feeds
   Refreshing Subscription Videos: Actualizando videos de las suscripciones
   Refreshing Subscription Shorts: Actualizando Shorts de las suscripciones

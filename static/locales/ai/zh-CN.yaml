@@ -143,7 +143,8 @@ Home Page:
   All sections hidden description: 自定义首页以重新显示版块。
 Subscriptions:
   Copy Error Details: "复制技术详情"
-  Refresh Errors: "无法刷新的频道数：{count}。点击查看详情。"
+  Refresh Errors: "无法刷新的频道：{channels}。点击查看详情。"
+  Refresh Error Channels More: "{channels} 以及其他 {count} 个频道"
   Never show {type} from this channel in feeds again: 不再在动态中显示此频道的{type}
   Refreshing Subscription Videos: 正在刷新订阅视频
   Refreshing Subscription Shorts: 正在刷新订阅短视频

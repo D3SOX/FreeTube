@@ -3,6 +3,8 @@ import { readFile } from 'node:fs/promises'
 import test from 'node:test'
 import vm from 'node:vm'
 import { shallowReactive } from 'vue'
+import { createI18n } from 'vue-i18n'
+import { load } from 'js-yaml'
 
 import { createNetworkRecovery } from '../../src/renderer/helpers/networkRecovery.js'
 import { createAbortError } from '../../src/renderer/helpers/api/requestErrors.js'
@@ -389,14 +391,18 @@ for (const feed of ['Videos', 'Shorts', 'Live']) {
   }
 }
 
-const translateSummary = (key, values) => values ? `${key}: ${values.count}` : key
+const translateSummary = createI18n({
+  legacy: false,
+  locale: 'en-US',
+  messages: { 'en-US': load(await readFile(new URL('../../static/locales/en-US.yaml', import.meta.url), 'utf8')) }
+}).global.t
 
 test('one compact refresh notification retains every failed channel and distinct diagnostic', async () => {
   const app = createRefresh({ error: Object.assign(new Error('HTTP 500'), { status: 500 }) })
   await app.refresh({ t: translateSummary })
   assert.equal(app.toasts.length, 1)
   const toast = app.toasts[0][0]
-  assert.match(toast.message(), /^Subscriptions.Refresh Errors: 20\nUC0, UC1, UC2…$/)
+  assert.equal(toast.message(), 'Channels that could not be refreshed: UC0, UC1, UC2 and 17 more. Click to view details.')
   assert.ok(toast.message().length < 100)
   toast.action()
   assert.equal(app.copied.length, 0, 'opening details must not overwrite the clipboard')
@@ -422,7 +428,7 @@ test('two confirmed unavailable channels are both named in the notification and 
   app.reconnect()
   await app.refresh({ t: translateSummary })
   assert.equal(app.toasts.length, 1)
-  assert.match(app.toasts[0][0].message(), /First channel.*Second channel/)
+  assert.equal(app.toasts[0][0].message(), 'Channels that could not be refreshed: First channel, Second channel. Click to view details.')
   app.toasts[0][0].action()
   assert.match(app.details, /First channel \(UCfirst\)/)
   assert.match(app.details, /Second channel \(UCsecond\)/)
@@ -434,7 +440,7 @@ for (const feed of ['Videos', 'Shorts', 'Live', 'Posts']) {
     await app.refresh({ t: translateSummary })
     assert.equal(app.writes.filter(write => write.key.endsWith('CacheByChannel')).length, 0)
     assert.equal(app.toasts.length, 1)
-    assert.match(app.toasts[0][0].message(), /^Subscriptions.Refresh Errors: 20\n/)
+    assert.equal(app.toasts[0][0].message(), 'Channels that could not be refreshed: UC0, UC1, UC2 and 17 more. Click to view details.')
   })
 }
 
@@ -461,3 +467,14 @@ test('confirmed HTTP failures stay accessible while another channel retries and 
     await refresh
   }
 })
+
+for (const count of [1, 3, 4, 5]) {
+  test(`refresh toast names up to three channels with ${count} failures`, async () => {
+    const app = createRefresh({ error: Object.assign(new Error('HTTP 500'), { status: 500 }) })
+    app.getters.getActiveProfile.subscriptions = Array.from({ length: count }, (_, i) => ({ id: `UC${i}`, name: `Channel ${i}` }))
+    await app.refresh({ t: translateSummary })
+    const names = Array.from({ length: Math.min(count, 3) }, (_, i) => `Channel ${i}`).join(', ')
+    const more = count > 3 ? ` and ${count - 3} more` : ''
+    assert.equal(app.toasts[0][0].message(), `Channels that could not be refreshed: ${names}${more}. Click to view details.`)
+  })
+}

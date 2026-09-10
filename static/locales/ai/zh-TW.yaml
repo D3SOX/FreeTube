@@ -143,7 +143,8 @@ Home Page:
   All sections hidden description: 自訂首頁以重新顯示區塊。
 Subscriptions:
   Copy Error Details: "複製技術詳細資訊"
-  Refresh Errors: "無法重新整理的頻道數：{count}。點擊查看詳細資訊。"
+  Refresh Errors: "無法重新整理的頻道：{channels}。點擊查看詳細資訊。"
+  Refresh Error Channels More: "{channels} 以及其他 {count} 個頻道"
   Never show {type} from this channel in feeds again: 不再於動態中顯示此頻道的{type}
   Refreshing Subscription Videos: 正在重新整理訂閱影片
   Refreshing Subscription Shorts: 正在重新整理訂閱的 Shorts 短片
