@@ -185,69 +185,134 @@
         class="mobileLinkActionsBackdrop"
         @pointerdown.self.stop
         @click.self.stop="closeMobileLinkActions"
-        @keydown.esc="closeMobileLinkActions"
+        @keydown.esc.stop="backMobileContextMenu"
       >
         <section
           ref="mobileLinkActionsRef"
           class="mobileLinkActions"
           role="menu"
-          :aria-label="mobileContextLinkLabel"
+          :aria-label="mobileContextMenuTitle"
           tabindex="-1"
-          @keydown.esc="closeMobileLinkActions"
+          @keydown.esc.stop="backMobileContextMenu"
         >
-          <strong dir="auto">{{ mobileContextLinkLabel }}</strong>
-          <button
-            v-for="action in mobileContextActions?.actions ?? []"
-            :key="action.label"
-            type="button"
-            role="menuitem"
-            @click="runMobileContextAction(action)"
+          <div class="mobileLinkActionsHeader">
+            <button
+              v-if="mobileContextMenuStack.length > 1"
+              type="button"
+              class="mobileLinkActionsBack"
+              @click="backMobileContextMenu"
+            >
+              <FtIcon
+                :icon="['fas', 'arrow-left']"
+                aria-hidden="true"
+              />
+              {{ t('Back') }}
+            </button>
+            <strong
+              v-if="mobileContextMenuStack.length === 1"
+              dir="auto"
+            >{{ mobileContextMenuTitle }}</strong>
+          </div>
+          <div
+            v-if="mobileContextQuickActions.length"
+            class="mobileLinkQuickActions"
           >
-            <FtIcon
-              :icon="action.icon"
-              aria-hidden="true"
-            />
-            {{ action.label }}
-          </button>
-          <button
-            v-if="mobileContextLink"
-            type="button"
-            role="menuitem"
-            @click="openMobileContextLink(false)"
+            <button
+              v-for="action in mobileContextQuickActions"
+              :key="action.label"
+              type="button"
+              role="menuitem"
+              :title="action.label"
+              :aria-label="action.label"
+              :disabled="action.enabled === false"
+              @click="runMobileContextAction(action)"
+            >
+              <FtIcon
+                :icon="action.icon"
+                aria-hidden="true"
+              />
+            </button>
+          </div>
+          <div
+            ref="mobileLinkActionsScrollRef"
+            v-overlay-scrollbars
+            class="mobileLinkActionsScroll"
           >
-            <FtIcon :icon="['fas', 'link']" />
-            {{ t('Share.Open Link') }}
-          </button>
-          <button
-            v-if="mobileContextLinkCanOpenInTab"
-            type="button"
-            role="menuitem"
-            @click="openMobileContextLink(true)"
-          >
-            <FtIcon :icon="['fas', 'arrow-up-right-from-square']" />
-            {{ t('Context Menu.Open in a New Tab') }}
-          </button>
-          <button
-            v-if="mobileContextLinkCopyUrl"
-            type="button"
-            role="menuitem"
-            @click="copyMobileContextLink"
-          >
-            <FtIcon :icon="['fas', 'copy']" />
-            {{ t('Share.Copy Link') }}
-          </button>
-          <button
-            v-if="mobileContextLinkCopyUrl"
-            type="button"
-            role="menuitem"
-            @click="shareMobileContextLink"
-          >
-            <FtIcon
-              :icon="['fas', 'share-alt']"
-              aria-hidden="true"
-            />
-            {{ t('Share.Share Link') }}
-          </button>
+            <div
+              ref="mobileLinkActionsContentRef"
+              class="mobileLinkActionsContent"
+            >
+              <template
+                v-for="(action, index) in mobileContextMenuRows"
+                :key="action.label ?? index"
+              >
+                <div
+                  v-if="action.type === 'separator'"
+                  class="mobileLinkActionsSeparator"
+                  role="separator"
+                />
+                <button
+                  v-else
+                  type="button"
+                  role="menuitem"
+                  :aria-label="action.label"
+                  :disabled="action.enabled === false"
+                  :aria-haspopup="action.submenu ? 'menu' : undefined"
+                  @click="runMobileContextAction(action)"
+                >
+                  <FtIcon
+                    :icon="action.icon"
+                    aria-hidden="true"
+                  />
+                  <span>{{ action.label }}</span>
+                  <span
+                    v-if="action.submenu"
+                    class="mobileLinkSubmenuArrow"
+                    aria-hidden="true"
+                  />
+                </button>
+              </template>
+              <button
+                v-if="mobileContextLink"
+                type="button"
+                role="menuitem"
+                @click="openMobileContextLink(false)"
+              >
+                <FtIcon :icon="['fas', 'link']" />
+                {{ t('Share.Open Link') }}
+              </button>
+              <button
+                v-if="mobileContextLinkCanOpenInTab"
+                type="button"
+                role="menuitem"
+                @click="openMobileContextLink(true)"
+              >
+                <FtIcon :icon="['fas', 'arrow-up-right-from-square']" />
+                {{ t('Context Menu.Open in a New Tab') }}
+              </button>
+              <button
+                v-if="mobileContextLinkCopyUrl"
+                type="button"
+                role="menuitem"
+                @click="copyMobileContextLink"
+              >
+                <FtIcon :icon="['fas', 'copy']" />
+                {{ t('Share.Copy Link') }}
+              </button>
+              <button
+                v-if="mobileContextLinkCopyUrl"
+                type="button"
+                role="menuitem"
+                @click="shareMobileContextLink"
+              >
+                <FtIcon
+                  :icon="['fas', 'share-alt']"
+                  aria-hidden="true"
+                />
+                {{ t('Share.Share Link') }}
+              </button>
+            </div>
+          </div>
         </section>
       </div>
     </Teleport>
@@ -422,7 +487,8 @@ import { playbackScreenWake } from './helpers/playbackScreenWake'
 import { FtIcon } from '@opentubex/icons'
 import { App as CapacitorApp } from '@capacitor/app'
 import { Capacitor, SystemBars, SystemBarsStyle } from '@capacitor/core'
-import { computed, defineAsyncComponent, nextTick, onBeforeUnmount, onMounted, provide, ref, useId, useTemplateRef, watch } from 'vue'
+import { clampOverlayScrollTop, restoreOverlayScrollTop } from './helpers/overlayScrollbars'
+import { computed, defineAsyncComponent, nextTick, onBeforeUnmount, onMounted, provide, ref, shallowRef, unref, useId, useTemplateRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { routerKey, useRoute, useRouter } from 'vue-router'
 
@@ -772,8 +838,28 @@ const commandPaletteOpen = ref(false)
 const hardwareKeyboardAttached = ref(!isCapacitor)
 provide('hardwareKeyboardAttached', hardwareKeyboardAttached)
 const mobileContextLink = ref(null)
-const mobileContextActions = ref(null)
+const mobileContextActions = shallowRef(null)
+const mobileContextMenuPath = ref([])
+const mobileContextMenuStack = computed(() => {
+  const stack = [{ label: mobileContextLinkLabel.value, items: unref(mobileContextActions.value?.actions) ?? [] }]
+  for (const label of mobileContextMenuPath.value) {
+    const action = stack.at(-1).items.find(item => item.label === label)
+    if (!action?.submenu) break
+    stack.push({ label: action.label, items: action.submenu })
+  }
+  return stack
+})
+const mobileContextMenuItems = computed(() => mobileContextMenuStack.value.at(-1).items)
+const mobileContextQuickActions = computed(() => mobileContextMenuItems.value.filter(action => action.quickAction))
+const mobileContextMenuRows = computed(() => {
+  const rows = mobileContextMenuItems.value.filter(action => !action.quickAction)
+  return rows.filter((action, index) => action.type !== 'separator' || (
+    index > 0 && index < rows.length - 1 && rows[index - 1].type !== 'separator'
+  ))
+})
+const mobileContextMenuTitle = computed(() => mobileContextMenuStack.value.at(-1).label)
 provide('openMobileContextActions', async (menu) => {
+  mobileContextMenuPath.value = []
   mobileContextLink.value = null
   mobileContextActions.value = menu
   await nextTick()
@@ -781,6 +867,20 @@ provide('openMobileContextActions', async (menu) => {
 })
 const mobileLinkActionsPromptId = useId()
 const mobileLinkActionsRef = useTemplateRef('mobileLinkActionsRef')
+const mobileLinkActionsScrollRef = useTemplateRef('mobileLinkActionsScrollRef')
+const mobileLinkActionsContentRef = useTemplateRef('mobileLinkActionsContentRef')
+watch(mobileLinkActionsContentRef, (content, _, onCleanup) => {
+  if (!content) return
+  const scroller = mobileLinkActionsScrollRef.value
+  const observer = new ResizeObserver(() => clampOverlayScrollTop(scroller, content))
+  observer.observe(content)
+  observer.observe(scroller)
+  onCleanup(() => observer.disconnect())
+})
+watch([mobileContextLink, mobileContextActions, mobileContextMenuPath], async () => {
+  await nextTick()
+  if (mobileLinkActionsScrollRef.value) restoreOverlayScrollTop(mobileLinkActionsScrollRef.value, 0)
+})
 let mobileLinkActionsLocked = false
 const mobileContextLinkLabel = computed(() => {
   if (mobileContextActions.value) return mobileContextActions.value.title
@@ -793,6 +893,11 @@ const mobileContextLinkLabel = computed(() => {
     link.textContent?.trim() ||
     itemTitle?.trim() ||
     link.href
+})
+watch(() => mobileContextMenuStack.value.length, (depth) => {
+  if (mobileContextMenuPath.value.length >= depth) {
+    mobileContextMenuPath.value = mobileContextMenuPath.value.slice(0, depth - 1)
+  }
 })
 const mobileContextLinkCanOpenInTab = computed(() => {
   const href = mobileContextLink.value?.href ?? ''
@@ -1415,6 +1520,7 @@ onMounted(async () => {
   setWindowTitle()
 
   document.addEventListener('keydown', handleKeyboardShortcuts)
+  window.addEventListener('opentubex:close-context-menu', closeOwnedMobileContextMenu)
   window.addEventListener(OPEN_COMMAND_PALETTE_EVENT, openCommandPalette)
   window.addEventListener(OPEN_TAB_ORGANIZER_EVENT, openTabOrganizer)
   if (isCapacitor) {
@@ -1478,6 +1584,7 @@ onBeforeUnmount(() => {
   clearInterval(historyCleanupTimer)
   store.dispatch('stopSyncServerAutoSync')
   document.removeEventListener('keydown', handleKeyboardShortcuts)
+  window.removeEventListener('opentubex:close-context-menu', closeOwnedMobileContextMenu)
   window.removeEventListener(OPEN_COMMAND_PALETTE_EVENT, openCommandPalette)
   window.removeEventListener(OPEN_TAB_ORGANIZER_EVENT, openTabOrganizer)
   window.removeEventListener('opentubex:android-pip', handleAndroidPictureInPictureChange)
@@ -2889,7 +2996,7 @@ async function handleAndroidExitPromptAnswer(option) {
 
 async function handleAndroidBack() {
   if (mobileContextLink.value !== null || mobileContextActions.value !== null) {
-    closeMobileLinkActions()
+    backMobileContextMenu()
     return
   }
 
@@ -3028,7 +3135,7 @@ function handleKeyboardShortcuts(event) {
 
   if (event.key === 'Escape' && (mobileContextLink.value || mobileContextActions.value)) {
     event.preventDefault()
-    closeMobileLinkActions()
+    backMobileContextMenu()
     return
   }
 
@@ -3886,12 +3993,37 @@ async function handleMobileLinkContextMenu(event) {
   mobileLinkActionsRef.value?.focus({ preventScroll: true })
 }
 
+function closeOwnedMobileContextMenu(event) {
+  if (mobileContextActions.value?.actions === event.detail) closeMobileLinkActions()
+}
+
+watch(() => route.fullPath, closeMobileLinkActions)
+
 function closeMobileLinkActions() {
+  mobileContextMenuPath.value = []
   mobileContextLink.value = null
   mobileContextActions.value = null
 }
 
-function runMobileContextAction(action) {
+async function backMobileContextMenu() {
+  if (mobileContextMenuStack.value.length === 1) {
+    closeMobileLinkActions()
+    return
+  }
+  const triggerLabel = mobileContextMenuStack.value.at(-1).label
+  mobileContextMenuPath.value = mobileContextMenuPath.value.slice(0, mobileContextMenuStack.value.length - 2)
+  await nextTick()
+  mobileLinkActionsRef.value?.querySelector(`[role="menuitem"][aria-label="${CSS.escape(triggerLabel)}"]:not(:disabled)`)?.focus({ preventScroll: true })
+}
+
+async function runMobileContextAction(action) {
+  if (action.enabled === false) return
+  if (action.submenu) {
+    mobileContextMenuPath.value = [...mobileContextMenuStack.value.slice(1).map(level => level.label), action.label]
+    await nextTick()
+    mobileLinkActionsRef.value?.querySelector('.mobileLinkActionsBack')?.focus({ preventScroll: true })
+    return
+  }
   closeMobileLinkActions()
   return action.run()
 }

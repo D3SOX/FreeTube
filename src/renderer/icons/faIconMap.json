@@ -1,4 +1,8 @@
 {
+  "add-to-queue": {
+    "ri": "play-list-2-line",
+    "material": "order-play-outline-rounded"
+  },
   "angle-down": {
     "ri": "arrow-down-s-line",
     "material": "keyboard-arrow-down-rounded"

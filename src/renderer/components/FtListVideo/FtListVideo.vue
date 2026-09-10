@@ -386,7 +386,7 @@
 <script setup>
 import { supportsYtDlp } from '../../helpers/ytDlpCapabilities'
 import { FtIcon } from '@opentubex/icons'
-import { computed, onBeforeUnmount, onMounted, ref, toRef, watch } from 'vue'
+import { computed, inject, onBeforeUnmount, onMounted, ref, toRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
 
@@ -412,6 +412,7 @@ import {
   getVideoThumbnailUrl,
   openExternalLink,
   openInternalPath,
+  shareLink,
   showToast,
   toDistractionFreeTitle,
   deepCopy,
@@ -432,6 +433,7 @@ import { useRelativeTimeClock } from '../../composables/useRelativeTimeClock.js'
 import { useHideSubscriptionFeedType } from '../../composables/useHideSubscriptionFeedType'
 import { useResultChannelAvatar } from '../../composables/useResultChannelAvatar.js'
 import { formatDate, formatDateTime } from '../../helpers/dateFormat.js'
+import { getYoutubeVideoShareUrl } from '../../helpers/share'
 import thumbnailPlaceholder from '../../assets/img/thumbnail_placeholder.svg'
 
 const props = defineProps({
@@ -884,9 +886,6 @@ const playlistSharable = computed(() => {
 })
 
 /** @type {import('vue').ComputedRef<boolean>} */
-const hideSharingActions = computed(() => store.getters.getHideSharingActions)
-
-/** @type {import('vue').ComputedRef<boolean>} */
 const showInvidiousShareOptions = computed(() => backendPreference.value === 'invidious' || store.getters.getBackendFallback)
 
 const { hideSubscriptionFeedType, hideSubscriptionFeedTypeOption } = useHideSubscriptionFeedType(() => channelId.value)
@@ -914,7 +913,7 @@ const videoMenuOptions = computed(() => {
     {
       label: t('Video.Add to Queue'),
       value: 'addToQueue',
-      icon: ['fas', 'bars-progress']
+      icon: ['fas', 'add-to-queue']
     },
     {
       type: 'divider'
@@ -972,26 +971,60 @@ const videoMenuOptions = computed(() => {
       })
     }
   }
-  if (!hideSharingActions.value) {
+  options.push(
+    {
+      type: 'divider'
+    },
+    {
+      label: t('Context Menu.Copy YouTube Link'),
+      value: 'copyYoutube',
+      icon: ['fab', 'youtube']
+    },
+    ...playlistSharable.value
+      ? [{
+          label: t('Context Menu.Copy {service} link without playlist', { service: 'YouTube' }),
+          value: 'copyYoutubeWithoutPlaylist',
+          icon: ['fab', 'youtube']
+        }]
+      : [],
+    {
+      label: t('Video.Open in YouTube'),
+      value: 'openYoutube',
+      icon: ['fab', 'youtube']
+    },
+    ...showInvidiousShareOptions.value
+      ? [
+          {
+            type: 'divider'
+          },
+          {
+            label: t('Context Menu.Copy Invidious Link'),
+            value: 'copyVideoInvidious',
+            icon: ['fas', 'link']
+          },
+          ...playlistSharable.value
+            ? [{
+                label: t('Context Menu.Copy {service} link without playlist', { service: 'Invidious' }),
+                value: 'copyInvidiousWithoutPlaylist',
+                icon: ['fas', 'link']
+              }]
+            : [],
+          {
+            label: t('Video.Open in Invidious'),
+            value: 'openInvidious',
+            icon: ['fas', 'external-link-alt']
+          }
+        ]
+      : [],
+  )
+  if (channelId.value !== null) {
     options.push(
       {
         type: 'divider'
       },
       {
-        label: t('Context Menu.Copy YouTube Link'),
-        value: 'copyYoutube',
-        icon: ['fab', 'youtube']
-      },
-      ...playlistSharable.value
-        ? [{
-            label: t('Context Menu.Copy {service} link without playlist', { service: 'YouTube' }),
-            value: 'copyYoutubeWithoutPlaylist',
-            icon: ['fab', 'youtube']
-          }]
-        : [],
-      {
-        label: t('Video.Open in YouTube'),
-        value: 'openYoutube',
+        label: t('Video.Open Channel in YouTube'),
+        value: 'openYoutubeChannel',
         icon: ['fab', 'youtube']
       },
       ...showInvidiousShareOptions.value
@@ -1000,49 +1033,13 @@ const videoMenuOptions = computed(() => {
               type: 'divider'
             },
             {
-              label: t('Context Menu.Copy Invidious Link'),
-              value: 'copyVideoInvidious',
-              icon: ['fas', 'link']
-            },
-            ...playlistSharable.value
-              ? [{
-                  label: t('Context Menu.Copy {service} link without playlist', { service: 'Invidious' }),
-                  value: 'copyInvidiousWithoutPlaylist',
-                  icon: ['fas', 'link']
-                }]
-              : [],
-            {
-              label: t('Video.Open in Invidious'),
-              value: 'openInvidious',
+              label: t('Video.Open Channel in Invidious'),
+              value: 'openInvidiousChannel',
               icon: ['fas', 'external-link-alt']
             }
           ]
         : [],
     )
-    if (channelId.value !== null) {
-      options.push(
-        {
-          type: 'divider'
-        },
-        {
-          label: t('Video.Open Channel in YouTube'),
-          value: 'openYoutubeChannel',
-          icon: ['fab', 'youtube']
-        },
-        ...showInvidiousShareOptions.value
-          ? [
-              {
-                type: 'divider'
-              },
-              {
-                label: t('Video.Open Channel in Invidious'),
-                value: 'openInvidiousChannel',
-                icon: ['fas', 'external-link-alt']
-              }
-            ]
-          : [],
-      )
-    }
   }
 
   if (channelId.value !== null && !inSubscriptions.value) {
@@ -1218,8 +1215,18 @@ const videoContextMenuItems = computed(() => {
           submenu: openItems
         })
   }
+  if (process.env.IS_CAPACITOR) {
+    rows.push({
+      label: t('Share.Share Link'),
+      icon: ['fas', 'share-alt'],
+      enabled: true,
+      run: () => shareLink(getYoutubeVideoShareUrl(id.value, playlistSharable.value ? playlistIdFinal.value : ''))
+    })
+  }
   return rows
 })
+
+const openMobileContextActions = inject('openMobileContextActions')
 
 let menuHoldTimer = null
 let menuHoldPosition = null
@@ -1264,6 +1271,20 @@ function openVideoContextMenu(event) {
   // Channel names, dialogs, and dropdowns keep their own context menus.
   if (target.closest('.channelName, [role="dialog"], [role="menu"], .iconDropdown')) return
 
+  if (event.pointerType === 'touch') {
+    event.preventDefault()
+    event.stopPropagation()
+    cancelMenuHold()
+    document.addEventListener('click', suppressMenuHoldClick, true)
+    document.addEventListener('pointerdown', resetMenuHold, true)
+    document.addEventListener('keydown', resetMenuHold, true)
+    openMobileContextActions({
+      title: title.value,
+      actions: videoContextMenuItems
+    })
+    return
+  }
+
   if (!process.env.IS_ELECTRON) {
     const selection = window.getSelection()
     // Only Electron can merge native image and selection actions into our menu.
@@ -1273,11 +1294,6 @@ function openVideoContextMenu(event) {
   event.preventDefault()
   event.stopPropagation()
   cancelMenuHold()
-  if (event.pointerType === 'touch') {
-    document.addEventListener('click', suppressMenuHoldClick, true)
-    document.addEventListener('pointerdown', resetMenuHold, true)
-    document.addEventListener('keydown', resetMenuHold, true)
-  }
   const bounds = target.getBoundingClientRect()
   const keyboard = event.type === 'keydown' || (event.clientX === 0 && event.clientY === 0)
   window.dispatchEvent(new CustomEvent('opentubex:context-menu', {

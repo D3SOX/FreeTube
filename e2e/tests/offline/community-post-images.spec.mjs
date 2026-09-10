@@ -162,6 +162,23 @@ test.describe('community post images', () => {
     }
   })
 
+  test('feed post options stay visible without hover in list and grid layouts', async ({ page }) => {
+    await stubPostImages(page)
+    await goTo(page, 'subscriptions')
+    await page.locator('[data-subscription-feed-tab="posts"]').click()
+    for (const listType of ['list', 'grid']) {
+      await page.evaluate(value => document.querySelector('#app').__vue_app__.config.globalProperties.$store.commit('setListType', value), listType)
+      await page.mouse.move(0, 0)
+      await page.evaluate(() => document.activeElement?.blur())
+      const post = page.locator('.ft-list-post').first()
+      const options = post.locator('.optionsButton')
+      await expect(options).toHaveCSS('opacity', '1')
+      await options.getByRole('button', { name: /^More options$/i }).click()
+      await expect(post.getByRole('option').first()).toBeVisible()
+      await page.keyboard.press('Escape')
+    }
+  })
+
   test('keeps carousel crops, shows full single images, and applies UI roundness', async ({ page, attachScreenshot }) => {
     await stubPostImages(page)
 

@@ -70,7 +70,10 @@
 }
 
 .mobileLinkActions {
-  display: grid;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  max-block-size: 100dvh;
   gap: 4px;
   padding-block: 16px max(16px, var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)));
   padding-inline: 16px;
@@ -80,7 +83,19 @@
   border-start-end-radius: calc(20px * var(--ui-roundness));
 }
 
+.mobileLinkActionsScroll {
+  min-block-size: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.mobileLinkActionsContent {
+  display: grid;
+  gap: 4px;
+}
+
 .mobileLinkActions strong {
+  min-inline-size: 0;
   padding: 8px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -89,7 +104,7 @@
 
 .mobileLinkActions button {
   display: grid;
-  grid-template-columns: 24px minmax(0, 1fr);
+  grid-template-columns: 24px minmax(0, 1fr) auto;
   align-items: center;
   gap: 16px;
   min-block-size: 48px;
@@ -102,8 +117,53 @@
   text-align: start;
 }
 
+.mobileLinkActionsHeader {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+}
+
+.mobileLinkQuickActions {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  flex-shrink: 0;
+  gap: 8px;
+  padding-block: 4px 12px;
+  border-block-end: 1px solid var(--border-color);
+  margin-block-end: 4px;
+}
+
+.mobileLinkQuickActions button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--side-nav-hover-color);
+  font-size: 20px;
+}
+
 .mobileLinkActions button:is(:active, :focus-visible) {
   background-color: var(--side-nav-hover-color);
+}
+
+.mobileLinkActionsSeparator {
+  block-size: 1px;
+  margin-block: 8px;
+  margin-inline: 12px;
+  background-color: var(--border-color);
+}
+
+.mobileLinkSubmenuArrow {
+  font-size: 24px;
+  line-height: 1;
+}
+
+.mobileLinkSubmenuArrow::before {
+  content: '›';
+}
+
+.mobileLinkSubmenuArrow:dir(rtl) {
+  transform: rotate(180deg);
 }
 
 :global(body.androidPictureInPicture .ftVideoPlayer[data-android-picture-in-picture-target]),

@@ -66,17 +66,45 @@ for (const uiScale of [100, 125]) {
   test.describe(`video context menu at ${uiScale}% UI scale`, () => {
     test.use({ seed: { ...SEED, settings: { ...SEED.settings, uiScale } } })
 
-    test('touch opens the menu without navigating and keeps actions within the viewport', async ({ page }) => {
+    test('right click and keyboard stay compact when touch input is available', async ({ page }) => {
       await goTo(page, 'history')
       const session = await page.context().newCDPSession(page)
       await session.send('Emulation.setTouchEmulationEnabled', { enabled: true })
-      const menu = page.locator('.contextMenu')
+      try {
+        expect(await page.evaluate(() => matchMedia('(any-pointer: coarse)').matches)).toBe(true)
+        const title = page.locator('.ft-list-video .title').first()
+        const menu = page.locator('.contextMenu')
+        for (const input of ['mouse', 'keyboard']) {
+          if (input === 'mouse') {
+            await title.click({ button: 'right' })
+          } else {
+            await title.focus()
+            await page.keyboard.press('Shift+F10')
+          }
+          await expect(menu).toBeVisible()
+          const action = menu.getByRole('menuitem', { name: 'Mark As Watched', exact: true })
+          await expect(action).toHaveCSS('font-size', '13px')
+          await expect(action).toHaveCSS('min-block-size', '28px')
+          await expect(menu.locator('.tabQuickActions button').first()).toHaveCSS('min-block-size', '30px')
+          await page.keyboard.press('Escape')
+          await expect(menu).toHaveCount(0)
+        }
+      } finally {
+        await session.detach()
+      }
+    })
+
+    test('touch holds open the existing bottom menu without navigating', async ({ page, app }) => {
+      await goTo(page, 'history')
+      const session = await page.context().newCDPSession(page)
+      await session.send('Emulation.setTouchEmulationEnabled', { enabled: true })
+      const menu = page.locator('.mobileLinkActions')
       try {
         for (const viewport of [{ width: 375, height: 812 }, { width: 812, height: 375 }, { width: 1024, height: 768 }]) {
           await page.setViewportSize(viewport)
           const card = page.locator('.ft-list-video').first()
-          await card.locator('.title').scrollIntoViewIfNeeded()
-          const bounds = await card.locator('.title').boundingBox()
+          await card.locator('.thumbnailImage').scrollIntoViewIfNeeded()
+          const bounds = await card.locator('.thumbnailImage').boundingBox()
           await session.send('Input.dispatchTouchEvent', {
             type: 'touchStart', touchPoints: [{ x: bounds.x + 8, y: bounds.y + 8 }]
           })
@@ -84,18 +112,30 @@ for (const uiScale of [100, 125]) {
           await session.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] })
           await expect(page).toHaveURL(/#\/history/)
           const actions = menu.getByRole('menuitem').filter({ visible: true })
-          await expect(actions.first()).toHaveCSS('font-size', '16px')
+          await expect(page.locator('.contextMenu')).toHaveCount(0)
+          for (const name of ['Play Next', 'Add to Queue', 'Mark As Watched', 'Remove From History', 'Copy Link']) {
+            await expect(menu.getByRole('menuitem', { name, exact: true })).toBeAttached()
+          }
+          const header = menu.locator('strong')
+          const headerBounds = await header.boundingBox()
           expect(await actions.evaluateAll(elements => Math.min(...elements.map(element => element.getBoundingClientRect().height)))).toBeGreaterThanOrEqual(47.99)
           expect(await menu.evaluate(element => {
             const bounds = element.getBoundingClientRect()
-            return bounds.left >= 0 && bounds.right <= innerWidth + 1 && bounds.top >= 0 && bounds.bottom <= innerHeight + 1
+            return bounds.left >= 0 && bounds.right <= innerWidth + 1 && bounds.top >= 0 && Math.abs(bounds.bottom - innerHeight) <= 1
           })).toBe(true)
           await actions.last().scrollIntoViewIfNeeded()
           await expect(actions.last()).toBeInViewport()
+          expect(await header.boundingBox()).toEqual(headerBounds)
+          await page.setViewportSize({ width: 1600, height: 1600 })
+          const scroller = menu.locator('.mobileLinkActionsScroll')
+          await expect.poll(() => scroller.evaluate(element => element.scrollTop)).toBe(0)
+          await expect(scroller.locator(':scope > .os-scrollbar-vertical')).toHaveClass(/os-scrollbar-unusable/)
           await menu.getByRole('menuitem', { name: 'Copy Link', exact: true }).click()
-          const copy = menu.getByRole('menuitem', { name: 'Copy YouTube Link', exact: true })
-          await expect(copy).toBeVisible()
-          await expect(copy).toBeInViewport()
+          await menu.getByRole('menuitem', { name: 'Copy YouTube Link', exact: true }).click()
+          await expect.poll(() => app.electronApp.evaluate(({ clipboard }) => clipboard.readText())).toBe(`https://youtu.be/${VIDEO_ID}`)
+          await expect(menu).toHaveCount(0)
+          await card.locator('.title').click({ button: 'right' })
+          await expect(page.locator('.contextMenu').getByRole('menuitem').first()).toHaveCSS('font-size', '13px')
           await page.keyboard.press('Escape')
           await expect(menu).toHaveCount(0)
         }
@@ -106,8 +146,124 @@ for (const uiScale of [100, 125]) {
   })
 }
 
+test.describe('sharing actions stay available in video menus', () => {
+  test.use({ seed: { ...SEED, settings: { ...SEED.settings, hideSharingActions: true } } })
+
+  test('desktop and mobile retain grouped link choices when sharing is hidden elsewhere', async ({ page, app }) => {
+    await goTo(page, 'history')
+    const title = page.locator('.ft-list-video .title').first()
+    for (const touch of [false, true]) {
+      if (touch) {
+        await title.evaluate(element => element.dispatchEvent(new PointerEvent('contextmenu', {
+          bubbles: true, cancelable: true, pointerType: 'touch'
+        })))
+      } else {
+        await title.click({ button: 'right' })
+      }
+      const menu = page.locator(touch ? '.mobileLinkActions' : '.contextMenu')
+      await menu.getByRole('menuitem', { name: 'Copy Link', exact: true }).click()
+      await expect(menu.getByRole('menuitem', { name: 'Copy Invidious Link', exact: true })).toBeVisible()
+      await menu.getByRole('menuitem', { name: 'Copy YouTube Link', exact: true }).click()
+      await expect.poll(() => app.electronApp.evaluate(({ clipboard }) => clipboard.readText())).toBe(`https://youtu.be/${VIDEO_ID}`)
+      await expect(menu).toHaveCount(0)
+    }
+  })
+})
+
+test('mobile groups quick actions and resets scrolling when entering and leaving submenus', async ({ page }) => {
+  await goTo(page, 'history')
+  await page.setViewportSize({ width: 375, height: 350 })
+  await page.locator('.ft-list-video .title').first().evaluate(element => element.dispatchEvent(new PointerEvent('contextmenu', {
+    bubbles: true, cancelable: true, pointerType: 'touch'
+  })))
+  const menu = page.locator('.mobileLinkActions')
+  const scroller = menu.locator('.mobileLinkActionsScroll')
+  const quickActions = menu.locator('.mobileLinkQuickActions [role="menuitem"]')
+  await expect(quickActions).toHaveCount(4)
+  const tops = await quickActions.evaluateAll(elements => elements.map(element => element.getBoundingClientRect().top))
+  expect(new Set(tops).size).toBe(1)
+  await expect(menu.getByRole('separator').first()).toBeAttached()
+  await menu.getByRole('menuitem').last().scrollIntoViewIfNeeded()
+  await expect.poll(() => scroller.evaluate(element => element.scrollTop)).toBeGreaterThan(0)
+  await menu.getByRole('menuitem', { name: 'Copy Link', exact: true }).click()
+  await expect(quickActions).toHaveCount(0)
+  await expect(menu.locator('strong')).toHaveCount(0)
+  await expect(menu).toHaveAttribute('aria-label', 'Copy Link')
+  await expect.poll(() => scroller.evaluate(element => element.scrollTop)).toBe(0)
+  await expect(scroller.locator(':scope > .os-scrollbar-vertical')).toHaveClass(/os-scrollbar-unusable/)
+  await expect(menu.getByRole('button', { name: 'Back', exact: true })).toBeFocused()
+  await menu.getByRole('button', { name: 'Back', exact: true }).click()
+  await expect(menu.getByRole('menuitem', { name: 'Copy Link', exact: true })).toBeFocused()
+  await expect(quickActions).toHaveCount(4)
+  await expect.poll(() => scroller.evaluate(element => element.scrollTop)).toBe(0)
+  await menu.getByRole('menuitem', { name: 'Open Link', exact: true }).click()
+  await expect(menu.getByRole('menuitem', { name: /^Open.*Channel in Invidious$/ })).toBeAttached()
+  await menu.getByRole('menuitem').last().scrollIntoViewIfNeeded()
+  await page.keyboard.press('Escape')
+  await expect(menu.locator('strong')).toHaveText('Video menu test')
+  await expect(menu.getByRole('menuitem', { name: 'Open Link', exact: true })).toBeFocused()
+  await expect.poll(() => scroller.evaluate(element => element.scrollTop)).toBe(0)
+  await page.keyboard.press('Escape')
+  await expect(menu).toHaveCount(0)
+})
+
+test('mobile video actions follow background updates and close with their source', async ({ page }) => {
+  await goTo(page, 'history')
+  const title = page.locator('.ft-list-video .title').first()
+  const menu = page.locator('.mobileLinkActions')
+  async function openMenu() {
+    await title.evaluate(element => element.dispatchEvent(new PointerEvent('contextmenu', {
+      bubbles: true, cancelable: true, pointerType: 'touch'
+    })))
+    await expect(menu).toBeVisible()
+  }
+  await openMenu()
+  await page.evaluate(videoId => {
+    const store = document.querySelector('#app').__vue_app__.config.globalProperties.$store
+    store.commit('upsertToHistoryCache', { ...store.getters.getHistoryCacheById[videoId], isWatched: true })
+  }, VIDEO_ID)
+  await expect(menu.getByRole('menuitem', { name: 'Unmark As Watched', exact: true })).toBeVisible()
+  await menu.getByRole('menuitem', { name: 'Open Link', exact: true }).click()
+  await page.evaluate(() => document.querySelector('#app').__vue_app__.config.globalProperties.$store.commit('setBackendFallback', false))
+  await expect(menu.getByRole('menuitem', { name: 'Open in Invidious', exact: true })).toHaveCount(0)
+  await expect(menu.getByRole('menuitem', { name: 'Open in YouTube', exact: true })).toBeVisible()
+  await page.evaluate(() => document.querySelector('#app').__vue_app__.config.globalProperties.$router.push('/playlists'))
+  await expect(menu).toHaveCount(0)
+  await page.evaluate(() => document.querySelector('#app').__vue_app__.config.globalProperties.$router.push('/history'))
+  await openMenu()
+  await page.evaluate(() => document.querySelector('#app').__vue_app__.config.globalProperties.$store.commit('setHistoryCacheSorted', []))
+  await expect(title).toHaveCount(0)
+  await expect(menu).toHaveCount(0)
+})
+
+test('replacing a long bottom menu resets its scroll range', async ({ page }) => {
+  await goTo(page, 'history')
+  await page.setViewportSize({ width: 375, height: 300 })
+  const thumbnail = page.locator('.ft-list-video .thumbnailImage').first()
+  await thumbnail.evaluate(element => element.dispatchEvent(new PointerEvent('contextmenu', {
+    bubbles: true, cancelable: true, pointerType: 'touch'
+  })))
+  const menu = page.locator('.mobileLinkActions')
+  await expect(menu).toBeVisible()
+  await menu.getByRole('menuitem').last().scrollIntoViewIfNeeded()
+  const scroller = menu.locator('.mobileLinkActionsScroll')
+  await expect.poll(() => scroller.evaluate(element => element.scrollTop)).toBeGreaterThan(0)
+  await page.evaluate(() => {
+    document.querySelector('#app').__vue_app__._container._vnode.component.provides.openMobileContextActions({
+      title: 'Short menu',
+      actions: [{ label: 'One action', icon: ['fas', 'check'], run() {} }]
+    })
+  })
+  await expect(menu.getByRole('menuitem', { name: 'One action', exact: true })).toBeInViewport()
+  await expect.poll(() => scroller.evaluate(element => element.scrollTop)).toBe(0)
+  await expect(scroller.locator(':scope > .os-scrollbar-vertical')).toHaveClass(/os-scrollbar-unusable/)
+  await page.keyboard.press('Escape')
+  await expect(menu).toHaveCount(0)
+})
+
 test('clamps a menu after actions disappear and resets it after resizing', async ({ page }) => {
   await goTo(page, 'history')
+  await page.evaluate(() => document.querySelector('#app').__vue_app__.config.globalProperties.$store.commit('setEnableDownloads', true))
   await page.setViewportSize({ width: 1000, height: 300 })
   const card = page.locator('.ft-list-video').first()
   await card.locator('.title').click({ button: 'right' })
@@ -119,8 +275,8 @@ test('clamps a menu after actions disappear and resets it after resizing', async
   await menu.getByRole('menuitem').filter({ visible: true }).last().scrollIntoViewIfNeeded()
   await expect.poll(() => scroller.evaluate(element => element.scrollTop)).toBeGreaterThan(0)
   expect(await header.boundingBox()).toEqual(headerBounds)
-  await page.evaluate(() => document.querySelector('#app').__vue_app__.config.globalProperties.$store.commit('setHideSharingActions', true))
-  await expect(menu.getByRole('menuitem', { name: 'Copy Link', exact: true })).toHaveCount(0)
+  await page.evaluate(() => document.querySelector('#app').__vue_app__.config.globalProperties.$store.commit('setEnableDownloads', false))
+  await expect(menu.getByRole('menuitem', { name: 'Download Video', exact: true })).toHaveCount(0)
   await expect.poll(() => scroller.evaluate(element => {
     const content = element.querySelector('.menuContent')
     const end = content.offsetTop + content.offsetHeight
@@ -131,7 +287,7 @@ test('clamps a menu after actions disappear and resets it after resizing', async
   await expect(menu).toHaveCount(0)
   await card.locator('.title').click({ button: 'right' })
   await expect.poll(() => scroller.evaluate(element => element.scrollTop)).toBe(0)
-  await expect(scroller.locator('.os-scrollbar-vertical')).toHaveClass(/os-scrollbar-unusable/)
+  await expect(scroller.locator(':scope > .os-scrollbar-vertical')).toHaveClass(/os-scrollbar-unusable/)
   await expect(menu.getByRole('menuitem').first()).toBeInViewport()
   await expect(menu.getByRole('menuitem').filter({ visible: true }).last()).toBeInViewport()
 })
