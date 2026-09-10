@@ -1474,6 +1474,11 @@ test.describe('custom Shorts player', () => {
   })
 
   test('hides Shorts controls on leave and keeps edge controls usable', async ({ page }) => {
+    // Finish the chapter lookup without depending on SponsorBlock in this controls test.
+    await page.route('https://sponsor.ajay.app/api/skipSegments/**', route => route.fulfill({
+      status: 404,
+      json: [],
+    }))
     await page.locator(sel.searchInput).fill('https://www.youtube.com/shorts/w1WKmSqwM8I')
     await page.locator(sel.searchInput).press('Enter')
 

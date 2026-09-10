@@ -534,6 +534,7 @@ for (const { label, musicVideoType } of [
 test('detects Invidious audio tracks from artist topic channels', async ({ page }) => {
   const instanceUrl = 'https://invidious.test'
   await page.route(/^https?:\/\//, abortUnmockedRequest)
+  await routePostLiveMedia(page)
   await page.route(`${instanceUrl}/api/v1/videos/**`, route => route.fulfill({
     json: {
       title: 'Invidious audio track',
@@ -557,6 +558,19 @@ test('detects Invidious audio tracks from artist topic channels', async ({ page 
       isPostLiveDvr: false,
       isListed: true,
       captions: [],
+      lengthSeconds: 1,
+      formatStreams: [],
+      adaptiveFormats: [{
+        itag: 140,
+        url: `${POST_LIVE_AUDIO_URL}&dur=1`,
+        type: 'audio/mp4; codecs="mp4a.40.2"',
+        bitrate: '128000',
+        init: '0-700',
+        index: '701-800',
+        audioQuality: 'AUDIO_QUALITY_MEDIUM',
+        audioSampleRate: '48000',
+        audioChannels: 2,
+      }],
       videoThumbnails: [{ url: '/vi/jNQXAC9IVRw/hqdefault.jpg', width: 480, height: 360 }],
     }
   }))
