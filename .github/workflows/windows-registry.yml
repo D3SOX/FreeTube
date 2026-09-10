@@ -1,0 +1,66 @@
+name: Windows portable registry
+
+on:
+  push:
+    branches: [development, master]
+    paths:
+      - '_scripts/windows-interposer/**'
+      - '_scripts/windows-registry-tests/**'
+      - '_scripts/windowsInterposer.mjs'
+      - '.github/workflows/windows-registry.yml'
+  pull_request:
+    paths:
+      - '_scripts/windows-interposer/**'
+      - '_scripts/windows-registry-tests/**'
+      - '_scripts/windowsInterposer.mjs'
+      - '.github/workflows/windows-registry.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  registry:
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: microsoft/setup-msbuild@6fb02220983dee41ce7ae257b6f4d8f9bf5ed4ce # v2.0.0
+      - name: Build portable interposer
+        run: node --input-type=module -e "import { prepareWindowsInterposer } from './_scripts/windowsInterposer.mjs'; await prepareWindowsInterposer()"
+      - name: Build registry regression test
+        run: |
+          cmake -S _scripts/windows-registry-tests -B .cache/registry-tests -A x64
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cmake --build .cache/registry-tests --config Release
+      - name: Check isolation and verified HTTPS
+        run: |
+          $dll = Get-ChildItem .cache/windows-interposer/*/version.dll | Select-Object -First 1
+          Copy-Item _scripts/windows-interposer/Config.yml (New-Item (Join-Path $dll.DirectoryName '.interposer') -ItemType Directory -Force)
+          & .cache/registry-tests/Release/registry-tests.exe --test $dll.FullName 'Software\OpenTubeX\RegistryRegression'
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          & .cache/registry-tests/Release/registry-tests.exe --overlay $dll.FullName 'Software\OpenTubeX\RegistryRegression'
+          exit $LASTEXITCODE
+      - name: Check moving only the portable data folder preserves registry state
+        run: |
+          $dll = Get-ChildItem .cache/windows-interposer/*/version.dll | Select-Object -First 1
+          $data = Join-Path $dll.DirectoryName 'OpenTubeX-data'
+          if (!(Test-Path (Join-Path $data 'Registry.hiv') -PathType Leaf)) {
+            throw 'Portable registry hive is missing from OpenTubeX-data'
+          }
+          $directory = New-Item .cache/relocated-portable -ItemType Directory -Force
+          Copy-Item $dll.FullName (Join-Path $directory.FullName 'version.dll')
+          Copy-Item _scripts/windows-interposer/Config.yml (New-Item (Join-Path $directory.FullName '.interposer') -ItemType Directory -Force)
+          Copy-Item $data $directory.FullName -Recurse
+          & .cache/registry-tests/Release/registry-tests.exe --overlay (Join-Path $directory.FullName 'version.dll') 'Software\OpenTubeX\RegistryRegression'
+          exit $LASTEXITCODE
+      - name: Check unavailable hive stays isolated
+        run: |
+          $directory = New-Item .cache/unavailable-hive -ItemType Directory -Force
+          $dll = Get-ChildItem .cache/windows-interposer/*/version.dll | Select-Object -First 1
+          Copy-Item $dll.FullName (Join-Path $directory.FullName 'version.dll')
+          New-Item (Join-Path $directory.FullName 'OpenTubeX-data/Registry.hiv') -ItemType Directory -Force
+          Copy-Item _scripts/windows-interposer/Config.yml (New-Item (Join-Path $directory.FullName '.interposer') -ItemType Directory -Force)
+          & .cache/registry-tests/Release/registry-tests.exe --unavailable (Join-Path $directory.FullName 'version.dll') 'Software\OpenTubeX\RegistryRegression'
+          exit $LASTEXITCODE

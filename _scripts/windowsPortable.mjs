@@ -1,4 +1,4 @@
-import { fileURLToPath } from 'node:url'
+import { getWindowsPortableExtraFiles } from './windowsInterposer.mjs'
 
 export function withWindowsPortable (config) {
   return {
@@ -6,10 +6,7 @@ export function withWindowsPortable (config) {
     files: [...(config.files ?? [])],
     extraFiles: [
       ...(config.extraFiles ?? []),
-      {
-        from: fileURLToPath(new URL('./windows-portable.marker', import.meta.url)),
-        to: 'portable.marker'
-      }
+      ...getWindowsPortableExtraFiles('win32')
     ]
   }
 }

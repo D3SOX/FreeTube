@@ -103,6 +103,9 @@ function Test-SuccessfulRegistryMutation {
 function Test-OpenTubeXRegistryPath {
   param([Parameter(Mandatory)] [AllowEmptyString()] [string] $Path)
 
+  # RegLoadAppKey stores its private hive under the kernel application root.
+  if ($Path.Trim() -match '^\\REGISTRY\\A\\') { return $false }
+
   return $Path.Trim() -match
     '(?:^|\\)(?:OpenTubeX|electron\.app\.OpenTubeX|io\.opentubex\.opentubex)(?:\\|$)'
 }

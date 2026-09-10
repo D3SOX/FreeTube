@@ -1,0 +1,5 @@
+cmake_minimum_required(VERSION 3.20)
+project(OpenTubeXRegistryTests LANGUAGES CXX)
+add_executable(registry-tests main.cpp)
+target_compile_features(registry-tests PRIVATE cxx_std_20)
+target_link_libraries(registry-tests PRIVATE advapi32 winhttp)
