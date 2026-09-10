@@ -469,7 +469,8 @@ jobs:
         package_json="$(jq --arg version "$version" '.version = $version' package.json)"
         printf '%s\n' "$package_json" > package.json
 
-        ANDROID_VERSION_CODE="$(git rev-list --count HEAD)"
+        # Reserve the next code for stable promotion of this commit.
+        ANDROID_VERSION_CODE="$(( $(git rev-list --count HEAD) * 2 ))"
         ANDROID_VERSION_NAME="$version"
         export ANDROID_VERSION_CODE ANDROID_VERSION_NAME
 

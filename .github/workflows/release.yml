@@ -196,12 +196,15 @@ jobs:
         fi
         printf '%s' "$ANDROID_RELEASE_KEYSTORE_BASE64" | base64 --decode > "$ANDROID_RELEASE_KEYSTORE"
         chmod 600 "$ANDROID_RELEASE_KEYSTORE"
-        ANDROID_VERSION_CODE="$(git rev-list --count HEAD)"
+        # Stable promotion must update a nightly built from the same commit.
+        ANDROID_VERSION_CODE="$(( $(git rev-list --count HEAD) * 2 + 1 ))"
         ANDROID_VERSION_NAME="$(jq --raw-output .version package.json)"
         export ANDROID_VERSION_CODE ANDROID_VERSION_NAME
         pnpm run capacitor:sync:android
-        ./android/gradlew --project-dir android :app:assembleRelease -PsplitApks
+        ./android/gradlew --project-dir android :app:assembleRelease :app:assembleNightly -PsplitApks \
+          -I ../tests/android/build-identity.init.gradle verifyBuildIdentity
         python3 _scripts/android_apks.py android/app/build/outputs/apk/release android-apks --release
+        python3 _scripts/android_apks.py android/app/build/outputs/apk/nightly android-nightly-apks
 
     - name: Convert x64 AppImage to Anylinux AppImage
       if: startsWith(matrix.os, 'ubuntu') && startsWith(matrix.runtime, 'linux-x64')
@@ -262,7 +265,7 @@ jobs:
 
         case "$RUNTIME" in
           android)
-            cp android-apks/*.apk release-assets/
+            cp android-apks/*.apk android-nightly-apks/*.apk release-assets/
             ;;
           linux-x64)
             cp "build/opentubex-${VERSION}.zip" \
