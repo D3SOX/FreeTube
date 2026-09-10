@@ -115,44 +115,6 @@
   max-inline-size: calc(100% - 46px);
 }
 
-:global(.listVideoOptionsDropdown.portal) {
-  inline-size: min(320px, calc(100vw - 16px));
-  font-size: 14px;
-  max-block-size: calc(100vh - 16px);
-  overflow: hidden auto;
-  box-shadow:
-    0 16px 40px rgb(0 0 0 / 55%),
-    0 3px 10px rgb(0 0 0 / 45%);
-}
-
-:global(.listVideoOptionsDropdown.portal .list) {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-}
-
-:global(.listVideoOptionsDropdown.portal .listItem) {
-  box-sizing: border-box;
-  justify-content: flex-start;
-  min-inline-size: 0;
-  white-space: nowrap;
-}
-
-:global(.listVideoOptionsDropdown.portal .listItem.hasIcon),
-:global(.listVideoOptionsDropdown.portal .listItem.active) {
-  display: flex;
-  text-align: start;
-}
-
-:global(.listVideoOptionsDropdown.portal .listItem > span) {
-  overflow: hidden;
-  text-align: start;
-  text-overflow: ellipsis;
-}
-
-:global(.listVideoOptionsDropdown.portal .listItemDivider) {
-  grid-column: 1 / -1;
-}
-
 .channelName.channelResolverButton {
   background: none;
   border: 0;

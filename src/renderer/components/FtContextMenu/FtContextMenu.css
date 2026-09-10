@@ -53,13 +53,15 @@
   cursor: default;
 }
 
-.compactTabMenu {
+.compactTabMenu,
+.videoMenu {
   inline-size: 236px;
   font-size: 13px;
   line-height: 1.35;
 }
 
-.compactTabMenu .menuItem {
+.compactTabMenu .menuItem,
+.videoMenu .menuItem {
   min-block-size: 28px;
   padding-block: 4px;
 }
@@ -82,12 +84,17 @@
   border-block-end: 1px solid color-mix(in srgb, var(--border-color) 45%, transparent);
 }
 
+.videoMenu .tabQuickActions {
+  border-block-end: 0;
+}
+
 .tabColorPalette {
   grid-template-columns: repeat(4, minmax(0, 1fr));
   padding-block: 4px;
 }
 
-.compactTabMenu .iconButton {
+.compactTabMenu .iconButton,
+.videoMenu .iconButton {
   display: flex;
   justify-content: center;
   min-block-size: 30px;
@@ -280,5 +287,36 @@
   .context-menu-leave-active,
   .submenu {
     transition: none;
+  }
+}
+
+@media (any-pointer: coarse) {
+  .videoMenu .menuItem {
+    min-block-size: 48px;
+    font-size: 16px;
+  }
+}
+
+@media (width <= 600px) {
+  .videoMenu .submenu {
+    position: static;
+    display: none;
+    inline-size: 100%;
+    max-inline-size: 100%;
+    padding: 0;
+    padding-inline-start: 12px;
+    border: 0;
+    box-shadow: none;
+    transform: none;
+    transition: none;
+  }
+
+  .videoMenu .submenu::before {
+    display: none;
+  }
+
+  .videoMenu .submenuContainer:hover > .submenu,
+  .videoMenu .submenuContainer:focus-within > .submenu {
+    display: flex;
   }
 }

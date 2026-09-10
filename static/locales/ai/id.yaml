@@ -1350,6 +1350,7 @@ Share:
   Share failed: "Tidak dapat membagikan tautan"
   Timestamp Link Copied: Tautan stempel waktu disalin ke papan klip
 Context Menu:
+  Copy {service} link without playlist: "Salin tautan {service} tanpa playlist"
   Context Menu: Menu konteks
   Select All: Pilih Semua
   Save Image As…: Simpan Gambar Sebagai…

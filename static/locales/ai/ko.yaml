@@ -1679,6 +1679,7 @@ Share:
   Share Post: 게시물 공유
   Timestamp Link Copied: 타임스탬프 링크를 클립보드에 복사했습니다
 Context Menu:
+  Copy {service} link without playlist: "재생목록 없이 {service} 링크 복사"
   Context Menu: 상황에 맞는 메뉴
   Select All: 모두 선택
   Save Image As…: 다른 이름으로 이미지 저장…

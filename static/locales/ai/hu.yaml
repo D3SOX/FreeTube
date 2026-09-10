@@ -1319,6 +1319,7 @@ Share:
   Share failed: "Nem sikerült megosztani a hivatkozást"
   Timestamp Link Copied: Időbélyeges hivatkozás a vágólapra másolva
 Context Menu:
+  Copy {service} link without playlist: "{service}-hivatkozás másolása lejátszási lista nélkül"
   Context Menu: Helyi menü
   Select All: Összes kijelölése
   Save Image As…: Kép mentése másként…

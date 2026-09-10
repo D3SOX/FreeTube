@@ -1714,6 +1714,7 @@ Share:
   Share Post: Bendrinti įrašą
   Timestamp Link Copied: Nuoroda su laiko žyma nukopijuota į iškarpinę
 Context Menu:
+  Copy {service} link without playlist: "Kopijuoti {service} nuorodą be grojaraščio"
   Context Menu: Kontekstinis meniu
   Select All: Pasirinkti viską
   Save Image As…: Išsaugoti paveikslą kaip…

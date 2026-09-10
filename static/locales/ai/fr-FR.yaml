@@ -1318,6 +1318,7 @@ Share:
   Share failed: "Impossible de partager le lien"
   Timestamp Link Copied: Lien horodaté copié dans le presse-papiers
 Context Menu:
+  Copy {service} link without playlist: "Copier le lien {service} sans la playlist"
   Context Menu: Menu contextuel
   Select All: Tout sélectionner
   Save Image As…: Enregistrer l’image sous…

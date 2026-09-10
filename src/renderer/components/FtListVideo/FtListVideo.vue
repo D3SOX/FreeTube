@@ -7,6 +7,13 @@
       [appearance]: true,
       watched: addWatchedStyle
     }"
+    @contextmenu="openVideoContextMenu"
+    @pointerdown="startMenuHold"
+    @pointermove="moveMenuHold"
+    @pointerup="cancelMenuHold"
+    @pointercancel="cancelMenuHold"
+    @dragstart="cancelMenuHold"
+    @keydown="handleContextMenuKeydown"
   >
     <div
       v-if="showGrabBar"
@@ -340,20 +347,6 @@
         </div>
       </div>
       <div class="buttonStack">
-        <FtIconButton
-          class="optionsButton"
-          :icon="['fas', 'ellipsis-v']"
-          :title="t('Video.More Options')"
-          theme="base-no-default"
-          :size="16"
-          :use-shadow="false"
-          dropdown-class="listVideoOptionsDropdown"
-          :dropdown-portal="appearance === 'watchPlaylistItem'"
-          dropdown-position-x="left"
-          :dropdown-position-y="appearance === 'watchPlaylistItem' ? 'top' : 'bottom'"
-          :dropdown-options="dropdownOptions"
-          @click="handleOptionsClick"
-        />
         <button
           v-if="deArrowChangedContent || deArrowTogglePinned"
           :title="deArrowToggleTitle"
@@ -898,8 +891,21 @@ const showInvidiousShareOptions = computed(() => backendPreference.value === 'in
 
 const { hideSubscriptionFeedType, hideSubscriptionFeedTypeOption } = useHideSubscriptionFeedType(() => channelId.value)
 
-const dropdownOptions = computed(() => {
+const videoMenuOptions = computed(() => {
   const options = [
+    {
+      label: t('Context Menu.Open in a New Tab'),
+      value: 'openNewTab',
+      icon: ['fas', 'arrow-up-right-from-square']
+    },
+    ...(process.env.IS_ELECTRON
+      ? [{
+          label: t('Context Menu.Open in a New Window'),
+          value: 'openNewWindow',
+          icon: ['fas', 'external-link-alt']
+        }]
+      : []),
+    { type: 'divider' },
     {
       label: t('Video.Play Next'),
       value: 'playNext',
@@ -972,6 +978,18 @@ const dropdownOptions = computed(() => {
         type: 'divider'
       },
       {
+        label: t('Context Menu.Copy YouTube Link'),
+        value: 'copyYoutube',
+        icon: ['fab', 'youtube']
+      },
+      ...playlistSharable.value
+        ? [{
+            label: t('Context Menu.Copy {service} link without playlist', { service: 'YouTube' }),
+            value: 'copyYoutubeWithoutPlaylist',
+            icon: ['fab', 'youtube']
+          }]
+        : [],
+      {
         label: t('Video.Open in YouTube'),
         value: 'openYoutube',
         icon: ['fab', 'youtube']
@@ -981,6 +999,18 @@ const dropdownOptions = computed(() => {
             {
               type: 'divider'
             },
+            {
+              label: t('Context Menu.Copy Invidious Link'),
+              value: 'copyVideoInvidious',
+              icon: ['fas', 'link']
+            },
+            ...playlistSharable.value
+              ? [{
+                  label: t('Context Menu.Copy {service} link without playlist', { service: 'Invidious' }),
+                  value: 'copyInvidiousWithoutPlaylist',
+                  icon: ['fas', 'link']
+                }]
+              : [],
             {
               label: t('Video.Open in Invidious'),
               value: 'openInvidious',
@@ -1153,11 +1183,143 @@ function getInvidiousChannelUrl() {
   return `${currentInvidiousInstanceUrl.value}/channel/${channelId.value}`
 }
 
+const videoContextMenuItems = computed(() => {
+  const items = videoMenuOptions.value.map(option => option.type === 'divider'
+    ? { type: 'separator' }
+    : {
+        label: option.label,
+        actionId: option.value,
+        quickAction: ['openNewTab', 'openNewWindow', 'playNext', 'addToQueue'].includes(option.value),
+        icon: option.icon,
+        enabled: !option.disabled,
+        run: () => handleOptionsClick(option.value)
+      })
+  const copyItems = items.filter(item => item.actionId?.startsWith('copy'))
+  const openItems = items.filter(item => ['openYoutube', 'openInvidious', 'openYoutubeChannel', 'openInvidiousChannel'].includes(item.actionId))
+  const rows = items.filter(item => !copyItems.includes(item) && !openItems.includes(item))
+  if (copyItems.length || openItems.length) rows.push({ type: 'separator' })
+  if (copyItems.length) {
+    rows.push(copyItems.length === 1
+      ? copyItems[0]
+      : {
+          label: t('Share.Copy Link'),
+          icon: ['fas', 'link'],
+          enabled: true,
+          submenu: copyItems
+        })
+  }
+  if (openItems.length) {
+    rows.push(openItems.length === 1
+      ? openItems[0]
+      : {
+          label: t('Share.Open Link'),
+          icon: ['fas', 'external-link-alt'],
+          enabled: true,
+          submenu: openItems
+        })
+  }
+  return rows
+})
+
+let menuHoldTimer = null
+let menuHoldPosition = null
+
+function cancelMenuHold() {
+  clearTimeout(menuHoldTimer)
+  menuHoldTimer = null
+  menuHoldPosition = null
+}
+
+function resetMenuHold() {
+  cancelMenuHold()
+  document.removeEventListener('click', suppressMenuHoldClick, true)
+  document.removeEventListener('pointerdown', resetMenuHold, true)
+  document.removeEventListener('keydown', resetMenuHold, true)
+}
+
+function suppressMenuHoldClick(event) {
+  event.preventDefault()
+  event.stopImmediatePropagation()
+  resetMenuHold()
+}
+
+function startMenuHold(event) {
+  cancelMenuHold()
+  if (event.pointerType !== 'touch' || !event.isPrimary || event.target.closest('button, .channelName, [role="dialog"], [role="menu"], .iconDropdown')) return
+  menuHoldPosition = { x: event.clientX, y: event.clientY }
+  menuHoldTimer = setTimeout(() => openVideoContextMenu(event), 500)
+}
+
+function moveMenuHold(event) {
+  if (menuHoldPosition && Math.hypot(event.clientX - menuHoldPosition.x, event.clientY - menuHoldPosition.y) > 10) cancelMenuHold()
+}
+
+onBeforeUnmount(() => {
+  resetMenuHold()
+  window.dispatchEvent(new CustomEvent('opentubex:close-context-menu', { detail: videoContextMenuItems }))
+})
+
+function openVideoContextMenu(event) {
+  const target = event.target
+  // Channel names, dialogs, and dropdowns keep their own context menus.
+  if (target.closest('.channelName, [role="dialog"], [role="menu"], .iconDropdown')) return
+
+  if (!process.env.IS_ELECTRON) {
+    const selection = window.getSelection()
+    // Only Electron can merge native image and selection actions into our menu.
+    if (target.closest('img, video') || (selection && !selection.isCollapsed && selection.containsNode(target, true))) return
+  }
+
+  event.preventDefault()
+  event.stopPropagation()
+  cancelMenuHold()
+  if (event.pointerType === 'touch') {
+    document.addEventListener('click', suppressMenuHoldClick, true)
+    document.addEventListener('pointerdown', resetMenuHold, true)
+    document.addEventListener('keydown', resetMenuHold, true)
+  }
+  const bounds = target.getBoundingClientRect()
+  const keyboard = event.type === 'keydown' || (event.clientX === 0 && event.clientY === 0)
+  window.dispatchEvent(new CustomEvent('opentubex:context-menu', {
+    detail: {
+      x: keyboard ? bounds.left : event.clientX,
+      y: keyboard ? bounds.bottom : event.clientY,
+      items: videoContextMenuItems,
+      contextEvent: event
+    }
+  }))
+}
+
+function handleContextMenuKeydown(event) {
+  if (event.key !== 'ContextMenu' && !(event.shiftKey && event.key === 'F10')) return
+  openVideoContextMenu(event)
+}
+
 /**
  * @param {string} option
  */
 function handleOptionsClick(option) {
   switch (option) {
+    case 'openNewTab':
+    case 'openNewWindow':
+      openInternalPath({
+        path: `/watch/${id.value}`,
+        query: watchPageLinkQuery.value,
+        title: title.value,
+        doCreateNewTab: option === 'openNewTab',
+        doCreateNewWindow: option === 'openNewWindow',
+        makeActive: true
+      })
+      break
+    case 'copyYoutubeWithoutPlaylist':
+      copyToClipboard(`https://youtu.be/${id.value}`, { messageOnSuccess: t('Share.YouTube URL copied to clipboard') })
+      break
+    case 'copyVideoInvidious':
+      copyToClipboard(getInvidiousUrl())
+      break
+    case 'copyInvidiousWithoutPlaylist':
+      copyToClipboard(`${currentInvidiousInstanceUrl.value}/watch?v=${id.value}`)
+      break
     case 'hideSubscriptionFeedType':
       hideSubscriptionFeedType()
       break

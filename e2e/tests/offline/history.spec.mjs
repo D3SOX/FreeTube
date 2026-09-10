@@ -255,15 +255,15 @@ test.describe('watch history', () => {
     const secondVideo = videos.filter({ hasText: 'Second test video' })
 
     await secondVideo.hover()
-    await secondVideo.locator('.optionsButton').click()
-    await page.getByRole('option', { name: 'Mark As Watched' }).click()
+    await secondVideo.locator('.title').click({ button: 'right' })
+    await page.getByRole('menuitem', { name: 'Mark As Watched' }).click()
 
     await expect(videos.nth(0)).toContainText('First test video')
     await expect(videos.nth(1)).toContainText('Second test video')
 
     await secondVideo.hover()
-    await secondVideo.locator('.optionsButton').click()
-    await page.getByRole('option', { name: 'Unmark As Watched' }).click()
+    await secondVideo.locator('.title').click({ button: 'right' })
+    await page.getByRole('menuitem', { name: 'Unmark As Watched' }).click()
 
     await expect(videos.nth(0)).toContainText('First test video')
     await expect(videos.nth(1)).toContainText('Second test video')
@@ -274,11 +274,11 @@ test.describe('watch history', () => {
 
     const activeLiveStream = page.locator('.ft-list-video').filter({ hasText: 'Active live stream' })
     await activeLiveStream.hover()
-    await activeLiveStream.locator('.optionsButton').click()
+    await activeLiveStream.locator('.title').click({ button: 'right' })
 
-    await expect(page.getByRole('option', { name: 'Mark As Watched' })).toHaveCount(0)
-    await expect(page.getByRole('option', { name: 'Unmark As Watched' })).toHaveCount(0)
-    await expect(page.getByRole('option', { name: 'Remove From History' })).toBeVisible()
+    await expect(page.getByRole('menuitem', { name: 'Mark As Watched' })).toHaveCount(0)
+    await expect(page.getByRole('menuitem', { name: 'Unmark As Watched' })).toHaveCount(0)
+    await expect(page.getByRole('menuitem', { name: 'Remove From History' })).toBeVisible()
   })
 
   test('does not offer watched actions for an upcoming premiere history entry', async ({ page }) => {
@@ -286,11 +286,11 @@ test.describe('watch history', () => {
 
     const upcomingPremiere = page.locator('.ft-list-video').filter({ hasText: 'Upcoming premiere' })
     await upcomingPremiere.hover()
-    await upcomingPremiere.locator('.optionsButton').click()
+    await upcomingPremiere.locator('.title').click({ button: 'right' })
 
-    await expect(page.getByRole('option', { name: 'Mark As Watched' })).toHaveCount(0)
-    await expect(page.getByRole('option', { name: 'Unmark As Watched' })).toHaveCount(0)
-    await expect(page.getByRole('option', { name: 'Remove From History' })).toBeVisible()
+    await expect(page.getByRole('menuitem', { name: 'Mark As Watched' })).toHaveCount(0)
+    await expect(page.getByRole('menuitem', { name: 'Unmark As Watched' })).toHaveCount(0)
+    await expect(page.getByRole('menuitem', { name: 'Remove From History' })).toBeVisible()
   })
 
   test('enables watched actions when a mounted premiere reaches its scheduled time', async ({ page }) => {
@@ -300,14 +300,14 @@ test.describe('watch history', () => {
 
     const upcomingPremiere = page.locator('.ft-list-video').filter({ hasText: 'Upcoming premiere' })
     await upcomingPremiere.hover()
-    await upcomingPremiere.locator('.optionsButton').click()
-    await expect(page.getByRole('option', { name: 'Mark As Watched' })).toHaveCount(0)
+    await upcomingPremiere.locator('.title').click({ button: 'right' })
+    await expect(page.getByRole('menuitem', { name: 'Mark As Watched' })).toHaveCount(0)
 
     // Split the jump so timers beyond Chromium's maximum timeout are rescheduled.
     await page.clock.fastForward(24 * DAY)
     await page.clock.fastForward(6 * DAY + 1000)
 
-    await expect(page.getByRole('option', { name: 'Mark As Watched' })).toBeVisible()
+    await expect(page.getByRole('menuitem', { name: 'Mark As Watched' })).toBeVisible()
   })
 
   test('marks every history entry as watched', async ({ app, page }) => {
@@ -503,8 +503,8 @@ test.describe('watch history with an immediate watched threshold', () => {
 
     const video = page.locator('.ft-list-video').filter({ hasText: 'Immediately watched video' })
     await video.hover()
-    await video.locator('.optionsButton').click()
-    await page.getByRole('option', { name: 'Unmark As Watched' }).click()
+    await video.locator('.title').click({ button: 'right' })
+    await page.getByRole('menuitem', { name: 'Unmark As Watched' }).click()
 
     await expect(video).toHaveCount(0)
     await expect(page.getByText('Your history list is currently empty.')).toBeVisible()
@@ -522,8 +522,8 @@ test.describe('watch history with an immediate watched threshold', () => {
     const video = page.locator('.ft-list-video').filter({ hasText: 'Immediately watched video' })
     await expect(video.locator('.watchedProgressBar')).toHaveCount(1)
     await video.hover()
-    await video.locator('.optionsButton').click()
-    await page.getByRole('option', { name: 'Unmark As Watched' }).click()
+    await video.locator('.title').click({ button: 'right' })
+    await page.getByRole('menuitem', { name: 'Unmark As Watched' }).click()
 
     await expect(video).toBeVisible()
     await expect(video.locator('.watchedProgressBar')).toHaveCount(0)
@@ -533,8 +533,8 @@ test.describe('watch history with an immediate watched threshold', () => {
     })).toBeUndefined()
 
     await video.hover()
-    await video.locator('.optionsButton').click()
-    await page.getByRole('option', { name: 'Mark As Watched' }).click()
+    await video.locator('.title').click({ button: 'right' })
+    await page.getByRole('menuitem', { name: 'Mark As Watched' }).click()
 
     await expect.poll(async () => {
       const contents = await readFile(path.join(app.userDataDir, 'history.db'), 'utf8')

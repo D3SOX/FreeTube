@@ -1299,6 +1299,7 @@ Share:
   Share failed: "Could not share the link"
   Timestamp Link Copied: Timestamp link copied to clipboard
 Context Menu:
+  Copy {service} link without playlist: "Copy {service} link without playlist"
   Context Menu: Context menu
   Select All: Select All
   Save Image As…: Save Image As…

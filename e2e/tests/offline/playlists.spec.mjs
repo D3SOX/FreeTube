@@ -634,8 +634,8 @@ test.describe('custom playlist order', () => {
     const thirdVideo = page.locator('.ft-list-video').filter({
       has: page.getByText('Custom playlist video 3', { exact: true })
     })
-    await thirdVideo.locator('.optionsButton').click()
-    await page.getByRole('option', { name: 'Move Video to the Top' }).click()
+    await thirdVideo.locator('.title').click({ button: 'right' })
+    await page.getByRole('menuitem', { name: 'Move Video to the Top' }).click()
 
     await expect(page.locator('.playlistItemsCard .h3Title').first()).toHaveText('Custom playlist video 3')
   })

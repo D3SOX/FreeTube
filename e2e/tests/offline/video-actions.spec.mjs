@@ -90,15 +90,17 @@ test.describe('video link copy actions', () => {
       await goTo(page, 'history')
       await page.setViewportSize({ width, height: 900 })
       const video = page.locator('.ft-list-video').first()
-      await video.locator('.optionsButton .iconButton').click()
-      const menu = page.locator('.listVideoOptionsDropdown')
-      await expect(menu.getByRole('option', { name: 'Open in YouTube', exact: true })).toBeVisible()
-      await expect(menu.getByRole('option', { name: 'Open in Invidious', exact: true })).toBeVisible()
-      await expect(menu.getByRole('option', { name: /^Copy / })).toHaveCount(0)
-      await expect(menu.getByRole('option', { name: 'Open YouTube Embedded Player', exact: true })).toHaveCount(0)
+      await video.locator('.title').click({ button: 'right' })
+      const menu = page.locator('.contextMenu')
+      await menu.getByRole('menuitem', { name: 'Open Link', exact: true }).click()
+      await expect(menu.getByRole('menuitem', { name: 'Open in YouTube', exact: true })).toBeVisible()
+      await expect(menu.getByRole('menuitem', { name: 'Open in Invidious', exact: true })).toBeVisible()
+      await expect(menu.getByRole('menuitem', { name: 'Open YouTube Embedded Player', exact: true })).toHaveCount(0)
       await page.keyboard.press('Escape')
 
       await video.locator('.title').click({ button: 'right' })
+      await menu.getByRole('menuitem', { name: 'Copy Link', exact: true }).click()
+      await expect(menu.getByRole('menuitem', { name: /^Copy (YouTube|Invidious) Link$/ })).toHaveCount(2)
       await expect(page.getByRole('menuitem', { name: 'Copy YouTube Link', exact: true })).toBeVisible()
       await expect(page.getByRole('menuitem', { name: 'Copy Invidious Link', exact: true })).toBeVisible()
       await page.getByRole('menuitem', { name: 'Copy YouTube Link', exact: true }).click()
@@ -113,140 +115,6 @@ test.describe('video link copy actions', () => {
     })
   }
 })
-
-for (const [iconPack, uiScale] of [['material', 100], ['remix', 125]]) {
-  test.describe(`kebab menu with ${iconPack} at ${uiScale}% UI scale`, () => {
-    test.use({
-      seed: {
-        ...SEED,
-        settings: { ...SEED.settings, iconPack, uiScale },
-        history: [{ ...SEED.history[0], viewCount: 123456789 }]
-      }
-    })
-
-    test('keeps the mobile menu and page within the viewport', async ({ page }) => {
-      await goTo(page, 'history')
-      await page.setViewportSize({ width: 375, height: 812 })
-      const session = await page.context().newCDPSession(page)
-      try {
-        await session.send('Emulation.setTouchEmulationEnabled', { enabled: true })
-        for (const listType of ['list', 'grid']) {
-          await page.evaluate(value => {
-            document.querySelector('#app').__vue_app__.config.globalProperties.$store.commit('setListType', value)
-          }, listType)
-          const expectNoHorizontalOverflow = () => expect.poll(() => page.evaluate(() => (
-            Math.max(document.documentElement.scrollWidth, document.body.scrollWidth) - innerWidth
-          ))).toBeLessThanOrEqual(1)
-          await expectNoHorizontalOverflow()
-          const button = page.locator('.ft-list-video .optionsButton .iconButton').first()
-          expect(await button.evaluate(element => (
-            element.getBoundingClientRect().right - innerWidth
-          ))).toBeLessThanOrEqual(1)
-          await button.click()
-          await expect(page.locator('.listVideoOptionsDropdown')).toBeVisible()
-          await expectNoHorizontalOverflow()
-          expect(await page.evaluate(() => window.scrollX)).toBe(0)
-          await page.keyboard.press('Escape')
-          await expectNoHorizontalOverflow()
-        }
-      } finally {
-        await session.detach()
-      }
-    })
-
-    test('clears the obsolete scroll range when an open mobile menu becomes shorter', async ({ page }) => {
-      await goTo(page, 'history')
-      await page.setViewportSize({ width: 375, height: 400 })
-      await page.locator('.ft-list-video .optionsButton .iconButton').first().click()
-      const menu = page.locator('.listVideoOptionsDropdown')
-      const scrollbar = menu.locator('.os-scrollbar-vertical')
-      for (let resize = 0; resize < 10; resize++) {
-        await page.setViewportSize({ width: 375, height: 400 })
-        await menu.getByRole('option').last().scrollIntoViewIfNeeded()
-        await expect.poll(() => menu.evaluate(element => element.scrollTop)).toBeGreaterThan(0)
-        await expect(scrollbar).not.toHaveClass(/os-scrollbar-unusable/)
-
-        await page.setViewportSize({ width: 1200, height: 1000 })
-        await expect(menu).toBeVisible()
-        await expect(menu.getByRole('option').first()).toHaveCSS('font-size', '14px')
-        await expect.poll(() => menu.evaluate(element => element.scrollTop)).toBe(0)
-        await expect.poll(() => menu.evaluate(element => element.scrollHeight - element.clientHeight)).toBeLessThanOrEqual(1)
-        await expect(scrollbar).toHaveClass(/os-scrollbar-unusable/)
-        await expect(menu.getByRole('option').first()).toBeInViewport()
-        await expect(menu.getByRole('option').last()).toBeInViewport()
-      }
-    })
-
-    test('opens a readable mobile menu with touch-sized options', async ({ page }) => {
-      await goTo(page, 'history')
-      const session = await page.context().newCDPSession(page)
-      try {
-        await session.send('Emulation.setTouchEmulationEnabled', { enabled: true })
-        for (const viewport of [
-          { width: 375, height: 812 },
-          { width: 812, height: 375 },
-          { width: 1024, height: 768 }
-        ]) {
-          await page.setViewportSize(viewport)
-          await page.locator('.ft-list-video .optionsButton .iconButton').first().click()
-          const menu = page.locator('.listVideoOptionsDropdown')
-          const options = menu.getByRole('option')
-          await expect(options.first()).toHaveCSS('font-size', '16px')
-          const minimumOptionHeight = await options.evaluateAll(elements => Math.min(
-            ...elements.map(element => element.getBoundingClientRect().height)
-          ))
-          // Electron zoom can introduce fractional-pixel rounding.
-          expect(minimumOptionHeight).toBeGreaterThanOrEqual(48 - 0.01)
-          await expect.poll(() => menu.evaluate(element => {
-            const bounds = element.getBoundingClientRect()
-            return bounds.left >= -1 && bounds.right <= innerWidth + 1 &&
-              bounds.top >= -1 && bounds.bottom <= innerHeight + 1
-          })).toBe(true)
-          await options.last().scrollIntoViewIfNeeded()
-          await expect(options.last()).toBeInViewport()
-          await page.keyboard.press('Escape')
-        }
-        await page.locator('.ft-list-video .optionsButton .iconButton').first().click()
-        await page.getByRole('option', { name: 'Mark As Watched', exact: true }).click()
-        await expect(page.locator('.listVideoOptionsDropdown')).toBeHidden()
-      } finally {
-        await session.detach()
-      }
-    })
-
-    test('enlarges the mobile icon and tap target', async ({ page }) => {
-      await goTo(page, 'history')
-      const button = page.locator('.ft-list-video .optionsButton .iconButton').first()
-      const icon = button.locator('[data-icon="ellipsis-vertical"]')
-      await expect(icon).toHaveAttribute('data-icon-pack', iconPack)
-      await expect(button).toHaveCSS('width', '36px')
-      await expect(icon).toHaveCSS('font-size', '16px')
-
-      const session = await page.context().newCDPSession(page)
-      try {
-        await session.send('Emulation.setTouchEmulationEnabled', { enabled: true })
-        for (const viewport of [
-          { width: 375, height: 812 },
-          { width: 812, height: 375 },
-          { width: 1024, height: 768 }
-        ]) {
-          await page.setViewportSize(viewport)
-          await expect(button).toHaveCSS('width', '48px')
-          await expect(button).toHaveCSS('height', '48px')
-          await expect(icon).toHaveCSS('font-size', '20px')
-          // The added space around the glyph must open the menu too.
-          await button.click({ position: { x: 4, y: 24 } })
-          await expect(button).toHaveAttribute('aria-expanded', 'true')
-          await expect(page.getByRole('option', { name: 'Mark As Watched', exact: true })).toBeVisible()
-          await page.keyboard.press('Escape')
-          await expect(button).toHaveAttribute('aria-expanded', 'false')
-        }
-      } finally {
-        await session.detach()
-      }
-    })
-  })
-}
 
 test('persists the yt-dlp playback cache across app restarts', async ({ app, page }) => {
   const expiryTime = Date.now() + 60 * 60 * 1000
@@ -462,8 +330,8 @@ test.describe('video downloads', () => {
 
     const video = page.locator('.ft-list-video').first()
     await video.hover()
-    await video.locator('.optionsButton').click()
-    await page.getByRole('option', { name: 'Download Video' }).click()
+    await video.locator('.title').click({ button: 'right' })
+    await page.getByRole('menuitem', { name: 'Download Video' }).click()
     await page.getByRole('button', { name: 'Download', exact: true }).click()
 
     await expect(page.getByText('Download failed', { exact: true })).toBeVisible()
@@ -503,8 +371,8 @@ test.describe('video downloads', () => {
     await goTo(page, 'history')
     const video = page.locator('.ft-list-video').first()
     await video.hover()
-    await video.locator('.optionsButton').click()
-    await page.getByRole('option', { name: 'Download Video' }).click()
+    await video.locator('.title').click({ button: 'right' })
+    await page.getByRole('menuitem', { name: 'Download Video' }).click()
     await page.getByRole('button', { name: 'Download', exact: true }).click()
 
     await expect(page.getByText('Download complete', { exact: true })).toBeVisible()
@@ -721,8 +589,8 @@ test.describe('video downloads', () => {
     await goTo(page, 'history')
     const video = page.locator('.ft-list-video').first()
     await video.hover()
-    await video.locator('.optionsButton').click()
-    await page.getByRole('option', { name: 'Download Video' }).click()
+    await video.locator('.title').click({ button: 'right' })
+    await page.getByRole('menuitem', { name: 'Download Video' }).click()
     await expect(page.locator('.downloadPromptCard')).toBeVisible()
     await page.evaluate(async () => {
       const store = document.querySelector('#app').__vue_app__.config.globalProperties.$store
@@ -750,8 +618,8 @@ test.describe('video downloads', () => {
     await expect(page.locator('.topNav .downloadsButton')).toHaveCount(0)
     await video.hover()
     await expect(video.locator('.extraThumbnailActionIcon')).toHaveCount(0)
-    await video.locator('.optionsButton').click()
-    await expect(page.getByRole('option', { name: 'Download Video' })).toHaveCount(0)
+    await video.locator('.title').click({ button: 'right' })
+    await expect(page.getByRole('menuitem', { name: 'Download Video' })).toHaveCount(0)
 
     await page.bringToFront()
     const result = await page.evaluate(() => window.ftElectron.ytDlpDownload({
@@ -1380,8 +1248,8 @@ test.describe('video downloads', () => {
     await goTo(page, 'history')
     const video = page.locator('.ft-list-video').first()
     await video.hover()
-    await video.locator('.optionsButton').click()
-    await page.getByRole('option', { name: 'Download Video' }).click()
+    await video.locator('.title').click({ button: 'right' })
+    await page.getByRole('menuitem', { name: 'Download Video' }).click()
     await page.getByRole('button', { name: 'Download', exact: true }).click()
 
     const otherDownload = otherWindow.locator('.downloadRow').filter({ hasText: 'Bookmarkable video' })
@@ -1420,8 +1288,8 @@ test.describe('video downloads', () => {
     await goTo(page, 'history')
     const video = page.locator('.ft-list-video').first()
     await video.hover()
-    await video.locator('.optionsButton').click()
-    await page.getByRole('option', { name: 'Download Video' }).click()
+    await video.locator('.title').click({ button: 'right' })
+    await page.getByRole('menuitem', { name: 'Download Video' }).click()
     await page.getByRole('button', { name: 'Download', exact: true }).click()
     await expect(page.getByText('Download complete', { exact: true })).toBeVisible()
     await page.getByRole('button', { name: 'Open Downloads', exact: true }).click()
@@ -1452,8 +1320,8 @@ test.describe('video downloads', () => {
     await goTo(page, 'history')
     const video = page.locator('.ft-list-video').first()
     await video.hover()
-    await video.locator('.optionsButton').click()
-    await page.getByRole('option', { name: 'Download Video' }).click()
+    await video.locator('.title').click({ button: 'right' })
+    await page.getByRole('menuitem', { name: 'Download Video' }).click()
 
     // the prompt animates in with a scale transform, so measure the layout box
     const promptCard = page.locator('.downloadPromptCard')
@@ -1547,8 +1415,8 @@ test.describe('video downloads', () => {
     await goTo(page, 'history')
     const video = page.locator('.ft-list-video').first()
     await video.hover()
-    await video.locator('.optionsButton').click()
-    await page.getByRole('option', { name: 'Download Video' }).click()
+    await video.locator('.title').click({ button: 'right' })
+    await page.getByRole('menuitem', { name: 'Download Video' }).click()
     await page.getByRole('combobox', { name: 'Template' }).click()
     await page.getByRole('listbox', { name: 'Template' })
       .getByRole('option', { name: 'Subtitles - SRT', exact: true }).click()
@@ -1753,8 +1621,8 @@ test.describe('list video actions', () => {
 
     const video = page.locator('.ft-list-video').first()
     await video.hover()
-    await video.locator('.optionsButton').click()
-    await page.getByRole('option', { name: 'Download Video' }).click()
+    await video.locator('.title').click({ button: 'right' })
+    await page.getByRole('menuitem', { name: 'Download Video' }).click()
 
     await expect(page.getByText('Media Type', { exact: true })).toBeVisible()
     await expect(page.getByText('50.0%', { exact: true })).toHaveCount(0)
@@ -1806,8 +1674,8 @@ test.describe('list video actions', () => {
 
     const video = page.locator('.ft-list-video').first()
     await video.hover()
-    await video.locator('.optionsButton').click()
-    await page.getByRole('option', { name: 'Download Video' }).click()
+    await video.locator('.title').click({ button: 'right' })
+    await page.getByRole('menuitem', { name: 'Download Video' }).click()
 
     for (const locator of [page.locator('.downloadPromptCard'), page.locator('.downloadOptions')]) {
       await expect.poll(() => locator.evaluate(element => element.scrollWidth - element.clientWidth)).toBe(0)
@@ -1828,8 +1696,8 @@ test.describe('list video actions', () => {
 
     const video = page.locator('.ft-list-video').first()
     await video.hover()
-    await video.locator('.optionsButton').click()
-    await page.getByRole('option', { name: 'Download Video' }).click()
+    await video.locator('.title').click({ button: 'right' })
+    await page.getByRole('menuitem', { name: 'Download Video' }).click()
 
     const metadataSection = page.locator('.optionSection').filter({
       has: page.getByRole('heading', { name: 'Subtitles and Metadata' })
@@ -1855,83 +1723,7 @@ test.describe('list video actions', () => {
     await expect(tooltip).toHaveCSS('opacity', '1')
   })
 
-  test('the options dropdown shows readable single-column actions with icons', async ({ page }) => {
-    await goTo(page, 'history')
-    await page.setViewportSize({ width: 1200, height: 360 })
-
-    const video = page.locator('.ft-list-video').first()
-    await video.hover()
-    await video.locator('.optionsButton').click()
-
-    const actions = page.getByRole('option')
-    const dropdown = video.locator('.optionsButton .iconDropdown')
-    await expect(actions).not.toHaveCount(0)
-    await expect(actions.locator('.optionIconColumn svg')).toHaveCount(await actions.count())
-    await expect(dropdown).toHaveCSS('font-size', '14px')
-    await expect(dropdown).not.toHaveCSS('box-shadow', 'none')
-    await expect(actions.first()).toHaveCSS('text-align', 'start')
-    await expect(actions.first()).toHaveCSS('justify-content', 'flex-start')
-    expect(await actions.locator('span').evaluateAll((labels) => {
-      return labels.every((label) => label.scrollWidth <= label.clientWidth)
-    })).toBe(true)
-    const actionRows = await actions.evaluateAll((items) => items.map((item) => item.offsetTop))
-    expect(new Set(actionRows).size).toBe(actionRows.length)
-
-    const dropdownBounds = await dropdown.boundingBox()
-    expect(dropdownBounds.y).toBeGreaterThanOrEqual(0)
-    expect(dropdownBounds.y + dropdownBounds.height).toBeLessThanOrEqual(360)
-    expect(await dropdown.evaluate((element) => element.scrollHeight > element.clientHeight)).toBe(true)
-    await expect(actions.last()).toBeVisible()
-
-    await page.setViewportSize({ width: 1000, height: 300 })
-    await expect.poll(async () => {
-      const bounds = await dropdown.boundingBox()
-      return bounds.y >= 0 && bounds.y + bounds.height <= 300
-    }).toBe(true)
-  })
-
-  test('a tall options dropdown stays below the horizontal tab bar', async ({ page }) => {
-    await goTo(page, 'history')
-    // The simplified menu needs a shorter viewport to exercise scrolling.
-    const viewportHeight = 300
-    await page.setViewportSize({ width: 1200, height: viewportHeight })
-
-    const video = page.locator('.ft-list-video').first()
-    await video.hover()
-    await video.locator('.optionsButton').click()
-
-    const dropdown = video.locator('.optionsButton .iconDropdown')
-    await expect(dropdown).toBeVisible()
-
-    // Clamping to the viewport edge let a menu that is too tall for the space
-    // below it cover the tabs and the top navigation instead of scrolling.
-    const [dropdownBounds, chromeBottom] = await Promise.all([
-      dropdown.boundingBox(),
-      page.evaluate(() => {
-        return Math.max(
-          document.querySelector('.topNav').getBoundingClientRect().bottom,
-          document.querySelector('.tabBar:not(.vertical)').getBoundingClientRect().bottom
-        )
-      })
-    ])
-
-    expect(chromeBottom).toBeGreaterThan(0)
-    expect(dropdownBounds.y).toBeGreaterThanOrEqual(chromeBottom)
-    expect(dropdownBounds.y + dropdownBounds.height).toBeLessThanOrEqual(viewportHeight)
-    expect(await dropdown.evaluate((element) => element.scrollHeight > element.clientHeight)).toBe(true)
-
-    // Repositioning alone cannot keep up with a fast scroll, so the chrome also
-    // has to paint above the dropdown.
-    const stackingOrder = await dropdown.evaluate((element) => ({
-      dropdown: Number(getComputedStyle(element).zIndex),
-      tabBar: Number(getComputedStyle(document.querySelector('.tabBar:not(.vertical)')).zIndex),
-      topNav: Number(getComputedStyle(document.querySelector('.topNav')).zIndex)
-    }))
-    expect(stackingOrder.tabBar).toBeGreaterThan(stackingOrder.dropdown)
-    expect(stackingOrder.topNav).toBeGreaterThan(stackingOrder.dropdown)
-  })
-
-  test('an open options dropdown crosses vertical tabs without lifting its feed card', async ({ page }) => {
+  test('the video context menu and playlist dropdown work with vertical tabs', async ({ page }) => {
     await goTo(page, 'history')
     await page.evaluate(() => {
       const store = document.querySelector('#app').__vue_app__.config.globalProperties.$store
@@ -1940,20 +1732,11 @@ test.describe('list video actions', () => {
 
     const video = page.locator('.ft-list-video').first()
     await video.hover()
-    await video.locator('.optionsButton').click()
+    await video.locator('.title').click({ button: 'right' })
 
-    await expect(video.locator('.optionsButton .iconDropdown')).toBeVisible()
-    const stackingOrder = await video.evaluate((listVideo) => ({
-      topNav: Number(getComputedStyle(document.querySelector('.topNav')).zIndex),
-      tabBar: Number(getComputedStyle(document.querySelector('.tabBar.vertical')).zIndex),
-      dropdown: Number(getComputedStyle(listVideo.querySelector('.iconDropdown')).zIndex),
-      listVideo: getComputedStyle(listVideo).zIndex
-    }))
-    expect(stackingOrder.topNav).toBeGreaterThan(stackingOrder.dropdown)
-    expect(stackingOrder.dropdown).toBeGreaterThan(stackingOrder.tabBar)
-    expect(stackingOrder.listVideo).toBe('auto')
-
-    await video.locator('.optionsButton').click()
+    await expect(page.locator('.contextMenu')).toBeVisible()
+    expect(await video.evaluate(element => getComputedStyle(element).zIndex)).toBe('auto')
+    await page.keyboard.press('Escape')
     await video.locator('.addToPlaylistIcon .iconButton').click()
     const thumbnailDropdown = video.locator('.addToPlaylistIcon .iconDropdown')
     await expect(thumbnailDropdown).toBeVisible()
@@ -2205,15 +1988,15 @@ test.describe('list video actions', () => {
 
     const video = page.locator('.ft-list-video').first()
     await video.hover()
-    await video.locator('.optionsButton').click()
-    await page.getByRole('option', { name: 'Mark As Watched' }).click()
+    await video.locator('.title').click({ button: 'right' })
+    await page.getByRole('menuitem', { name: 'Mark As Watched' }).click()
 
     // The watched action changes independently and keeps the history entry.
     await video.hover()
-    await video.locator('.optionsButton').click()
-    await expect(page.getByRole('option', { name: 'Unmark As Watched' })).toBeVisible()
-    await expect(page.getByRole('option', { name: 'Remove From History' })).toBeVisible()
-    await page.getByRole('option', { name: 'Unmark As Watched' }).click()
+    await video.locator('.title').click({ button: 'right' })
+    await expect(page.getByRole('menuitem', { name: 'Unmark As Watched' })).toBeVisible()
+    await expect(page.getByRole('menuitem', { name: 'Remove From History' })).toBeVisible()
+    await page.getByRole('menuitem', { name: 'Unmark As Watched' }).click()
 
     await expect(page.getByText('Bookmarkable video')).toBeVisible()
     await expect.poll(async () => {
@@ -2223,8 +2006,8 @@ test.describe('list video actions', () => {
     }).toBe(false)
 
     await video.hover()
-    await video.locator('.optionsButton').click()
-    await page.getByRole('option', { name: 'Remove From History' }).click()
+    await video.locator('.title').click({ button: 'right' })
+    await page.getByRole('menuitem', { name: 'Remove From History' }).click()
 
     await expect(page.getByText('Bookmarkable video')).toBeHidden()
     await expect(page.getByText('Your history list is currently empty.')).toBeVisible()

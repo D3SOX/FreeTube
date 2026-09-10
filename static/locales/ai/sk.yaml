@@ -1319,6 +1319,7 @@ Share:
   Share failed: "Odkaz sa nepodarilo zdieľať"
   Timestamp Link Copied: Odkaz s časovým údajom bol skopírovaný do schránky
 Context Menu:
+  Copy {service} link without playlist: "Kopírovať odkaz na {service} bez zoznamu videí"
   Context Menu: Kontextová ponuka
   Select All: Vybrať všetko
   Save Image As…: Uložiť obrázok ako…

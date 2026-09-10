@@ -1319,6 +1319,7 @@ Share:
   Share failed: "リンクを共有できませんでした"
   Timestamp Link Copied: 再生時刻付きリンクをクリップボードにコピーしました
 Context Menu:
+  Copy {service} link without playlist: "再生リストを含めずに{service}のリンクをコピー"
   Context Menu: コンテキストメニュー
   Select All: すべて選択
   Save Image As…: 名前を付けて画像を保存…

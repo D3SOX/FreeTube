@@ -1348,6 +1348,7 @@ Share:
   Share failed: "Không thể chia sẻ liên kết"
   Timestamp Link Copied: Đã sao chép liên kết có mốc thời gian vào bảng nhớ tạm
 Context Menu:
+  Copy {service} link without playlist: "Sao chép liên kết {service} không kèm danh sách phát"
   Context Menu: Menu ngữ cảnh
   Select All: Chọn tất cả
   Save Image As…: Lưu ảnh thành…

@@ -1355,6 +1355,7 @@ Share:
   Share Post: Distribuie postarea
   Timestamp Link Copied: Linkul cu marcaj temporal a fost copiat în clipboard
 Context Menu:
+  Copy {service} link without playlist: "Copiază linkul {service} fără lista de redare"
   Context Menu: Meniu contextual
   Select All: Selectează tot
   Save Image As…: Salvează imaginea ca…

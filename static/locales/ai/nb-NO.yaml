@@ -1332,6 +1332,7 @@ Share:
   Share failed: "Kunne ikke dele lenken"
   Timestamp Link Copied: Lenken med tidsstempel er kopiert til utklippstavlen
 Context Menu:
+  Copy {service} link without playlist: "Kopier {service}-lenke uten spilleliste"
   Context Menu: Kontekstmeny
   Select All: Merk alt
   Save Image As…: Lagre bildet som…

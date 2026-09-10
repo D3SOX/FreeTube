@@ -1333,6 +1333,7 @@ Share:
   Share failed: "N’eus ket bet gallet rannañ al liamm"
   Timestamp Link Copied: "Eilet eo bet al liamm gant ar mare er golver"
 Context Menu:
+  Copy {service} link without playlist: "Eilañ al liamm {service} hep ar roll-lenn"
   Context Menu: "Roll lañser"
   Select All: "Diuzañ pep tra"
   Save Image As…: "Enrollañ ar skeudenn evel…"

@@ -1792,6 +1792,7 @@ Clipboard:
   Copy failed: Kopiranje v odložišče ni uspelo
   Cannot access clipboard without a secure connection: Brez varne povezave dostop do odložišča ni mogoč
 Context Menu:
+  Copy {service} link without playlist: "Kopiraj povezavo do {service} brez seznama predvajanja"
   Context Menu: Kontekstni meni
   Select All: Izberi vse
   Save Image As…: Shrani sliko kot …

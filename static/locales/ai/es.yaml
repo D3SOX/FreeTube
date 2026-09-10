@@ -1346,6 +1346,7 @@ Share:
   Share failed: "No se pudo compartir el enlace"
   Timestamp Link Copied: Enlace con marca de tiempo copiado al portapapeles
 Context Menu:
+  Copy {service} link without playlist: "Copiar enlace de {service} sin lista de reproducción"
   Context Menu: Menú contextual
   Select All: Seleccionar todo
   Save Image As…: Guardar imagen como…

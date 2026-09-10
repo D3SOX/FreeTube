@@ -2331,6 +2331,7 @@ Clipboard:
   Cannot access clipboard without a secure connection: Cannot access clipboard without a secure connection
 
 Context Menu:
+  Copy {service} link without playlist: "Copy {service} link without playlist"
   Context Menu: Context menu
   Select All: Select All
   Save Image As…: Save Image As…

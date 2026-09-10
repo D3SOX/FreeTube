@@ -1362,6 +1362,7 @@ Share:
   Share failed: "Não foi possível partilhar a ligação"
   Timestamp Link Copied: Hiperligação com marca temporal copiada para a área de transferência
 Context Menu:
+  Copy {service} link without playlist: "Copiar ligação do {service} sem lista de reprodução"
   Context Menu: Menu de contexto
   Select All: Selecionar tudo
   Save Image As…: Guardar imagem como…

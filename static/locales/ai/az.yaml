@@ -1331,6 +1331,7 @@ Share:
   Share failed: Link paylaşıla bilmədi
   Timestamp Link Copied: Vaxt göstəricili link buferə köçürüldü
 Context Menu:
+  Copy {service} link without playlist: "{service} keçidini pleylist olmadan kopyala"
   Context Menu: Kontekst menyusu
   Select All: Hamısını seç
   Save Image As…: Şəkli fərqli saxla…

@@ -1357,6 +1357,7 @@ Share:
   Share failed: "Ekki tókst að deila tenglinum"
   Timestamp Link Copied: Tengill með tímamerki afritaður á klippispjald
 Context Menu:
+  Copy {service} link without playlist: "Afrita {service}-tengil án spilunarlista"
   Context Menu: Samhengisvalmynd
   Select All: Velja allt
   Save Image As…: Vista mynd sem…

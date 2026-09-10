@@ -8,7 +8,7 @@
         v-if="isOpen"
         ref="menuRef"
         class="contextMenu"
-        :class="{ submenusOpenStart, compactTabMenu: tabColorMenu != null }"
+        :class="{ submenusOpenStart, compactTabMenu: tabColorMenu != null, videoMenu: localItems != null }"
         :style="menuStyle"
         role="menu"
         :aria-label="t('Context Menu.Context Menu')"
@@ -16,7 +16,7 @@
         @pointerdown.stop
       >
         <div
-          v-if="tabColorMenu"
+          v-if="tabColorMenu || videoQuickActions.length"
           class="tabMenuHeader"
           role="none"
         >
@@ -26,7 +26,7 @@
             :aria-label="t('Context Menu.Context Menu')"
           >
             <button
-              v-for="item in tabQuickActions"
+              v-for="item in quickActions"
               :key="item.actionId"
               class="menuItem iconButton"
               :class="{ disabled: !item.enabled }"
@@ -45,6 +45,7 @@
             </button>
           </div>
           <div
+            v-if="tabColorMenu"
             class="tabColorPalette"
             role="group"
             :aria-label="localizedLabel(tabColorMenu)"
@@ -82,7 +83,7 @@
           >
             <template
               v-for="(item, index) in menuRows"
-              :key="item.actionId ?? `separator-${index}`"
+              :key="item.actionId ?? `renderer-item-${index}`"
             >
               <div
                 v-if="item.type === 'separator'"
@@ -102,6 +103,7 @@
                   role="menuitem"
                   :disabled="!item.enabled"
                   aria-haspopup="menu"
+                  @click="$event.currentTarget.focus()"
                   @pointerdown.prevent
                 >
                   <FtContextMenuItemIcon
@@ -189,18 +191,21 @@
 </template>
 
 <script setup>
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, useTemplateRef } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, shallowRef, useTemplateRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useRoute } from 'vue-router'
 
 import store from '../../store/index'
 import { clampOverlayScrollTop, restoreOverlayScrollTop } from '../../helpers/overlayScrollbars'
 import FtContextMenuItemIcon from './FtContextMenuItemIcon.vue'
 
 const { t } = useI18n()
+const route = useRoute()
 const menuRef = useTemplateRef('menuRef')
 const fullscreenTarget = ref(null)
 const isOpen = ref(false)
 const items = ref([])
+const localItems = shallowRef(null)
 const sessionId = ref(null)
 const position = ref({ x: 0, y: 0 })
 const submenusOpenStart = ref(false)
@@ -219,6 +224,11 @@ const menuStyle = computed(() => ({
  * open, as the refresh can end (or be started elsewhere) in the meantime.
  */
 const displayedItems = computed(() => {
+  if (localItems.value) {
+    return items.value.length > 0
+      ? [...localItems.value.value, { type: 'separator' }, ...items.value]
+      : localItems.value.value
+  }
   if (!store.getters.getSubscriptionFeedRefreshInProgress) {
     return items.value
   }
@@ -233,7 +243,7 @@ const displayedItems = computed(() => {
     : item)
 })
 
-// Keep the action payloads intact; only the desktop tab menu's presentation changes.
+// Keep action payloads intact when moving frequent commands into the header.
 const tabColorMenu = computed(() => displayedItems.value.find(item => item.labelKey === 'Context Menu.Tab Color'))
 const quickActionKeys = [
   ['Reload Tab', 'Reload Tabs'],
@@ -244,10 +254,12 @@ const quickActionKeys = [
 const tabQuickActions = computed(() => tabColorMenu.value
   ? quickActionKeys.map(keys => displayedItems.value.find(item => keys.includes(item.labelKey))).filter(Boolean)
   : [])
+const videoQuickActions = computed(() => localItems.value
+  ? displayedItems.value.filter(item => item.quickAction)
+  : [])
+const quickActions = computed(() => tabColorMenu.value ? tabQuickActions.value : videoQuickActions.value)
 const menuRows = computed(() => {
-  if (!tabColorMenu.value) return displayedItems.value
-
-  const rows = displayedItems.value.filter(item => item !== tabColorMenu.value && !tabQuickActions.value.includes(item))
+  const rows = displayedItems.value.filter(item => item !== tabColorMenu.value && !quickActions.value.includes(item))
   return rows.filter((item, index) => item.type !== 'separator' || (
     index > 0 && index < rows.length - 1 && rows[index - 1].type !== 'separator'
   ))
@@ -313,6 +325,7 @@ const itemIcons = {
 const colorLabels = new Set(['Default', 'Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Purple', 'Pink'])
 
 function getItemIcon(item, parentLabel = '') {
+  if (Array.isArray(item.icon)) return item.icon
   if (colorLabels.has(item.label)) return ['fas', 'circle']
   if (item.label === 'To Beginning') return ['fas', verticalTabLayout.value ? 'arrow-up' : 'arrow-left']
   if (item.label === 'To End') return ['fas', verticalTabLayout.value ? 'arrow-down' : 'arrow-right']
@@ -374,7 +387,7 @@ function getContextParameters(event) {
     pageURL: window.location.href,
     linkURL: link?.href ?? '',
     linkText: link?.textContent?.trim() ?? '',
-    srcURL: media?.currentSrc ?? media?.src ?? '',
+    srcURL: media?.currentSrc || media?.src || '',
     mediaType: media instanceof HTMLImageElement ? 'image' : media instanceof HTMLVideoElement ? 'video' : 'none',
     selectionText,
     isEditable,
@@ -388,18 +401,47 @@ function getContextParameters(event) {
 }
 
 async function open(event) {
-  if (event.defaultPrevented) return
+  if (event.defaultPrevented || !process.env.IS_ELECTRON) return
 
   event.preventDefault()
   const request = ++openRequest
   const result = await window.ftElectron.contextMenu.open(getContextParameters(event))
   if (request !== openRequest || result.items.length === 0) return
 
-  items.value = result.items
+  localItems.value = null
+  await showMenu(result.items, result.sessionId, event.clientX, event.clientY, request)
+}
+
+function closeLocalMenu(event) {
+  if (localItems.value === event.detail) close()
+}
+
+watch(() => route.fullPath, () => close())
+
+async function openLocalMenu(event) {
+  const { items, x, y, contextEvent } = event.detail
+  const request = ++openRequest
+  localItems.value = items
+  let contextualMenu = { items: [], sessionId: null }
+  if (process.env.IS_ELECTRON && contextEvent) {
+    const parameters = getContextParameters(contextEvent)
+    if (parameters.mediaType === 'image' || parameters.selectionText) {
+      // Video actions already provide the link commands. Retain image and
+      // selected-text commands from the native context instead of duplicating links.
+      window.ftElectron.tabs.setContextMenuTab({ tabId: null, surface: 'content' })
+      contextualMenu = await window.ftElectron.contextMenu.open({ ...parameters, linkURL: '', linkText: '' })
+    }
+  }
+  if (request !== openRequest) return
+  await showMenu(contextualMenu.items, contextualMenu.sessionId, x, y, request)
+}
+
+async function showMenu(menuItems, menuSessionId, clientX, clientY, request) {
+  items.value = menuItems
   resolveItemFavicons(items.value)
-  sessionId.value = result.sessionId
-  position.value = { x: event.clientX, y: event.clientY }
-  submenusOpenStart.value = event.clientX > window.innerWidth / 2
+  sessionId.value = menuSessionId
+  position.value = { x: clientX, y: clientY }
+  submenusOpenStart.value = clientX > window.innerWidth / 2
   verticalTabLayout.value = document.querySelector('.app')?.classList.contains('verticalTabs') === true
   previousFocus = document.activeElement
   isOpen.value = true
@@ -412,6 +454,12 @@ async function open(event) {
     for (const scroller of scrollports) {
       clampOverlayScrollTop(scroller, scroller.querySelector(':scope > .menuContent'))
     }
+    if (localItems.value && menuRef.value) {
+      position.value = {
+        ...position.value,
+        y: Math.max(8, Math.min(position.value.y, window.innerHeight - menuRef.value.offsetHeight - 8))
+      }
+    }
     positionOpenSubmenu()
   })
   for (const scroller of scrollports) {
@@ -423,12 +471,13 @@ async function open(event) {
   const menuWidth = menuRef.value.offsetWidth
   const menuHeight = menuRef.value.offsetHeight
   const x = document.body.dir === 'rtl'
-    ? event.clientX - menuWidth
-    : event.clientX
+    ? clientX - menuWidth
+    : clientX
   position.value = {
     x: Math.max(8, Math.min(x, window.innerWidth - menuWidth - 8)),
-    y: Math.max(8, Math.min(event.clientY, window.innerHeight - menuHeight - 8))
+    y: Math.max(8, Math.min(clientY, window.innerHeight - menuHeight - 8))
   }
+  if (localItems.value) menuRef.value.querySelector('button:enabled')?.focus({ preventScroll: true })
 }
 
 function close(event) {
@@ -437,6 +486,8 @@ function close(event) {
   openRequest++
   scrollResizeObserver?.disconnect()
   isOpen.value = false
+  localItems.value = null
+  items.value = []
 }
 
 function positionSubmenu(eventOrContainer) {
@@ -488,7 +539,14 @@ function positionOpenSubmenu() {
 }
 
 async function execute(item) {
-  if (!item.enabled || !item.actionId || sessionId.value == null) return
+  if (!item.enabled) return
+  if (item.run) {
+    const run = item.run
+    close()
+    await run()
+    return
+  }
+  if (!item.actionId || sessionId.value == null) return
 
   const currentSessionId = sessionId.value
   close()
@@ -517,7 +575,7 @@ function handleKeydown(event) {
     previousFocus?.focus({ preventScroll: true })
     return
   }
-  if (!tabColorMenu.value || !['ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return
+  if ((!tabColorMenu.value && !localItems.value) || !['ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return
 
   event.preventDefault()
   event.stopPropagation()
@@ -551,6 +609,8 @@ function handleKeydown(event) {
 
 onMounted(() => {
   document.addEventListener('contextmenu', open)
+  window.addEventListener('opentubex:context-menu', openLocalMenu)
+  window.addEventListener('opentubex:close-context-menu', closeLocalMenu)
   document.addEventListener('pointerdown', close, true)
   document.addEventListener('fullscreenchange', updateFullscreenTarget)
   window.addEventListener('blur', close)
@@ -562,6 +622,8 @@ onMounted(() => {
 onBeforeUnmount(() => {
   scrollResizeObserver?.disconnect()
   document.removeEventListener('contextmenu', open)
+  window.removeEventListener('opentubex:context-menu', openLocalMenu)
+  window.removeEventListener('opentubex:close-context-menu', closeLocalMenu)
   document.removeEventListener('pointerdown', close, true)
   document.removeEventListener('fullscreenchange', updateFullscreenTarget)
   window.removeEventListener('blur', close)

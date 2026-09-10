@@ -1336,6 +1336,7 @@ Share:
   Share failed: "Poveznicu nije moguće podijeliti"
   Timestamp Link Copied: Poveznica s vremenskom oznakom kopirana je u međuspremnik
 Context Menu:
+  Copy {service} link without playlist: "Kopiraj poveznicu za {service} bez popisa za reprodukciju"
   Context Menu: Kontekstni izbornik
   Select All: Odaberi sve
   Save Image As…: Spremi sliku kao…
