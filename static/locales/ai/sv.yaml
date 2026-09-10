@@ -1332,6 +1332,7 @@ Share:
   Share failed: "Kunde inte dela länken"
   Timestamp Link Copied: Länken med tidsstämpeln har kopierats till urklipp
 Context Menu:
+  Copy {service} link without playlist: "Kopiera {service}-länk utan spellista"
   Context Menu: Snabbmeny
   Select All: Markera allt
   Save Image As…: Spara bild som…

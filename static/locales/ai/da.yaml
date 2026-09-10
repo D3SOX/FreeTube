@@ -1387,6 +1387,7 @@ Share:
   Share Post: Del opslag
   Timestamp Link Copied: Linket med tidsstempel er kopieret til udklipsholderen
 Context Menu:
+  Copy {service} link without playlist: "Kopiér {service}-link uden afspilningsliste"
   Context Menu: Genvejsmenu
   Select All: Markér alt
   Save Image As…: Gem billede som…

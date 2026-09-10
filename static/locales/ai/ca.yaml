@@ -1817,6 +1817,7 @@ Clipboard:
   Copy failed: No s'ha pogut copiar al porta-retalls
   Cannot access clipboard without a secure connection: No es pot accedir al porta-retalls sense una connexió segura
 Context Menu:
+  Copy {service} link without playlist: "Copia l’enllaç de {service} sense la llista de reproducció"
   Context Menu: Menú contextual
   Select All: Selecciona-ho tot
   Save Image As…: Desa la imatge com a…

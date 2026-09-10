@@ -1328,6 +1328,7 @@ Share:
   Share failed: "Не удалось поделиться ссылкой"
   Timestamp Link Copied: Ссылка на момент времени скопирована в буфер обмена
 Context Menu:
+  Copy {service} link without playlist: "Копировать ссылку {service} без плейлиста"
   Context Menu: Контекстное меню
   Select All: Выделить всё
   Save Image As…: Сохранить изображение как…

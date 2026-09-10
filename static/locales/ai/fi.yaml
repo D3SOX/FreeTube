@@ -1356,6 +1356,7 @@ Share:
   Share failed: "Linkin jakaminen epäonnistui"
   Timestamp Link Copied: Aikaleiman sisältävä linkki kopioitiin leikepöydälle
 Context Menu:
+  Copy {service} link without playlist: "Kopioi {service}-linkki ilman soittolistaa"
   Context Menu: Pikavalikko
   Select All: Valitse kaikki
   Save Image As…: Tallenna kuva nimellä…

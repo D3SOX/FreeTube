@@ -1319,6 +1319,7 @@ Share:
   Share failed: "Não foi possível compartilhar o link"
   Timestamp Link Copied: Link com marca temporal copiada para a área de download
 Context Menu:
+  Copy {service} link without playlist: "Copiar link do {service} sem playlist"
   Context Menu: Menu de contexto
   Select All: Selecionar tudo
   Save Image As…: Salvar imagem como…

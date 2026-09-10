@@ -1351,6 +1351,7 @@ Share:
   Share failed: "تعذرت مشاركة الرابط"
   Timestamp Link Copied: تم نسخ رابط الطابع الزمني إلى الحافظة
 Context Menu:
+  Copy {service} link without playlist: "نسخ رابط {service} بدون قائمة التشغيل"
   Context Menu: قائمة السياق
   Select All: حدد الكل
   Save Image As…: حفظ الصورة باسم...

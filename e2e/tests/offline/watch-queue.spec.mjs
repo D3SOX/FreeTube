@@ -35,8 +35,8 @@ test.use({
 async function chooseVideoOption (page, title, option) {
   const video = page.locator('.ft-list-video').filter({ hasText: title })
   await video.hover()
-  await video.locator('.optionsButton').click()
-  await page.getByRole('option', { name: option }).click()
+  await video.locator('.title').click({ button: 'right' })
+  await page.getByRole('menuitem', { name: option }).click()
 }
 
 test('manages a temporary queue from video menus and the watch sidebar', async ({ page }) => {

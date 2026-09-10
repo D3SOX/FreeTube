@@ -1341,6 +1341,7 @@ Share:
   Share failed: "Ezin izan da esteka partekatu"
   Timestamp Link Copied: Denbora-markaren esteka arbelean kopiatu da
 Context Menu:
+  Copy {service} link without playlist: "Kopiatu {service} esteka erreprodukzio-zerrendarik gabe"
   Context Menu: Laster-menua
   Select All: Hautatu dena
   Save Image As…: Gorde irudia honela…

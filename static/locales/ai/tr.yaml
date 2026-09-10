@@ -1319,6 +1319,7 @@ Share:
   Share failed: "Bağlantı paylaşılamadı"
   Timestamp Link Copied: Zaman damgası bağlantısı panoya kopyalandı
 Context Menu:
+  Copy {service} link without playlist: "Oynatma listesi olmadan {service} bağlantısını kopyala"
   Context Menu: Bağlam menüsü
   Select All: Tümünü Seç
   Save Image As…: Görseli Farklı Kaydet…

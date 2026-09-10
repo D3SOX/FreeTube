@@ -1358,6 +1358,7 @@ Share:
   Share failed: "לא ניתן לשתף את הקישור"
   Timestamp Link Copied: הקישור לנקודת הזמן הועתק ללוח
 Context Menu:
+  Copy {service} link without playlist: "העתקת קישור {service} ללא רשימת השמעה"
   Context Menu: תפריט ההקשר
   Select All: בחירת הכול
   Save Image As…: שמירת התמונה בשם…

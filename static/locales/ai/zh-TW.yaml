@@ -1330,6 +1330,7 @@ Share:
   Share failed: "無法分享連結"
   Timestamp Link Copied: 已將時間戳記連結複製到剪貼簿
 Context Menu:
+  Copy {service} link without playlist: "複製不含播放清單的 {service} 連結"
   Context Menu: 內容功能表
   Select All: 全選
   Save Image As…: 將圖片另存為…

@@ -1341,6 +1341,7 @@ Share:
   Share failed: "Methu rhannu’r ddolen"
   Timestamp Link Copied: Wedi copïo dolen y stamp amser i'r clipfwrdd
 Context Menu:
+  Copy {service} link without playlist: "Copïo dolen {service} heb restr chwarae"
   Context Menu: Dewislen cyd-destun
   Select All: Dewis y cyfan
   Save Image As…: Cadw'r ddelwedd fel…

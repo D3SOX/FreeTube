@@ -223,8 +223,8 @@ test('offers skipping to a queued video without a playlist', async ({ page }) =>
 
   const queuedVideo = page.locator('.ft-list-video').filter({ hasText: 'Queued video' })
   await queuedVideo.hover()
-  await queuedVideo.locator('.optionsButton').click()
-  await page.getByRole('option', { name: 'Add to Queue' }).click()
+  await queuedVideo.locator('.title').click({ button: 'right' })
+  await page.getByRole('menuitem', { name: 'Add to Queue' }).click()
 
   await page.getByRole('link', { name: /Standalone video/ }).click()
   await expect(page).toHaveURL(/#\/watch\/queuevideo1/)

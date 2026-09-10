@@ -88,8 +88,12 @@ for (const category of types) {
     await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight))
     await lastCard.scrollIntoViewIfNeeded()
     await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(0)
-    await lastCard.getByRole('button', { name: 'More Options', exact: true }).click()
-    const action = page.getByRole('option', { name: `Never show ${labels[category]} from this channel in feeds again`, exact: true })
+    if (category === 'posts') {
+      await lastCard.getByRole('button', { name: 'More Options', exact: true }).click()
+    } else {
+      await lastCard.locator('.title').click({ button: 'right' })
+    }
+    const action = page.getByRole(category === 'posts' ? 'option' : 'menuitem', { name: `Never show ${labels[category]} from this channel in feeds again`, exact: true })
     await expect(action).toBeVisible()
     await action.focus()
     await page.keyboard.press('Enter')
@@ -145,12 +149,12 @@ test('hides from a combined New feed section and reports failed writes', async (
   })
   await page.locator('.mediaSection').first().scrollIntoViewIfNeeded()
   const short = card(page, 'shorts')
-  await short.getByRole('button', { name: 'More Options', exact: true }).click()
-  await page.getByRole('option', { name: 'Never show Shorts from this channel in feeds again', exact: true }).click()
+  await short.locator('.title').click({ button: 'right' })
+  await page.getByRole('menuitem', { name: 'Never show Shorts from this channel in feeds again', exact: true }).click()
   await expect(page.locator('.toast', { hasText: 'Failed to save channel settings' })).toBeVisible()
   await expect(short).toBeVisible()
-  await short.getByRole('button', { name: 'More Options', exact: true }).click()
-  await page.getByRole('option', { name: 'Never show Shorts from this channel in feeds again', exact: true }).click()
+  await short.locator('.title').click({ button: 'right' })
+  await page.getByRole('menuitem', { name: 'Never show Shorts from this channel in feeds again', exact: true }).click()
   await expect(short).toHaveCount(0)
   await expect(card(page, 'videos')).toHaveCount(1)
   await page.locator('[data-subscription-feed-tab="shorts"]').click()
@@ -173,8 +177,8 @@ test('keeps both types hidden when another hide is queued during a save', async 
   })
   for (const category of ['videos', 'shorts']) {
     await page.locator(`[data-subscription-feed-tab="${category}"]`).click()
-    await card(page, category).getByRole('button', { name: 'More Options', exact: true }).click()
-    await page.getByRole('option', { name: `Never show ${labels[category]} from this channel in feeds again`, exact: true }).click()
+    await card(page, category).locator('.title').click({ button: 'right' })
+    await page.getByRole('menuitem', { name: `Never show ${labels[category]} from this channel in feeds again`, exact: true }).click()
   }
   await page.evaluate(() => window.releaseFirstFeedHide())
   await expect.poll(() => page.evaluate(channelId => {
@@ -199,17 +203,17 @@ for (const locale of ['en-US', 'de-DE']) {
           }, width)
           for (const category of ['videos', 'posts']) {
             await page.locator(`[data-subscription-feed-tab="${category}"]`).click()
-            const menuButton = card(page, category).getByRole('button', {
-              name: locale === 'en-US' ? 'More Options' : 'Weitere Optionen', exact: true
-            })
-            await menuButton.click()
+            const menuButton = category === 'posts'
+              ? card(page, category).getByRole('button', { name: locale === 'en-US' ? 'More Options' : 'Weitere Optionen', exact: true })
+              : card(page, category).locator('.title')
+            await menuButton.click({ button: category === 'posts' ? 'left' : 'right' })
             const type = locale === 'de-DE' && category === 'posts' ? 'Beiträge' : labels[category]
-            const label = page.getByRole('option', {
+            const label = page.getByRole(category === 'posts' ? 'option' : 'menuitem', {
               name: locale === 'en-US'
                 ? `Never show ${type} from this channel in feeds again`
                 : `Nie wieder ${type} von diesem Kanal in Feeds anzeigen`,
               exact: true
-            }).locator(':scope > span')
+            }).locator(':scope > span').last()
             await expect(label).toBeVisible()
             await expect.poll(() => label.evaluate(element => (
               element.scrollWidth <= element.clientWidth && element.scrollHeight <= element.clientHeight
@@ -239,3 +243,20 @@ for (const locale of ['en-US', 'de-DE']) {
     }
   })
 }
+
+test('disables a video hide action while its settings are being saved', async ({ page }) => {
+  await goTo(page, 'subscriptions')
+  await page.locator('[data-subscription-feed-tab="videos"]').click()
+  await page.evaluate(() => {
+    const store = document.querySelector('#app').__vue_app__.config.globalProperties.$store
+    store._actions.updateChannelSettings = [() => new Promise(resolve => { window.finishSavingChannel = resolve })]
+  })
+  const video = card(page, 'videos')
+  const action = page.getByRole('menuitem', { name: 'Never show Videos from this channel in feeds again', exact: true })
+  await video.locator('.title').click({ button: 'right' })
+  await action.click()
+  await video.locator('.title').click({ button: 'right' })
+  await expect(action).toBeDisabled()
+  await page.evaluate(() => window.finishSavingChannel(true))
+  await expect(action).toBeEnabled()
+})

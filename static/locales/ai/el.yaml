@@ -1356,6 +1356,7 @@ Share:
   Share failed: "Δεν ήταν δυνατή η κοινοποίηση του συνδέσμου"
   Timestamp Link Copied: Ο σύνδεσμος χρονικής ένδειξης αντιγράφηκε στο πρόχειρο
 Context Menu:
+  Copy {service} link without playlist: "Αντιγραφή συνδέσμου {service} χωρίς λίστα αναπαραγωγής"
   Context Menu: Μενού περιβάλλοντος
   Select All: Επιλογή όλων
   Save Image As…: Αποθήκευση εικόνας ως…

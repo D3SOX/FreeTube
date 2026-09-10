@@ -4828,23 +4828,16 @@ test.describe('fullscreen playlist dock', () => {
     await page.keyboard.press('Escape')
     await expect(dropdown).toHaveCount(0)
 
-    const moreOptions = item.locator('.optionsButton .iconButton')
-    await moreOptions.click()
-    await expect(dropdown).toBeVisible()
-    await expect(dropdown).toHaveClass(/listVideoOptionsDropdown/)
-    await expect(dropdown).toHaveCSS('font-size', '14px')
-    await expect(dropdown).toHaveCSS('overflow-y', 'auto')
-    const optionsDropdownBox = await dropdown.boundingBox()
-    expect(optionsDropdownBox.y).toBeGreaterThanOrEqual(8)
-    expect(optionsDropdownBox.y + optionsDropdownBox.height).toBeLessThanOrEqual(
-      await page.evaluate(() => window.innerHeight - 8)
-    )
-    expect(optionsDropdownBox.x).toBeGreaterThanOrEqual(8)
-    expect(optionsDropdownBox.x + optionsDropdownBox.width).toBeLessThanOrEqual(
-      await page.evaluate(() => window.innerWidth - 8)
-    )
-    expect(await dropdown.evaluate(element => element.parentElement?.classList.contains('app'))).toBe(true)
-    await expect(moreOptions).toBeVisible()
+    await item.locator('.title').click({ button: 'right' })
+    const contextMenu = page.locator('.contextMenu')
+    await expect(contextMenu).toBeVisible()
+    await expect(contextMenu.getByRole('menuitem', { name: 'Copy YouTube Link', exact: true })).toBeVisible()
+    const menuBounds = await contextMenu.boundingBox()
+    expect(menuBounds.x).toBeGreaterThanOrEqual(8)
+    expect(menuBounds.y).toBeGreaterThanOrEqual(8)
+    // offsetWidth rounds while rendered bounds can retain fractional CSS pixels.
+    expect(menuBounds.x + menuBounds.width).toBeLessThanOrEqual(await page.evaluate(() => innerWidth - 7))
+    expect(menuBounds.y + menuBounds.height).toBeLessThanOrEqual(await page.evaluate(() => innerHeight - 7))
   })
 })
 

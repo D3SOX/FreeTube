@@ -1381,6 +1381,7 @@ Share:
   Share Post: Подели објаву
   Timestamp Link Copied: Веза до временске ознаке је копирана у привремену меморију
 Context Menu:
+  Copy {service} link without playlist: "Копирај {service} везу без листе за репродукцију"
   Context Menu: Контекстни мени
   Select All: Изабери све
   Save Image As…: Сачувај слику као…

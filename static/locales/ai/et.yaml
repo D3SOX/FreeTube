@@ -1321,6 +1321,7 @@ Share:
   Share failed: "Linki ei õnnestunud jagada"
   Timestamp Link Copied: Ajatempliga link kopeeriti lõikelauale
 Context Menu:
+  Copy {service} link without playlist: "Kopeeri {service} link ilma esitusloendita"
   Context Menu: Kontekstimenüü
   Select All: Vali kõik
   Save Image As…: Salvesta pilt nimega…

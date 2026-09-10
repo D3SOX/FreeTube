@@ -369,9 +369,9 @@ test.describe('new subscriptions feed', () => {
 
     await page.keyboard.press('Escape')
     await video.hover()
-    await video.locator('.optionsButton').click()
+    await video.locator('.title').click({ button: 'right' })
 
-    await expect(video.locator('.optionsButton .iconDropdown')).toBeVisible()
+    await expect(page.locator('.contextMenu')).toBeVisible()
     await expect(video).toBeVisible()
   })
 
@@ -386,8 +386,8 @@ test.describe('new subscriptions feed', () => {
     await expect(markAllAsSeen).toBeVisible()
 
     await video.hover()
-    await video.locator('.optionsButton').click()
-    await page.getByRole('option', { name: 'Mark as seen' }).click()
+    await video.locator('.title').click({ button: 'right' })
+    await page.getByRole('menuitem', { name: 'Mark as seen' }).click()
 
     await expect(video).toBeVisible()
     await expect(video.locator('.newContentDot')).toHaveCount(0)
@@ -395,8 +395,8 @@ test.describe('new subscriptions feed', () => {
     await expect(markAllAsSeen).toHaveCount(0)
 
     await video.hover()
-    await video.locator('.optionsButton').click()
-    await expect(page.getByRole('option', { name: 'Mark as seen' })).toHaveCount(0)
+    await video.locator('.title').click({ button: 'right' })
+    await expect(page.getByRole('menuitem', { name: 'Mark as seen' })).toHaveCount(0)
   })
 
   test('marks a dotted post as seen from its options menu and persists after restart', async ({ app, page }) => {
@@ -792,8 +792,8 @@ test.describe('new feed settings and seen state', () => {
       has: page.getByRole('heading', { name: 'New video', exact: true })
     })
     await regularFeedVideo.hover()
-    await regularFeedVideo.locator('.optionsButton').click()
-    await expect(page.getByRole('option', { name: 'Mark as seen' })).toHaveCount(0)
+    await regularFeedVideo.locator('.title').click({ button: 'right' })
+    await expect(page.getByRole('menuitem', { name: 'Mark as seen' })).toHaveCount(0)
 
     await page.keyboard.press('Escape')
     await page.locator('[data-subscription-feed-tab="all"]').click()
@@ -802,8 +802,8 @@ test.describe('new feed settings and seen state', () => {
       has: page.getByRole('heading', { name: 'New video', exact: true })
     })
     await newFeedVideo.hover()
-    await newFeedVideo.locator('.optionsButton').click()
-    await page.getByRole('option', { name: 'Mark as seen' }).click()
+    await newFeedVideo.locator('.title').click({ button: 'right' })
+    await page.getByRole('menuitem', { name: 'Mark as seen' }).click()
 
     await expect(newFeedVideo).toHaveCount(0)
   })

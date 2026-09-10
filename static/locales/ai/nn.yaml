@@ -1651,6 +1651,7 @@ Share:
   Share Post: Del innlegget
   Timestamp Link Copied: Lenkja med tidsstempel er kopiert til utklippstavla
 Context Menu:
+  Copy {service} link without playlist: "Kopier {service}-lenkje utan speleliste"
   Context Menu: Samanhengsmeny
   Select All: Vel alt
   Save Image As…: Lagre biletet som…

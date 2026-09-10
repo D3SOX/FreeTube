@@ -282,3 +282,10 @@
     transition: none;
   }
 }
+
+@media (any-pointer: coarse) {
+  .videoMenu .menuItem {
+    min-block-size: 48px;
+    font-size: 16px;
+  }
+}

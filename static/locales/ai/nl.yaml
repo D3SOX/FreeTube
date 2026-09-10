@@ -1367,6 +1367,7 @@ Share:
   Share failed: "Kan de link niet delen"
   Timestamp Link Copied: Link met tijdsaanduiding naar klembord gekopieerd
 Context Menu:
+  Copy {service} link without playlist: "{service}-link zonder afspeellijst kopiëren"
   Context Menu: Contextmenu
   Select All: Alles selecteren
   Save Image As…: Afbeelding opslaan als…

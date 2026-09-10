@@ -309,8 +309,8 @@ test.describe('subscriptions feed from cache', () => {
     const video = page.locator('.ft-list-video').first()
     await expect(video).toBeVisible()
     await video.hover()
-    await video.locator('.optionsButton').click()
-    await expect(video.locator('.iconDropdown')).toBeVisible()
+    await video.locator('.title').click({ button: 'right' })
+    await expect(page.locator('.contextMenu')).toBeVisible()
 
     const headerCoversVideo = await page.evaluate(() => {
       const header = document.querySelector('.subscriptionsHeader')
@@ -336,11 +336,11 @@ test.describe('subscriptions feed from cache', () => {
 
     const runningPremiere = page.locator('.ft-list-video').filter({ hasText: 'Running premiere video' })
     await runningPremiere.hover()
-    await runningPremiere.locator('.optionsButton').click()
+    await runningPremiere.locator('.title').click({ button: 'right' })
 
-    await expect(page.getByRole('option', { name: 'Mark As Watched' })).toHaveCount(0)
-    await expect(page.getByRole('option', { name: 'Unmark As Watched' })).toHaveCount(0)
-    await expect(page.getByRole('option', { name: 'Add to Queue' })).toBeVisible()
+    await expect(page.getByRole('menuitem', { name: 'Mark As Watched' })).toHaveCount(0)
+    await expect(page.getByRole('menuitem', { name: 'Unmark As Watched' })).toHaveCount(0)
+    await expect(page.getByRole('menuitem', { name: 'Add to Queue' })).toBeVisible()
   })
 
   test('shows when the feed was last updated without being held back by a stale channel', async ({ page }) => {
@@ -460,11 +460,11 @@ test.describe('subscriptions feed with upcoming premieres shown', () => {
     const upcomingPremiere = page.locator('.ft-list-video').filter({ hasText: 'Upcoming premiere video' })
     await expect(upcomingPremiere).toBeVisible()
     await upcomingPremiere.hover()
-    await upcomingPremiere.locator('.optionsButton').click()
+    await upcomingPremiere.locator('.title').click({ button: 'right' })
 
-    await expect(page.getByRole('option', { name: 'Mark As Watched' })).toHaveCount(0)
-    await expect(page.getByRole('option', { name: 'Unmark As Watched' })).toHaveCount(0)
-    await expect(page.getByRole('option', { name: 'Add to Queue' })).toBeVisible()
+    await expect(page.getByRole('menuitem', { name: 'Mark As Watched' })).toHaveCount(0)
+    await expect(page.getByRole('menuitem', { name: 'Unmark As Watched' })).toHaveCount(0)
+    await expect(page.getByRole('menuitem', { name: 'Add to Queue' })).toBeVisible()
   })
 
   test.describe('with date and time formats independent of the app language', () => {
@@ -620,9 +620,9 @@ test.describe('subscriptions feed with upcoming premieres shown', () => {
     await goTo(page, 'subscriptions')
 
     const upcomingPremiere = page.locator('.ft-list-video').filter({ hasText: 'Upcoming premiere video' })
-    await upcomingPremiere.locator('.optionsButton').click()
-    const menu = upcomingPremiere.locator('.iconDropdown')
+    await upcomingPremiere.locator('.title').click({ button: 'right' })
+    const menu = page.locator('.contextMenu')
     await expect(menu).toBeVisible()
-    await expect(menu.locator('.listItemDivider + .listItemDivider')).toHaveCount(0)
+    await expect(menu.locator('.separator + .separator')).toHaveCount(0)
   })
 })

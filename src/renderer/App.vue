@@ -177,7 +177,7 @@
     <FtCreatePlaylistPrompt
       v-if="showCreatePlaylistPrompt"
     />
-    <FtContextMenu v-if="isElectron" />
+    <FtContextMenu />
     <Teleport to="body">
       <div
         v-if="mobileContextLink || mobileContextActions"
@@ -3872,6 +3872,7 @@ function handleClick(event) {
 }
 
 async function handleMobileLinkContextMenu(event) {
+  if (event.target instanceof Element && event.target.closest('.ft-list-video')) return
   const link = getEventLink(event)
   if (!link) return
 

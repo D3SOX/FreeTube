@@ -1332,6 +1332,7 @@ Share:
   Share failed: "Връзката не можа да бъде споделена"
   Timestamp Link Copied: Връзката към времевия маркер е копирана в системния буфер
 Context Menu:
+  Copy {service} link without playlist: "Копиране на връзката към {service} без плейлиста"
   Context Menu: Контекстно меню
   Select All: Избиране на всичко
   Save Image As…: Запазване на изображението като…

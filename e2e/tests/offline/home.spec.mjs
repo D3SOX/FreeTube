@@ -383,8 +383,8 @@ test('shows a queued video without reloading the page', async ({ page }) => {
   await goTo(page, 'history')
   const video = page.locator('.ft-list-video').filter({ hasText: 'Partly watched video' })
   await video.hover()
-  await video.locator('.optionsButton').click()
-  await page.getByRole('option', { name: 'Add to Queue' }).click()
+  await video.locator('.title').click({ button: 'right' })
+  await page.getByRole('menuitem', { name: 'Add to Queue' }).click()
 
   await goTo(page, 'home')
 
