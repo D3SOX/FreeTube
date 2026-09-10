@@ -14,6 +14,7 @@ import {
   getLocalChannelVideos,
   getLocalPlaylist,
   localApiFetch,
+  parseLocalChannelShorts,
   parseLocalPlaylistVideos
 } from './api/local'
 import {
@@ -1431,10 +1432,41 @@ async function getChannelShortsLocal(channel, t, errorChannels, failedAttempts =
         return { videos: null }
       }
       if (!channelPage.has_shorts) return { videos: [] }
-      const playlist = await getLocalPlaylist(playlistId, activeRefresh?.controller.signal)
-      const videos = parseLocalPlaylistVideos(playlist.items)
-      videos.forEach(video => { video.isShort = true })
-      return { videos }
+      try {
+        const playlist = await getLocalPlaylist(playlistId, activeRefresh?.controller.signal)
+        const videos = parseLocalPlaylistVideos(playlist.items)
+        videos.forEach(video => { video.isShort = true })
+        return { videos }
+      } catch (error) {
+        if (error.message !== 'The playlist does not exist.') throw error
+        // Some channels have Shorts even though their automatic playlist is missing.
+        const shortsTab = await channelPage.getShorts()
+        const videos = parseLocalChannelShorts(shortsTab.videos, channel.id, channel.name)
+        const cachedVideos = store.getters.getShortsCache[channel.id]?.videos ?? []
+        // The Shorts tab omits dates, which subscriptions need for sorting and New badges.
+        for (const video of videos) {
+          const cached = cachedVideos.find(entry => entry.videoId === video.videoId)
+          if (Number.isFinite(cached?.published)) {
+            video.published = cached.published
+            continue
+          }
+          const response = await localApiFetch(`https://www.youtube.com/watch?v=${video.videoId}`, {
+            signal: AbortSignal.any([
+              activeRefresh?.controller.signal,
+              AbortSignal.timeout(RSS_ENRICHMENT_TIMEOUT_MS)
+            ].filter(Boolean)),
+            nativeTimeoutMs: RSS_ENRICHMENT_TIMEOUT_MS
+          })
+          checkSubscriptionFeedResponse(response)
+          const player = JSON.parse(extractAssignedJsonObject(await response.text(), 'ytInitialPlayerResponse') ?? 'null')
+          const published = Date.parse(player?.microformat?.playerMicroformatRenderer?.publishDate)
+          if (player?.videoDetails?.videoId !== video.videoId || !Number.isFinite(published)) {
+            throw new Error(`Could not load the publication date for Short ${video.videoId}`, { cause: error })
+          }
+          video.published = published
+        }
+        return { videos }
+      }
     }
 
     checkSubscriptionFeedResponse(response)

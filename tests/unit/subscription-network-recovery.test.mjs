@@ -5,6 +5,7 @@ import vm from 'node:vm'
 import { shallowReactive } from 'vue'
 import { createI18n } from 'vue-i18n'
 import { load } from 'js-yaml'
+import { YTNodes } from 'youtubei.js'
 
 import { createNetworkRecovery } from '../../src/renderer/helpers/networkRecovery.js'
 import { createAbortError } from '../../src/renderer/helpers/api/requestErrors.js'
@@ -12,7 +13,12 @@ import { createSubscriptionNetworkRecovery, SubscriptionNetworkError } from '../
 import { mapConcurrently } from '../../src/renderer/helpers/concurrent-map.js'
 import { buildRequestDiagnostic, classifyRequestFailure, formatRequestDiagnostic } from '../../src/renderer/helpers/api/requestDiagnostics.js'
 import { getSubscriptionsForFeed } from '../../src/renderer/helpers/subscription-channels.js'
-import { reconcileFetchedSubscriptionEntries } from '../../src/renderer/helpers/subscription-entries.js'
+import { extractAssignedJsonObject } from '../../src/renderer/helpers/assigned-json.js'
+import { getSubscriptionVideoSortTimestamp, updateUpcomingPremiereState, reconcileFetchedSubscriptionEntries } from '../../src/renderer/helpers/subscription-entries.js'
+
+const localSource = await readFile(new URL('../../src/renderer/helpers/api/local.js', import.meta.url), 'utf8')
+const shortsParserSource = localSource.slice(localSource.indexOf('export function parseShort('), localSource.indexOf('export function parseLocalListPlaylist('))
+  .replace(/^export /gm, '')
 
 const networkSource = (await readFile(new URL('../../src/renderer/helpers/networkRecovery.js', import.meta.url), 'utf8'))
   .replace(/^import .* from .*\n/gm, '').replace(/^export /gm, '')
@@ -23,7 +29,7 @@ const source = (await readFile(new URL('../../src/renderer/helpers/subscriptions
 
 // Exercise the real refresh, fallback, cache, and notification paths with fake
 // platform APIs. Webpack-only imports are supplied in the isolated context.
-function createRefresh({ online = true, feed = 'Shorts', error = new TypeError('Failed to fetch'), webCors = false, backend = 'local', fallbackWorks = false, rssStatus = 200, channelInfo = { has_shorts: true }, playlistError = null, stallChannelProbe = false, channelStatus = rssStatus, scraperError = null } = {}) {
+function createRefresh({ online = true, feed = 'Shorts', error = new TypeError('Failed to fetch'), webCors = false, backend = 'local', fallbackWorks = false, rssStatus = 200, channelInfo = { has_shorts: true, getShorts: async () => ({ videos: [] }) }, playlistError = null, stallChannelProbe = false, channelStatus = rssStatus, scraperError = null, shortPublishDate = '2026-09-06T12:00:00Z' } = {}) {
   const window = new EventTarget()
   const navigator = { onLine: online }
   const toasts = []
@@ -51,6 +57,13 @@ function createRefresh({ online = true, feed = 'Shorts', error = new TypeError('
   const fetchChannel = async url => {
     requests.push(url)
     if (fail) throw typeof error === 'function' ? error(url) : error
+    if (url.includes('/watch?v=')) {
+      const videoId = new URL(url).searchParams.get('v')
+      return { ok: true, status: 200, text: async () => `var ytInitialPlayerResponse = ${JSON.stringify({
+        videoDetails: { videoId },
+        microformat: { playerMicroformatRenderer: { publishDate: shortPublishDate } }
+      })};` }
+    }
     return { videos: [], posts: [], status: url.includes('/feed/channel/') ? channelStatus : rssStatus, text: async () => '<feed/>' }
   }
   const fetchFallback = async url => {
@@ -70,7 +83,7 @@ function createRefresh({ online = true, feed = 'Shorts', error = new TypeError('
     },
     createSubscriptionNetworkRecovery, SubscriptionNetworkError,
     mapConcurrently, buildRequestDiagnostic, classifyRequestFailure, formatRequestDiagnostic, getSubscriptionsForFeed,
-    reconcileFetchedSubscriptionEntries,
+    reconcileFetchedSubscriptionEntries, extractAssignedJsonObject, getSubscriptionVideoSortTimestamp, updateUpcomingPremiereState,
     isAndroidSubscriptionRefreshActive: async () => false,
     includeAutomaticDownloadChannels: channels => channels,
     startAutomaticDownloadsForChannel: async () => {},
@@ -97,6 +110,7 @@ function createRefresh({ online = true, feed = 'Shorts', error = new TypeError('
       }
     },
   })
+  vm.runInContext(shortsParserSource, context)
   vm.runInContext(networkSource, context)
   const sharedRecovery = vm.runInContext('initializeNetworkRecovery()', context)
   context.createSubscriptionNetworkRecovery = options => createSubscriptionNetworkRecovery({ ...options, recovery: sharedRecovery })
@@ -109,7 +123,7 @@ function createRefresh({ online = true, feed = 'Shorts', error = new TypeError('
       init?.signal?.addEventListener('abort', () => reject(createAbortError()), { once: true })
     })
   }
-  vm.runInContext(`${source}\nglobalThis.api = { refreshSubscriptionVideosFromRemote, refreshSubscriptionShortsFromRemote, refreshSubscriptionLiveFromRemote, refreshSubscriptionPostsFromRemote, cancelSubscriptionRefresh }`, context)
+  vm.runInContext(`${source}\nglobalThis.api = { refreshSubscriptionVideosFromRemote, refreshSubscriptionShortsFromRemote, refreshSubscriptionLiveFromRemote, refreshSubscriptionPostsFromRemote, cancelSubscriptionRefresh, updateVideoListAfterProcessing }`, context)
   return {
     get details() { return [...subscriptionRefreshErrors.value.values()].map(channel => channel.trace).join('\n') },
     ...context.api, refresh: context.api[`refreshSubscription${feed}FromRemote`], navigator, requests, fallbackRequests, toasts, copied, writes, events, getters, recovery: sharedRecovery,
@@ -329,6 +343,85 @@ for (const feed of ['Videos', 'Shorts', 'Live']) {
     assert.deepEqual(errorChannels, [])
     assert.equal(app.toasts.length, 0)
     assert.equal(app.writes.filter(write => write.key.endsWith('CacheByChannel')).length, 20)
+  })
+}
+
+test('Shorts refresh loads the channel tab when its automatic playlist does not exist', async () => {
+  const channelId = 'UCvNL_YC5NbOcoqSjjJSTzSA'
+  let tabRequests = 0
+  const app = createRefresh({
+    rssStatus: 404,
+    playlistError: new Error('The playlist does not exist.'),
+    channelInfo: {
+      has_shorts: true,
+      async getShorts() {
+        tabRequests++
+        return { videos: [new YTNodes.ReelItem({
+          videoId: 'C9wafAQcub0',
+          headline: { simpleText: 'CAIVA Short' },
+          thumbnail: { thumbnails: [{ url: 'https://i.ytimg.com/vi/C9wafAQcub0/hqdefault.jpg' }] },
+        }), new YTNodes.ReelItem({ videoId: 'cached-short', headline: { simpleText: 'Older Short' }, thumbnail: { thumbnails: [] } })] }
+      }
+    }
+  })
+  app.getters.getActiveProfile.subscriptions = [{ id: channelId, name: 'CAIVA' }]
+  app.getters.getBackendFallback = false
+  const cachedPublished = Date.parse('2026-09-01T12:00:00Z')
+  app.getters.getShortsCache[channelId] = {
+    timestamp: new Date('2026-09-05T12:00:00Z'),
+    videos: [{ videoId: 'cached-short', published: cachedPublished }]
+  }
+  app.reconnect()
+  const errorChannels = []
+  await app.refresh({ t: key => key, errorChannels })
+  assert.equal(app.toasts.length, 0)
+  assert.deepEqual(errorChannels, [])
+  assert.equal(tabRequests, 1)
+  const update = app.writes.find(write => write.key === 'updateSubscriptionShortsCacheByChannel')
+  assert.equal(update?.value.channelId, channelId)
+  assert.equal(update.value.videos.length, 2)
+  assert.equal(update.value.videos[0].videoId, 'C9wafAQcub0')
+  assert.equal(update.value.videos[0].authorId, channelId)
+  assert.equal(update.value.videos[0].author, 'CAIVA')
+  assert.equal(update.value.videos[0].isShort, true)
+  assert.equal(update.value.videos[0].published, Date.parse('2026-09-06T12:00:00Z'))
+  assert.equal(update.value.videos[0].isNewInSubscriptionFeed, true)
+  assert.equal(update.value.videos[1].published, cachedPublished)
+  assert.equal(app.requests.filter(url => url.includes('/watch?v=')).length, 1)
+  const sorted = app.updateVideoListAfterProcessing([
+    { videoId: 'middle', published: Date.parse('2026-09-03T12:00:00Z') },
+    ...update.value.videos
+  ])
+  assert.equal(sorted.map(video => video.videoId).join(','), 'C9wafAQcub0,middle,cached-short')
+})
+
+for (const failure of ['playlist request', 'Shorts tab request', 'publication date']) {
+  test(`Shorts refresh preserves errors from a failed ${failure}`, async () => {
+    let tabRequests = 0
+    const app = createRefresh({
+      rssStatus: 404,
+      shortPublishDate: null,
+      playlistError: new Error(failure === 'playlist request' ? 'Request rejected' : 'The playlist does not exist.'),
+      channelInfo: {
+        has_shorts: true,
+        async getShorts() {
+          tabRequests++
+          if (failure !== 'publication date') throw new Error('Request rejected')
+          return { videos: [new YTNodes.ReelItem({
+            videoId: 'short-without-date', headline: { simpleText: 'Short' }, thumbnail: { thumbnails: [] }
+          })] }
+        }
+      }
+    })
+    app.getters.getActiveProfile.subscriptions = [{ id: 'UC-test' }]
+    app.getters.getBackendFallback = false
+    app.reconnect()
+    await app.refresh({ t: key => key })
+    assert.equal(tabRequests, failure === 'playlist request' ? 0 : 1)
+    assert.equal(app.toasts.length, 1)
+    app.toasts[0][0].action()
+    assert.match(app.details, failure === 'publication date' ? /Could not load the publication date/ : /Request rejected/)
+    assert.equal(app.writes.filter(write => write.key.endsWith('CacheByChannel')).length, 0)
   })
 }
 
