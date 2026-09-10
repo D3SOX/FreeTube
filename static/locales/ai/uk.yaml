@@ -142,7 +142,8 @@ Home Page:
   All sections hidden: Усі розділи приховано
   All sections hidden description: Налаштуйте головну, щоб знову показати розділ.
 Subscriptions:
-  Refresh Errors: "Канали, які не вдалося оновити: {count}. Натисніть, щоб скопіювати подробиці."
+  Copy Error Details: "Скопіювати технічні подробиці"
+  Refresh Errors: "Канали, які не вдалося оновити: {count}. Натисніть, щоб переглянути подробиці."
   Never show {type} from this channel in feeds again: Більше ніколи не показувати {type} із цього каналу в стрічках
   Refreshing Subscription Videos: Оновлення відео з підписок
   Refreshing Subscription Shorts: Оновлення коротких відео з підписок

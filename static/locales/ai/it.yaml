@@ -142,7 +142,8 @@ Home Page:
   All sections hidden: Tutte le sezioni sono nascoste
   All sections hidden description: Personalizza Home per mostrare di nuovo una sezione.
 Subscriptions:
-  Refresh Errors: "Canali che non è stato possibile aggiornare: {count}. Fai clic per copiare i dettagli."
+  Copy Error Details: "Copia dettagli tecnici"
+  Refresh Errors: "Canali che non è stato possibile aggiornare: {count}. Fai clic per vedere i dettagli."
   Never show {type} from this channel in feeds again: Non mostrare più contenuti di tipo {type} di questo canale nei feed
   Refreshing Subscription Videos: Aggiornamento dei video delle iscrizioni
   Refreshing Subscription Shorts: Aggiornamento degli Shorts delle iscrizioni

@@ -142,7 +142,8 @@ Home Page:
   All sections hidden: Kuzhet eo an holl rannoù
   All sections hidden description: Personelait ar bajenn degemer evit diskouez ur rann en-dro.
 Subscriptions:
-  Refresh Errors: "Kanolioù n'int ket bet hizivaet: {count}. Klikit evit eilañ ar munudoù."
+  Copy Error Details: "Eilañ ar munudoù teknikel"
+  Refresh Errors: "Kanolioù n'int ket bet hizivaet: {count}. Klikit evit gwelet ar munudoù."
   Never show {type} from this channel in feeds again: Na ziskouez biken {type} eus ar chadenn-mañ er gwazhioù en-dro
   Refreshing Subscription Videos: "Oc'h adkargañ videoioù ar c'houmanantoù"
   Refreshing Subscription Shorts: "Oc'h adkargañ videoioù berr (Shorts) ar c'houmanantoù"

@@ -142,7 +142,8 @@ Home Page:
   All sections hidden: Mae pob adran wedi'i chuddio
   All sections hidden description: Addaswch yr hafan i ddangos adran eto.
 Subscriptions:
-  Refresh Errors: "Sianeli na ellid eu hadnewyddu: {count}. Cliciwch i gopïo'r manylion."
+  Copy Error Details: "Copïo manylion technegol"
+  Refresh Errors: "Sianeli na ellid eu hadnewyddu: {count}. Cliciwch i weld y manylion."
   Never show {type} from this channel in feeds again: Peidio byth â dangos {type} o’r sianel hon mewn ffrydiau eto
   Refreshing Subscription Videos: Wrthi'n adnewyddu fideos tanysgrifiadau
   Refreshing Subscription Shorts: Wrthi'n adnewyddu Byrion tanysgrifiadau

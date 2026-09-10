@@ -142,7 +142,8 @@ Home Page:
   All sections hidden: Bütün bölmələr gizlədilib
   All sections hidden description: Bölməni yenidən göstərmək üçün ana səhifəni fərdiləşdirin.
 Subscriptions:
-  Refresh Errors: "Yenilənə bilməyən kanallar: {count}. Təfərrüatları kopyalamaq üçün klikləyin."
+  Copy Error Details: "Texniki təfərrüatları kopyala"
+  Refresh Errors: "Yenilənə bilməyən kanallar: {count}. Təfərrüatlara baxmaq üçün klikləyin."
   Never show {type} from this channel in feeds again: Bu kanaldan {type} məzmununu lentlərdə bir daha göstərmə
   Refreshing Subscription Videos: Abunəlik videoları yenilənir
   Refreshing Subscription Shorts: Abunəlik qısa videoları yenilənir

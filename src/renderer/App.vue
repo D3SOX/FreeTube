@@ -105,6 +105,7 @@
       v-if="tabOrganizerOpen"
       @close="closeTabOrganizer"
     />
+    <SubscriptionRefreshErrors />
     <FtPrompt
       v-if="showReleaseNotes"
       theme="readable-width"
@@ -432,6 +433,7 @@ import TabBar from './components/TabBar/TabBar.vue'
 import CapacitorTabletTabBar from './components/TabBar/CapacitorTabletTabBar.vue'
 import TabContent from './components/TabContent/TabContent.vue'
 import FtPrompt from './components/FtPrompt/FtPrompt.vue'
+import SubscriptionRefreshErrors from './components/SubscriptionRefreshErrors.vue'
 import FtButton from './components/FtButton/FtButton.vue'
 import FtToast from './components/FtToast/FtToast.vue'
 import FtConnectionStatus from './components/FtConnectionStatus/FtConnectionStatus.vue'

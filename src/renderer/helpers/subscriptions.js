@@ -1,3 +1,5 @@
+import { shallowReactive } from 'vue'
+import { subscriptionRefreshErrors } from './subscriptionRefreshErrors'
 import store from '../store/index'
 import {
   getInvidiousChannelLive,
@@ -15,7 +17,6 @@ import {
   parseLocalPlaylistVideos
 } from './api/local'
 import {
-  copyToClipboard,
   getChannelPlaylistId,
   showApiErrorToast,
   showToast,
@@ -59,7 +60,7 @@ let electronRefreshOwnerTabId = null
 
 /**
  * Cancellation state of the refresh this renderer is running, if any.
- * @type {{ cancelled: boolean, tab: string, profileId: string, refreshId: number, controller: AbortController, errors: Map<string, Set<string>>, errorSummary: ReturnType<typeof createSubscriptionErrorSummary>, networkRecovery: ReturnType<typeof createSubscriptionNetworkRecovery> | null } | null}
+ * @type {{ cancelled: boolean, tab: string, profileId: string, refreshId: number, controller: AbortController, errors: Map<string, Map<string, string>>, errorSummary: ReturnType<typeof createSubscriptionErrorSummary>, networkRecovery: ReturnType<typeof createSubscriptionNetworkRecovery> | null } | null}
  */
 let activeRefresh = null
 let nextRefreshId = 0
@@ -308,21 +309,31 @@ function notifySubscriptionChannelRefreshed(tab) {
 
 /** Keep confirmed channel failures visible even when another channel keeps retrying. */
 function createSubscriptionErrorSummary(t) {
-  const errors = new Map()
+  const errors = shallowReactive(new Map())
   const controller = new AbortController()
   let shown = false
   return {
-    add(channelId, messages) {
+    add(channel, messages) {
       if (!messages?.size) return
-      errors.set(channelId, messages)
-      if (shown) return
+      errors.set(channel.id, {
+        id: channel.id,
+        name: channel.name || channel.id,
+        reasons: [...new Set(messages.values())],
+        trace: [...messages.keys()].join('\n')
+      })
+      if (shown || subscriptionRefreshErrors.value === errors) return
       shown = true
       showToast({
-        message: () => t('Subscriptions.Refresh Errors', { count: errors.size }),
+        message: () => {
+          const names = [...errors.values()].slice(0, 3).map(channel => channel.name).join(', ')
+          return `${t('Subscriptions.Refresh Errors', { count: errors.size })}\n${names}${errors.size > 3 ? '…' : ''}`
+        },
         time: Infinity,
-        dismissOnAction: false,
         abortSignal: controller.signal,
-        action: () => copyToClipboard([...errors.values()].flatMap(messages => [...messages]).join('\n')),
+        action: () => {
+          shown = false
+          subscriptionRefreshErrors.value = errors
+        },
         icon: ['fas', 'circle-exclamation']
       })
     },
@@ -363,7 +374,7 @@ async function fetchSubscriptionsConcurrently(channels, fetchChannel) {
       }
 
       if (!isRefreshCancelled()) {
-        activeRefresh.errorSummary.add(channel.id, activeRefresh.errors.get(channel.id))
+        activeRefresh.errorSummary.add(channel, activeRefresh.errors.get(channel.id))
       }
 
       // Let input and navigation tasks run between parsing/cache updates.
@@ -408,13 +419,14 @@ function handleSubscriptionFetchError(channel, error, title, context) {
   }
 
   const channelLabel = channel.name ? `${channel.name} (${channel.id})` : channel.id
-  const diagnostic = formatRequestDiagnostic(buildRequestDiagnostic(error, context))
+  const details = buildRequestDiagnostic(error, context)
+  const diagnostic = formatRequestDiagnostic(details)
   const message = `${channelLabel}: ${diagnostic}`
 
   console.error(`Failed to fetch subscription channel ${channelLabel}: ${diagnostic}`)
   if (activeRefresh) {
-    if (!activeRefresh.errors.has(channel.id)) activeRefresh.errors.set(channel.id, new Set())
-    activeRefresh.errors.get(channel.id).add(message)
+    if (!activeRefresh.errors.has(channel.id)) activeRefresh.errors.set(channel.id, new Map())
+    activeRefresh.errors.get(channel.id).set(message, details.message)
   } else {
     showApiErrorToast(title, message)
   }

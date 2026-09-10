@@ -2,6 +2,7 @@ import assert from 'node:assert/strict'
 import { readFile } from 'node:fs/promises'
 import test from 'node:test'
 import vm from 'node:vm'
+import { shallowReactive } from 'vue'
 
 import { createNetworkRecovery } from '../../src/renderer/helpers/networkRecovery.js'
 import { createAbortError } from '../../src/renderer/helpers/api/requestErrors.js'
@@ -25,6 +26,7 @@ function createRefresh({ online = true, feed = 'Shorts', error = new TypeError('
   const navigator = { onLine: online }
   const toasts = []
   const copied = []
+  const subscriptionRefreshErrors = { value: null }
   const requests = []
   const fallbackRequests = []
   const writes = []
@@ -56,7 +58,7 @@ function createRefresh({ online = true, feed = 'Shorts', error = new TypeError('
   const fetchLocal = fallbackWorks && backend === 'invidious' ? fetchFallback : fetchChannel
   const fetchInvidious = fallbackWorks && backend === 'local' ? fetchFallback : fetchChannel
   const context = vm.createContext({
-    window, navigator, CustomEvent, AbortController, AbortSignal, Request, Response, URL, EventTarget, createAbortError,
+    shallowReactive, subscriptionRefreshErrors, window, navigator, CustomEvent, AbortController, AbortSignal, Request, Response, URL, EventTarget, createAbortError,
     location: { href: 'https://localhost/', origin: 'https://localhost' }, setTimeout, clearTimeout, console: { error() {}, warn() {} },
     process: { env: { IS_CAPACITOR: true, SUPPORTS_LOCAL_API: true } },
     store: {
@@ -107,6 +109,7 @@ function createRefresh({ online = true, feed = 'Shorts', error = new TypeError('
   }
   vm.runInContext(`${source}\nglobalThis.api = { refreshSubscriptionVideosFromRemote, refreshSubscriptionShortsFromRemote, refreshSubscriptionLiveFromRemote, refreshSubscriptionPostsFromRemote, cancelSubscriptionRefresh }`, context)
   return {
+    get details() { return [...subscriptionRefreshErrors.value.values()].map(channel => channel.trace).join('\n') },
     ...context.api, refresh: context.api[`refreshSubscription${feed}FromRemote`], navigator, requests, fallbackRequests, toasts, copied, writes, events, getters, recovery: sharedRecovery,
     reconnect() {
       fail = false
@@ -361,7 +364,7 @@ for (const feed of ['Videos', 'Shorts', 'Live']) {
         await app.refresh({ t: key => key, errorChannels: [] })
         assert.equal(app.toasts.length, 1)
         app.toasts[0][0].action()
-        assert.match(app.copied[0], new RegExp(`HTTP ${status}`))
+        assert.match(app.details, new RegExp(`HTTP ${status}`))
         assert.equal(app.recovery.state, 'online')
         assert.deepEqual(app.events, ['completed', 'finished'])
       })
@@ -379,7 +382,7 @@ for (const feed of ['Videos', 'Shorts', 'Live']) {
       await app.refresh({ t: key => key, errorChannels })
       assert.equal(app.toasts.length, 1)
       app.toasts[0][0].action()
-      assert.match(app.copied[0], new RegExp(`HTTP ${status}`))
+      assert.match(app.details, new RegExp(`HTTP ${status}`))
       assert.equal(app.recovery.state, 'online')
       assert.equal(errorChannels.length, status === 404 ? 20 : 0)
     })
@@ -393,14 +396,15 @@ test('one compact refresh notification retains every failed channel and distinct
   await app.refresh({ t: translateSummary })
   assert.equal(app.toasts.length, 1)
   const toast = app.toasts[0][0]
-  assert.equal(toast.message(), 'Subscriptions.Refresh Errors: 20')
+  assert.match(toast.message(), /^Subscriptions.Refresh Errors: 20\nUC0, UC1, UC2…$/)
   assert.ok(toast.message().length < 100)
   toast.action()
-  for (let i = 0; i < 20; i++) assert.match(app.copied[0], new RegExp(`UC${i}:`))
-  assert.match(app.copied[0], /HTTP 500/)
-  assert.match(app.copied[0], /backend=YouTube RSS/)
-  assert.match(app.copied[0], /backend=Invidious RSS/)
-  assert.equal(new Set(app.copied[0].split('\n')).size, app.copied[0].split('\n').length)
+  assert.equal(app.copied.length, 0, 'opening details must not overwrite the clipboard')
+  for (let i = 0; i < 20; i++) assert.match(app.details, new RegExp(`UC${i}:`))
+  assert.match(app.details, /HTTP 500/)
+  assert.match(app.details, /backend=YouTube RSS/)
+  assert.match(app.details, /backend=Invidious RSS/)
+  assert.equal(new Set(app.details.split('\n')).size, app.details.split('\n').length)
 })
 
 for (const feed of ['Videos', 'Shorts', 'Live', 'Posts']) {
@@ -412,16 +416,16 @@ for (const feed of ['Videos', 'Shorts', 'Live', 'Posts']) {
   })
 }
 
-test('two confirmed unavailable channels are both included in the copied summary', async () => {
+test('two confirmed unavailable channels are both named in the notification and details', async () => {
   const app = createRefresh({ rssStatus: 404, channelInfo: { alert: 'This channel does not exist.' } })
   app.getters.getActiveProfile.subscriptions = [{ id: 'UCfirst', name: 'First channel' }, { id: 'UCsecond', name: 'Second channel' }]
   app.reconnect()
   await app.refresh({ t: translateSummary })
   assert.equal(app.toasts.length, 1)
-  assert.equal(app.toasts[0][0].message(), 'Subscriptions.Refresh Errors: 2')
+  assert.match(app.toasts[0][0].message(), /First channel.*Second channel/)
   app.toasts[0][0].action()
-  assert.match(app.copied[0], /First channel \(UCfirst\)/)
-  assert.match(app.copied[0], /Second channel \(UCsecond\)/)
+  assert.match(app.details, /First channel \(UCfirst\)/)
+  assert.match(app.details, /Second channel \(UCsecond\)/)
 })
 
 for (const feed of ['Videos', 'Shorts', 'Live', 'Posts']) {
@@ -430,7 +434,7 @@ for (const feed of ['Videos', 'Shorts', 'Live', 'Posts']) {
     await app.refresh({ t: translateSummary })
     assert.equal(app.writes.filter(write => write.key.endsWith('CacheByChannel')).length, 0)
     assert.equal(app.toasts.length, 1)
-    assert.equal(app.toasts[0][0].message(), 'Subscriptions.Refresh Errors: 20')
+    assert.match(app.toasts[0][0].message(), /^Subscriptions.Refresh Errors: 20\n/)
   })
 }
 
@@ -446,8 +450,8 @@ test('confirmed HTTP failures stay accessible while another channel retries and 
     assert.deepEqual(app.events, [])
     assert.equal(app.toasts.length, 1, 'the finished HTTP failure must not wait for network recovery')
     app.toasts[0][0].action()
-    assert.match(app.copied[0], /UC0:/)
-    assert.doesNotMatch(app.copied[0], /UC1:/)
+    assert.match(app.details, /UC0:/)
+    assert.doesNotMatch(app.details, /UC1:/)
     app.cancelSubscriptionRefresh()
     await refresh
     assert.equal(app.toasts.length, 1)

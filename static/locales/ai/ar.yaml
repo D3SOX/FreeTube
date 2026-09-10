@@ -142,7 +142,8 @@ Home Page:
   All sections hidden: جميع الأقسام مخفية
   All sections hidden description: خصّص الصفحة الرئيسية لإظهار قسم من جديد.
 Subscriptions:
-  Refresh Errors: "القنوات التي تعذر تحديثها: {count}. انقر لنسخ التفاصيل."
+  Copy Error Details: "نسخ التفاصيل التقنية"
+  Refresh Errors: "القنوات التي تعذر تحديثها: {count}. انقر لعرض التفاصيل."
   Never show {type} from this channel in feeds again: عدم عرض {type} من هذه القناة في الخلاصات مجددًا
   Refreshing Subscription Videos: تحديث مقاطع الفيديو الخاصة بالاشتراك
   Refreshing Subscription Shorts: 'تحديث الفيديوهات القصيرة للاشتراكات'

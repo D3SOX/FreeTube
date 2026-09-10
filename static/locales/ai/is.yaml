@@ -142,7 +142,8 @@ Home Page:
   All sections hidden: Allir hlutar eru faldir
   All sections hidden description: Sérsníddu heimasíðuna til að sýna hluta aftur.
 Subscriptions:
-  Refresh Errors: "Rásir sem ekki tókst að uppfæra: {count}. Smelltu til að afrita upplýsingar."
+  Copy Error Details: "Afrita tæknilegar upplýsingar"
+  Refresh Errors: "Rásir sem ekki tókst að uppfæra: {count}. Smelltu til að sjá upplýsingar."
   Never show {type} from this channel in feeds again: Aldrei sýna aftur efni af gerðinni {type} frá þessari rás í straumum
   Refreshing Subscription Videos: Endurnýja myndbönd úr áskriftum
   Refreshing Subscription Shorts: Endurnýja Shorts-myndbönd úr áskriftum

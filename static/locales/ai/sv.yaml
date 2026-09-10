@@ -142,7 +142,8 @@ Home Page:
   All sections hidden: Alla avsnitt är dolda
   All sections hidden description: Anpassa startsidan för att visa ett avsnitt igen.
 Subscriptions:
-  Refresh Errors: "Kanaler som inte kunde uppdateras: {count}. Klicka för att kopiera detaljer."
+  Copy Error Details: "Kopiera tekniska detaljer"
+  Refresh Errors: "Kanaler som inte kunde uppdateras: {count}. Klicka för att visa detaljer."
   Never show {type} from this channel in feeds again: Visa aldrig {type} från den här kanalen i flöden igen
   Refreshing Subscription Videos: Uppdaterar prenumerationsvideor
   Refreshing Subscription Shorts: Uppdaterar Shorts från prenumerationer
