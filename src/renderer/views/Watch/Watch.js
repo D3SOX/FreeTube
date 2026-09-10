@@ -1,4 +1,4 @@
-import { Capacitor } from '@capacitor/core'
+import { connectionEvents, getConnectionState } from '../../helpers/networkRecovery'
 import { ytDlp } from '../../helpers/ytDlp'
 import { supportsYtDlp } from '../../helpers/ytDlpCapabilities'
 import { isAppHidden } from '../../helpers/appVisibility.js'
@@ -1240,6 +1240,7 @@ export default defineComponent({
     this.initializeVideoQuality()
   },
   mounted: function () {
+    connectionEvents.addEventListener('change', this.handleDownloadConnectionChange)
     document.addEventListener('keydown', this.handleShortsNavigationKeydown, true)
     document.addEventListener('visibilitychange', this.updateAndroidBackgroundPlaybackFormat)
     window.addEventListener('resize', this.updateShortsViewportHeight)
@@ -1264,6 +1265,7 @@ export default defineComponent({
     this.onMountedDependOnLocalStateLoading()
   },
   beforeUnmount: function () {
+    connectionEvents.removeEventListener('change', this.handleDownloadConnectionChange)
     document.removeEventListener('keydown', this.handleShortsNavigationKeydown, true)
     document.removeEventListener('visibilitychange', this.updateAndroidBackgroundPlaybackFormat)
     window.removeEventListener('resize', this.updateShortsViewportHeight)
@@ -1291,6 +1293,13 @@ export default defineComponent({
     }
   },
   methods: {
+    handleDownloadConnectionChange({ detail }) {
+      if (detail !== 'offline' || !this.isLoading || this.localFilePlayback) return
+      if (this.finishDownloadedPlaybackWithoutMetadata()) {
+        // Ignore metadata responses that arrive after switching to the local file.
+        this.videoLoadGeneration++
+      }
+    },
     updateAndroidBackgroundPlaybackFormat() {
       if (!process.env.IS_CAPACITOR || this.$refs.player?.isNativePlayback?.()) return
 
@@ -1353,6 +1362,7 @@ export default defineComponent({
         !this.enableVideoMetadataCache ||
         this.isLoading ||
         !this.hasResolvedVideoTitle ||
+        (this.localFilePlayback && !this.channelId) ||
         typeof window.ftElectron?.videoMetadataCache?.update !== 'function'
       ) {
         return
@@ -2085,7 +2095,8 @@ export default defineComponent({
 
       this.cacheOnlinePlaybackSource()
       this.sabrData = null
-      const url = process.env.IS_CAPACITOR ? Capacitor.convertFileSrc(file.path) : `downloadmedia://file/${downloadId}/${this.videoId}`
+      // Android uses the native player, which reads content URIs directly.
+      const url = process.env.IS_CAPACITOR ? file.path : `downloadmedia://file/${downloadId}/${this.videoId}`
       if (download.mode === 'audio') {
         this.manifestSrc = url
         this.manifestMimeType = mimeType
@@ -2735,6 +2746,9 @@ export default defineComponent({
     },
 
     getVideoInformationLocal: async function (loadGeneration = ++this.videoLoadGeneration) {
+      // Keep online metadata when available, but never wait for reconnection to play a download.
+      if (getConnectionState() === 'offline' && this.finishDownloadedPlaybackWithoutMetadata()) return
+
       if (this.firstLoad) {
         this.isLoading = true
       }
@@ -3075,11 +3089,13 @@ export default defineComponent({
               result.streaming_data.adaptive_formats[0]?.cipher
             ) {
               try {
-                this.manifestSrc = await this.createLocalDashManifest(result, true)
+                const manifestSrc = await this.createLocalDashManifest(result, true)
                 if (!this.isCurrentVideoLoad(loadGeneration, videoId)) { return }
+                this.manifestSrc = manifestSrc
                 this.manifestMimeType = MANIFEST_TYPE_DASH
                 useRemoteManifest = false
               } catch (error) {
+                if (!this.isCurrentVideoLoad(loadGeneration, videoId)) { return }
                 console.error(`Failed to generate DASH manifest for this Post Live DVR video ${this.videoId}, falling back to using YouTube's provided one...`, error)
               }
             }
@@ -3279,8 +3295,9 @@ export default defineComponent({
               result.streaming_data.adaptive_formats[0]?.signature_cipher ||
               result.streaming_data.adaptive_formats[0]?.cipher
             ) {
-              this.manifestSrc = await this.createLocalDashManifest(result)
+              const manifestSrc = await this.createLocalDashManifest(result)
               if (!this.isCurrentVideoLoad(loadGeneration, videoId)) { return }
+              this.manifestSrc = manifestSrc
               this.manifestMimeType = MANIFEST_TYPE_DASH
             } else {
               // Neither a SABR streaming URL nor playable adaptive format URLs,
@@ -3341,6 +3358,7 @@ export default defineComponent({
           this.getVideoInformationInvidious(loadGeneration)
         } else {
           const didReload = await this.runIpBlockRecoveryScriptAndReload()
+          if (!this.isCurrentVideoLoad(loadGeneration, videoId)) { return }
           if (didReload) {
             return
           }
@@ -3358,6 +3376,9 @@ export default defineComponent({
     },
 
     getVideoInformationInvidious: function (loadGeneration = ++this.videoLoadGeneration) {
+      // Keep online metadata when available, but never wait for reconnection to play a download.
+      if (getConnectionState() === 'offline' && this.finishDownloadedPlaybackWithoutMetadata()) return
+
       if (this.firstLoad) {
         this.isLoading = true
       }
@@ -3541,8 +3562,9 @@ export default defineComponent({
               })
               ?.projectionType ?? null
 
-            this.manifestSrc = await this.createInvidiousDashManifest(result)
+            const manifestSrc = await this.createInvidiousDashManifest(result)
             if (!this.isCurrentVideoLoad(loadGeneration, videoId)) { return }
+            this.manifestSrc = manifestSrc
             this.manifestMimeType = MANIFEST_TYPE_DASH
           }
 
@@ -3588,6 +3610,7 @@ export default defineComponent({
             }
 
             const didReload = await this.runIpBlockRecoveryScriptAndReload()
+            if (!this.isCurrentVideoLoad(loadGeneration, videoId)) { return }
             if (didReload) {
               return
             }
@@ -3622,6 +3645,8 @@ export default defineComponent({
         return false
       }
 
+      const loadGeneration = this.videoLoadGeneration
+      const videoId = this.videoId
       this.ipBlockRecoveryAttemptedForCurrentVideo = true
       const longToastDurationMs = 10000
       const startedRecovery = await window.ftElectron.startIpBlockRecoveryScript(scriptPath)
@@ -3645,6 +3670,8 @@ export default defineComponent({
           showToastOnAllTabs(this.t('Settings.Proxy Settings.IP block recovery script failed', { exitCode: 'unknown' }), longToastDurationMs, ['fas', 'circle-exclamation'])
         }
       }
+
+      if (!this.isCurrentVideoLoad(loadGeneration, videoId)) return false
 
       // The reload only affects this tab's video, so keep it scoped.
       this.showTabToast({
@@ -3903,15 +3930,21 @@ export default defineComponent({
 
     addToHistory: function (watchProgress, isWatched = isHistoryEntryWatched(this.historyEntry)) {
       const now = Date.now()
+      // Local playback can start before channel metadata is available.
+      const metadata = this.localFilePlayback && !this.channelId && this.historyEntry
+        ? this.historyEntry
+        : {
+            title: this.videoTitle,
+            author: this.channelName,
+            authorId: this.channelId,
+            published: this.videoPublished,
+            description: this.videoDescription,
+            viewCount: this.videoViewCount,
+          }
       const videoData = {
         ...this.historyEntry,
+        ...metadata,
         videoId: this.videoId,
-        title: this.videoTitle,
-        author: this.channelName,
-        authorId: this.channelId,
-        published: this.videoPublished,
-        description: this.videoDescription,
-        viewCount: this.videoViewCount,
         lengthSeconds: this.videoLengthSeconds,
         watchProgress: watchProgress,
         isWatched,
