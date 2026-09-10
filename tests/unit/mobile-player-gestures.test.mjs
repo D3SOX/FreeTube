@@ -1,14 +1,18 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
+import { readFileSync } from 'node:fs'
+import vm from 'node:vm'
 import { createRenderer } from 'vue'
 import { useMobileFullscreenGestures } from '../../src/renderer/components/ft-shaka-video-player/opentubex/useMobileFullscreenGestures.js'
+
+const playerSource = readFileSync(new URL('../../src/renderer/components/ft-shaka-video-player/ft-shaka-video-player.js', import.meta.url), 'utf8')
 
 class ElementStub {
   constructor(selector = '') { this.selector = selector }
   closest(selectors) { return this.selector && selectors.includes(this.selector) ? this : null }
 }
 
-function fixture(t, { left = 'brightness', right = 'volume', fullscreenSwipe = true, mobile = true, mini = false, height = 200.5 } = {}) {
+function fixture(t, { left = 'brightness', right = 'volume', fullscreenSwipe = true, mobile = true, mini = false, height = 200.5, nativeReplay = false } = {}) {
   t.mock.method(globalThis, 'setTimeout', setTimeout)
   const previous = { document: globalThis.document, window: globalThis.window, Element: globalThis.Element }
   globalThis.Element = ElementStub
@@ -35,7 +39,11 @@ function fixture(t, { left = 'brightness', right = 'volume', fullscreenSwipe = t
         isFullscreenSwipeEnabled: () => fullscreenSwipe,
         isPlaybackEnded: () => false,
         isPlaybackPaused: () => true,
-        isPlayerSurfaceTarget: target => target === surface,
+        isPlayerSurfaceTarget: nativeReplay
+          ? vm.runInNewContext(`(${playerSource.match(/function isPlayerSurfaceTarget\(target\) \{[\s\S]*?\n    \}/)[0]})`, {
+            Element: ElementStub, video: { value: {} }, container: { value: { hasAttribute: () => true } }
+          })
+          : target => target === surface,
         isScrollMiniPlayerActive: () => mini,
         getSwipeAction: side => side === 'left' ? left : right,
         adjustments: {
@@ -160,5 +168,24 @@ for (const [side, x] of [['left', 50], ['right', 370]]) {
     g.finishMobileFullscreenGesture(event(x, 49.75))
     assert.deepEqual(calls, [['begin', 'speed'], ['update', 0.5], 'finish'])
     assert.equal(calls.includes('fullscreen'), false)
+  })
+}
+
+for (const [placement, x] of [['toolbar', 50], ['center', 210]]) {
+  test(`native ${placement} replay taps reach the button without gesture suppression`, t => {
+    const { gestures: g, event, calls } = fixture(t, { nativeReplay: true })
+    const target = new ElementStub('.shaka-play-button')
+    target.classList = { contains: () => false }
+    target.closest = selectors => selectors.includes('.shaka-play-button') ||
+      (placement === 'toolbar' && selectors.includes('.shaka-controls-button-panel')) ? target : null
+    g.startMobileFullscreenGesture(event(x, 150, { target }))
+    g.finishMobileFullscreenGesture(event(x, 150, { target }))
+    const touchEnd = event(x, 150, { target })
+    g.handleMobilePlayerTouchEnd(touchEnd)
+    assert.notEqual(touchEnd.prevented, true, 'Touch end must allow the replay click')
+    const click = event(x, 150, { target })
+    assert.equal(g.handleMobilePlayerSurfaceClick(click), false, 'Click capture must allow Shaka to receive replay')
+    assert.notEqual(click.prevented, true)
+    assert.deepEqual(calls, [])
   })
 }

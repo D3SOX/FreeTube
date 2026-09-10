@@ -260,7 +260,7 @@ export function createAndroidNativeScreen({ element, container, getController, g
       controlsHeight: controlBounds.height,
       videoVisible: visible,
       controlsVisible: visible && controlBounds.width > 0 && controlBounds.height > 0 &&
-        !container.querySelector('.endedScreen') &&
+        !container.querySelector('.endedPoster') &&
         !container.classList.contains('scrollMiniPlayer') && sharedControls?.hasAttribute('shown') === true,
       // Android clips and routes touches around these rectangles. A browser
       // hit test at the controls' center duplicates that work on every scroll.

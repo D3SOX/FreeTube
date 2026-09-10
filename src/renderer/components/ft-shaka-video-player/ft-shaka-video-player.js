@@ -4362,7 +4362,7 @@ export default defineComponent({
     const uiConfig = computed(() => {
       const controlPanelElements = [
         'ft_skip_previous',
-        ...(!isCapacitorMobilePlayer() ? ['play_pause'] : []),
+        'play_pause',
         'ft_skip_next',
         ...(!isCapacitorMobilePlayer() ? ['mute', 'volume'] : []),
         'time_and_duration',
@@ -4816,13 +4816,12 @@ export default defineComponent({
       if (target === video.value) return true
       if (!(target instanceof Element)) return false
 
-      // The visible web play button owns its click. Only its hidden native
-      // counterpart is part of the surface handled by the mobile recognizer.
-      if (target.closest('.shaka-play-button') && !container.value?.hasAttribute('data-native-player-controls')) return false
+      // Play and replay buttons own their clicks, including Android end screens.
+      if (target.closest('.shaka-play-button')) return false
 
       // Seek feedback remains hit-testable while transparent, including its
       // text and SVG paths. Those descendants belong to the player surface.
-      return target.closest('.shaka-fast-forward-container, .shaka-rewind-container, .shaka-play-button') !== null || [
+      return target.closest('.shaka-fast-forward-container, .shaka-rewind-container') !== null || [
         'shaka-scrim-container',
         'shaka-play-button-container',
         'shaka-controls-container',

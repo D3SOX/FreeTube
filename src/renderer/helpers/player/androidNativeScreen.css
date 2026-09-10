@@ -92,6 +92,17 @@
   visibility: hidden;
 }
 
+/* Recommendations leave replay in the toolbar. An empty end screen uses
+   Shaka's center replay button instead of the native transport controls. */
+[data-native-player-controls]:not(:has(.endedScreen)) .shaka-controls-button-panel > .shaka-play-button {
+  display: none;
+}
+
+[data-native-player-controls]:has(.endedPoster):not(:has(.endedScreen)) .shaka-big-buttons-container,
+[data-native-player-controls]:has(.endedPoster):not(:has(.endedScreen)) .shaka-play-button-container {
+  visibility: visible;
+}
+
 /* Keep the shared toolbar's captions, PiP, quick speeds and timeline features.
    Menus form a higher layer, including where they overlap the seek bar. */
 [data-native-player-controls] .ft-controls-overflow-pip > .shaka-pip-button,
