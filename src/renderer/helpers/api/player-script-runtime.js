@@ -1,4 +1,4 @@
-import variant from '@jitl/quickjs-singlefile-browser-release-sync'
+import variant from '@jitl/quickjs-wasmfile-release-sync'
 import { newQuickJSWASMModuleFromVariant } from 'quickjs-emscripten-core'
 
 let modulePromise
