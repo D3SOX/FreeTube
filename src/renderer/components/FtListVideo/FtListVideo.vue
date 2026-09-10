@@ -1264,6 +1264,12 @@ function openVideoContextMenu(event) {
   // Channel names, dialogs, and dropdowns keep their own context menus.
   if (target.closest('.channelName, [role="dialog"], [role="menu"], .iconDropdown')) return
 
+  if (!process.env.IS_ELECTRON) {
+    const selection = window.getSelection()
+    // Only Electron can merge native image and selection actions into our menu.
+    if (target.closest('img, video') || (selection && !selection.isCollapsed && selection.containsNode(target, true))) return
+  }
+
   event.preventDefault()
   event.stopPropagation()
   cancelMenuHold()

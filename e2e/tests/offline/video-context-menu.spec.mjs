@@ -151,7 +151,7 @@ for (const playlistType of ['youtube', 'user']) {
     const playlistId = playlistType === 'youtube' ? 'PL1234567890' : 'private-playlist'
     test.use({
       seed: {
-        settings: { saveVideoHistoryWithLastViewedPlaylist: true, backendFallback: true },
+        settings: { saveVideoHistoryWithLastViewedPlaylist: true, backendFallback: true, defaultInvidiousInstance: 'https://invidious.test' },
         history: [{ ...SEED.history[0], lastViewedPlaylistId: playlistId, lastViewedPlaylistType: playlistType }]
       }
     })
