@@ -21,6 +21,7 @@ async function fixture({ fullscreen = true, chrome = [], deferTransitions = fals
   let menu = false
   let panel = false
   let recommendations = false
+  let ended = false
   let animating = false
   let id = 0
   const bounds = { x: 0, y: 0, width: 640, height: 360 }
@@ -34,6 +35,7 @@ async function fixture({ fullscreen = true, chrome = [], deferTransitions = fals
     querySelectorAll(selector) { return menu && selector.includes('shaka-overflow-menu') ? [{ getAnimations: () => [], getBoundingClientRect: () => ({ x: 400, y: 100, width: 200, height: 240 }) }] : [] },
     querySelector(selector) {
       if (selector === '.shaka-controls-container') return controlsElement
+      if (selector === '.endedPoster' && (ended || recommendations)) return { getBoundingClientRect: () => bounds }
       if (selector === '.endedScreen' && recommendations) return { getBoundingClientRect: () => bounds }
       return null
     },
@@ -71,9 +73,10 @@ async function fixture({ fullscreen = true, chrome = [], deferTransitions = fals
   if (fullscreen) await screen.show()
   else await screen.attach()
   await flush()
-  return { screen, container, layouts, presentations, completeTransitions, completeFullscreen, fullscreenEvents, bounds, observers, window, styleWrites, flush, change({ visible = shown, menuOpen = menu, panelOpen = panel, containerAnimating = animating, endedRecommendations = recommendations }) {
+  return { screen, container, layouts, presentations, completeTransitions, completeFullscreen, fullscreenEvents, bounds, observers, window, styleWrites, flush, change({ visible = shown, menuOpen = menu, panelOpen = panel, containerAnimating = animating, endedRecommendations = recommendations, playbackEnded = ended }) {
     shown = visible; menu = menuOpen; panel = panelOpen
     recommendations = endedRecommendations
+    ended = playbackEnded
     animating = containerAnimating
     for (const observer of observers) observer.callback([{ type: 'attributes', attributeName: 'style', target: container }])
   } }
@@ -245,7 +248,7 @@ for (const fullscreen of [false, true]) {
     assert.equal(f.layouts.at(-1).controlsVisible, false, 'Revealing the shared toolbar must not restore the overlapping native buttons')
     f.change({ endedRecommendations: false })
     await f.flush()
-    assert.equal(f.layouts.at(-1).controlsVisible, true, 'Replay and end screens without recommendations retain native controls')
+    assert.equal(f.layouts.at(-1).controlsVisible, true, 'Leaving the end screen restores native controls')
     f.screen.destroy()
   })
 }
@@ -309,6 +312,19 @@ for (const teardown of ['reset', 'destroy']) {
     assert.equal(f.screen.hasSurface(), false)
     assert.equal(f.screen.isOpen(), false)
     assert.equal(f.fullscreenEvents.length, 2)
+    f.screen.destroy()
+  })
+}
+
+for (const fullscreen of [false, true]) {
+  test(`end screens without recommendations reserve the center for shared replay ${fullscreen ? 'in fullscreen' : 'inline'}`, async () => {
+    const f = await fixture({ fullscreen })
+    f.change({ playbackEnded: true })
+    await f.flush()
+    assert.equal(f.layouts.at(-1).controlsVisible, false, 'Native transport controls must not overlap the shared replay button')
+    f.change({ playbackEnded: false })
+    await f.flush()
+    assert.equal(f.layouts.at(-1).controlsVisible, true)
     f.screen.destroy()
   })
 }

@@ -163,6 +163,9 @@ export function attachAndroidMediaElement(element, { command, load, onError, now
       if (detached) return
       const previous = state
       state = { ...state, ...next }
+      // ExoPlayer retains playWhenReady at the end. Shared replay controls
+      // need the HTML media paused state to seek back and start on one tap.
+      if (state.ended) state.paused = true
       // A snapshot queued before pause() must not replay a play/pause pair in
       // the shared controls while Android is still processing that command.
       if (pendingPause) {
