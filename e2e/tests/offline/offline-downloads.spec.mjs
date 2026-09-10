@@ -33,7 +33,7 @@ for (const restart of [false, true]) {
       await page.reload()
       await waitForAppReady(page)
     }
-    await expect(page.locator('.connectionStatus')).toContainText('Connection lost')
+    await expect(page.locator('.connectionStatus')).toHaveText('Offline')
     await goTo(page, 'downloads')
     await expect(page.locator('.downloadRow')).toContainText('Offline download')
     await page.getByRole('button', { name: 'Play download', exact: true }).click()
