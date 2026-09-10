@@ -158,6 +158,7 @@ public class AndroidPlaybackPlugin extends Plugin {
                         screen.layoutControls(controlsX, controlsY, controlsWidth, controlsHeight, viewportWidth);
                     }
                 }
+                screen.setGestureActive(call.getBoolean("gestureActive", false));
             }
             call.resolve();
         });

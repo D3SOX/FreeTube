@@ -398,7 +398,7 @@ for (const uiScale of [100, 125]) {
           canvas.getContext('2d').fillRect(0, 0, canvas.width, canvas.height)
         }
       })
-      await expect.poll(() => page.evaluate(() => getComputedStyle(document.body, '::before').clipPath)).toContain('path(')
+      await expect.poll(() => page.evaluate(() => getComputedStyle(document.querySelector('.nativeInlineBackdrop')).clipPath)).toContain('path(')
       const bounds = await player.boundingBox()
       const screenshot = await page.screenshot({ omitBackground: true })
       const pixels = await page.evaluate(async ({ imageData, bounds }) => {
@@ -431,7 +431,7 @@ test('closing an inactive player cannot remove the active inline surface window'
   await openMockedVideo(page)
   await openNativeScreen(page, false)
   await expect(page.locator('html')).toHaveClass(/nativePlaybackInline/)
-  const clip = await page.evaluate(() => document.documentElement.style.getPropertyValue('--native-inline-background-clip'))
+  const clip = await page.evaluate(() => document.querySelector('.nativeInlineBackdrop').style.clipPath)
   await page.evaluate(() => {
     const container = document.createElement('div')
     const element = document.createElement('video')
@@ -441,9 +441,65 @@ test('closing an inactive player cannot remove the active inline surface window'
     inactive.destroy()
   })
   await expect(page.locator('html')).toHaveClass(/nativePlaybackInline/)
-  expect(await page.evaluate(() => document.documentElement.style.getPropertyValue('--native-inline-background-clip'))).toBe(clip)
+  expect(await page.evaluate(() => document.querySelector('.nativeInlineBackdrop').style.clipPath)).toBe(clip)
   await page.evaluate(() => window.nativeScreenTest.destroy())
 })
+
+for (const differentPage of [false, true]) {
+  test(`transferring native ownership cleans page clips (${differentPage ? 'different pages' : 'same page'})`, async ({ app, page }) => {
+    await mockPlayableWatchPage(app, page)
+    await openMockedVideo(page)
+    await openNativeScreen(page, false)
+    await page.locator('.ftVideoPlayer').evaluate(element => document.querySelector('#cross-tab-mini-player-layer').append(element))
+    await expect(page.locator('[data-native-player-backdrop]')).toBeAttached()
+    const result = await page.evaluate(async differentPage => {
+      const previousPage = document.querySelector('[data-native-player-backdrop]')
+      const host = document.createElement('div')
+      host.className = 'app'
+      const nextPage = differentPage ? document.createElement('div') : previousPage
+      if (differentPage) {
+        nextPage.className = 'flexBox'
+        host.append(nextPage)
+        document.body.prepend(host)
+      }
+      const container = document.createElement('div')
+      const element = document.createElement('video')
+      Object.assign(container.style, { position: 'fixed', left: '20px', top: '80px', width: '180px', height: '100px' })
+      container.append(element)
+      document.querySelector('#cross-tab-mini-player-layer').append(container)
+      const second = window.createNativeScreenTest({
+        element,
+        container,
+        getController: () => ({ async show() {}, async layout() {} }),
+        getLocale: () => 'en-US',
+        onError: error => { throw error }
+      })
+      // Commit the handoff synchronously so the retiring screen's queued layout
+      // cannot obscure whether cleanup happens before ownership changes.
+      window.holdNativeLayout = true
+      try {
+        await second.attach()
+        second.action('scroll-end')
+        const previousCleared = !previousPage.hasAttribute('data-native-player-backdrop') && previousPage.style.clipPath === ''
+        const nextClip = nextPage.style.clipPath
+        window.nativeScreenTest.destroy()
+        const preserved = nextPage.hasAttribute('data-native-player-backdrop') && nextPage.style.clipPath === nextClip && nextClip !== ''
+        second.reset()
+        const released = !nextPage.hasAttribute('data-native-player-backdrop') && nextPage.style.clipPath === ''
+        return { previousCleared, preserved, released }
+      } finally {
+        window.nativeScreenTest.destroy()
+        second.destroy()
+        container.remove()
+        host.remove()
+        window.holdNativeLayout = false
+      }
+    }, differentPage)
+    if (differentPage) expect(result.previousCleared).toBe(true)
+    expect(result.preserved).toBe(true)
+    expect(result.released).toBe(true)
+  })
+}
 
 test('global Quick Settings clips native controls wherever its menu overlaps inline video', async ({ app, page }) => {
   await mockPlayableWatchPage(app, page)
@@ -1289,3 +1345,250 @@ test('desktop playback does not load Android document compositing styles', async
   ))
   expect(nativeStyles).toBe(false)
 })
+
+for (const uiScale of [100, 125]) {
+  test.describe(`native scroll work at ${uiScale}%`, () => {
+    test.use({ seed: { settings: { videoPlaybackEngine: 'built-in', ytDlpPlaybackEngineDefaultMigration: true, uiScale, ambientMode: false } } })
+    test('scrolling avoids whole-page searches and hit tests', async ({ app, page }) => {
+      await mockPlayableWatchPage(app, page)
+      const video = await openMockedVideo(page)
+      await setWindowSize(app, page, { width: 480, height: 850 })
+      await video.evaluate(element => element.pause())
+      await openNativeScreen(page, false)
+      const work = await page.evaluate(async () => {
+        const nextFrame = () => new Promise(resolve => requestAnimationFrame(resolve))
+        await nextFrame()
+        await nextFrame()
+        const query = document.querySelectorAll
+        const hitTest = document.elementFromPoint
+        let searches = 0
+        let hitTests = 0
+        document.querySelectorAll = function (selector) {
+          if (selector.includes('[role="dialog"]') || selector.includes('.topNav')) searches++
+          return query.call(this, selector)
+        }
+        document.elementFromPoint = function (...args) {
+          hitTests++
+          return hitTest.apply(this, args)
+        }
+        try {
+          for (let i = 0; i < 40; i++) {
+            window.scrollTo(0, i * 2)
+            await nextFrame()
+          }
+          return { searches, hitTests, scrollY: window.scrollY, pageScroll: window.nativeLayoutTest.pageScroll }
+        } finally {
+          document.querySelectorAll = query
+          document.elementFromPoint = hitTest
+        }
+      })
+      expect(work.scrollY).toBeGreaterThan(50)
+      expect(work.pageScroll).toBe(true)
+      // Allow occasional Shaka DOM updates, but no document search per frame.
+      expect(work.searches).toBeLessThan(20)
+      expect(work.hitTests).toBe(0)
+      await page.evaluate(() => window.nativeScreenTest.destroy())
+    })
+  })
+}
+
+test('cached global overlays follow insertion, roles, styles, classes and removal', async ({ app, page }) => {
+  await mockPlayableWatchPage(app, page)
+  await openMockedVideo(page)
+  await openNativeScreen(page, false)
+  await page.evaluate(() => {
+    const overlay = document.createElement('div')
+    overlay.id = 'native-menu-test'
+    Object.assign(overlay.style, { position: 'fixed', left: '110px', top: '120px', width: '80px', height: '70px' })
+    document.body.append(overlay)
+  })
+  const overlay = page.locator('#native-menu-test')
+  const hasClip = () => page.evaluate(() => window.nativeLayoutTest.menus.some(menu => menu.x === 110 && menu.width === 80))
+  for (const attribute of ['role', 'aria-modal', 'class']) {
+    const value = { role: 'dialog', 'aria-modal': 'true', class: 'sideNav' }[attribute]
+    await overlay.evaluate((element, { attribute, value }) => element.setAttribute(attribute, value), { attribute, value })
+    await expect.poll(hasClip).toBe(true)
+    await overlay.evaluate(element => { element.style.top = '130px' })
+    await expect.poll(() => page.evaluate(() => window.nativeLayoutTest.menus.some(menu => menu.x === 110 && menu.y === 130))).toBe(true)
+    await overlay.evaluate((element, attribute) => element.removeAttribute(attribute), attribute)
+    await expect.poll(hasClip).toBe(false)
+    await overlay.evaluate(element => { element.style.top = '120px' })
+  }
+  await overlay.evaluate(element => element.setAttribute('role', 'menu'))
+  await expect.poll(hasClip).toBe(true)
+  await overlay.evaluate(element => element.remove())
+  await expect.poll(hasClip).toBe(false)
+  await page.evaluate(() => window.nativeScreenTest.destroy())
+})
+
+for (const uiScale of [100, 125]) {
+  for (const gesture of ['resize', 'drag']) {
+    test.describe(`native mini-player ${gesture} at ${uiScale}%`, () => {
+      test.use({ seed: { settings: { videoPlaybackEngine: 'built-in', ytDlpPlaybackEngineDefaultMigration: true, uiScale, ambientMode: false } } })
+      test('motion keeps cutout styles out of unrelated page content', async ({ app, page }) => {
+        await mockPlayableWatchPage(app, page)
+        await openMockedVideo(page)
+        await openNativeScreen(page, false)
+        const player = page.locator('.ftVideoPlayer')
+        await player.evaluate(element => window.scrollTo(0, scrollY + element.getBoundingClientRect().bottom + 200))
+        await expect(player).toHaveClass(/scrollMiniPlayer/)
+        await expect(player).not.toHaveClass(/scrollMiniPlayerAnimating/)
+        await player.evaluate(element => document.querySelector('#cross-tab-mini-player-layer').append(element))
+        await expect(page.locator('[data-native-player-backdrop]')).toBeAttached()
+        const result = await page.evaluate(async gesture => {
+          const player = document.querySelector('.scrollMiniPlayer')
+          const handle = player.querySelector(gesture === 'resize' ? '.scrollMiniResizeHandle' : '.scrollMiniDragHandle')
+          const bounds = handle.getBoundingClientRect()
+          const x = bounds.x + bounds.width / 2
+          const y = bounds.y + bounds.height / 2
+          const pageStyles = () => {
+            const style = getComputedStyle(document.querySelector('.watchVideoInfo'))
+            return JSON.stringify([...style].filter(name => name.startsWith('--')).map(name => [name, style.getPropertyValue(name)]))
+          }
+          const before = pageStyles()
+          const widths = []
+          let changedPageStyles = 0
+          const cutouts = new Set()
+          handle.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, pointerId: 1, clientX: x, clientY: y }))
+          for (let i = 0; i < 40; i++) {
+            const delta = Math.sin(i * Math.PI / 20) * 80
+            window.dispatchEvent(new PointerEvent('pointermove', { pointerId: 1, clientX: x + delta, clientY: y + delta * 9 / 16 }))
+            await new Promise(requestAnimationFrame)
+            widths.push(player.getBoundingClientRect()[gesture === 'resize' ? 'width' : 'x'])
+            if (i > 2) cutouts.add(document.querySelector('[data-native-player-backdrop]').style.clipPath)
+            if (pageStyles() !== before) changedPageStyles++
+          }
+          const bouncePositions = []
+          const bounceCutouts = new Set()
+          if (gesture === 'drag') {
+            window.dispatchEvent(new PointerEvent('pointermove', { pointerId: 1, clientX: x - 80, clientY: y }))
+            await new Promise(requestAnimationFrame)
+          }
+          window.dispatchEvent(new PointerEvent('pointerup', { pointerId: 1, clientX: gesture === 'drag' ? x - 80 : x, clientY: y }))
+          if (gesture === 'drag') {
+            for (let i = 0; i < 45; i++) {
+              await new Promise(requestAnimationFrame)
+              bouncePositions.push(player.getBoundingClientRect().x)
+              bounceCutouts.add(document.querySelector('[data-native-player-backdrop]').style.clipPath)
+            }
+          }
+          return {
+            changedPageStyles,
+            cutouts: cutouts.size,
+            range: Math.max(...widths) - Math.min(...widths),
+            bounceRange: Math.max(...bouncePositions) - Math.min(...bouncePositions),
+            bounceCutouts: bounceCutouts.size
+          }
+        }, gesture)
+        expect(result.range).toBeGreaterThan(50)
+        expect(result.changedPageStyles).toBe(0)
+        expect(result.cutouts).toBe(1)
+        if (gesture === 'drag') {
+          expect(result.bounceRange).toBeGreaterThan(30)
+          expect(result.bounceCutouts).toBeLessThanOrEqual(2)
+        }
+        await expect.poll(() => page.evaluate(() => window.nativeLayoutTest.gestureActive)).toBe(false)
+        await expect.poll(() => page.evaluate(() => document.querySelector('[data-native-player-backdrop]').style.clipPath.match(/M /g)?.length)).toBe(2)
+        // Touch cancellation must restore the cutout and release native ownership.
+        await player.locator(gesture === 'resize' ? '.scrollMiniResizeHandle' : '.scrollMiniDragHandle').dispatchEvent('pointerdown', { pointerId: 2, clientX: 300, clientY: 300 })
+        await expect.poll(() => page.evaluate(() => window.nativeLayoutTest.gestureActive)).toBe(true)
+        await page.evaluate(() => window.dispatchEvent(new PointerEvent('pointercancel', { pointerId: 2 })))
+        await expect.poll(() => page.evaluate(() => window.nativeLayoutTest.gestureActive)).toBe(false)
+        await expect.poll(() => page.evaluate(() => document.querySelector('[data-native-player-backdrop]').style.clipPath.match(/M /g)?.length)).toBe(2)
+        await expect.poll(async () => Math.abs((await player.boundingBox()).width - await page.evaluate(() => window.nativeLayoutTest.width))).toBeLessThan(1)
+        await page.evaluate(() => window.nativeScreenTest.destroy())
+      })
+    })
+  }
+}
+
+for (const uiScale of [100, 125]) {
+  test.describe(`mini-player touch target at ${uiScale}%`, () => {
+    test.use({ seed: { settings: { videoPlaybackEngine: 'built-in', ytDlpPlaybackEngineDefaultMigration: true, uiScale, ambientMode: false } } })
+    test('touch resizing has a larger target without jumping at the grab point', async ({ app, page }) => {
+      await mockPlayableWatchPage(app, page)
+      await openMockedVideo(page)
+      await openNativeScreen(page, false)
+      const player = page.locator('.ftVideoPlayer')
+      await player.evaluate(element => window.scrollTo(0, scrollY + element.getBoundingClientRect().bottom + 200))
+      await expect(player).toHaveClass(/scrollMiniPlayer/)
+      await expect(player).not.toHaveClass(/scrollMiniPlayerAnimating/)
+      await page.evaluate(() => window.nativeScreenTest.destroy())
+      await setWindowSize(app, page, { width: 480, height: 800 })
+      const cdp = await page.context().newCDPSession(page)
+      await cdp.send('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 1 })
+      await expect.poll(() => page.evaluate(() => matchMedia('(pointer: coarse)').matches)).toBe(true)
+      const handle = player.locator('.scrollMiniResizeHandle')
+      await expect.poll(() => handle.evaluate(element => [getComputedStyle(element).width, getComputedStyle(element).height])).toEqual(['48px', '48px'])
+      const result = await player.evaluate(async player => {
+        const handle = player.querySelector('.scrollMiniResizeHandle')
+        const original = handle.className
+        const corners = ['top-left', 'top-right', 'bottom-left', 'bottom-right']
+        const hits = corners.map(corner => {
+          handle.className = `scrollMiniResizeHandle scrollMiniResizeHandle-${corner}`
+          const r = handle.getBoundingClientRect()
+          // Stay beside the volume button, which keeps priority where targets overlap.
+          const x = corner.endsWith('left') ? r.left + 8 : r.right - 8
+          const y = corner.startsWith('top') ? r.top + 40 : r.bottom - 40
+          return document.elementFromPoint(x, y) === handle
+        })
+        const volume = player.querySelector('.scrollMiniVolume')
+        const v = volume.getBoundingClientRect()
+        handle.className = 'scrollMiniResizeHandle scrollMiniResizeHandle-bottom-left'
+        const volumeAccessible = volume.contains(document.elementFromPoint(v.x + v.width / 2, v.y + v.height / 2))
+        handle.className = original
+        const corner = corners.find(c => handle.classList.contains(`scrollMiniResizeHandle-${c}`))
+        const outward = corner.endsWith('left') ? -1 : 1
+        // Grow first so minimum-size clamping cannot hide an initial jump.
+        const r = player.getBoundingClientRect()
+        const x = corner.endsWith('left') ? r.left : r.right
+        const y = corner.startsWith('top') ? r.top : r.bottom
+        handle.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, clientX: x, clientY: y, pointerId: 1 }))
+        window.dispatchEvent(new PointerEvent('pointermove', { clientX: x + outward * 60, clientY: y, pointerId: 1 }))
+        await new Promise(requestAnimationFrame)
+        window.dispatchEvent(new PointerEvent('pointerup', { clientX: x + outward * 60, clientY: y, pointerId: 1 }))
+        await new Promise(requestAnimationFrame)
+        const h = handle.getBoundingClientRect()
+        const grabX = corner.endsWith('left') ? h.left + 38 : h.right - 38
+        const grabY = corner.startsWith('top') ? h.top + 38 : h.bottom - 38
+        const before = player.getBoundingClientRect().width
+        document.elementFromPoint(grabX, grabY).dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, clientX: grabX, clientY: grabY, pointerId: 2 }))
+        window.dispatchEvent(new PointerEvent('pointermove', { clientX: grabX, clientY: grabY, pointerId: 2 }))
+        await new Promise(requestAnimationFrame)
+        const stationary = player.getBoundingClientRect().width
+        window.dispatchEvent(new PointerEvent('pointermove', { clientX: grabX - outward * 10, clientY: grabY, pointerId: 2 }))
+        await new Promise(requestAnimationFrame)
+        const moved = player.getBoundingClientRect().width
+        window.dispatchEvent(new PointerEvent('pointerup', { clientX: grabX - outward * 10, clientY: grabY, pointerId: 2 }))
+        return { hits, volumeAccessible, before, stationary, moved, backgroundSize: getComputedStyle(handle).backgroundSize }
+      })
+      expect(result.hits).toEqual([true, true, true, true])
+      expect(result.volumeAccessible).toBe(true)
+      expect(result.backgroundSize).toBe('18px 18px')
+      expect(Math.abs(result.stationary - result.before)).toBeLessThan(1)
+      expect(result.before - result.moved).toBeCloseTo(10, 0)
+      await cdp.send('Emulation.setTouchEmulationEnabled', { enabled: false })
+      await expect.poll(() => handle.evaluate(element => getComputedStyle(element).width)).toBe('18px')
+    })
+  })
+}
+
+for (const gesture of ['drag', 'resize']) {
+  test(`leaving mini-player mode releases an unfinished ${gesture} with reduced motion`, async ({ app, page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' })
+    await mockPlayableWatchPage(app, page)
+    await openMockedVideo(page)
+    await openNativeScreen(page, false)
+    const player = page.locator('.ftVideoPlayer')
+    await player.evaluate(element => window.scrollTo(0, scrollY + element.getBoundingClientRect().bottom + 200))
+    await expect(player).toHaveClass(/scrollMiniPlayer/)
+    await player.locator(gesture === 'drag' ? '.scrollMiniDragHandle' : '.scrollMiniResizeHandle').dispatchEvent('pointerdown', { clientX: 300, clientY: 300, pointerId: 1 })
+    await expect.poll(() => page.evaluate(() => window.nativeLayoutTest.gestureActive)).toBe(true)
+    await page.evaluate(() => window.scrollTo(0, 0))
+    await expect(player).not.toHaveClass(/scrollMiniPlayer/)
+    await expect.poll(() => page.evaluate(() => window.nativeLayoutTest.gestureActive)).toBe(false)
+    await expect(player).not.toHaveAttribute('data-native-player-gesture')
+    await expect(page.locator('body')).not.toHaveClass(/scroll-mini-player-grabbing/)
+    await page.evaluate(() => window.nativeScreenTest.destroy())
+  })
+}

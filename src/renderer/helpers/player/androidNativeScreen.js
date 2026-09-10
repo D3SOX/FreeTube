@@ -1,6 +1,7 @@
 import { overrideShakaMethods } from './overrideShakaMethods'
 
 let inlineScreenOwner = null
+let inlineBackdrop = null
 
 /** Shares the existing feature panels with the native video and basic controls. */
 export function createAndroidNativeScreen({ element, container, getController, getLocale, hasVideoCanvas, isFullscreenOnRotationEnabled = () => false, onError }) {
@@ -17,10 +18,15 @@ export function createAndroidNativeScreen({ element, container, getController, g
   let attachmentSequence = 0
   let lastInlineClip = ''
   let clippedPage = null
-  const inlineOwner = {}
+  const inlineOwner = { clearPageClip }
   let transitionSequence = 0
   let transitioning = false
   let pageScrolling = false
+  let gestureActive = false
+  let appChromeElements = []
+  let globalMenuElements = []
+  let globalElementsDirty = true
+  const appChromeSelector = '.topNav, .sideNav, .tabBar, .capacitorTabletTabBar'
 
   function endTransition() {
     if (!transitioning) return
@@ -39,6 +45,7 @@ export function createAndroidNativeScreen({ element, container, getController, g
     }
     if (!attached || open || hasVideoCanvas?.()) return
     event.preventDefault()
+    endGesture()
     const sequence = ++transitionSequence
     const { from, to, duration } = event.detail
     transitioning = true
@@ -57,11 +64,31 @@ export function createAndroidNativeScreen({ element, container, getController, g
   }
   container.addEventListener('native-player-transition', handleTransition)
 
+  function handleGesture(event) {
+    if (!attached || open || hasVideoCanvas?.()) return
+    gestureActive = event.detail === true
+    container.toggleAttribute('data-native-player-gesture', gestureActive)
+    // Pointer handlers update Vue geometry in the same turn. Send the final
+    // rectangle and reopen the cutout together after that update has rendered.
+    scheduleLayout()
+  }
+  container.addEventListener('native-player-gesture', handleGesture)
+
+  function endGesture() {
+    if (!gestureActive) return
+    gestureActive = false
+    container.toggleAttribute('data-native-player-gesture', false)
+    syncLayout()
+  }
+
   function inlineClip(bounds, visible, origin = { x: 0, y: 0 }) {
     const style = getComputedStyle(container)
     const radius = Math.max(0, Math.min(parseFloat(style.borderTopLeftRadius) || 0, bounds.width / 2, bounds.height / 2))
-    const left = bounds.x - origin.x
-    const top = bounds.y - origin.y
+    // Float32 viewport bounds plus fractional WebView scroll offsets can vary
+    // by millionths of a CSS pixel. Do not invalidate the whole page's backdrop
+    // for that noise; retain the same subpixel precision as native geometry.
+    const left = Math.round((bounds.x - origin.x) * 1000) / 1000
+    const top = Math.round((bounds.y - origin.y) * 1000) / 1000
     const right = left + bounds.width
     const bottom = top + bounds.height
     // Preserve the page background everywhere except the native video's window.
@@ -76,7 +103,7 @@ export function createAndroidNativeScreen({ element, container, getController, g
     if (clippedPage) resize.unobserve(clippedPage)
     if (inlineScreenOwner === inlineOwner) {
       clippedPage?.removeAttribute('data-native-player-backdrop')
-      clippedPage?.style.removeProperty('--native-player-content-clip')
+      clippedPage?.style.removeProperty('clip-path')
     }
     clippedPage = null
   }
@@ -87,26 +114,41 @@ export function createAndroidNativeScreen({ element, container, getController, g
 
   function syncInlineBackground(visible) {
     if (!attached || open) return
+    if (inlineScreenOwner !== inlineOwner) {
+      inlineScreenOwner?.clearPageClip()
+      lastInlineClip = ''
+    }
     inlineScreenOwner = inlineOwner
-    document.documentElement.classList.toggle('nativePlaybackInline', true)
+    if (!inlineBackdrop) {
+      inlineBackdrop = document.createElement('div')
+      inlineBackdrop.className = 'nativeInlineBackdrop'
+      inlineBackdrop.setAttribute('aria-hidden', 'true')
+      document.body.append(inlineBackdrop)
+    }
     const bounds = container.getBoundingClientRect()
     const scrolling = followsPageScroll()
-    document.documentElement.classList.toggle('nativePlaybackPageScroll', scrolling)
     const origin = scrolling ? { x: -window.scrollX, y: -window.scrollY } : undefined
     const clip = inlineClip(bounds, visible, origin)
-    const pageHeight = `${Math.max(window.innerHeight, document.body.getBoundingClientRect().height)}px`
-    if (document.documentElement.style.getPropertyValue('--native-inline-page-height') !== pageHeight) {
-      document.documentElement.style.setProperty('--native-inline-page-height', pageHeight)
+    const pageHeight = scrolling ? `${Math.max(window.innerHeight, document.body.getBoundingClientRect().height)}px` : ''
+    // Read both openings before changing either clip, so a resize does not
+    // force another style/layout pass midway through measuring the page.
+    const page = container.closest?.('#cross-tab-mini-player-layer')
+      ? document.querySelector('.app > .flexBox')
+      : null
+    const pageClip = page ? inlineClip(bounds, visible, page.getBoundingClientRect()) : ''
+    document.documentElement.classList.toggle('nativePlaybackInline', true)
+    document.documentElement.classList.toggle('nativePlaybackPageScroll', scrolling)
+    if (inlineBackdrop.style.getPropertyValue('block-size') !== pageHeight) {
+      inlineBackdrop.style.setProperty('block-size', pageHeight)
     }
     if (clip !== lastInlineClip) {
-      document.documentElement.style.setProperty('--native-inline-background-clip', clip)
+      // Keep changing geometry local. Inherited custom properties make every
+      // descendant recalculate styles while dragging or resizing the mini player.
+      inlineBackdrop.style.setProperty('clip-path', clip)
       lastInlineClip = clip
     }
     // Floating native video sits below the WebView. Cut the route's content
     // out too, while its teleported controls stay in the separate overlay layer.
-    const page = container.closest?.('#cross-tab-mini-player-layer')
-      ? document.querySelector('.app > .flexBox')
-      : null
     if (page !== clippedPage) {
       clearPageClip()
       clippedPage = page
@@ -114,10 +156,8 @@ export function createAndroidNativeScreen({ element, container, getController, g
       if (page) resize.observe(page)
     }
     if (page) {
-      const origin = page.getBoundingClientRect()
-      const pageClip = inlineClip(bounds, visible, origin)
-      if (page.style.getPropertyValue('--native-player-content-clip') !== pageClip) {
-        page.style.setProperty('--native-player-content-clip', pageClip)
+      if (page.style.getPropertyValue('clip-path') !== pageClip) {
+        page.style.setProperty('clip-path', pageClip)
       }
     }
   }
@@ -127,8 +167,8 @@ export function createAndroidNativeScreen({ element, container, getController, g
     if (inlineScreenOwner === inlineOwner) {
       document.documentElement.classList.toggle('nativePlaybackInline', false)
       document.documentElement.classList.toggle('nativePlaybackPageScroll', false)
-      document.documentElement.style.removeProperty('--native-inline-page-height')
-      document.documentElement.style.removeProperty('--native-inline-background-clip')
+      inlineBackdrop?.remove()
+      inlineBackdrop = null
       inlineScreenOwner = null
     }
     lastInlineClip = ''
@@ -174,26 +214,25 @@ export function createAndroidNativeScreen({ element, container, getController, g
     frame = null
     if ((!open && !attached) || transitioning) return
     const bounds = element.getBoundingClientRect()
-    syncAmbientClip(bounds)
     const sharedControls = container.querySelector('.shaka-controls-container')
     const controlBounds = sharedControls?.getBoundingClientRect() ?? bounds
     const visible = !document.hidden && bounds.width > 0 && bounds.height > 0 &&
       bounds.y + bounds.height > 0 && bounds.y < window.innerHeight &&
       container.checkVisibility?.({ checkOpacity: true, checkVisibilityCSS: true }) !== false
-    syncInlineBackground(visible && !pageScrolling)
-    const centerElement = !open && document.elementFromPoint(
-      Math.max(0, Math.min(window.innerWidth - 1, controlBounds.x + controlBounds.width / 2)),
-      Math.max(0, Math.min(window.innerHeight - 1, controlBounds.y + controlBounds.height / 2)))
     // Notices need the same native clipping and touch priority as menus.
     const playerMenus = [...container.querySelectorAll('.shaka-overflow-menu:not(.shaka-hidden), .shaka-settings-menu:not(.shaka-hidden), .shaka-sub-menu:not(.shaka-hidden), .shaka-context-menu:not(.shaka-hidden), .skippedSegmentsWrapper')]
     const countdowns = [...container.querySelectorAll('.countdownProgress')]
     // Global dialogs such as Quick Settings can cover only one native button.
     // Keep their whole rectangle above native controls, not just the center hit.
-    const appChrome = open ? [] : [...document.querySelectorAll('.topNav, .sideNav, .tabBar, .capacitorTabletTabBar')]
-    const globalMenus = open
-      ? []
-      : [...document.querySelectorAll('[role="dialog"], [role="menu"], [aria-modal="true"]')]
-          .filter(menu => !container.contains(menu))
+    // Scroll and scrollbar style updates change geometry, not membership.
+    // Avoid searching the whole Watch page again on every scrolling frame.
+    if (!open && globalElementsDirty) {
+      appChromeElements = [...document.querySelectorAll(appChromeSelector)]
+      globalMenuElements = [...document.querySelectorAll('[role="dialog"], [role="menu"], [aria-modal="true"]')]
+      globalElementsDirty = false
+    }
+    const appChrome = open ? [] : appChromeElements
+    const globalMenus = open ? [] : globalMenuElements.filter(menu => !container.contains(menu))
     const menuElements = [...playerMenus, ...countdowns, ...globalMenus, ...appChrome]
     const pageScroll = followsPageScroll()
     const nativeY = y => pageScroll ? Math.round((y + window.scrollY) * 1000) / 1000 : y
@@ -213,6 +252,7 @@ export function createAndroidNativeScreen({ element, container, getController, g
       viewportWidth: window.innerWidth,
       pageScroll,
       miniPlayer: container.classList.contains('scrollMiniPlayer'),
+      gestureActive,
       radius: parseFloat(getComputedStyle(container).borderTopLeftRadius) || 0,
       controlsX: controlBounds.x,
       controlsY: nativeY(controlBounds.y),
@@ -221,8 +261,9 @@ export function createAndroidNativeScreen({ element, container, getController, g
       videoVisible: visible,
       controlsVisible: visible && controlBounds.width > 0 && controlBounds.height > 0 &&
         !container.querySelector('.endedScreen') &&
-        !container.classList.contains('scrollMiniPlayer') && sharedControls?.hasAttribute('shown') === true &&
-        (!centerElement || container.contains(centerElement)),
+        !container.classList.contains('scrollMiniPlayer') && sharedControls?.hasAttribute('shown') === true,
+      // Android clips and routes touches around these rectangles. A browser
+      // hit test at the controls' center duplicates that work on every scroll.
       menus: menus.map(({ x, y, width, height, pageScroll = false }) => ({ x, y: pageScroll ? nativeY(y) : y, width, height, pageScroll })),
       overlayActive: panelOpen || [...playerMenus, ...globalMenus].some(menu => {
         const bounds = menu.getBoundingClientRect()
@@ -233,6 +274,8 @@ export function createAndroidNativeScreen({ element, container, getController, g
     // Transforms do not trigger ResizeObserver. Follow zoom transitions until
     // their final frame so native video matches the shared gesture geometry.
     if ([container, element, ...menuElements].some(target => target.getAnimations().some(animation => animation.playState === 'running'))) scheduleLayout()
+    syncAmbientClip(bounds)
+    syncInlineBackground(visible && !pageScrolling && !gestureActive)
     if (signature === lastLayout) return
     lastLayout = signature
     getController()?.layout(layout).catch(onError)
@@ -241,12 +284,20 @@ export function createAndroidNativeScreen({ element, container, getController, g
     if ((open || attached) && frame === null) frame = requestAnimationFrame(syncLayout)
   }
   const resize = new ResizeObserver(scheduleLayout)
-  const mutations = new MutationObserver(scheduleLayout)
+  const mutations = new MutationObserver(records => {
+    if (records.some(record => record.type === 'childList'
+      ? [...record.addedNodes, ...record.removedNodes].some(node => node.nodeType === 1)
+      : ['role', 'aria-modal'].includes(record.attributeName) ||
+        (record.attributeName === 'class' && (appChromeElements.includes(record.target) || record.target.matches(appChromeSelector))))) {
+      globalElementsDirty = true
+    }
+    scheduleLayout()
+  })
   resize.observe(document.body)
   resize.observe(container)
   resize.observe(element)
   // Popups outside the player must invalidate clipping even during paused video.
-  mutations.observe(document.body, { subtree: true, attributes: true, attributeFilter: ['class', 'style', 'shown', 'hidden', 'inert'], childList: true })
+  mutations.observe(document.body, { subtree: true, attributes: true, attributeFilter: ['class', 'style', 'shown', 'hidden', 'inert', 'role', 'aria-modal'], childList: true })
   mutations.observe(document.documentElement, { attributes: true, attributeFilter: ['class', 'style'] })
   window.addEventListener('resize', scheduleLayout)
   window.addEventListener('scroll', scheduleLayout, true)
@@ -254,6 +305,7 @@ export function createAndroidNativeScreen({ element, container, getController, g
 
   function setOpen(value) {
     if (open === value) return
+    endGesture()
     endTransition()
     open = value
     presentationSequence++
@@ -369,6 +421,7 @@ export function createAndroidNativeScreen({ element, container, getController, g
     },
     reset() {
       attachmentSequence++
+      endGesture()
       endTransition()
       attached = false
       pageScrolling = false
@@ -380,6 +433,7 @@ export function createAndroidNativeScreen({ element, container, getController, g
     },
     destroy() {
       attachmentSequence++
+      endGesture()
       endTransition()
       attached = false
       pageScrolling = false
@@ -396,6 +450,7 @@ export function createAndroidNativeScreen({ element, container, getController, g
       document.removeEventListener('visibilitychange', scheduleLayout)
       container.removeEventListener('click', handleFullscreenClick, true)
       container.removeEventListener('native-player-transition', handleTransition)
+      container.removeEventListener('native-player-gesture', handleGesture)
       if (frame !== null) cancelAnimationFrame(frame)
       restoreControls?.()
     },

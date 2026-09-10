@@ -129,7 +129,8 @@ public class NativePlaybackScreenTest {
             screen.setControlsVisible(true);
             screen.setFollowsPageScroll(true);
             screen.layoutVideo(0, 180, 400, 225, 1000);
-            screen.layoutControls(0, 180, 400, 225, 1000);
+            // Keep both countdown positions inside the controller after scrolling.
+            screen.layoutControls(0, 180, 400, 400, 1000);
             controls.setBackgroundColor(android.graphics.Color.MAGENTA);
             screen.setMenuBounds(new android.graphics.RectF[] { new android.graphics.RectF(0, 0, 1000, 100) });
             screen.setScrollingMenuBounds(new android.graphics.RectF[] { new android.graphics.RectF(200, 300, 280, 380) });
@@ -259,8 +260,78 @@ public class NativePlaybackScreenTest {
         });
     }
 
+    @Test public void draggingAndResizingKeepVideoAboveThePageUntilTheFinalClipDraws() {
+        ViewGroup[] frame = new ViewGroup[1];
+        withScreen((screen, controls, web, engine) -> {
+            screen.setFullscreen(false);
+            screen.setInlineVisible(true);
+            screen.setMiniPlayer(true, 12);
+            screen.layoutVideo(200, 200, 400, 225, 1000);
+            frame[0] = (ViewGroup) screen.getChildAt(0);
+            frame[0].setBackgroundColor(android.graphics.Color.MAGENTA);
+            frame[0].getChildAt(0).setVisibility(View.INVISIBLE);
+            web.setBackgroundColor(android.graphics.Color.RED);
+            web.holdVisualState = true;
+            screen.setGestureActive(true);
+            int textureWidth = frame[0].getLayoutParams().width;
+            screen.layoutVideo(140.125, 170.25, 400, 225, 1000);
+            assertEquals("Dragging must move the native video with the handle", 140.125 * screen.getWidth() / 1000, frame[0].getTranslationX(), 1);
+            screen.layoutVideo(100.125, 150.25, 600.5, 337.78125, 1000);
+            assertEquals("Live resizing must keep the decoder buffer size stable", textureWidth, frame[0].getLayoutParams().width);
+            assertEquals(100.125 * screen.getWidth() / 1000, frame[0].getTranslationX(), 1);
+            assertTrue(screen.indexOfChild(frame[0]) > screen.indexOfChild((View) web.getParent()));
+            android.graphics.Bitmap image = android.graphics.Bitmap.createBitmap(screen.getWidth(), screen.getHeight(), android.graphics.Bitmap.Config.ARGB_8888);
+            screen.draw(new android.graphics.Canvas(image));
+            assertEquals("The resized video must cover page content outside its old cutout", android.graphics.Color.MAGENTA,
+                image.getPixel((int) (150 * screen.getWidth() / 1000f), (int) (250 * screen.getWidth() / 1000f)));
+            image.recycle();
+            screen.setGestureActive(false);
+            assertNotNull(web.heldVisualState);
+            web.heldVisualState.onComplete(web.heldVisualStateId);
+            // A second resize can start before the previous handoff draws.
+            screen.setGestureActive(true);
+            image = android.graphics.Bitmap.createBitmap(screen.getWidth(), screen.getHeight(), android.graphics.Bitmap.Config.ARGB_8888);
+            screen.draw(new android.graphics.Canvas(image));
+            image.recycle();
+        }, (screen, controls, web, engine) -> {
+            assertTrue("An obsolete handoff cannot lower the video during another resize", screen.indexOfChild(frame[0]) > screen.indexOfChild((View) web.getParent()));
+            screen.layoutVideo(250, 200, 300, 168.75, 1000);
+            screen.setGestureActive(false);
+            web.heldVisualState.onComplete(web.heldVisualStateId);
+            assertTrue("A ready callback alone must not lower the video", screen.indexOfChild(frame[0]) > screen.indexOfChild((View) web.getParent()));
+            android.graphics.Bitmap image = android.graphics.Bitmap.createBitmap(screen.getWidth(), screen.getHeight(), android.graphics.Bitmap.Config.ARGB_8888);
+            screen.draw(new android.graphics.Canvas(image));
+            image.recycle();
+        }, (screen, controls, web, engine) -> {
+            assertTrue("Releasing the resize must restore shared controls after the final draw", screen.indexOfChild((View) web.getParent()) > screen.indexOfChild(frame[0]));
+            assertEquals(250 * screen.getWidth() / 1000f, frame[0].getTranslationX(), 1);
+        });
+    }
+
+    @Test public void anAnimationCanTakeOverALiveGestureAndReturnBelowThePage() {
+        View[] frame = new View[1];
+        withScreen((screen, controls, web, engine) -> {
+            screen.setFullscreen(false);
+            screen.setInlineVisible(true);
+            screen.setMiniPlayer(true, 12);
+            screen.layoutVideo(200, 200, 400, 225, 1000);
+            frame[0] = screen.getChildAt(0);
+            web.holdVisualState = true;
+            screen.setGestureActive(true);
+            screen.animateVideo(new double[] { 200, 200, 400, 225 }, new double[] { 100, 200, 400, 225, 1000 }, 0, 12, screen::finishVideoTransition);
+        }, (screen, controls, web, engine) -> {
+            assertNotNull("The finished animation must release the previous gesture", web.heldVisualState);
+            web.heldVisualState.onComplete(web.heldVisualStateId);
+            android.graphics.Bitmap image = android.graphics.Bitmap.createBitmap(screen.getWidth(), screen.getHeight(), android.graphics.Bitmap.Config.ARGB_8888);
+            screen.draw(new android.graphics.Canvas(image));
+            image.recycle();
+        }, (screen, controls, web, engine) -> {
+            assertTrue(screen.indexOfChild((View) web.getParent()) > screen.indexOfChild(frame[0]));
+        });
+    }
+
     @Test public void pictureInPictureDuringMotionUsesTheWholeVideoWindow() {
-        for (String mode : new String[] { "scroll", "handoff", "animation" }) withScreen((screen, controls, web, engine) -> {
+        for (String mode : new String[] { "scroll", "handoff", "animation", "resize" }) withScreen((screen, controls, web, engine) -> {
             screen.setFullscreen(false);
             screen.setInlineVisible(true);
             screen.layoutVideo(200, 200, 400, 225, 1000);
@@ -268,7 +339,9 @@ public class NativePlaybackScreenTest {
             ViewGroup frame = (ViewGroup) screen.getChildAt(0);
             frame.setBackgroundColor(android.graphics.Color.MAGENTA);
             frame.getChildAt(0).setVisibility(View.INVISIBLE);
-            if (mode.equals("animation")) {
+            if (mode.equals("resize")) {
+                screen.setGestureActive(true);
+            } else if (mode.equals("animation")) {
                 screen.animateVideo(new double[] { 200, 200, 400, 225 }, new double[] { 100, 100, 600, 337.5, 1000 }, 1200, 12, () -> {});
             } else {
                 swipePage(screen);

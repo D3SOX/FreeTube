@@ -462,11 +462,17 @@ export function useScrollMiniPlayer({ container, fullWindowEnabled, getUi, isAct
     )
   }
 
+  function syncNativeMiniPlayerGesture() {
+    const active = ['drag', 'resize'].includes(scrollMiniPointerSession?.type) || scrollMiniBounceCancel !== null
+    container.value?.dispatchEvent(new CustomEvent('native-player-gesture', { detail: active }))
+  }
+
   function cancelScrollMiniPlayerBounce() {
     if (!scrollMiniBounceCancel) return
 
     scrollMiniBounceCancel()
     scrollMiniBounceCancel = null
+    syncNativeMiniPlayerGesture()
   }
 
   function cancelScrollMiniPlayerLayoutAnimation(replacingNative = false) {
@@ -734,6 +740,7 @@ export function useScrollMiniPlayer({ container, fullWindowEnabled, getUi, isAct
     scrollMiniVolumeExpanded.value = false
 
     cancelScrollMiniPlayerBounce()
+    endScrollMiniPointerSession()
 
     if (previousRect) {
       animateScrollMiniPlayerLayout(previousRect, false, animationSequence)
@@ -956,6 +963,7 @@ export function useScrollMiniPlayer({ container, fullWindowEnabled, getUi, isAct
 
   function endScrollMiniPointerSession() {
     scrollMiniPointerSession = null
+    syncNativeMiniPlayerGesture()
     document.body.classList.remove('scroll-mini-player-grabbing')
     window.removeEventListener('pointermove', handleScrollMiniPointerMoveWindow)
     window.removeEventListener('pointerup', handleScrollMiniPointerUpWindow)
@@ -979,10 +987,13 @@ export function useScrollMiniPlayer({ container, fullWindowEnabled, getUi, isAct
         top: startRect.top + dy,
       }, scrollMiniVideoAspectRatio.value))
     } else if (scrollMiniPointerSession.type === 'resize' && scrollMiniPointerSession.corner) {
+      const { startRect, startX, corner } = scrollMiniPointerSession
+      const edgeX = startRect.left + (corner.endsWith('right') ? startRect.width : 0)
+      // Preserve the grab offset, including presses inside the larger touch target.
       applyScrollMiniPlayerRect(resizeScrollMiniPlayerFromCorner(
-        scrollMiniPointerSession.startRect,
-        /** @type {'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'} */ (scrollMiniPointerSession.corner),
-        event.clientX,
+        startRect,
+        /** @type {'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'} */ (corner),
+        edgeX + event.clientX - startX,
         event.clientY,
         insets,
         scrollMiniVideoAspectRatio.value
@@ -1044,6 +1055,7 @@ export function useScrollMiniPlayer({ container, fullWindowEnabled, getUi, isAct
           () => {
             applyScrollMiniPlayerRect(clampScrollMiniPlayerRect(targetRect, scrollMiniVideoAspectRatio.value), true)
             scrollMiniBounceCancel = null
+            syncNativeMiniPlayerGesture()
           }
         )
       } else {
@@ -1086,6 +1098,7 @@ export function useScrollMiniPlayer({ container, fullWindowEnabled, getUi, isAct
       startRect: { ...scrollMiniPlayerRect.value },
     }
 
+    syncNativeMiniPlayerGesture()
     document.body.classList.add('scroll-mini-player-grabbing')
     window.addEventListener('pointermove', handleScrollMiniPointerMoveWindow)
     window.addEventListener('pointerup', handleScrollMiniPointerUpWindow)
@@ -1108,6 +1121,7 @@ export function useScrollMiniPlayer({ container, fullWindowEnabled, getUi, isAct
       startRect: { ...scrollMiniPlayerRect.value },
     }
 
+    syncNativeMiniPlayerGesture()
     document.body.classList.add('scroll-mini-player-grabbing')
     window.addEventListener('pointermove', handleScrollMiniPointerMoveWindow)
     window.addEventListener('pointerup', handleScrollMiniPointerUpWindow)

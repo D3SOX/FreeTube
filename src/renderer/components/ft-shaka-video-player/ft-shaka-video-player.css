@@ -4415,6 +4415,7 @@ html[data-reduced-motion='reduce'] .musicVisualizerCanvas {
     var(--scroll-mini-resize-handle-color) calc(50% + 1px),
     transparent calc(50% + 1px)
   );
+  background-position: bottom left;
 }
 
 .scrollMiniResizeHandle-bottom-right {
@@ -4428,6 +4429,7 @@ html[data-reduced-motion='reduce'] .musicVisualizerCanvas {
     var(--scroll-mini-resize-handle-color) calc(50% + 1px),
     transparent calc(50% + 1px)
   );
+  background-position: bottom right;
 }
 
 .scrollMiniResizeHandle-top-left {
@@ -4441,6 +4443,7 @@ html[data-reduced-motion='reduce'] .musicVisualizerCanvas {
     var(--scroll-mini-resize-handle-color) calc(50% + 1px),
     transparent calc(50% + 1px)
   );
+  background-position: top left;
 }
 
 .scrollMiniResizeHandle-top-right {
@@ -4454,6 +4457,21 @@ html[data-reduced-motion='reduce'] .musicVisualizerCanvas {
     var(--scroll-mini-resize-handle-color) calc(50% + 1px),
     transparent calc(50% + 1px)
   );
+  background-position: top right;
+}
+
+/* Enlarge the touch area without enlarging the visible corner grip. */
+@media (pointer: coarse) {
+  .scrollMiniResizeHandle {
+    width: 48px;
+    height: 48px;
+    background-size: 18px 18px;
+    background-repeat: no-repeat;
+  }
+
+  .scrollMiniVolume {
+    z-index: 4;
+  }
 }
 
 :global(body.scroll-mini-player-grabbing),
