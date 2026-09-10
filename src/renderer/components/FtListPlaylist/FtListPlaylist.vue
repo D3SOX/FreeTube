@@ -16,12 +16,12 @@
         tabindex="-1"
         aria-hidden="true"
       >
-        <img
+        <FtRetryImage
           alt=""
           :src="thumbnailForDisplay"
           class="thumbnailImage"
           :class="{ blur: blurThumbnails }"
-        >
+        />
       </RouterLink>
       <div
         class="videoCountContainer"
@@ -124,6 +124,7 @@
 </template>
 
 <script setup>
+import FtRetryImage from '../FtRetryImage.vue'
 import { supportsYtDlp } from '../../helpers/ytDlpCapabilities'
 import { FtIcon } from '@opentubex/icons'
 import { computed, ref, toRef, watch } from 'vue'

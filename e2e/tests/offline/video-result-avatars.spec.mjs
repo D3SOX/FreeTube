@@ -66,6 +66,38 @@ test.describe('Invidious search video avatars', () => {
     }
   })
 
+  test('retries failed video and playlist thumbnails without reloading the results', async ({ page }) => {
+    await page.route(`${instanceUrl}/api/v1/search/**`, route => route.fulfill({
+      json: [invidiousVideo('avatar-search-1', 'Retry thumbnail result'), invidiousPlaylist()]
+    }))
+    await page.route(`${instanceUrl}/api/v1/channels/${CHANNEL_ID}?**`, route => route.fulfill({
+      json: { author: 'Channel A', authorThumbnails: [{ url: avatarUrl }], tabs: [] }
+    }))
+    await page.route(avatarUrl, route => fulfillVisualFixture(route, 'avatar'))
+    const failedRequests = []
+    const serveThumbnail = route => {
+      const url = new URL(route.request().url())
+      if (!url.searchParams.has('opentubex_retry')) {
+        failedRequests.push(url.toString())
+        return route.abort('failed')
+      }
+      return fulfillVisualFixture(route, 'video-thumbnail')
+    }
+    await page.route(`${instanceUrl}/vi/**`, serveThumbnail)
+    await page.route('https://i.ytimg.com/**', serveThumbnail)
+
+    await page.locator(sel.searchInput).fill('retry thumbnails')
+    await page.locator(sel.searchInput).press('Enter')
+
+    const thumbnails = page.locator('.ft-list-video .thumbnailImage')
+    await expect(thumbnails).toHaveCount(2)
+    await expectImagesLoaded(thumbnails)
+    expect(failedRequests.length).toBeGreaterThan(0)
+    for (const thumbnail of await thumbnails.all()) {
+      await expect(thumbnail).toHaveAttribute('src', /[?&]opentubex_retry=/)
+    }
+  })
+
   test('loads shared avatars and lays out result metadata responsively', async ({ page }) => {
     let channelRequests = 0
 

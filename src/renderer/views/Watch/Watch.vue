@@ -213,12 +213,12 @@
                   @click="openShortsChannel"
                   @auxclick="openShortsChannel"
                 >
-                  <img
+                  <FtRetryImage
                     v-if="channelThumbnail"
                     :src="channelThumbnail"
                     class="shortsFullscreenChannelThumbnail"
                     alt=""
-                  >
+                  />
                   <span dir="auto">{{ channelName }}</span>
                 </component>
                 <FtSubscribeButton
@@ -380,12 +380,12 @@
                 @click="openShortsChannel"
                 @auxclick="openShortsChannel"
               >
-                <img
+                <FtRetryImage
                   v-if="channelThumbnail"
                   :src="channelThumbnail"
                   class="shortsExternalChannelThumbnail"
                   alt=""
-                >
+                />
                 <span dir="auto">{{ channelName }}</span>
               </component>
               <FtSubscribeButton
@@ -559,10 +559,10 @@
             @click="openShortsChannel"
             @auxclick="openShortsChannel"
           >
-            <img
+            <FtRetryImage
               :src="channelThumbnail"
               alt=""
-            >
+            />
           </component>
         </div>
         <button

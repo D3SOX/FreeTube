@@ -18,13 +18,13 @@
         <div
           class="thumbnailContainer"
         >
-          <img
+          <FtRetryImage
             v-if="thumbnailUrl && !thumbnailLoadFailed"
             class="thumbnail"
             :src="thumbnailUrl"
             alt=""
             @error="handleThumbnailError"
-          >
+          />
           <FtIcon
             v-else
             class="thumbnail"
@@ -285,6 +285,7 @@
 </template>
 
 <script setup>
+import FtRetryImage from '../FtRetryImage.vue'
 import { computed, onBeforeUnmount, onMounted, ref, useTemplateRef, watch } from 'vue'
 
 import { FtIcon } from '@opentubex/icons'

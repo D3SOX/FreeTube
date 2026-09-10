@@ -43,13 +43,13 @@
               class="thumbnailContainer"
               :to="`/channel/${channel.id}`"
             >
-              <img
+              <FtRetryImage
                 v-if="hasUsableThumbnail(channel.thumbnail)"
                 class="channelThumbnail"
                 :src="thumbnailURL(channel.thumbnail)"
                 alt=""
                 @error.once="handleThumbnailError(channel)"
-              >
+              />
               <ft-icon
                 v-else
                 class="channelThumbnail"
@@ -99,6 +99,7 @@
 </template>
 
 <script setup>
+import FtRetryImage from '../../components/FtRetryImage.vue'
 import { FtIcon } from '@opentubex/icons'
 import { computed, onMounted, onBeforeUnmount, ref, watch, useTemplateRef } from 'vue'
 import { isNavigationFailure, NavigationFailureType, useRoute, useRouter } from 'vue-router'

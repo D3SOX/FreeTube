@@ -363,13 +363,13 @@
               v-if="comment.isHearted"
               class="commentHeartBadge"
             >
-              <img
+              <FtRetryImage
                 :src="channelThumbnail"
                 :title="$t('Comments.Hearted')"
                 :aria-label="$t('Comments.Hearted')"
                 class="commentHeartBadgeImg"
                 alt=""
-              >
+              />
               <FtIcon
                 :icon="['fas', 'heart']"
                 class="commentHeartBadgeWhite"

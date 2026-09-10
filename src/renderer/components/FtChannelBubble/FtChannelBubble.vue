@@ -6,13 +6,13 @@
     :to="`/channel/${channelId}`"
     :data-tab-title="channelName"
   >
-    <img
+    <FtRetryImage
       v-if="channelThumbnail != null && !thumbnailLoadFailed"
       class="bubble"
       :src="channelThumbnail"
       alt=""
       @error="handleThumbnailError"
-    >
+    />
     <FtIcon
       v-else
       :icon="['fas', 'circle-user']"
@@ -36,13 +36,13 @@
     @click="handleClick"
     @keydown.space.enter.prevent="handleClick"
   >
-    <img
+    <FtRetryImage
       v-if="channelThumbnail != null && !thumbnailLoadFailed"
       class="bubble"
       :src="channelThumbnail"
       alt=""
       @error="handleThumbnailError"
-    >
+    />
     <FtIcon
       v-else
       :icon="['fas', 'circle-user']"
@@ -68,6 +68,7 @@
 </template>
 
 <script setup>
+import FtRetryImage from '../FtRetryImage.vue'
 import { FtIcon } from '@opentubex/icons'
 import { ref, useId, watch } from 'vue'
 

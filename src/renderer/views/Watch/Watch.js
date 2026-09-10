@@ -21,6 +21,7 @@ import WatchVideoQueue from '../../components/WatchVideoQueue/WatchVideoQueue.vu
 import WatchVideoRecommendations from '../../components/WatchVideoRecommendations/WatchVideoRecommendations.vue'
 import FtAgeRestricted from '../../components/FtAgeRestricted/FtAgeRestricted.vue'
 import { hasConfiguredRestrictedPlaybackAuthentication } from '../../helpers/restricted-playback'
+import FtRetryImage from '../../components/FtRetryImage.vue'
 import FtSubscribeButton from '../../components/FtSubscribeButton/FtSubscribeButton.vue'
 import FtShareButton from '../../components/FtShareButton/FtShareButton.vue'
 import FtIconButton from '../../components/FtIconButton/FtIconButton.vue'
@@ -156,6 +157,7 @@ const UNAVAILABLE_VIDEO_THUMBNAILS = {
 export default defineComponent({
   name: 'Watch',
   components: {
+    FtRetryImage,
     'ft-shaka-video-player': FtShakaVideoPlayer,
     'watch-video-info': WatchVideoInfo,
     'watch-video-description': WatchVideoDescription,

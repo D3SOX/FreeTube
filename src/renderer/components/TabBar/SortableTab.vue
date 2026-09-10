@@ -50,14 +50,14 @@
             class="playingIcon"
             aria-hidden="true"
           />
-          <img
+          <FtRetryImage
             v-else-if="showIcon && usableTabAvatarUrl"
             :src="tabAvatarUrl"
             class="tabAvatar"
             alt=""
             draggable="false"
             @error="handleAvatarError"
-          >
+          />
           <FtIcon
             v-else-if="showIcon && tabPageIcon"
             :icon="tabPageIcon"
@@ -84,6 +84,7 @@
 </template>
 
 <script setup>
+import FtRetryImage from '../FtRetryImage.vue'
 import { FtIcon } from '@opentubex/icons'
 import { computed, ref, watch } from 'vue'
 import { getTabAccentColor } from '../../constants/tabColors'

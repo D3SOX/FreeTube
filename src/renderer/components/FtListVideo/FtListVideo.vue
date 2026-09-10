@@ -40,12 +40,12 @@
         @pointerenter="startThumbnailPreview"
         @pointerleave="stopThumbnailPreview"
       >
-        <img
+        <FtRetryImage
           :src="thumbnail"
           class="thumbnailImage"
           :class="{ blur: blurThumbnails }"
           alt=""
-        >
+        />
         <img
           v-if="thumbnailPreviewActive && thumbnailPreviewLoaded"
           :src="thumbnailPreviewUrl"
@@ -384,6 +384,7 @@
 </template>
 
 <script setup>
+import FtRetryImage from '../FtRetryImage.vue'
 import { supportsYtDlp } from '../../helpers/ytDlpCapabilities'
 import { FtIcon } from '@opentubex/icons'
 import { computed, inject, onBeforeUnmount, onMounted, ref, toRef, watch } from 'vue'

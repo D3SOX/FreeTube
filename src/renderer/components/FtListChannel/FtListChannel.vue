@@ -15,11 +15,11 @@
         tabindex="-1"
         aria-hidden="true"
       >
-        <img
+        <FtRetryImage
           :src="thumbnail"
           :class="!isGame ? 'channelImage' : 'gameImage'"
           alt=""
-        >
+        />
       </component>
     </div>
     <div class="infoAndSubscribe">
@@ -80,6 +80,7 @@
 </template>
 
 <script setup>
+import FtRetryImage from '../FtRetryImage.vue'
 import { computed } from 'vue'
 
 import FtSubscribeButton from '../FtSubscribeButton/FtSubscribeButton.vue'

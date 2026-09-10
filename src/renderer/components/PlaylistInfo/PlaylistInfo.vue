@@ -126,12 +126,12 @@
         class="playlistChannel"
         :to="`/channel/${channelId}`"
       >
-        <img
+        <FtRetryImage
           v-if="channelThumbnail"
           class="channelThumbnail"
           :src="channelThumbnail"
           alt=""
-        >
+        />
         <h3
           class="channelName"
           dir="auto"
@@ -326,6 +326,7 @@
 </template>
 
 <script setup>
+import FtRetryImage from '../FtRetryImage.vue'
 import { supportsYtDlp } from '../../helpers/ytDlpCapabilities'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, useTemplateRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'

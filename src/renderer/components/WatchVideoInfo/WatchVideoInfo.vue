@@ -108,13 +108,13 @@
           @click="showCollaboratorsPrompt = true"
         >
           <span class="collaboratorSummaryThumbnails">
-            <img
+            <FtRetryImage
               v-for="collaborator in channelCollaborators"
               :key="collaborator.id"
               :src="collaborator.thumbnail"
               class="channelThumbnail collaboratorThumbnail"
               alt=""
-            >
+            />
           </span>
           <span
             class="channelName collaboratorSummaryName"
@@ -133,12 +133,12 @@
               @click="handleChannelLinkClick"
               @auxclick="handleChannelLinkClick"
             >
-              <img
+              <FtRetryImage
                 :src="channelThumbnail"
                 :class="enableChannelLinks ? '' : 'initialCursor'"
                 class="channelThumbnail"
                 alt=""
-              >
+              />
             </component>
           </div>
           <div>
@@ -313,6 +313,7 @@
 </template>
 
 <script setup>
+import FtRetryImage from '../FtRetryImage.vue'
 import { ytDlp } from '../../helpers/ytDlp'
 import { supportsYtDlp } from '../../helpers/ytDlpCapabilities'
 import { FtIcon } from '@opentubex/icons'

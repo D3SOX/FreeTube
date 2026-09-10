@@ -62,7 +62,7 @@
           <div
             class="thumbnailContainer"
           >
-            <img
+            <FtRetryImage
               v-if="channel.thumbnail != null"
               class="channelThumbnail"
               height="35"
@@ -70,7 +70,7 @@
               loading="lazy"
               :src="channel.thumbnail"
               :alt="isOpen ? '' : channel.name"
-            >
+            />
             <FtIcon
               v-else
               class="channelThumbnail noThumbnail"
@@ -100,6 +100,7 @@
 </template>
 
 <script setup>
+import FtRetryImage from '../FtRetryImage.vue'
 import { FtIcon } from '@opentubex/icons'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, useTemplateRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
