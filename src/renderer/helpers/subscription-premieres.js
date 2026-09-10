@@ -91,7 +91,9 @@ export function getInvidiousSubscriptionPremiereUpdate(video, videoId) {
   if (video?.error || video?.videoId !== videoId || typeof video.liveNow !== 'boolean') return null
   const update = stateUpdate(video.liveNow, video.isUpcoming === true)
   if (!update.liveNow && !update.isUpcoming) {
-    const published = numericCount(video.published) * 1000
+    const published = typeof video.published === 'number' && Number.isFinite(video.published)
+      ? video.published * 1000
+      : undefined
     if (Number.isFinite(published) && published > 0) update.published = published
   }
   const viewCount = numericCount(video.viewCount)

@@ -191,7 +191,7 @@ test('completion does not replace cached publication dates with missing or inval
     const update = getLocalSubscriptionPremiereUpdate(html({ live: false, microformat: { publishDate } }), videoId)
     assert.equal(Object.hasOwn(update, 'published'), false)
   }
-  for (const published of [undefined, null, '', 'invalid', 0, -1, Infinity]) {
+  for (const published of [undefined, null, '', 'invalid', '1789026626', true, 0, -1, Infinity]) {
     const update = getInvidiousSubscriptionPremiereUpdate({ videoId, liveNow: false, published }, videoId)
     assert.equal(Object.hasOwn(update, 'published'), false)
   }
