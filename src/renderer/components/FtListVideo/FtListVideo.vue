@@ -864,7 +864,7 @@ const progressPercentage = computed(() => {
     return 0
   }
 
-  if (isWatched.value) {
+  if (isWatched.value && watchedPercentageThreshold.value !== 0) {
     return 100
   }
 
