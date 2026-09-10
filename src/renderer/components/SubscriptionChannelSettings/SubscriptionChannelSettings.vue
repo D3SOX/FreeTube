@@ -185,12 +185,12 @@
                   aria-hidden="true"
                 />
               </button>
-              <img
+              <FtRetryImage
                 v-if="channel.thumbnail"
                 class="channelThumbnail"
                 :src="channel.thumbnail"
                 alt=""
-              >
+              />
               <span
                 v-else
                 class="channelThumbnail channelThumbnailPlaceholder"
@@ -290,6 +290,7 @@
 </template>
 
 <script setup>
+import FtRetryImage from '../FtRetryImage.vue'
 import { FtIcon } from '@opentubex/icons'
 import { computed, nextTick, onBeforeUnmount, ref, shallowRef, useId, useTemplateRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'

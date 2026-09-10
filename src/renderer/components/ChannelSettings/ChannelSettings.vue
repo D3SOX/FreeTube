@@ -106,12 +106,12 @@
                   :to="disableChannelLinks ? undefined : `/channel/${channel.id}`"
                   @click="handleChannelLinkClick"
                 >
-                  <img
+                  <FtRetryImage
                     v-if="channel.thumbnail"
                     class="channelThumbnail"
                     :src="channel.thumbnail"
                     alt=""
-                  >
+                  />
                   <span
                     v-else
                     class="channelThumbnail channelThumbnailPlaceholder"
@@ -259,12 +259,12 @@
                   :disabled="addingSubscribedChannel"
                   @click="addSubscribedChannel(channel.id)"
                 >
-                  <img
+                  <FtRetryImage
                     v-if="channel.thumbnail"
                     class="channelThumbnail"
                     :src="channel.thumbnail"
                     alt=""
-                  >
+                  />
                   <span
                     v-else
                     class="channelThumbnail channelThumbnailPlaceholder"
@@ -303,6 +303,7 @@
 </template>
 
 <script setup>
+import FtRetryImage from '../FtRetryImage.vue'
 import { FtIcon } from '@opentubex/icons'
 import { computed, nextTick, onBeforeUnmount, ref, useTemplateRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'

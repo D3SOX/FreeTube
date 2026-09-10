@@ -27,11 +27,11 @@
           :data-tab-title="collaborator.name"
           @click="emit('close')"
         >
-          <img
+          <FtRetryImage
             :src="collaborator.thumbnail"
             class="collaboratorModalThumbnail"
             alt=""
-          >
+          />
           <span class="collaboratorText">
             <span
               class="collaboratorName"
@@ -61,6 +61,7 @@
 </template>
 
 <script setup>
+import FtRetryImage from '../FtRetryImage.vue'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 

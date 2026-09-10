@@ -7,14 +7,14 @@
       draggable="false"
       @error="previewUrl = null"
     >
-    <img
+    <FtRetryImage
       v-else-if="avatarUrl && avatarUrl !== failedAvatarUrl"
       :src="avatarUrl"
       alt=""
       class="tabTooltipPreviewAvatar"
       draggable="false"
       @error="failedAvatarUrl = avatarUrl"
-    >
+    />
     <div
       v-else
       class="tabTooltipPreviewFallback"
@@ -30,14 +30,14 @@
     v-if="showTitle"
     class="tabTooltipGridTitle"
   >
-    <img
+    <FtRetryImage
       v-if="showIcon && avatarUrl && avatarUrl !== failedAvatarUrl"
       :src="avatarUrl"
       class="tabTooltipGridTitleAvatar"
       alt=""
       draggable="false"
       @error="failedAvatarUrl = avatarUrl"
-    >
+    />
     <FtIcon
       v-else-if="showIcon && pageIcon"
       :icon="pageIcon"
@@ -49,6 +49,7 @@
 </template>
 
 <script setup>
+import FtRetryImage from '../FtRetryImage.vue'
 import { FtIcon } from '@opentubex/icons'
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { getTabAvatarUrl, getTabPageIcon, getTabPreviewFallbackUrl } from '../../tabs/tabPreview'

@@ -18,18 +18,18 @@
           tabindex="-1"
           aria-hidden="true"
         >
-          <img
+          <FtRetryImage
             :src="authorThumbnail"
             class="communityThumbnail"
             alt=""
-          >
+          />
         </component>
-        <img
+        <FtRetryImage
           v-else
           :src="authorThumbnail"
           class="communityThumbnail"
           alt=""
-        >
+        />
       </template>
       <p
         class="authorName"
@@ -177,6 +177,7 @@
 </template>
 
 <script setup>
+import FtRetryImage from '../FtRetryImage.vue'
 import { FtIcon } from '@opentubex/icons'
 import autolinker from 'autolinker'
 import { computed, onActivated, onMounted, useTemplateRef } from 'vue'

@@ -367,14 +367,14 @@
               draggable="false"
               @error="handleTabSwitcherPreviewError(tab)"
             >
-            <img
+            <FtRetryImage
               v-else-if="!tabSwitcherPreviewPending[tab.id] && getUsableTabSwitcherAvatarUrl(tab)"
               :src="getUsableTabSwitcherAvatarUrl(tab)"
               :alt="`${formatTabTitle(tab.title)} preview`"
               class="tabSwitcherPreviewAvatar"
               draggable="false"
               @error="handleTabSwitcherAvatarError(tab)"
-            >
+            />
             <span
               v-else-if="!tabSwitcherPreviewPending[tab.id]"
               class="tabSwitcherPreviewFallback"
@@ -387,14 +387,14 @@
             </span>
           </span>
           <span class="tabSwitcherTitle">
-            <img
+            <FtRetryImage
               v-if="showTabIcons && getUsableTabSwitcherAvatarUrl(tab)"
               :src="getUsableTabSwitcherAvatarUrl(tab)"
               class="tabSwitcherTitleAvatar"
               alt=""
               draggable="false"
               @error="handleTabSwitcherAvatarError(tab)"
-            >
+            />
             <FtIcon
               v-else-if="showTabIcons && getTabPageIcon(tab)"
               :icon="getTabPageIcon(tab)"
@@ -413,6 +413,7 @@
 </template>
 
 <script setup>
+import FtRetryImage from './components/FtRetryImage.vue'
 import { initializeAndroidYtDlp, ytDlp } from './helpers/ytDlp'
 import { parseAutomaticDownloadRules } from './helpers/automaticDownloadRules'
 import { isAppHidden, setAndroidAppVisible } from './helpers/appVisibility.js'

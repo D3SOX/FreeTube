@@ -102,14 +102,14 @@
                     :fallback="command.profileFallback"
                     aria-hidden="true"
                   />
-                  <img
+                  <FtRetryImage
                     v-else-if="hasUsableIconUrl(command)"
                     class="commandPaletteOptionIconImage"
                     :src="command.iconUrl"
                     alt=""
                     draggable="false"
                     @error="handleIconError(command.iconUrl)"
-                  >
+                  />
                   <FtIcon
                     v-else-if="command.icon"
                     class="commandPaletteOptionIcon"
@@ -167,6 +167,7 @@
 </template>
 
 <script setup>
+import FtRetryImage from '../FtRetryImage.vue'
 import { FtIcon } from '@opentubex/icons'
 import { computed, nextTick, onBeforeMount, onBeforeUnmount, onMounted, ref, useId, useTemplateRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'

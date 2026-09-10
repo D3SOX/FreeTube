@@ -3,7 +3,7 @@
     class="channelAvatar"
     aria-hidden="true"
   >
-    <img
+    <FtRetryImage
       v-if="thumbnail && !thumbnailLoadFailed"
       class="channelAvatarImage"
       :src="thumbnail"
@@ -13,7 +13,7 @@
       loading="lazy"
       decoding="async"
       @error="thumbnailLoadFailed = true"
-    >
+    />
     <FtIcon
       v-else
       class="channelAvatarFallback"
@@ -23,6 +23,7 @@
 </template>
 
 <script setup>
+import FtRetryImage from '../FtRetryImage.vue'
 import { FtIcon } from '@opentubex/icons'
 import { ref, watch } from 'vue'
 

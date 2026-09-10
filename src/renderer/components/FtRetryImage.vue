@@ -18,8 +18,11 @@ const props = defineProps({
   }
 })
 
+const emit = defineEmits(['error'])
+
 const imageUrl = ref(props.src)
 let hasRetried = false
+let retryPending = false
 let retryTimeoutId
 let sourceVersion = 0
 
@@ -28,6 +31,7 @@ watch(() => props.src, (src) => {
   retryTimeoutId = undefined
   sourceVersion++
   hasRetried = false
+  retryPending = false
   imageUrl.value = src
 })
 
@@ -42,12 +46,14 @@ function addRetryParameter(src) {
   }
 }
 
-async function retryImageLoad() {
+async function retryImageLoad(event) {
   if (hasRetried) {
+    if (!retryPending) emit('error', event)
     return
   }
 
   hasRetried = true
+  retryPending = true
   const failedSourceVersion = sourceVersion
 
   if (process.env.IS_CAPACITOR) {
@@ -56,6 +62,7 @@ async function retryImageLoad() {
 
     if (failedSourceVersion !== sourceVersion) return
     if (dataUrl !== null) {
+      retryPending = false
       imageUrl.value = dataUrl
       return
     }
@@ -63,6 +70,7 @@ async function retryImageLoad() {
 
   retryTimeoutId = setTimeout(() => {
     retryTimeoutId = undefined
+    retryPending = false
     imageUrl.value = addRetryParameter(props.src)
   }, RETRY_DELAY_MS)
 }

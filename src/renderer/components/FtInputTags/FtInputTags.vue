@@ -52,14 +52,14 @@
               :to="tag.iconHref ?? ''"
               class="tag-icon-link"
             >
-              <img
+              <FtRetryImage
                 :src="tag.icon"
                 alt=""
                 class="tag-icon"
                 height="24"
                 width="24"
                 loading="lazy"
-              >
+              />
             </RouterLink>
             <bdi
               class="name"
@@ -91,6 +91,7 @@
 </template>
 
 <script setup>
+import FtRetryImage from '../FtRetryImage.vue'
 import { FtIcon } from '@opentubex/icons'
 import { useId, useTemplateRef, ref } from 'vue'
 import { useI18n } from 'vue-i18n'

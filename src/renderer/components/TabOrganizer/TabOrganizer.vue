@@ -378,13 +378,13 @@
                     @update:model-value="toggleTabSelection(tab.id, $event.includes(tab.id))"
                   />
                   <span class="tabIcon">
-                    <img
+                    <FtRetryImage
                       v-if="usableTabAvatarUrl(tab)"
                       :src="usableTabAvatarUrl(tab)"
                       alt=""
                       draggable="false"
                       @error="handleTabAvatarError(tab)"
-                    >
+                    />
                     <FtIcon
                       v-else
                       :icon="getTabPageIcon(tab) || ['fas', 'display']"
@@ -520,12 +520,12 @@
                         @click="openOtherDeviceSession({ ...activeOtherDeviceSession, tabs: [tab] })"
                       >
                         <span class="tabIcon">
-                          <img
+                          <FtRetryImage
                             v-if="usableTabAvatarUrl(syncedTabPreview(tab))"
                             :src="usableTabAvatarUrl(syncedTabPreview(tab))"
                             alt=""
                             @error="handleTabAvatarError(syncedTabPreview(tab))"
-                          >
+                          />
                           <FtIcon
                             v-else
                             :icon="getTabPageIcon(syncedTabPreview(tab)) || ['fas', 'display']"
@@ -628,6 +628,7 @@
 </template>
 
 <script setup>
+import FtRetryImage from '../FtRetryImage.vue'
 import { FtIcon } from '@opentubex/icons'
 import { computed, nextTick, onBeforeMount, onBeforeUnmount, onMounted, ref, useId, useTemplateRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
