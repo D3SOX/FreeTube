@@ -134,10 +134,12 @@ test('discovers, installs, persists and updates themes without overwriting local
   await expect(viewer.locator('img')).toHaveAttribute('src', secondScreenshot)
   const close = viewer.getByRole('button', { name: 'Close', exact: true })
   await expect(close).toHaveText('')
-  const [headerBounds, closeBounds] = await Promise.all([
-    viewer.locator('.screenshotHeader').boundingBox(), close.boundingBox()
-  ])
-  expect(Math.abs(closeBounds.x + closeBounds.width - headerBounds.x - headerBounds.width)).toBeLessThanOrEqual(1)
+  // Read both edges in the same frame while the prompt's entry animation scales it.
+  expect(await close.evaluate(button => {
+    const headerBounds = button.closest('.screenshotHeader').getBoundingClientRect()
+    const closeBounds = button.getBoundingClientRect()
+    return Math.abs(closeBounds.right - headerBounds.right)
+  })).toBeLessThanOrEqual(1)
   await viewer.getByRole('button', { name: 'Previous', exact: true }).click()
   await expect(viewer.locator('img')).toHaveAttribute('src', screenshot)
   await expect(viewer.locator('.screenshotNavigation')).toContainText('1 / 2')
