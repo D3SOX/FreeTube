@@ -1759,3 +1759,9 @@ Theme Discovery:
 Connection:
   Reconnecting: "Ligação perdida. A tentar restabelecer a ligação…"
   Back Online: "Novamente online"
+
+App Icon:
+  Restart: "Reiniciar aplicação"
+  Saved Message: "Ícone guardado. O lançador pode demorar um momento a atualizar."
+  Title: "Ícone da aplicação"
+  Error: "Não foi possível carregar ou alterar o ícone da aplicação"

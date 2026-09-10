@@ -1769,3 +1769,9 @@ Theme Discovery:
 Connection:
   Reconnecting: "Tenging rofnaði. Reyni að tengjast aftur…"
   Back Online: "Aftur á netinu"
+
+App Icon:
+  Restart: "Endurræsa forrit"
+  Saved Message: "Táknið hefur verið vistað. Uppfærsla heimaskjásins gæti tekið smástund."
+  Title: "Tákn forrits"
+  Error: "Ekki tókst að hlaða eða breyta tákni forritsins"

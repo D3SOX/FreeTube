@@ -2319,3 +2319,9 @@ Theme Discovery:
 Connection:
   Reconnecting: "Povezava je prekinjena. Poskus ponovne povezave…"
   Back Online: "Znova povezano"
+
+App Icon:
+  Restart: "Znova zaženi aplikacijo"
+  Saved Message: "Ikona je shranjena. Posodobitev zaganjalnika lahko traja nekaj časa."
+  Title: "Ikona aplikacije"
+  Error: "Ikone aplikacije ni bilo mogoče naložiti ali spremeniti"

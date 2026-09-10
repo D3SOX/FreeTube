@@ -1726,3 +1726,9 @@ Theme Discovery:
 Connection:
   Reconnecting: "接続が切れました。再接続しています…"
   Back Online: "オンラインに戻りました"
+
+App Icon:
+  Restart: "アプリを再起動"
+  Saved Message: "アイコンを保存しました。ランチャーの更新には少し時間がかかる場合があります。"
+  Title: "アプリアイコン"
+  Error: "アプリアイコンを読み込むか変更することができませんでした"

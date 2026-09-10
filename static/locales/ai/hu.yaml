@@ -1726,3 +1726,9 @@ Theme Discovery:
 Connection:
   Reconnecting: "Megszakadt a kapcsolat. Újracsatlakozás folyamatban…"
   Back Online: "Újra online"
+
+App Icon:
+  Restart: "Alkalmazás újraindítása"
+  Saved Message: "Ikon mentve. A kezdőképernyő frissítése eltarthat egy ideig."
+  Title: "Alkalmazásikon"
+  Error: "Nem sikerült betölteni vagy módosítani az alkalmazás ikonját"

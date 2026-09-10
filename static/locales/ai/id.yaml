@@ -1762,3 +1762,9 @@ Theme Discovery:
 Connection:
   Reconnecting: "Koneksi terputus. Mencoba menghubungkan kembali…"
   Back Online: "Kembali online"
+
+App Icon:
+  Restart: "Mulai ulang aplikasi"
+  Saved Message: "Ikon disimpan. Peluncur mungkin memerlukan waktu untuk memperbarui."
+  Title: "Ikon aplikasi"
+  Error: "Tidak dapat memuat atau mengubah ikon aplikasi"

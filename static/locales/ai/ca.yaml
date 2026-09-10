@@ -2369,3 +2369,9 @@ Theme Discovery:
 Connection:
   Reconnecting: "S’ha perdut la connexió. S’està intentant reconnectar…"
   Back Online: "Torneu a estar en línia"
+
+App Icon:
+  Restart: "Reinicia l'aplicació"
+  Saved Message: "Icona desada. El llançador pot trigar un moment a actualitzar-se."
+  Title: "Icona de l'aplicació"
+  Error: "No s'ha pogut carregar o canviar la icona de l'aplicació"

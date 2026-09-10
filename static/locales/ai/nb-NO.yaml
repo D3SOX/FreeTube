@@ -1744,3 +1744,9 @@ Theme Discovery:
 Connection:
   Reconnecting: "Tilkoblingen ble brutt. Prøver å koble til igjen…"
   Back Online: "På nett igjen"
+
+App Icon:
+  Restart: "Start appen på nytt"
+  Saved Message: "Ikonet er lagret. Det kan ta litt tid før startskjermen oppdateres."
+  Title: "Appikon"
+  Error: "Kunne ikke laste inn eller endre appikonet"

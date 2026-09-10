@@ -1753,3 +1753,9 @@ Theme Discovery:
 Connection:
   Reconnecting: "Cysylltiad wedi’i golli. Yn ceisio ailgysylltu…"
   Back Online: "Ar-lein eto"
+
+App Icon:
+  Restart: "Ailgychwyn yr ap"
+  Saved Message: "Eicon wedi'i gadw. Gall gymryd eiliad i'ch lansiwr ddiweddaru."
+  Title: "Eicon yr ap"
+  Error: "Methu llwytho neu newid eicon yr ap"

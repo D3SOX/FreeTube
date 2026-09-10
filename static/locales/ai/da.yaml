@@ -1807,3 +1807,9 @@ Theme Discovery:
 Connection:
   Reconnecting: "Forbindelsen er afbrudt. Forsøger at oprette forbindelse igen…"
   Back Online: "Online igen"
+
+App Icon:
+  Restart: "Genstart appen"
+  Saved Message: "Ikonet er gemt. Det kan tage et øjeblik, før din startskærm opdateres."
+  Title: "Appikon"
+  Error: "Kunne ikke indlæse eller ændre appikonet"

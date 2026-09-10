@@ -2919,3 +2919,9 @@ Theme Discovery:
 Connection:
   Reconnecting: "Verbindung verloren. Verbindung wird wiederhergestellt…"
   Back Online: "Wieder online"
+
+App Icon:
+  Restart: "App neu starten"
+  Saved Message: "Symbol gespeichert. Es kann einen Moment dauern, bis dein Launcher es aktualisiert."
+  Title: "App-Symbol"
+  Error: "Das App-Symbol konnte nicht geladen oder geändert werden"

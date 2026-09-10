@@ -941,3 +941,9 @@ Theme Discovery:
 Connection:
   Reconnecting: "Utracono połączenie. Próba ponownego połączenia…"
   Back Online: "Ponownie online"
+
+App Icon:
+  Restart: "Uruchom aplikację ponownie"
+  Saved Message: "Ikona została zapisana. Aktualizacja programu uruchamiającego może chwilę potrwać."
+  Title: "Ikona aplikacji"
+  Error: "Nie udało się wczytać lub zmienić ikony aplikacji"

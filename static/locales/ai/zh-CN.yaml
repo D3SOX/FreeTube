@@ -1726,3 +1726,9 @@ Theme Discovery:
 Connection:
   Reconnecting: "连接已断开，正在尝试重新连接…"
   Back Online: "已恢复网络连接"
+
+App Icon:
+  Restart: "重启应用"
+  Saved Message: "图标已保存。启动器可能需要一些时间来更新。"
+  Title: "应用图标"
+  Error: "无法加载或更改应用图标"

@@ -3,6 +3,7 @@ package org.opentubex.app;
 import android.app.Activity;
 import android.app.PictureInPictureParams;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.hardware.input.InputManager;
 import android.os.Build;
@@ -96,6 +97,21 @@ public class AndroidUiPlugin extends Plugin {
         getActivity().runOnUiThread(() -> {
             call.resolve();
             getActivity().finishAndRemoveTask();
+        });
+    }
+
+    @PluginMethod
+    public void restartApp(PluginCall call) {
+        getActivity().runOnUiThread(() -> {
+            Intent intent = new Intent(getContext(), RestartActivity.class)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                .putExtra(RestartActivity.EXTRA_PROCESS_ID, android.os.Process.myPid());
+            try {
+                getActivity().startActivity(intent);
+                call.resolve();
+            } catch (RuntimeException error) {
+                call.reject("Unable to restart app", error);
+            }
         });
     }
 

@@ -2941,3 +2941,9 @@ Theme Discovery:
 Connection:
   Reconnecting: "Connection lost. Trying to reconnect…"
   Back Online: "Back online"
+
+App Icon:
+  Restart: "Restart app"
+  Saved Message: "Icon saved. Your launcher may take a moment to update."
+  Title: "App icon"
+  Error: "Unable to load or change the app icon"

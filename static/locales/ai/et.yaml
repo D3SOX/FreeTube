@@ -1728,3 +1728,9 @@ Theme Discovery:
 Connection:
   Reconnecting: "Ühendus katkes. Proovin uuesti ühendada…"
   Back Online: "Taas võrgus"
+
+App Icon:
+  Restart: "Taaskäivita rakendus"
+  Saved Message: "Ikoon on salvestatud. Käivitaja värskendamine võib võtta hetke."
+  Title: "Rakenduse ikoon"
+  Error: "Rakenduse ikooni ei saanud laadida ega muuta"

@@ -114,6 +114,12 @@
         @click="openCustomThemeEditor(selectedCustomThemeId)"
       />
     </FtFlexBox>
+    <FtFlexBox
+      v-if="IS_CAPACITOR"
+      class="appIconActions"
+    >
+      <AppIconSettings />
+    </FtFlexBox>
     <ThemeDiscovery
       :open="showThemeDiscovery"
       @close="showThemeDiscovery = false"
@@ -382,6 +388,7 @@
 </template>
 
 <script setup>
+import AppIconSettings from './AppIconSettings.vue'
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -984,7 +991,8 @@ function handleSmoothScrolling(value) {
 </script>
 
 <style scoped>
-.customThemeActions {
+.customThemeActions,
+.appIconActions {
   margin-block-start: 24px;
 }
 

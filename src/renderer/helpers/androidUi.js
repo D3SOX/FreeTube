@@ -62,6 +62,10 @@ export function exitAndroidApp() {
   return AndroidUi?.exitApp() ?? Promise.resolve()
 }
 
+export function restartAndroidApp() {
+  return AndroidUi?.restartApp() ?? Promise.resolve()
+}
+
 export async function getAndroidHardwareKeyboardState() {
   const result = await (AndroidUi?.getHardwareKeyboardState() ?? Promise.resolve({ attached: false }))
   return result.attached === true

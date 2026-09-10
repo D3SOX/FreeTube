@@ -45,6 +45,7 @@ public class MainActivity extends BridgeActivity {
         registerPlugin(PoTokenPlugin.class);
         registerPlugin(YtDlpPlugin.class);
         registerPlugin(AndroidUiPlugin.class);
+        registerPlugin(AppIconPlugin.class);
         registerPlugin(ScreenshotPlugin.class);
         registerPlugin(PullToRefreshPlugin.class);
         registerPlugin(AndroidStoragePlugin.class);
@@ -54,6 +55,11 @@ public class MainActivity extends BridgeActivity {
         registerPlugin(SabrHttpPlugin.class);
         registerPlugin(VoiceOverHttpPlugin.class);
         super.onCreate(savedInstanceState);
+        try {
+            AppIconPlugin.updateTaskIcon(this);
+        } catch (android.content.pm.PackageManager.NameNotFoundException | RuntimeException error) {
+            android.util.Log.e("AppIcon", "Unable to restore recent apps icon", error);
+        }
         // Honor viewport widths larger than the device for UI scales below 100%.
         getBridge().getWebView().getSettings().setUseWideViewPort(true);
         // Capacitor falls back to addJavascriptInterface when the modern,

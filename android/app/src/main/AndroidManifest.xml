@@ -43,11 +43,6 @@
             android:exported="true">
 
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-
-            <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
@@ -58,6 +53,24 @@
             </intent-filter>
 
         </activity>
+
+        <activity
+            android:name=".LauncherActivity"
+            android:theme="@android:style/Theme.NoDisplay"
+            android:taskAffinity=""
+            android:excludeFromRecents="true"
+            android:exported="true" />
+
+        <activity
+            android:name=".RestartActivity"
+            android:process=":restart"
+            android:taskAffinity="${applicationId}.restart"
+            android:theme="@android:style/Theme.NoDisplay"
+            android:excludeFromRecents="true"
+            android:exported="false" />
+
+        <!-- App icon presets:start -->
+        <!-- App icon presets:end -->
 
         <provider
             android:name="androidx.core.content.FileProvider"

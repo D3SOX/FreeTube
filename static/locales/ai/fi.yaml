@@ -1770,3 +1770,9 @@ Theme Discovery:
 Connection:
   Reconnecting: "Yhteys katkesi. Yritetään yhdistää uudelleen…"
   Back Online: "Jälleen verkossa"
+
+App Icon:
+  Restart: "Käynnistä sovellus uudelleen"
+  Saved Message: "Kuvake tallennettu. Käynnistyssovelluksen päivittyminen voi kestää hetken."
+  Title: "Sovelluskuvake"
+  Error: "Sovelluskuvaketta ei voitu ladata tai vaihtaa"
