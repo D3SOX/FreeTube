@@ -19,7 +19,7 @@ async function mountAvatar(t, nativeResult, componentPath = 'FtChannelAvatar/FtC
   const requests = []
   const timers = new Map()
   const RetryImage = await compileComponent('FtRetryImage.vue', {
-    loadNativeHttp: async () => ({ fetchCapacitorAvatarDataUrl: async src => { requests.push(src); return nativeResult } }),
+    loadNativeHttp: async () => ({ fetchCapacitorAvatarDataUrl: async src => { requests.push(src); return typeof nativeResult === 'function' ? nativeResult() : nativeResult } }),
     setTimeout: callback => { const id = {}; timers.set(id, callback); return id },
     clearTimeout: id => timers.delete(id)
   })
@@ -106,4 +106,18 @@ test('tab preview channel avatars recover before hiding the failed URL', async t
   await fail(f.find('img'))
   assert.deepEqual(f.requests, ['https://yt3.ggpht.com/avatar'])
   assert.equal(f.find('img')?.props.src, 'data:image/png;base64,AA==')
+})
+
+test('unexpected native recovery errors still allow the delayed retry and terminal fallback', async t => {
+  const f = await mountAvatar(t, () => { throw new TypeError('Invalid response headers') })
+  await fail(f.find('img'))
+  assert.ok(f.find('img'))
+  assert.equal(f.timers.size, 1)
+  await fail(f.find('img'))
+  assert.ok(f.find('img'), 'ignore duplicate errors while the retry is pending')
+  for (const callback of f.timers.values()) callback()
+  await Vue.nextTick()
+  assert.match(f.find('img').props.src, /opentubex_retry=/)
+  await fail(f.find('img'))
+  assert.ok(f.find('fallback'))
 })

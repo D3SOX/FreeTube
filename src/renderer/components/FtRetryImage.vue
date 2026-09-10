@@ -57,8 +57,13 @@ async function retryImageLoad(event) {
   const failedSourceVersion = sourceVersion
 
   if (process.env.IS_CAPACITOR) {
-    const { fetchCapacitorAvatarDataUrl } = await import('../helpers/api/capacitor-http')
-    const dataUrl = await fetchCapacitorAvatarDataUrl(props.src)
+    let dataUrl = null
+    try {
+      const { fetchCapacitorAvatarDataUrl } = await import('../helpers/api/capacitor-http')
+      dataUrl = await fetchCapacitorAvatarDataUrl(props.src)
+    } catch {
+      // Native recovery is optional; unexpected failures still get a delayed retry.
+    }
 
     if (failedSourceVersion !== sourceVersion) return
     if (dataUrl !== null) {
