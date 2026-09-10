@@ -142,7 +142,8 @@ Home Page:
   All sections hidden: Tüm bölümler gizli
   All sections hidden description: Bir bölümü yeniden göstermek için Ana Sayfayı özelleştirin.
 Subscriptions:
-  Refresh Errors: "Yenilenemeyen kanallar: {count}. Ayrıntıları kopyalamak için tıklayın."
+  Copy Error Details: "Teknik ayrıntıları kopyala"
+  Refresh Errors: "Yenilenemeyen kanallar: {count}. Ayrıntıları görmek için tıklayın."
   Never show {type} from this channel in feeds again: Bu kanalın {type} içeriklerini akışlarda bir daha gösterme
   Refreshing Subscription Videos: Abonelik videoları yenileniyor
   Refreshing Subscription Shorts: Abonelik kısa videoları yenileniyor

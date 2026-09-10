@@ -142,7 +142,8 @@ Home Page:
   All sections hidden: Svi su odjeljci skriveni
   All sections hidden description: Prilagodite početnu stranicu kako biste ponovno prikazali odjeljak.
 Subscriptions:
-  Refresh Errors: "Kanali koji se nisu mogli osvježiti: {count}. Kliknite za kopiranje pojedinosti."
+  Copy Error Details: "Kopiraj tehničke pojedinosti"
+  Refresh Errors: "Kanali koji se nisu mogli osvježiti: {count}. Kliknite za prikaz pojedinosti."
   Never show {type} from this channel in feeds again: Nikad više ne prikazuj {type} s ovog kanala u sažecima sadržaja
   Refreshing Subscription Videos: Osvježavanje videozapisa iz pretplata
   Refreshing Subscription Shorts: Osvježavanje sadržaja Shorts iz pretplata

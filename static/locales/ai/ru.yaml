@@ -117,7 +117,8 @@ Home Page:
   All sections hidden: Все разделы скрыты
   All sections hidden description: Настройте главную, чтобы снова показать раздел.
 Subscriptions:
-  Refresh Errors: "Каналы, которые не удалось обновить: {count}. Нажмите, чтобы скопировать подробности."
+  Copy Error Details: "Скопировать технические подробности"
+  Refresh Errors: "Каналы, которые не удалось обновить: {count}. Нажмите, чтобы посмотреть подробности."
   Never show {type} from this channel in feeds again: Больше никогда не показывать {type} с этого канала в лентах
   Refreshing Subscription Videos: Обновление видео из подписок
   Refreshing Subscription Shorts: Обновление Shorts из подписок

@@ -142,7 +142,8 @@ Home Page:
   All sections hidden: Atal guztiak ezkutatuta daude
   All sections hidden description: Pertsonalizatu hasiera atal bat berriro erakusteko.
 Subscriptions:
-  Refresh Errors: "Eguneratu ezin izan diren kanalak: {count}. Egin klik xehetasunak kopiatzeko."
+  Copy Error Details: "Kopiatu xehetasun teknikoak"
+  Refresh Errors: "Eguneratu ezin izan diren kanalak: {count}. Egin klik xehetasunak ikusteko."
   Never show {type} from this channel in feeds again: Ez erakutsi berriro kanal honetako {type} jarioetan
   Refreshing Subscription Videos: Harpidetzetako bideoak freskatzen
   Refreshing Subscription Shorts: Harpidetzetako bideo laburrak freskatzen

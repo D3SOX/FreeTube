@@ -171,7 +171,8 @@ Home Page:
   All sections hidden: Vsi razdelki so skriti
   All sections hidden description: Prilagodite domačo stran, da znova prikažete razdelek.
 Subscriptions:
-  Refresh Errors: "Kanali, ki jih ni bilo mogoče osvežiti: {count}. Kliknite za kopiranje podrobnosti."
+  Copy Error Details: "Kopiraj tehnične podrobnosti"
+  Refresh Errors: "Kanali, ki jih ni bilo mogoče osvežiti: {count}. Kliknite za ogled podrobnosti."
   Never show {type} from this channel in feeds again: Nikoli več ne prikazuj vsebine vrste {type} s tega kanala v virih
   Empty Posts: Kanali, na katere ste naročeni, trenutno nimajo objav.
   Load More Posts: Naloži več objav

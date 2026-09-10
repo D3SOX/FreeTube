@@ -142,7 +142,8 @@ Home Page:
   All sections hidden: Όλες οι ενότητες είναι κρυφές
   All sections hidden description: Προσαρμόστε την αρχική για να εμφανίσετε ξανά μια ενότητα.
 Subscriptions:
-  Refresh Errors: "Κανάλια που δεν ήταν δυνατό να ανανεωθούν: {count}. Κάντε κλικ για αντιγραφή λεπτομερειών."
+  Copy Error Details: "Αντιγραφή τεχνικών λεπτομερειών"
+  Refresh Errors: "Κανάλια που δεν ήταν δυνατό να ανανεωθούν: {count}. Κάντε κλικ για προβολή λεπτομερειών."
   Never show {type} from this channel in feeds again: Να μην εμφανίζεται ξανά περιεχόμενο τύπου {type} από αυτό το κανάλι στις ροές
   Refreshing Subscription Videos: Ανανέωση βίντεο συνδρομών
   Refreshing Subscription Shorts: Ανανέωση σύντομων βίντεο συνδρομών

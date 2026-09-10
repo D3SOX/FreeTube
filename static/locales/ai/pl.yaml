@@ -55,7 +55,8 @@ Home Page:
   All sections hidden: Wszystkie sekcje są ukryte
   All sections hidden description: Dostosuj stronę główną, aby ponownie wyświetlić sekcję.
 Subscriptions:
-  Refresh Errors: "Kanały, których nie udało się odświeżyć: {count}. Kliknij, aby skopiować szczegóły."
+  Copy Error Details: "Kopiuj szczegóły techniczne"
+  Refresh Errors: "Kanały, których nie udało się odświeżyć: {count}. Kliknij, aby zobaczyć szczegóły."
   Never show {type} from this channel in feeds again: Nigdy więcej nie pokazuj treści typu {type} z tego kanału w strumieniach
   New Content Tabs: Karty nowych treści
   Show Tabbed View: Pokaż widok kart

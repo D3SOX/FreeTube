@@ -141,7 +141,8 @@ Home Page:
   All sections hidden: All sections are hidden
   All sections hidden description: Customise Home to show a section again.
 Subscriptions:
-  Refresh Errors: "Channels that could not be refreshed: {count}. Click to copy details."
+  Copy Error Details: "Copy technical details"
+  Refresh Errors: "Channels that could not be refreshed: {count}. Click to view details."
   Never show {type} from this channel in feeds again: Never show {type} from this channel in feeds again
   Refreshing Subscription Videos: Refreshing subscription videos
   Refreshing Subscription Shorts: Refreshing subscription shorts

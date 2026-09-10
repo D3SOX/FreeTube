@@ -148,7 +148,8 @@ Home Page:
   All sections hidden: Усе раздзелы схаваны
   All sections hidden description: Наладзьце галоўную, каб зноў паказаць раздзел.
 Subscriptions:
-  Refresh Errors: "Каналы, якія не ўдалося абнавіць: {count}. Націсніце, каб скапіяваць падрабязнасці."
+  Copy Error Details: "Скапіяваць тэхнічныя падрабязнасці"
+  Refresh Errors: "Каналы, якія не ўдалося абнавіць: {count}. Націсніце, каб праглядзець падрабязнасці."
   Never show {type} from this channel in feeds again: Больш не паказваць {type} з гэтага канала ў стужках
   Refreshing Subscription Videos: Абнаўляюцца відэа з падпісак
   Refreshing Subscription Shorts: Абнаўляюцца кароткія відэа з падпісак

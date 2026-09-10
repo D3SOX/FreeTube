@@ -142,7 +142,8 @@ Home Page:
   All sections hidden: Semua bagian disembunyikan
   All sections hidden description: Sesuaikan Beranda untuk menampilkan kembali bagian.
 Subscriptions:
-  Refresh Errors: "Channel yang tidak dapat diperbarui: {count}. Klik untuk menyalin detail."
+  Copy Error Details: "Salin detail teknis"
+  Refresh Errors: "Channel yang tidak dapat diperbarui: {count}. Klik untuk melihat detail."
   Never show {type} from this channel in feeds again: Jangan pernah tampilkan {type} dari channel ini di feed lagi
   Refreshing Subscription Videos: Memperbarui video langganan
   Refreshing Subscription Shorts: Memperbarui Shorts langganan
