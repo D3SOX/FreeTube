@@ -1056,9 +1056,10 @@ test('uses mobile surface taps for controls and keeps an on-video play button', 
   ))).toBeLessThanOrEqual(1)
   const player = page.locator(`${activeTab} .ftVideoPlayer`)
   const surface = player.locator('.shaka-controls-container')
-  const playButtons = player.locator('.shaka-play-button')
+  const playButtons = player.locator('.shaka-big-buttons-container .shaka-play-button')
 
   await expect(playButtons).toHaveCount(1)
+  await expect(player.locator('.shaka-controls-button-panel .shaka-play-button')).toBeVisible()
   await expect(player.locator('.shaka-controls-button-panel .shaka-pip-button')).toBeVisible()
   await expect(player.locator('.shaka-settings-menu .shaka-pip-button')).toHaveCount(0)
   await expect(player.locator('.shaka-mute-button, .shaka-volume-bar-container')).toHaveCount(0)
@@ -1639,15 +1640,16 @@ test.describe('scroll mini player', () => {
       await expect.poll(async () => (await size()).height).toBe(landscape.width)
 
       const handle = player.locator('.scrollMiniResizeHandle')
-      await handle.dispatchEvent('pointerdown', { button: 0, clientX: 0, clientY: 0, pointerId: 1 })
-      await page.evaluate(() => {
-        const rect = document.querySelector('.scrollMiniPlayer').getBoundingClientRect()
+      const handleBounds = await handle.boundingBox()
+      const startX = handleBounds.x + handleBounds.width / 2
+      const startY = handleBounds.y + handleBounds.height / 2
+      const portrait = await size()
+      await handle.dispatchEvent('pointerdown', { button: 0, clientX: startX, clientY: startY, pointerId: 1 })
+      await page.evaluate(({ clientX, clientY }) => {
         for (const type of ['pointermove', 'pointerup']) {
-          window.dispatchEvent(new PointerEvent(type, {
-            clientX: rect.right - 270, clientY: rect.top, pointerId: 1
-          }))
+          window.dispatchEvent(new PointerEvent(type, { clientX, clientY, pointerId: 1 }))
         }
-      })
+      }, { clientX: startX + portrait.width - 270, clientY: startY })
       await expect.poll(async () => (await size()).height).toBe(480)
       await page.locator('.tabBar .tab').first().click()
       const watch = await page.evaluateHandle(findWatchComponent)

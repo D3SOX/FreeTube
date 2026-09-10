@@ -3,9 +3,11 @@ import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { brotliCompressSync } from 'node:zlib'
-import { INTERNET_CHECK_URL } from '../../src/renderer/helpers/internetConnectivity.js'
 
 import { test as base, expect, _electron as electron } from '@playwright/test'
+
+// Shared fixtures also run from the base checkout against candidate builds.
+const INTERNET_CHECK_URL = 'https://connectivitycheck.grapheneos.network/generate_204'
 
 export const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..')
 
