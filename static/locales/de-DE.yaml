@@ -141,6 +141,7 @@ Home Page:
   All sections hidden description: Passe die Startseite an, um wieder einen Bereich anzuzeigen.
 
 Subscriptions:
+  Refresh Errors: "Nicht aktualisierte Kanäle: {count}. Klicken, um Details zu kopieren."
   Never show {type} from this channel in feeds again: Nie wieder {type} von diesem Kanal in Feeds anzeigen
     # On Subscriptions Page
   Subscriptions: Abos

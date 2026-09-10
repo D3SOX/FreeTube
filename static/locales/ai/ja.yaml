@@ -142,6 +142,7 @@ Home Page:
   All sections hidden: すべてのセクションが非表示です
   All sections hidden description: ホームをカスタマイズして、セクションを再表示してください。
 Subscriptions:
+  Refresh Errors: "更新できなかったチャンネル数: {count}。クリックして詳細をコピーします。"
   Never show {type} from this channel in feeds again: このチャンネルの「{type}」をフィードに今後表示しない
   Refreshing Subscription Videos: 登録チャンネルの動画を更新中
   Refreshing Subscription Shorts: 登録チャンネルのショート動画を更新中

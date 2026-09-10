@@ -259,6 +259,7 @@ Home Page:
   All sections hidden description: Customize Home to show a section again.
 
 Subscriptions:
+  Refresh Errors: "Channels that could not be refreshed: {count}. Click to copy details."
   Never show {type} from this channel in feeds again: Never show {type} from this channel in feeds again
     # On Subscriptions Page
   Subscriptions: Subscriptions

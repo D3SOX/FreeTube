@@ -27,7 +27,9 @@ export function createNetworkRecovery({ eventTarget, isOnline, onChange = () => 
   }
 
   function update() {
-    if (!online || [...origins.values()].some(entry => entry.failed)) publish('offline')
+    // A failed origin or subscription refresh is not a device-wide outage.
+    // Keep request recovery independent from the global connection banner.
+    if (!online) publish('offline')
     else if (state === 'offline') publish('restored')
     else if (!state) publish('online')
   }
@@ -95,19 +97,16 @@ export function createNetworkRecovery({ eventTarget, isOnline, onChange = () => 
               try {
                 const result = await task(signal)
                 origin.failed = false
-                update()
                 return result
               } catch (error) {
                 if (signal.aborted) throw createAbortError()
                 const networkError = await isNetworkError(error)
                 if (!networkError) {
                   origin.failed = false
-                  update()
                   throw error
                 }
                 if (!retry) throw error
                 origin.failed = true
-                update()
                 delay = Math.min(delay * 2, 60000)
               }
             }
@@ -117,21 +116,16 @@ export function createNetworkRecovery({ eventTarget, isOnline, onChange = () => 
           }
         }
         try {
-          const result = await task(signal)
-          update()
-          return result
+          return await task(signal)
         } catch (error) {
           if (signal.aborted || !retry || !await isNetworkError(error)) throw error
           origin.failed = true
-          update()
         }
       }
     } finally {
       origin.users--
       if (origin.users === 0) {
         origins.delete(originKey)
-        // Cancellation is not evidence of restored connectivity.
-        if (state === 'offline' && online && ![...origins.values()].some(entry => entry.failed)) publish('online')
       }
     }
   }

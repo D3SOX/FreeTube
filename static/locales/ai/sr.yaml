@@ -144,6 +144,7 @@ Home Page:
   All sections hidden: Сви одељци су сакривени
   All sections hidden description: Прилагодите почетну страницу да бисте поново приказали одељак.
 Subscriptions:
+  Refresh Errors: "Канали које није било могуће освежити: {count}. Кликните да копирате детаље."
   Never show {type} from this channel in feeds again: Никада више не приказуј {type} са овог канала у фидовима
   Refreshing Subscription Videos: Освежавају се видео-снимци из претплата
   Refreshing Subscription Shorts: Освежавају се кратки видео-снимци из претплата

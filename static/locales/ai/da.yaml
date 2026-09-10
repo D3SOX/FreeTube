@@ -144,6 +144,7 @@ Home Page:
   All sections hidden: Alle sektioner er skjult
   All sections hidden description: Tilpas startsiden for at vise en sektion igen.
 Subscriptions:
+  Refresh Errors: "Kanaler, der ikke kunne opdateres: {count}. Klik for at kopiere detaljer."
   Never show {type} from this channel in feeds again: Vis aldrig {type} fra denne kanal i feeds igen
   Refreshing Subscription Videos: Opdaterer videoer fra abonnementer
   Refreshing Subscription Shorts: Opdaterer Shorts fra abonnementer

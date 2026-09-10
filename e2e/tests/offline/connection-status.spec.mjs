@@ -40,3 +40,29 @@ for (const scale of [1, 1.25]) {
     await expect(banner).toBeHidden({ timeout: 5000 })
   })
 }
+
+test('an unavailable service retries quietly while another service remains usable', async ({ page }) => {
+  let failedRequests = 0
+  await page.route('https://unavailable.example/**', route => {
+    failedRequests++
+    return route.abort('connectionrefused')
+  })
+  await page.route('https://connection.example/**', route => route.fulfill({ status: 200, body: 'working' }))
+  await page.evaluate(() => {
+    window.connectionTestController = new AbortController()
+    window.connectionTestPending = fetch('https://unavailable.example/status', {
+      signal: window.connectionTestController.signal
+    }).catch(error => error.name)
+  })
+  try {
+    await expect.poll(() => failedRequests).toBeGreaterThanOrEqual(2)
+    expect(await page.evaluate(() => fetch('https://connection.example/status').then(response => response.text()))).toBe('working')
+    await expect(page.locator('.connectionStatus')).toBeHidden()
+    await expect(page.locator('.toast-slot:not(.persistent-slot)')).toHaveCount(0)
+  } finally {
+    await page.evaluate(async () => {
+      window.connectionTestController.abort()
+      await window.connectionTestPending
+    })
+  }
+})

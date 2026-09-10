@@ -142,6 +142,7 @@ Home Page:
   All sections hidden: Všechny sekce jsou skryté
   All sections hidden description: Přizpůsobte domovskou stránku a některou sekci znovu zobrazte.
 Subscriptions:
+  Refresh Errors: "Kanály, které se nepodařilo obnovit: {count}. Kliknutím zkopírujete podrobnosti."
   Never show {type} from this channel in feeds again: Už nikdy nezobrazovat {type} z tohoto kanálu ve feedech
   Refreshing Subscription Videos: Obnovování videí z odběrů
   Refreshing Subscription Shorts: Obnovování krátkých videí z odběrů

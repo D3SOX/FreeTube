@@ -15,6 +15,7 @@ import {
   parseLocalPlaylistVideos
 } from './api/local'
 import {
+  copyToClipboard,
   getChannelPlaylistId,
   showApiErrorToast,
   showToast,
@@ -58,7 +59,7 @@ let electronRefreshOwnerTabId = null
 
 /**
  * Cancellation state of the refresh this renderer is running, if any.
- * @type {{ cancelled: boolean, tab: string, profileId: string, refreshId: number, controller: AbortController, errorShown: boolean, networkRecovery: ReturnType<typeof createSubscriptionNetworkRecovery> | null } | null}
+ * @type {{ cancelled: boolean, tab: string, profileId: string, refreshId: number, controller: AbortController, errors: Map<string, Set<string>>, errorSummary: ReturnType<typeof createSubscriptionErrorSummary>, networkRecovery: ReturnType<typeof createSubscriptionNetworkRecovery> | null } | null}
  */
 let activeRefresh = null
 let nextRefreshId = 0
@@ -188,20 +189,20 @@ function isRefreshCancelled() {
  * @param {() => Promise<T>} refresh
  * @returns {Promise<T | null>}
  */
-async function withSubscriptionRefreshLock(tab, profileId, refresh) {
+async function withSubscriptionRefreshLock(tab, profileId, refresh, t) {
   if (rendererRefreshReserved || store.getters.getSubscriptionFeedRefreshInProgress) {
     return null
   }
 
   rendererRefreshReserved = true
   try {
-    return await runWithSubscriptionRefreshLock(tab, profileId, refresh)
+    return await runWithSubscriptionRefreshLock(tab, profileId, refresh, t)
   } finally {
     rendererRefreshReserved = false
   }
 }
 
-async function runWithSubscriptionRefreshLock(tab, profileId, refresh) {
+async function runWithSubscriptionRefreshLock(tab, profileId, refresh, t) {
   if (process.env.IS_CAPACITOR && await isAndroidSubscriptionRefreshActive()) {
     return null
   }
@@ -212,7 +213,8 @@ async function runWithSubscriptionRefreshLock(tab, profileId, refresh) {
     const controller = new AbortController()
     activeRefresh = {
       cancelled: false,
-      errorShown: false,
+      errors: new Map(),
+      errorSummary: createSubscriptionErrorSummary(t),
       controller,
       tab,
       profileId,
@@ -234,6 +236,7 @@ async function runWithSubscriptionRefreshLock(tab, profileId, refresh) {
       return await refresh()
     } finally {
       activeRefresh.networkRecovery?.cancel()
+      activeRefresh.errorSummary.finish()
       activeRefresh = null
       window.dispatchEvent(new CustomEvent(SUBSCRIPTION_REFRESH_FINISHED_EVENT, {
         detail: { tab, profileId, refreshId }
@@ -303,6 +306,33 @@ function notifySubscriptionChannelRefreshed(tab) {
   }))
 }
 
+/** Keep confirmed channel failures visible even when another channel keeps retrying. */
+function createSubscriptionErrorSummary(t) {
+  const errors = new Map()
+  const controller = new AbortController()
+  let shown = false
+  return {
+    add(channelId, messages) {
+      if (!messages?.size) return
+      errors.set(channelId, messages)
+      if (shown) return
+      shown = true
+      showToast({
+        message: () => t('Subscriptions.Refresh Errors', { count: errors.size }),
+        time: Infinity,
+        dismissOnAction: false,
+        abortSignal: controller.signal,
+        action: () => copyToClipboard([...errors.values()].flatMap(messages => [...messages]).join('\n')),
+        icon: ['fas', 'circle-exclamation']
+      })
+    },
+    finish() {
+      // Keep the final details available briefly after completion or cancellation.
+      if (shown) setTimeout(() => controller.abort(), 10000)
+    }
+  }
+}
+
 async function fetchSubscriptionsConcurrently(channels, fetchChannel) {
   await mapConcurrently(
     channels,
@@ -330,6 +360,10 @@ async function fetchSubscriptionsConcurrently(channels, fetchChannel) {
         }
       } catch (error) {
         if (!isRefreshCancelled()) throw error
+      }
+
+      if (!isRefreshCancelled()) {
+        activeRefresh.errorSummary.add(channel.id, activeRefresh.errors.get(channel.id))
       }
 
       // Let input and navigation tasks run between parsing/cache updates.
@@ -378,8 +412,10 @@ function handleSubscriptionFetchError(channel, error, title, context) {
   const message = `${channelLabel}: ${diagnostic}`
 
   console.error(`Failed to fetch subscription channel ${channelLabel}: ${diagnostic}`)
-  if (!activeRefresh?.errorShown) {
-    if (activeRefresh) activeRefresh.errorShown = true
+  if (activeRefresh) {
+    if (!activeRefresh.errors.has(channel.id)) activeRefresh.errors.set(channel.id, new Set())
+    activeRefresh.errors.get(channel.id).add(message)
+  } else {
     showApiErrorToast(title, message)
   }
 }
@@ -737,7 +773,8 @@ export function refreshSubscriptionVideosFromRemote(options) {
   return withSubscriptionRefreshLock(
     'videos',
     activeProfile._id,
-    () => refreshSubscriptionVideosFromRemoteUnlocked(options, activeProfile)
+    () => refreshSubscriptionVideosFromRemoteUnlocked(options, activeProfile),
+    options.t
   )
 }
 
@@ -786,6 +823,7 @@ async function refreshSubscriptionVideosFromRemoteUnlocked({
       setSubscriptionRefreshProgress((channelCount / subscriptionList.length) * 100)
 
       if (videos != null) {
+        activeRefresh.errors.delete(channel.id)
         const previousCache = store.getters.getVideoCache[channel.id]
         videos = reconcileFetchedSubscriptionEntries(
           videos,
@@ -843,7 +881,8 @@ export function refreshSubscriptionShortsFromRemote(options) {
   return withSubscriptionRefreshLock(
     'shorts',
     activeProfile._id,
-    () => refreshSubscriptionShortsFromRemoteUnlocked(options, activeProfile)
+    () => refreshSubscriptionShortsFromRemoteUnlocked(options, activeProfile),
+    options.t
   )
 }
 
@@ -883,6 +922,7 @@ async function refreshSubscriptionShortsFromRemoteUnlocked({
       setSubscriptionRefreshProgress((channelCount / subscriptionList.length) * 100)
 
       if (videos != null) {
+        activeRefresh.errors.delete(channel.id)
         const previousCache = store.getters.getShortsCache[channel.id]
         videos = reconcileFetchedSubscriptionEntries(
           videos,
@@ -933,7 +973,8 @@ export function refreshSubscriptionLiveFromRemote(options) {
   return withSubscriptionRefreshLock(
     'live',
     activeProfile._id,
-    () => refreshSubscriptionLiveFromRemoteUnlocked(options, activeProfile)
+    () => refreshSubscriptionLiveFromRemoteUnlocked(options, activeProfile),
+    options.t
   )
 }
 
@@ -982,6 +1023,7 @@ async function refreshSubscriptionLiveFromRemoteUnlocked({
       setSubscriptionRefreshProgress((channelCount / subscriptionList.length) * 100)
 
       if (videos != null) {
+        activeRefresh.errors.delete(channel.id)
         const previousCache = store.getters.getLiveCache[channel.id]
         videos = reconcileFetchedSubscriptionEntries(
           videos,
@@ -1039,7 +1081,8 @@ export function refreshSubscriptionPostsFromRemote(options) {
   return withSubscriptionRefreshLock(
     'posts',
     activeProfile._id,
-    () => refreshSubscriptionPostsFromRemoteUnlocked(options, activeProfile)
+    () => refreshSubscriptionPostsFromRemoteUnlocked(options, activeProfile),
+    options.t
   )
 }
 
@@ -1077,6 +1120,8 @@ async function refreshSubscriptionPostsFromRemoteUnlocked({
       channelCount++
       setSubscriptionRefreshProgress((channelCount / activeSubscriptionList.length) * 100)
 
+      if (posts === null) return
+      activeRefresh.errors.delete(channel.id)
       const previousCache = store.getters.getPostsCache[channel.id]
       posts = reconcileFetchedSubscriptionEntries(
         posts,
@@ -1130,7 +1175,11 @@ async function getChannelPostsLocal(channel, t, errorChannels) {
 
     if (posts === null) {
       errorChannels.push(channel)
-      return []
+      handleSubscriptionFetchError(channel, new Error('Channel unavailable'), t('Local API Error (Click to copy)'), {
+        category: 'subscription posts',
+        backend: 'local API'
+      })
+      return null
     }
 
     return posts
@@ -1145,7 +1194,7 @@ async function getChannelPostsLocal(channel, t, errorChannels) {
       return await getChannelPostsInvidious(channel, t, errorChannels)
     }
 
-    return []
+    return null
   }
 }
 
@@ -1169,7 +1218,7 @@ async function getChannelPostsInvidious(channel, t, errorChannels) {
       return await getChannelPostsLocal(channel, t, errorChannels)
     }
 
-    return []
+    return null
   }
 }
 
@@ -1179,6 +1228,10 @@ async function getChannelVideosLocalScraper(channel, t, errorChannels, failedAtt
 
     if (result === null) {
       errorChannels.push(channel)
+      handleSubscriptionFetchError(channel, new Error('Channel unavailable'), t('Local API Error (Click to copy)'), {
+        category: 'subscription videos',
+        backend: 'local API'
+      })
       return { videos: null }
     }
 
@@ -1211,6 +1264,15 @@ async function getChannelVideosLocalScraper(channel, t, errorChannels, failedAtt
   }
 }
 
+/** Reject HTTP failures before trying to parse an error page as RSS. */
+function checkSubscriptionFeedResponse(response) {
+  if (response.status >= 400) {
+    const error = new Error(`Subscription feed returned HTTP ${response.status}`)
+    error.status = response.status
+    throw error
+  }
+}
+
 async function getChannelVideosLocalRSS(channel, t, errorChannels, failedAttempts = 0) {
   const playlistId = getChannelPlaylistId(channel.id, 'videos', 'newest')
   const feedUrl = `https://www.youtube.com/feeds/videos.xml?playlist_id=${playlistId}`
@@ -1218,16 +1280,13 @@ async function getChannelVideosLocalRSS(channel, t, errorChannels, failedAttempt
   try {
     const response = await localApiFetch(feedUrl, { signal: activeRefresh?.controller.signal })
 
-    if (response.status === 403) {
-      return { videos: null }
-    }
-
     if (response.status === 404) {
       // RSS can return 404 for channels that still exist. Verify through
       // the API instead of treating a second RSS response as channel removal.
       return await getChannelVideosLocalScraper(channel, t, errorChannels, 3)
     }
 
+    checkSubscriptionFeedResponse(response)
     return await parseYouTubeRSSFeed(await response.text(), channel.id)
   } catch (error) {
     handleSubscriptionFetchError(channel, error, t('Local API Error (Click to copy)'), {
@@ -1303,12 +1362,18 @@ async function getChannelVideosInvidiousRSS(channel, t, errorChannels, failedAtt
 
       if (response2.status === 404) {
         errorChannels.push(channel)
+        handleSubscriptionFetchError(channel, Object.assign(new Error('Subscription feed returned HTTP 404'), { status: 404 }), t('Invidious API Error (Click to copy)'), {
+          category: 'subscription videos',
+          backend: 'Invidious RSS'
+        })
         return { videos: null }
       }
 
+      checkSubscriptionFeedResponse(response2)
       return { videos: [] }
     }
 
+    checkSubscriptionFeedResponse(response)
     return await parseYouTubeRSSFeed(await response.text(), channel.id)
   } catch (error) {
     handleSubscriptionFetchError(channel, error, t('Invidious API Error (Click to copy)'), {
@@ -1340,14 +1405,14 @@ async function getChannelShortsLocal(channel, t, errorChannels, failedAttempts =
   try {
     const response = await localApiFetch(feedUrl, { signal: activeRefresh?.controller.signal })
 
-    if (response.status === 403) {
-      return { videos: null }
-    }
-
     if (response.status === 404) {
       const channelPage = await getLocalChannel(channel.id, activeRefresh?.controller.signal)
       if (channelPage.alert) {
         errorChannels.push(channel)
+        handleSubscriptionFetchError(channel, new Error(String(channelPage.alert)), t('Local API Error (Click to copy)'), {
+          category: 'subscription Shorts',
+          backend: 'local API'
+        })
         return { videos: null }
       }
       if (!channelPage.has_shorts) return { videos: [] }
@@ -1357,6 +1422,7 @@ async function getChannelShortsLocal(channel, t, errorChannels, failedAttempts =
       return { videos }
     }
 
+    checkSubscriptionFeedResponse(response)
     const [result, thumbnailEntries] = await Promise.all([
       parseYouTubeRSSFeed(await response.text(), channel.id),
       getLocalShortThumbnailEntries(playlistId)
@@ -1404,12 +1470,18 @@ async function getChannelShortsInvidious(channel, t, errorChannels, failedAttemp
 
       if (response2.status === 404) {
         errorChannels.push(channel)
+        handleSubscriptionFetchError(channel, Object.assign(new Error('Subscription feed returned HTTP 404'), { status: 404 }), t('Invidious API Error (Click to copy)'), {
+          category: 'subscription Shorts',
+          backend: 'Invidious RSS'
+        })
         return { videos: null }
       }
 
+      checkSubscriptionFeedResponse(response2)
       return { videos: [] }
     }
 
+    checkSubscriptionFeedResponse(response)
     const result = await parseYouTubeRSSFeed(await response.text(), channel.id)
     result.videos.forEach(video => { video.isShort = true })
     return result
@@ -1434,6 +1506,10 @@ async function getChannelLiveLocal(channel, t, errorChannels, failedAttempts = 0
 
     if (result === null) {
       errorChannels.push(channel)
+      handleSubscriptionFetchError(channel, new Error('Channel unavailable'), t('Local API Error (Click to copy)'), {
+        category: 'subscription live streams',
+        backend: 'local API'
+      })
       return { videos: null }
     }
 
@@ -1468,14 +1544,11 @@ async function getChannelLiveLocalRSS(channel, t, errorChannels, failedAttempts 
   try {
     const response = await localApiFetch(feedUrl, { signal: activeRefresh?.controller.signal })
 
-    if (response.status === 403) {
-      return { videos: null }
-    }
-
     if (response.status === 404) {
       return await getChannelLiveLocal(channel, t, errorChannels, 3)
     }
 
+    checkSubscriptionFeedResponse(response)
     return await parseYouTubeRSSFeed(await response.text(), channel.id)
   } catch (error) {
     handleSubscriptionFetchError(channel, error, t('Local API Error (Click to copy)'), {
@@ -1551,12 +1624,18 @@ async function getChannelLiveInvidiousRSS(channel, t, errorChannels, failedAttem
 
       if (response2.status === 404) {
         errorChannels.push(channel)
+        handleSubscriptionFetchError(channel, Object.assign(new Error('Subscription feed returned HTTP 404'), { status: 404 }), t('Invidious API Error (Click to copy)'), {
+          category: 'subscription live streams',
+          backend: 'Invidious RSS'
+        })
         return { videos: null }
       }
 
+      checkSubscriptionFeedResponse(response2)
       return { videos: [] }
     }
 
+    checkSubscriptionFeedResponse(response)
     return await parseYouTubeRSSFeed(await response.text(), channel.id)
   } catch (error) {
     handleSubscriptionFetchError(channel, error, t('Invidious API Error (Click to copy)'), {

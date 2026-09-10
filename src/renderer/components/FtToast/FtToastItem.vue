@@ -161,7 +161,7 @@ function performAction() {
   if (!props.toast.action) { return }
 
   props.toast.action()
-  close()
+  if (props.toast.dismissOnAction !== false) close()
 }
 
 /**
