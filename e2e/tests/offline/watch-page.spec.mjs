@@ -3685,7 +3685,8 @@ test.describe('watch page', () => {
     })
     expect(reopenedSeekLeft).toBeLessThan(closedSeekLeft)
 
-    await moreOptions.click({ force: true })
+    await player.locator('.shortsFullscreenVideoSpace').hover({ force: true })
+    await moreOptions.click()
     await expect(overflowMenu).toBeVisible()
     await expect.poll(async () => {
       const [buttonBounds, menuBounds] = await Promise.all([
@@ -3729,11 +3730,16 @@ test.describe('watch page', () => {
     await expect(auxPanel).not.toHaveClass(/shortsAuxPanelOpen/)
 
     await setPlayerFullscreen(page, true)
-    await moreOptions.click({ force: true })
+    await player.locator('.shortsFullscreenVideoSpace').hover({ force: true })
+    await moreOptions.click()
     await overflowMenu.getByRole('button', { name: 'Video information' }).click()
     await expect(player.locator('.fullscreenMetadataOverlay.open')).toBeVisible()
 
-    await moreOptions.click({ force: true })
+    // Cover reopening the menu after playback controls have auto-hidden.
+    await page.mouse.move(0, 0)
+    await expect(player.locator('.shortsTopControls')).toBeHidden()
+    await player.locator('.shortsFullscreenVideoSpace').hover({ force: true })
+    await moreOptions.click()
     await expect(overflowMenu).toBeVisible()
     await setPlayerFullscreen(page, false)
     await expect(overflowMenu).toBeHidden()
