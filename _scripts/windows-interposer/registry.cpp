@@ -269,12 +269,20 @@ template<typename T> void Hook(const char* name, T replacement, T& original)
 
 void InstallRegistryHooks()
 {
-    query = reinterpret_cast<Query>(GetProcAddress(GetModuleHandleW(L"ntdll.dll"), "NtQueryKey"));
+    HMODULE ntdll = GetModuleHandleW(L"ntdll.dll");
+    query = reinterpret_cast<Query>(GetProcAddress(ntdll, "NtQueryKey"));
     if (!query) throw std::runtime_error("NtQueryKey unavailable");
-    HKEY currentUser;
-    if (RegOpenCurrentUser(KEY_READ, &currentUser) != ERROR_SUCCESS) throw std::runtime_error("Cannot resolve current user");
-    userPath = KeyPath(currentUser);
-    RegCloseKey(currentUser);
+    // DLL attach holds the loader lock. Format the path from the user token
+    // through ntdll, without opening/querying registry keys through Advapi32.
+    using FormatUserPath = NTSTATUS(NTAPI*)(PUNICODE_STRING);
+    using FreeString = void(NTAPI*)(PUNICODE_STRING);
+    auto formatUserPath = reinterpret_cast<FormatUserPath>(GetProcAddress(ntdll, "RtlFormatCurrentUserKeyPath"));
+    auto freeString = reinterpret_cast<FreeString>(GetProcAddress(ntdll, "RtlFreeUnicodeString"));
+    if (!formatUserPath || !freeString) throw std::runtime_error("Native user path functions unavailable");
+    UNICODE_STRING currentUser{};
+    if (formatUserPath(&currentUser) < 0) throw std::runtime_error("Cannot resolve current user");
+    userPath = Upper(std::wstring(currentUser.Buffer, currentUser.Length / sizeof(wchar_t)));
+    freeString(&currentUser);
     if (userPath.empty()) throw std::runtime_error("Cannot resolve user registry path");
     HMODULE self;
     if (!GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,

@@ -38,7 +38,10 @@ const peHeaderOffsetPosition = 0x3C
 const peHeaderSignature = 0x00004550
 const peSignatureSize = 4
 const coffHeaderSize = 20
+const coffOptionalHeaderSizeOffset = 16
 const coffCharacteristicsOffset = 18
+const pe32PlusMinimumHeaderSize = 112
+const pe32PlusMagic = 0x20B
 const windowsX64Machine = 0x8664
 const imageFileDll = 0x2000
 
@@ -72,6 +75,13 @@ export function verifyWindowsX64Dll (contents) {
   )
   if ((characteristics & imageFileDll) === 0) {
     throw new Error('LANCommander Interposer is not a DLL')
+  }
+  const optionalHeaderOffset = coffHeaderOffset + coffHeaderSize
+  const optionalHeaderSize = contents.readUInt16LE(coffHeaderOffset + coffOptionalHeaderSizeOffset)
+  if (optionalHeaderSize < pe32PlusMinimumHeaderSize ||
+      optionalHeaderOffset + optionalHeaderSize > contents.length ||
+      contents.readUInt16LE(optionalHeaderOffset) !== pe32PlusMagic) {
+    throw new Error('LANCommander Interposer has an invalid PE32+ optional header')
   }
 }
 

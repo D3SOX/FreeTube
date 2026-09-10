@@ -71,18 +71,35 @@ test('rejects invalid, non-DLL, and non-x64 Interposer binaries', () => {
   const peHeaderSignature = 0x00004550
   const machinePosition = peHeaderOffset + 4
   const coffHeaderSize = 20
+  const optionalHeaderSizePosition = machinePosition + 16
+  const optionalHeaderPosition = machinePosition + coffHeaderSize
+  const optionalHeaderSize = 240
   const characteristicsPosition = machinePosition + 18
   const windowsArm64Machine = 0xAA64
   const windowsX64Machine = 0x8664
   const imageFileDll = 0x2000
-  const x64Binary = Buffer.alloc(0x80)
+  const x64Binary = Buffer.alloc(optionalHeaderPosition + optionalHeaderSize)
   x64Binary.writeUInt16LE(dosHeaderSignature, 0)
   x64Binary.writeUInt32LE(peHeaderOffset, peHeaderOffsetPosition)
   x64Binary.writeUInt32LE(peHeaderSignature, peHeaderOffset)
   x64Binary.writeUInt16LE(windowsX64Machine, machinePosition)
   x64Binary.writeUInt16LE(imageFileDll, characteristicsPosition)
+  x64Binary.writeUInt16LE(optionalHeaderSize, optionalHeaderSizePosition)
+  x64Binary.writeUInt16LE(0x20B, optionalHeaderPosition)
 
   assert.doesNotThrow(() => verifyWindowsX64Dll(x64Binary))
+  for (const invalidSize of [0, 111, optionalHeaderSize + 1]) {
+    x64Binary.writeUInt16LE(invalidSize, optionalHeaderSizePosition)
+    assert.throws(() => verifyWindowsX64Dll(x64Binary), /invalid PE32\+ optional header/)
+  }
+  x64Binary.writeUInt16LE(optionalHeaderSize, optionalHeaderSizePosition)
+  assert.throws(
+    () => verifyWindowsX64Dll(x64Binary.subarray(0, optionalHeaderPosition)),
+    /invalid PE32\+ optional header/
+  )
+  x64Binary.writeUInt16LE(0x10B, optionalHeaderPosition)
+  assert.throws(() => verifyWindowsX64Dll(x64Binary), /invalid PE32\+ optional header/)
+  x64Binary.writeUInt16LE(0x20B, optionalHeaderPosition)
   const truncatedHeader = x64Binary.subarray(
     0,
     peHeaderOffset + 4 + coffHeaderSize - 1
@@ -97,4 +114,3 @@ test('rejects invalid, non-DLL, and non-x64 Interposer binaries', () => {
   x64Binary.writeUInt16LE(windowsArm64Machine, machinePosition)
   assert.throws(() => verifyWindowsX64Dll(x64Binary), /not an x64 DLL/)
 })
-
