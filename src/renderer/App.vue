@@ -3872,7 +3872,7 @@ function handleClick(event) {
 }
 
 async function handleMobileLinkContextMenu(event) {
-  if (event.target instanceof Element && event.target.closest('.ft-list-video')) return
+  if (event.target instanceof Element && event.target.closest('.ft-list-video') && !event.target.closest('.channelName')) return
   const link = getEventLink(event)
   if (!link) return
 

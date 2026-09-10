@@ -3,6 +3,7 @@ import { test, expect, goTo } from '../../helpers/app.mjs'
 const VIDEO_ID = 'jNQXAC9IVRw'
 
 const SEED = {
+  settings: { backendFallback: true },
   history: [{
     _id: VIDEO_ID,
     videoId: VIDEO_ID,
@@ -23,16 +24,16 @@ const SEED = {
 
 test.use({ seed: SEED })
 
-test('the whole video card offers one menu with video and link actions', async ({ page, app, attachScreenshot }) => {
+test('video thumbnails, titles, and metadata share one menu', async ({ page, app, attachScreenshot }) => {
   await goTo(page, 'history')
   const card = page.locator('.ft-list-video').first()
   await expect(card.getByTitle('More Options', { exact: true })).toHaveCount(0)
   const menu = page.getByRole('menu', { name: 'Context menu', exact: true })
 
-  for (const selector of ['.thumbnailImage', '.h3Title', '.channelName', '.videoInfo', '.info']) {
+  for (const selector of ['.thumbnailImage', '.h3Title', '.videoInfo']) {
     await card.locator(selector).first().click({ button: 'right' })
     await expect(menu).toBeVisible()
-    for (const label of ['Play Next', 'Add to Queue', 'Mark As Watched', 'Remove From History', 'Copy YouTube Link', 'Open in a New Tab', 'Open in a New Window']) {
+    for (const label of ['Play Next', 'Add to Queue', 'Mark As Watched', 'Remove From History', 'Copy Link', 'Open in a New Tab', 'Open in a New Window']) {
       await expect(menu.getByRole('menuitem', { name: label, exact: true })).toBeVisible()
     }
     await page.keyboard.press('Escape')
@@ -47,6 +48,7 @@ test('the whole video card offers one menu with video and link actions', async (
   await attachScreenshot('unified video context menu')
   await page.keyboard.press('ArrowDown')
   await expect(menu.getByRole('menuitem').nth(1)).toBeFocused()
+  await menu.getByRole('menuitem', { name: 'Copy Link', exact: true }).click()
   await menu.getByRole('menuitem', { name: 'Copy YouTube Link', exact: true }).click()
   await expect.poll(() => app.electronApp.evaluate(({ clipboard }) => clipboard.readText())).toBe(`https://youtu.be/${VIDEO_ID}`)
   await expect(card.locator('.title')).toBeFocused()
@@ -62,7 +64,7 @@ test('the whole video card offers one menu with video and link actions', async (
 
 for (const uiScale of [100, 125]) {
   test.describe(`video context menu at ${uiScale}% UI scale`, () => {
-    test.use({ seed: { ...SEED, settings: { uiScale } } })
+    test.use({ seed: { ...SEED, settings: { ...SEED.settings, uiScale } } })
 
     test('touch opens the menu without navigating and keeps actions within the viewport', async ({ page }) => {
       await goTo(page, 'history')
@@ -81,7 +83,7 @@ for (const uiScale of [100, 125]) {
           await expect(menu).toBeVisible({ timeout: 3000 })
           await session.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] })
           await expect(page).toHaveURL(/#\/history/)
-          const actions = menu.getByRole('menuitem')
+          const actions = menu.getByRole('menuitem').filter({ visible: true })
           await expect(actions.first()).toHaveCSS('font-size', '16px')
           expect(await actions.evaluateAll(elements => Math.min(...elements.map(element => element.getBoundingClientRect().height)))).toBeGreaterThanOrEqual(47.99)
           expect(await menu.evaluate(element => {
@@ -90,6 +92,10 @@ for (const uiScale of [100, 125]) {
           })).toBe(true)
           await actions.last().scrollIntoViewIfNeeded()
           await expect(actions.last()).toBeInViewport()
+          await menu.getByRole('menuitem', { name: 'Copy Link', exact: true }).click()
+          const copy = menu.getByRole('menuitem', { name: 'Copy YouTube Link', exact: true })
+          await expect(copy).toBeVisible()
+          await expect(copy).toBeInViewport()
           await page.keyboard.press('Escape')
           await expect(menu).toHaveCount(0)
         }
@@ -107,23 +113,27 @@ test('clamps a menu after actions disappear and resets it after resizing', async
   await card.locator('.title').click({ button: 'right' })
   const menu = page.locator('.contextMenu')
   const scroller = menu.locator('.menuScroll')
-  await menu.getByRole('menuitem').last().scrollIntoViewIfNeeded()
+  await menu.evaluate(element => { element.style.maxHeight = '150px' })
+  const header = menu.locator('.tabMenuHeader')
+  const headerBounds = await header.boundingBox()
+  await menu.getByRole('menuitem').filter({ visible: true }).last().scrollIntoViewIfNeeded()
   await expect.poll(() => scroller.evaluate(element => element.scrollTop)).toBeGreaterThan(0)
+  expect(await header.boundingBox()).toEqual(headerBounds)
   await page.evaluate(() => document.querySelector('#app').__vue_app__.config.globalProperties.$store.commit('setHideSharingActions', true))
-  await expect(menu.getByRole('menuitem', { name: 'Copy YouTube Link', exact: true })).toHaveCount(0)
+  await expect(menu.getByRole('menuitem', { name: 'Copy Link', exact: true })).toHaveCount(0)
   await expect.poll(() => scroller.evaluate(element => {
     const content = element.querySelector('.menuContent')
     const end = content.offsetTop + content.offsetHeight
     return Math.abs(element.scrollTop - Math.max(0, end - element.clientHeight))
   })).toBeLessThanOrEqual(1)
-  await expect(menu.getByRole('menuitem').last()).toBeInViewport()
+  await expect(menu.getByRole('menuitem').filter({ visible: true }).last()).toBeInViewport()
   await page.setViewportSize({ width: 1200, height: 1000 })
   await expect(menu).toHaveCount(0)
   await card.locator('.title').click({ button: 'right' })
   await expect.poll(() => scroller.evaluate(element => element.scrollTop)).toBe(0)
   await expect(scroller.locator('.os-scrollbar-vertical')).toHaveClass(/os-scrollbar-unusable/)
   await expect(menu.getByRole('menuitem').first()).toBeInViewport()
-  await expect(menu.getByRole('menuitem').last()).toBeInViewport()
+  await expect(menu.getByRole('menuitem').filter({ visible: true }).last()).toBeInViewport()
 })
 
 test('opens the selected video in a new tab', async ({ page }) => {
@@ -156,10 +166,12 @@ for (const playlistType of ['youtube', 'user']) {
         ['Invidious', `${invidious}/watch?v=${VIDEO_ID}`, '&']
       ]) {
         await card.locator('.title').click({ button: 'right' })
+        await menu.getByRole('menuitem', { name: 'Copy Link', exact: true }).click()
         await menu.getByRole('menuitem', { name: `Copy ${service} Link`, exact: true }).click()
         await expect.poll(() => app.electronApp.evaluate(({ clipboard }) => clipboard.readText()))
           .toBe(playlistType === 'youtube' ? `${url}${separator}list=${playlistId}` : url)
         await card.locator('.title').click({ button: 'right' })
+        await menu.getByRole('menuitem', { name: 'Copy Link', exact: true }).click()
         const withoutPlaylist = menu.getByRole('menuitem', { name: `Copy ${service} link without playlist`, exact: true })
         if (playlistType === 'youtube') {
           await withoutPlaylist.click()
@@ -193,7 +205,93 @@ test('retains image and selected-text actions alongside video actions', async ({
   await card.locator('.h3Title').click({ button: 'right' })
   await expect(menu.getByRole('menuitem', { name: 'Copy', exact: true })).toBeVisible()
   await expect(menu.getByRole('menuitem', { name: /Search.*Video menu test/ }).first()).toBeVisible()
-  await expect(menu.getByRole('menuitem', { name: 'Copy YouTube Link', exact: true })).toBeVisible()
+  await expect(menu.getByRole('menuitem', { name: 'Copy Link', exact: true })).toBeVisible()
   await menu.getByRole('menuitem', { name: 'Copy', exact: true }).click()
   await expect.poll(() => app.electronApp.evaluate(({ clipboard }) => clipboard.readText())).toBe('Video menu test')
+})
+
+test('channel names keep their channel context menu', async ({ page, app }) => {
+  await goTo(page, 'history')
+  const channel = page.locator('.ft-list-video .channelName').first()
+  await channel.locator('.channelNameText').click({ button: 'right' })
+  const menu = page.locator('.contextMenu')
+  await expect(menu).toBeVisible()
+  for (const name of ['Add to Queue', 'Play Next', 'Mark As Watched', 'Remove From History', 'Download Video']) {
+    await expect(menu.getByRole('menuitem', { name, exact: true })).toHaveCount(0)
+  }
+  await menu.getByRole('menuitem', { name: 'Copy YouTube Link', exact: true }).click()
+  await expect.poll(() => app.electronApp.evaluate(({ clipboard }) => clipboard.readText()))
+    .toBe('https://www.youtube.com/channel/UCaaaaaaaaaaaaaaaaaaaaaa')
+  await channel.focus()
+  await page.keyboard.press('Shift+F10')
+  await expect(menu).toBeVisible()
+  await expect(menu.getByRole('menuitem', { name: 'Add to Queue', exact: true })).toHaveCount(0)
+  await menu.getByRole('menuitem', { name: 'Copy YouTube Link', exact: true }).click()
+  await expect.poll(() => app.electronApp.evaluate(({ clipboard }) => clipboard.readText()))
+    .toBe('https://www.youtube.com/channel/UCaaaaaaaaaaaaaaaaaaaaaa')
+})
+
+test('compact header and link submenus support keyboard navigation', async ({ page }) => {
+  await goTo(page, 'history')
+  await page.locator('.ft-list-video .title').first().focus()
+  await page.keyboard.press('Shift+F10')
+  const menu = page.locator('.contextMenu')
+  const quickActions = menu.locator('.tabQuickActions button')
+  await expect(quickActions).toHaveCount(4)
+  const tops = await quickActions.evaluateAll(buttons => buttons.map(button => button.getBoundingClientRect().top))
+  expect(new Set(tops).size).toBe(1)
+  await page.keyboard.press('ArrowRight')
+  await expect(quickActions.nth(1)).toBeFocused()
+  const copy = menu.getByRole('menuitem', { name: 'Copy Link', exact: true })
+  await copy.focus()
+  await page.keyboard.press('ArrowRight')
+  await expect(menu.getByRole('menuitem', { name: 'Copy YouTube Link', exact: true })).toBeFocused()
+  await page.keyboard.press('ArrowLeft')
+  await expect(copy).toBeFocused()
+  await menu.getByRole('menuitem', { name: 'Open Link', exact: true }).click()
+  await expect(menu.getByRole('menuitem', { name: 'Open in YouTube', exact: true })).toBeVisible()
+})
+
+test('inline link choices clamp scrolling when collapsed on narrow screens', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 500 })
+  await goTo(page, 'history')
+  await page.locator('.ft-list-video .title').first().click({ button: 'right' })
+  const menu = page.locator('.contextMenu')
+  await menu.evaluate(element => { element.style.maxHeight = '200px' })
+  await menu.getByRole('menuitem', { name: 'Copy Link', exact: true }).focus()
+  const scroller = menu.locator('.menuScroll')
+  await scroller.evaluate(element => { element.scrollTop = element.scrollHeight })
+  await expect.poll(() => scroller.evaluate(element => element.scrollTop)).toBeGreaterThan(0)
+  await page.mouse.move(0, 0)
+  await menu.locator('.tabQuickActions button').first().focus()
+  await expect(menu.getByRole('menuitem', { name: 'Copy YouTube Link', exact: true })).toBeHidden()
+  await expect.poll(() => scroller.evaluate(element => {
+    const content = element.querySelector('.menuContent')
+    return element.scrollTop <= Math.max(0, content.offsetTop + content.offsetHeight - element.clientHeight) + 1
+  })).toBe(true)
+  await expect(menu.getByRole('menuitem', { name: 'Open Link', exact: true })).toBeInViewport()
+})
+
+test.describe('single link choice', () => {
+  test.use({
+    seed: {
+      ...SEED,
+      settings: { backendFallback: false, backendPreference: 'local' },
+      history: [{ ...SEED.history[0], authorId: null }]
+    }
+  })
+
+  test('shows the copy action directly when it is the only choice', async ({ page, app }) => {
+    await goTo(page, 'history')
+    await page.locator('.ft-list-video .title').first().click({ button: 'right' })
+    const menu = page.locator('.contextMenu')
+    await expect(menu.getByRole('menuitem', { name: 'Copy Link', exact: true })).toHaveCount(0)
+    await expect(menu.getByRole('menuitem', { name: 'Open Link', exact: true })).toHaveCount(0)
+    await expect(menu.getByRole('menuitem', { name: 'Open in YouTube', exact: true })).toBeVisible()
+    const copy = menu.getByRole('menuitem', { name: 'Copy YouTube Link', exact: true })
+    await expect(copy).toBeVisible()
+    await expect(copy).not.toHaveAttribute('aria-haspopup', 'menu')
+    await copy.click()
+    await expect.poll(() => app.electronApp.evaluate(({ clipboard }) => clipboard.readText())).toBe(`https://youtu.be/${VIDEO_ID}`)
+  })
 })

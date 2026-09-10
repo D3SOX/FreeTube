@@ -1183,14 +1183,43 @@ function getInvidiousChannelUrl() {
   return `${currentInvidiousInstanceUrl.value}/channel/${channelId.value}`
 }
 
-const videoContextMenuItems = computed(() => videoMenuOptions.value.map(option => option.type === 'divider'
-  ? { type: 'separator' }
-  : {
-      label: option.label,
-      icon: option.icon,
-      enabled: !option.disabled,
-      run: () => handleOptionsClick(option.value)
-    }))
+const videoContextMenuItems = computed(() => {
+  const items = videoMenuOptions.value.map(option => option.type === 'divider'
+    ? { type: 'separator' }
+    : {
+        label: option.label,
+        actionId: option.value,
+        quickAction: ['openNewTab', 'openNewWindow', 'playNext', 'addToQueue'].includes(option.value),
+        icon: option.icon,
+        enabled: !option.disabled,
+        run: () => handleOptionsClick(option.value)
+      })
+  const copyItems = items.filter(item => item.actionId?.startsWith('copy'))
+  const openItems = items.filter(item => ['openYoutube', 'openInvidious', 'openYoutubeChannel', 'openInvidiousChannel'].includes(item.actionId))
+  const rows = items.filter(item => !copyItems.includes(item) && !openItems.includes(item))
+  if (copyItems.length || openItems.length) rows.push({ type: 'separator' })
+  if (copyItems.length) {
+    rows.push(copyItems.length === 1
+      ? copyItems[0]
+      : {
+          label: t('Share.Copy Link'),
+          icon: ['fas', 'link'],
+          enabled: true,
+          submenu: copyItems
+        })
+  }
+  if (openItems.length) {
+    rows.push(openItems.length === 1
+      ? openItems[0]
+      : {
+          label: t('Share.Open Link'),
+          icon: ['fas', 'external-link-alt'],
+          enabled: true,
+          submenu: openItems
+        })
+  }
+  return rows
+})
 
 let menuHoldTimer = null
 let menuHoldPosition = null
@@ -1216,7 +1245,7 @@ function suppressMenuHoldClick(event) {
 
 function startMenuHold(event) {
   cancelMenuHold()
-  if (event.pointerType !== 'touch' || !event.isPrimary || event.target.closest('button, [role="dialog"], [role="menu"], .iconDropdown')) return
+  if (event.pointerType !== 'touch' || !event.isPrimary || event.target.closest('button, .channelName, [role="dialog"], [role="menu"], .iconDropdown')) return
   menuHoldPosition = { x: event.clientX, y: event.clientY }
   menuHoldTimer = setTimeout(() => openVideoContextMenu(event), 500)
 }
@@ -1232,8 +1261,8 @@ onBeforeUnmount(() => {
 
 function openVideoContextMenu(event) {
   const target = event.target
-  // Dialogs and dropdowns inside the card keep their own interactions.
-  if (target.closest('[role="dialog"], [role="menu"], .iconDropdown')) return
+  // Channel names, dialogs, and dropdowns keep their own context menus.
+  if (target.closest('.channelName, [role="dialog"], [role="menu"], .iconDropdown')) return
 
   event.preventDefault()
   event.stopPropagation()
@@ -1257,8 +1286,6 @@ function openVideoContextMenu(event) {
 
 function handleContextMenuKeydown(event) {
   if (event.key !== 'ContextMenu' && !(event.shiftKey && event.key === 'F10')) return
-  event.preventDefault()
-  event.stopPropagation()
   openVideoContextMenu(event)
 }
 

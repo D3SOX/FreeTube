@@ -16,7 +16,7 @@
         @pointerdown.stop
       >
         <div
-          v-if="tabColorMenu"
+          v-if="tabColorMenu || videoQuickActions.length"
           class="tabMenuHeader"
           role="none"
         >
@@ -26,7 +26,7 @@
             :aria-label="t('Context Menu.Context Menu')"
           >
             <button
-              v-for="item in tabQuickActions"
+              v-for="item in quickActions"
               :key="item.actionId"
               class="menuItem iconButton"
               :class="{ disabled: !item.enabled }"
@@ -45,6 +45,7 @@
             </button>
           </div>
           <div
+            v-if="tabColorMenu"
             class="tabColorPalette"
             role="group"
             :aria-label="localizedLabel(tabColorMenu)"
@@ -102,6 +103,7 @@
                   role="menuitem"
                   :disabled="!item.enabled"
                   aria-haspopup="menu"
+                  @click="$event.currentTarget.focus()"
                   @pointerdown.prevent
                 >
                   <FtContextMenuItemIcon
@@ -241,7 +243,7 @@ const displayedItems = computed(() => {
     : item)
 })
 
-// Keep the action payloads intact; only the desktop tab menu's presentation changes.
+// Keep action payloads intact when moving frequent commands into the header.
 const tabColorMenu = computed(() => displayedItems.value.find(item => item.labelKey === 'Context Menu.Tab Color'))
 const quickActionKeys = [
   ['Reload Tab', 'Reload Tabs'],
@@ -252,10 +254,12 @@ const quickActionKeys = [
 const tabQuickActions = computed(() => tabColorMenu.value
   ? quickActionKeys.map(keys => displayedItems.value.find(item => keys.includes(item.labelKey))).filter(Boolean)
   : [])
+const videoQuickActions = computed(() => localItems.value
+  ? displayedItems.value.filter(item => item.quickAction)
+  : [])
+const quickActions = computed(() => tabColorMenu.value ? tabQuickActions.value : videoQuickActions.value)
 const menuRows = computed(() => {
-  if (!tabColorMenu.value) return displayedItems.value
-
-  const rows = displayedItems.value.filter(item => item !== tabColorMenu.value && !tabQuickActions.value.includes(item))
+  const rows = displayedItems.value.filter(item => item !== tabColorMenu.value && !quickActions.value.includes(item))
   return rows.filter((item, index) => item.type !== 'separator' || (
     index > 0 && index < rows.length - 1 && rows[index - 1].type !== 'separator'
   ))
@@ -449,6 +453,12 @@ async function showMenu(menuItems, menuSessionId, clientX, clientY, request) {
   scrollResizeObserver = new ResizeObserver(() => {
     for (const scroller of scrollports) {
       clampOverlayScrollTop(scroller, scroller.querySelector(':scope > .menuContent'))
+    }
+    if (localItems.value && menuRef.value) {
+      position.value = {
+        ...position.value,
+        y: Math.max(8, Math.min(position.value.y, window.innerHeight - menuRef.value.offsetHeight - 8))
+      }
     }
     positionOpenSubmenu()
   })
