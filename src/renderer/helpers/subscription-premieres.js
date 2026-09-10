@@ -55,13 +55,18 @@ export function getLocalSubscriptionPremiereUpdate(html, videoId) {
     if (details?.videoId !== videoId) return null
     const isUpcoming = details.isUpcoming === true
     if (player.playabilityStatus?.status !== 'OK' && !isUpcoming) return null
-    const broadcast = player.microformat?.playerMicroformatRenderer?.liveBroadcastDetails
+    const microformat = player.microformat?.playerMicroformatRenderer
+    const broadcast = microformat?.liveBroadcastDetails
     // Finished premieres can omit isLive entirely once they become VODs.
     const live = broadcast?.isLiveNow ?? details.isLive ??
       (numericCount(details.lengthSeconds) > 0 ? false : undefined)
     if (typeof live !== 'boolean') return null
     const liveNow = live && !isUpcoming
     const update = stateUpdate(liveNow, isUpcoming)
+    if (!liveNow && !isUpcoming && typeof microformat?.publishDate === 'string') {
+      const published = Date.parse(microformat.publishDate)
+      if (Number.isFinite(published) && published > 0) update.published = published
+    }
     if ((liveNow || isUpcoming) && typeof details.isLiveContent === 'boolean') {
       update.isPremiere = !details.isLiveContent
     }
@@ -85,6 +90,12 @@ export function getLocalSubscriptionPremiereUpdate(html, videoId) {
 export function getInvidiousSubscriptionPremiereUpdate(video, videoId) {
   if (video?.error || video?.videoId !== videoId || typeof video.liveNow !== 'boolean') return null
   const update = stateUpdate(video.liveNow, video.isUpcoming === true)
+  if (!update.liveNow && !update.isUpcoming) {
+    const published = typeof video.published === 'number' && Number.isFinite(video.published)
+      ? video.published * 1000
+      : undefined
+    if (Number.isFinite(published) && published > 0) update.published = published
+  }
   const viewCount = numericCount(video.viewCount)
   const lengthSeconds = numericCount(video.lengthSeconds)
   if (viewCount !== undefined) update.viewCount = viewCount

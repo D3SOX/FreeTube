@@ -6,13 +6,55 @@ import vm from 'node:vm'
 import { getLocalSubscriptionPremiereUpdate, getInvidiousSubscriptionPremiereUpdate, shouldRefreshSubscriptionPremiere } from '../../src/renderer/helpers/subscription-premieres.js'
 import { mapConcurrently } from '../../src/renderer/helpers/concurrent-map.js'
 import { getSubscriptionsForFeed } from '../../src/renderer/helpers/subscription-channels.js'
+import { formatDate, formatDateTime } from '../../src/renderer/helpers/dateFormat.js'
+
+const cardSource = await readFile(new URL('../../src/renderer/components/FtListVideo/FtListVideo.vue', import.meta.url), 'utf8')
+const dateStart = cardSource.indexOf('function updateUploadedTime()')
+const dateSource = cardSource.slice(dateStart, cardSource.indexOf('\nfunction ', dateStart + 1))
+
+for (const backend of ['local', 'invidious']) {
+  test(`${backend} completed premiere displays its publication date instead of January 1970`, () => {
+    const update = backend === 'local'
+      ? getLocalSubscriptionPremiereUpdate(html({ live: false }), videoId)
+      : getInvidiousSubscriptionPremiereUpdate({ videoId, liveNow: false, lengthSeconds: 4540 }, videoId)
+    const published = 1789026626910
+    const context = {
+      props: { data: { published, ...update } },
+      uploadedTime: { value: '' },
+      uploadedTimeIsRelative: { value: false },
+      published: { value: undefined },
+      locale: { value: 'en-US' },
+      dateFormat: { value: 'locale' },
+      timeFormat: { value: 'locale' },
+      isLive: { value: false },
+      isStation: { value: false },
+      inHistory: { value: false },
+      formatDate,
+      formatDateTime,
+      getRelativeTimeFromDate(timestamp) {
+        assert.equal(timestamp, published)
+        return '2 hours ago'
+      }
+    }
+    let error
+    try {
+      vm.runInNewContext(`${dateSource}\nupdateUploadedTime()`, context)
+    } catch (caught) {
+      error = caught
+    }
+    assert.equal(context.uploadedTime.value, '2 hours ago')
+    assert.equal(error, undefined)
+    assert.equal(context.published.value, published)
+    assert.equal(context.uploadedTimeIsRelative.value, true)
+  })
+}
 
 const videoId = 'premiere123'
-function html({ live = true, upcoming = false, watching = '2,500', status = 'OK' } = {}) {
+function html({ live = true, upcoming = false, watching = '2,500', status = 'OK', microformat = {} } = {}) {
   return `<script>var ytInitialPlayerResponse = ${JSON.stringify({
     playabilityStatus: { status },
     videoDetails: { videoId, isLive: live, isLiveContent: false, isUpcoming: upcoming, viewCount: '9000', lengthSeconds: '702' },
-    microformat: { playerMicroformatRenderer: { liveBroadcastDetails: { isLiveNow: live && !upcoming } } }
+    microformat: { playerMicroformatRenderer: { liveBroadcastDetails: { isLiveNow: live && !upcoming }, ...microformat } }
   })}; var ytInitialData = ${JSON.stringify({ contents: { videoViewCountRenderer: {
     viewCount: { runs: [{ text: watching }, { text: ' watching now' }] }, isLive: true
   } } })};</script>`
@@ -128,6 +170,41 @@ function createRefresh(fetch) {
   })
   return { refresh, getters, writes }
 }
+
+for (const backend of ['local', 'invidious']) {
+  test(`${backend} completion replaces the cached live fetch time with the fetched publication date`, async () => {
+    const published = Date.parse('2026-09-10T16:00:00Z')
+    const { refresh, getters, writes } = createRefresh(async () => backend === 'local'
+      ? new Response(html({ live: false, microformat: { publishDate: '2026-09-10T16:00:00Z' } }))
+      : Response.json({ videoId, liveNow: false, published: published / 1000 }))
+    getters.getBackendPreference = backend
+    getters.getVideoCache.channel.videos[0].published = published + 30 * 60 * 1000
+    await refresh(() => true)
+    assert.equal(writes[0].videos[0].published, published)
+    assert.equal(writes[0].videos[0].isPremiere, false)
+    assert.equal(writes[0].timestamp.getTime(), 1000)
+  })
+}
+
+test('completion does not replace cached publication dates with missing or invalid metadata', () => {
+  for (const publishDate of [undefined, null, '', 'invalid', 0, '1970-01-01']) {
+    const update = getLocalSubscriptionPremiereUpdate(html({ live: false, microformat: { publishDate } }), videoId)
+    assert.equal(Object.hasOwn(update, 'published'), false)
+  }
+  for (const published of [undefined, null, '', 'invalid', '1789026626', true, 0, -1, Infinity]) {
+    const update = getInvidiousSubscriptionPremiereUpdate({ videoId, liveNow: false, published }, videoId)
+    assert.equal(Object.hasOwn(update, 'published'), false)
+  }
+})
+
+test('running and upcoming premieres keep their cached publication date', () => {
+  for (const upcoming of [false, true]) {
+    const local = getLocalSubscriptionPremiereUpdate(html({ upcoming, microformat: { publishDate: '2026-09-10T06:37:06Z' } }), videoId)
+    const invidious = getInvidiousSubscriptionPremiereUpdate({ videoId, liveNow: !upcoming, isUpcoming: upcoming, published: 1789022226 }, videoId)
+    assert.equal(Object.hasOwn(local, 'published'), false)
+    assert.equal(Object.hasOwn(invidious, 'published'), false)
+  }
+})
 
 test('polling preserves seen state and the last full channel refresh timestamp', async () => {
   const { refresh, writes } = createRefresh(async () => new Response(html()))
