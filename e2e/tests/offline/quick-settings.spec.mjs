@@ -428,11 +428,11 @@ test.describe('quick settings menu', () => {
     ]
 
     for (const pair of pairs) {
-      const controls = pair.map(settingId => menu.locator(`[data-setting-id="${settingId}"]`))
-      const [first, second] = await Promise.all(controls.map(control => control.evaluate(element => {
-        const { x, y, width } = element.getBoundingClientRect()
+      // Measure both controls in one frame while the menu animates.
+      const [first, second] = await menu.evaluate((element, settingIds) => settingIds.map(settingId => {
+        const { x, y, width } = element.querySelector(`[data-setting-id="${settingId}"]`).getBoundingClientRect()
         return { x, y, width }
-      })))
+      }), pair)
       expect(Math.abs(first.y - second.y)).toBeLessThanOrEqual(1)
       expect(second.x).toBeGreaterThan(first.x + first.width)
     }
