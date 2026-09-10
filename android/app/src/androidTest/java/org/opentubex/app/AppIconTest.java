@@ -33,6 +33,24 @@ import java.util.concurrent.atomic.AtomicReference;
 @RunWith(AndroidJUnit4.class)
 public class AppIconTest {
     @Test
+    public void missingLauncherIconDoesNotPreventStartup() throws Exception {
+        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        String original = AppIconPlugin.current(context);
+        try {
+            for (ActivityInfo alias : AppIconPlugin.aliases(context)) {
+                context.getPackageManager().setComponentEnabledSetting(
+                    new ComponentName(context.getPackageName(), alias.name),
+                    PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
+            }
+            try (ActivityScenario<MainActivity> scenario = ActivityScenario.launch(MainActivity.class)) {
+                assertEquals(Lifecycle.State.RESUMED, scenario.getState());
+            }
+        } finally {
+            AppIconPlugin.select(context, original);
+        }
+    }
+
+    @Test
     public void recentsUsesSelectedIconOnLaunchAndAfterSelection() throws Exception {
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         String original = AppIconPlugin.current(context);

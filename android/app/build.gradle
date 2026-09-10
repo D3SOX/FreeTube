@@ -22,6 +22,7 @@ def generateAppIconPresets = tasks.register('generateAppIconPresets', Exec) {
     commandLine 'node', '_scripts/brand/generate-app-icon-presets.mjs'
     inputs.files(
         rootProject.file('../src/appIconPresets.js'),
+        rootProject.file('../src/constants.js'),
         rootProject.file('../_scripts/brand/generate-app-icon-presets.mjs'),
         file('src/main/AndroidManifest.xml'),
         file('src/main/res/drawable/ic_launcher_monochrome.xml'),

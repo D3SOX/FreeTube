@@ -57,7 +57,7 @@ public class MainActivity extends BridgeActivity {
         super.onCreate(savedInstanceState);
         try {
             AppIconPlugin.updateTaskIcon(this);
-        } catch (android.content.pm.PackageManager.NameNotFoundException error) {
+        } catch (android.content.pm.PackageManager.NameNotFoundException | RuntimeException error) {
             android.util.Log.e("AppIcon", "Unable to restore recent apps icon", error);
         }
         // Honor viewport widths larger than the device for UI scales below 100%.
