@@ -556,6 +556,7 @@ Settings:
       Scroll Mini Player: Vierityksen minisoitin
       When Scrolling Down: Pidä minisoitin näkyvissä alaspäin vieritettäessä
       On All Tabs: Pidä minisoitin näkyvissä välilehteä vaihdettaessa
+      On Navigation: Jatka toistoa poistuttaessa videosivulta
     Multiply Seek Interval by Playback Rate: Kerro siirtymisväli toistonopeudella
     Show Playback Rate Adjusted Timestamp: Näytä toistonopeuteen mukautettu aikaleima
     Use YouTube-style Shorts: Käytä YouTube-tyylisiä Shortseja

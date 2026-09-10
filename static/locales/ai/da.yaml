@@ -567,6 +567,7 @@ Settings:
       Scroll Mini Player: Miniafspiller ved rulning
       When Scrolling Down: Behold en miniafspiller på skærmen, når der rulles ned
       On All Tabs: Behold en miniafspiller på skærmen, når der skiftes fane
+      On Navigation: Fortsæt afspilning, når videosiden forlades
     Multiply Seek Interval by Playback Rate: Gang spoleintervallet med afspilningshastigheden
     Show Playback Rate Adjusted Timestamp: Vis tidsangivelse justeret efter afspilningshastighed
     Use YouTube-style Shorts: Brug Shorts i YouTube-stil

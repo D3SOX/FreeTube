@@ -558,6 +558,7 @@ Settings:
       Scroll Mini Player: Minileitor ao deslocar
       When Scrolling Down: Manter um minileitor no ecrã ao deslocar para baixo
       On All Tabs: Manter um minileitor no ecrã ao mudar de separador
+      On Navigation: Continuar a reprodução ao sair da página do vídeo
     Multiply Seek Interval by Playback Rate: Multiplicar o intervalo de avanço pela velocidade de reprodução
     Show Playback Rate Adjusted Timestamp: Mostrar marca temporal ajustada à velocidade de reprodução
     Use YouTube-style Shorts: Usar Shorts ao estilo do YouTube

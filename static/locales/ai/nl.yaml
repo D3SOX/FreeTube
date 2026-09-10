@@ -556,6 +556,7 @@ Settings:
       Scroll Mini Player: Minispeler tijdens scrollen
       When Scrolling Down: Minispeler in beeld houden tijdens omlaag scrollen
       On All Tabs: Minispeler in beeld houden bij wisselen van tabblad
+      On Navigation: Blijven afspelen bij het verlaten van de videopagina
     Multiply Seek Interval by Playback Rate: Zoekinterval vermenigvuldigen met afspeelsnelheid
     Show Playback Rate Adjusted Timestamp: Tijdsaanduiding aangepast aan afspeelsnelheid tonen
     Use YouTube-style Shorts: Shorts in YouTube-stijl gebruiken

@@ -7,13 +7,20 @@
     :inert="!isPresented"
     :aria-hidden="String(!isPresented)"
   >
+    <TabWatchContent
+      v-if="initialized"
+      :key="tab.refreshKey || 0"
+      :tab-id="tab.id"
+      :route="resolvedRoute"
+      :presented="isPresented"
+    />
     <KeepAlive
       include="AboutRoute"
       :max="1"
     >
       <component
         :is="resolvedComponent"
-        v-if="initialized && resolvedComponent"
+        v-if="initialized && resolvedComponent && !resolvedRoute.path.startsWith('/watch/')"
         :key="resolvedComponentKey"
         class="routerView"
       />
@@ -35,6 +42,7 @@ import {
   watch
 } from 'vue'
 import { routeLocationKey, routerKey } from 'vue-router'
+import TabWatchContent from './TabWatchContent.vue'
 
 import store from '../../store/index'
 import { resolveRouteComponent } from '../../router/index'

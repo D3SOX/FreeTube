@@ -548,6 +548,7 @@ Settings:
       Scroll Mini Player: スクロール時のミニプレーヤー
       When Scrolling Down: 下へスクロールしたときもミニプレーヤーを画面に表示
       On All Tabs: タブを切り替えてもミニプレーヤーを画面に表示
+      On Navigation: 動画ページを離れても再生を続ける
     Multiply Seek Interval by Playback Rate: シーク間隔を再生速度に合わせる
     Show Playback Rate Adjusted Timestamp: 再生速度を反映した時刻を表示
     Use YouTube-style Shorts: YouTube形式のショート動画を使用

@@ -548,6 +548,7 @@ Settings:
       Scroll Mini Player: Minipřehrávač při posouvání
       When Scrolling Down: Při posouvání dolů ponechat na obrazovce minipřehrávač
       On All Tabs: Při přepínání karet ponechat na obrazovce minipřehrávač
+      On Navigation: Pokračovat v přehrávání při opuštění stránky videa
     Multiply Seek Interval by Playback Rate: Násobit interval posunu rychlostí přehrávání
     Show Playback Rate Adjusted Timestamp: Zobrazovat čas upravený podle rychlosti přehrávání
     Use YouTube-style Shorts: Používat krátká videa ve stylu YouTube

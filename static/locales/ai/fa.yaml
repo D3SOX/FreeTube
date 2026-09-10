@@ -572,6 +572,7 @@ Settings:
       Scroll Mini Player: پخش‌کنندهٔ کوچک هنگام پیمایش
       When Scrolling Down: هنگام پیمایش به پایین، پخش‌کنندهٔ کوچک را روی صفحه نگه دار
       On All Tabs: هنگام جابه‌جایی میان برگه‌ها، پخش‌کنندهٔ کوچک را روی صفحه نگه دار
+      On Navigation: ادامهٔ پخش هنگام خروج از صفحهٔ ویدیو
     Multiply Seek Interval by Playback Rate: ضرب فاصلهٔ پرش در سرعت پخش
     Show Playback Rate Adjusted Timestamp: نمایش زمان هماهنگ‌شده با سرعت پخش
     Use YouTube-style Shorts: استفاده از ویدیوهای کوتاه به سبک YouTube

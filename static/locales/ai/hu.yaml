@@ -548,6 +548,7 @@ Settings:
       Scroll Mini Player: Görgetéskor megjelenő minilejátszó
       When Scrolling Down: Minilejátszó a képernyőn lefelé görgetéskor
       On All Tabs: Minilejátszó a képernyőn lapváltáskor
+      On Navigation: Lejátszás folytatása a videóoldal elhagyásakor
     Multiply Seek Interval by Playback Rate: Keresési időköz szorzása a lejátszási sebességgel
     Show Playback Rate Adjusted Timestamp: Lejátszási sebességhez igazított időbélyeg megjelenítése
     Use YouTube-style Shorts: YouTube-stílusú Shorts használata

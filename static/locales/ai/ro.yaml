@@ -552,6 +552,7 @@ Settings:
       Scroll Mini Player: Miniplayer la derulare
       When Scrolling Down: Păstrează un miniplayer pe ecran la derularea în jos
       On All Tabs: Păstrează un miniplayer pe ecran la schimbarea filelor
+      On Navigation: Continuă redarea când părăsești pagina videoclipului
     Multiply Seek Interval by Playback Rate: Înmulțește intervalul de salt cu viteza de redare
     Show Playback Rate Adjusted Timestamp: Afișează marcajul temporal ajustat la viteza de redare
     Use YouTube-style Shorts: Folosește videoclipuri Shorts în stil YouTube

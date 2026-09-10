@@ -549,6 +549,7 @@ Settings:
       Scroll Mini Player: Sürüşdürərkən kiçik oynadıcı
       When Scrolling Down: Aşağı sürüşdürərkən kiçik oynadıcını ekranda saxla
       On All Tabs: Vərəqləri dəyişərkən kiçik oynadıcını ekranda saxla
+      On Navigation: Video səhifəsindən çıxarkən oxutmağa davam et
     Multiply Seek Interval by Playback Rate: Keçid intervalını oynatma sürətinə vur
     Rotate Wide Videos to Landscape in Fullscreen: Tam ekranda enli videoları üfüqi istiqamətə çevir
     Swipe Up or Down to Enter or Exit Fullscreen: Tam ekrana keçmək və ya ondan çıxmaq üçün yuxarı və ya aşağı sürüşdür

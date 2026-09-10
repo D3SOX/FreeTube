@@ -716,6 +716,7 @@ Settings:
       Scroll Mini Player: 스크롤 미니 플레이어
       When Scrolling Down: 아래로 스크롤할 때 미니 플레이어를 화면에 유지
       On All Tabs: 탭을 전환할 때 미니 플레이어를 화면에 유지
+      On Navigation: 동영상 페이지를 벗어나도 계속 재생
     Multiply Seek Interval by Playback Rate: 탐색 간격에 재생 속도 곱하기
     Show Playback Rate Adjusted Timestamp: 재생 속도가 반영된 시간 표시
     Use YouTube-style Shorts: YouTube 스타일 Shorts 사용

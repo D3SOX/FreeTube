@@ -556,6 +556,7 @@ Settings:
       Scroll Mini Player: Trình phát thu nhỏ khi cuộn
       When Scrolling Down: Giữ trình phát thu nhỏ trên màn hình khi cuộn xuống
       On All Tabs: Giữ trình phát thu nhỏ trên màn hình khi chuyển thẻ
+      On Navigation: Tiếp tục phát khi rời khỏi trang video
     Multiply Seek Interval by Playback Rate: Nhân khoảng tua với tốc độ phát
     Show Playback Rate Adjusted Timestamp: Hiện mốc thời gian đã điều chỉnh theo tốc độ phát
     Use YouTube-style Shorts: Dùng video ngắn kiểu YouTube

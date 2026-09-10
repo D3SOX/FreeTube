@@ -774,6 +774,7 @@ Settings:
       Scroll Mini Player: Minireproductor en desplaçar-se
       When Scrolling Down: Manté un minireproductor a la pantalla en desplaçar-se avall
       On All Tabs: Manté un minireproductor a la pantalla en canviar de pestanya
+      On Navigation: Continua la reproducció en sortir de la pàgina del vídeo
     Skip by Scrolling Over Video Player: Salta desplaçant la roda sobre el reproductor de vídeo
     Multiply Seek Interval by Playback Rate: Multiplica l'interval de salt per la velocitat de reproducció
     Enter Fullscreen on Display Rotate: Entra a pantalla completa en girar la pantalla

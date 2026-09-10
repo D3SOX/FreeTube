@@ -987,6 +987,7 @@ Settings:
       Scroll Mini Player: Scroll mini player
       When Scrolling Down: Keep a mini player on screen when scrolling down
       On All Tabs: Keep a mini player on screen when switching tabs
+      On Navigation: Keep playing when navigating away from a video
     Scroll Volume Over Video Player: Scroll Volume Over Video Player
     Scroll Playback Rate Over Video Player: Scroll Playback Rate Over Video Player
     Skip by Scrolling Over Video Player: Skip by Scrolling Over Video Player

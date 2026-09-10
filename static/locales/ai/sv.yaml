@@ -550,6 +550,7 @@ Settings:
       Scroll Mini Player: Minispelare vid rullning
       When Scrolling Down: Behåll en minispelare på skärmen när du rullar nedåt
       On All Tabs: Behåll en minispelare på skärmen när du byter flik
+      On Navigation: Fortsätt spela när du lämnar videosidan
     Multiply Seek Interval by Playback Rate: Multiplicera hoppintervallet med uppspelningshastigheten
     Show Playback Rate Adjusted Timestamp: Visa tidsangivelse justerad efter uppspelningshastigheten
     Use YouTube-style Shorts: Använd Shorts i YouTube-stil

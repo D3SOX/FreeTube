@@ -548,6 +548,7 @@ Settings:
       Scroll Mini Player: Mini-lecteur lors du défilement
       When Scrolling Down: Garder un mini-lecteur à l’écran lors du défilement vers le bas
       On All Tabs: Garder un mini-lecteur à l’écran lors du changement d’onglet
+      On Navigation: Continuer la lecture en quittant la page de la vidéo
     Multiply Seek Interval by Playback Rate: Multiplier l’intervalle de déplacement par la vitesse de lecture
     Show Playback Rate Adjusted Timestamp: Afficher le temps ajusté à la vitesse de lecture
     Use YouTube-style Shorts: Utiliser des Shorts de style YouTube

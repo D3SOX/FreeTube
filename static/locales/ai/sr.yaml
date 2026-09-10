@@ -565,6 +565,7 @@ Settings:
       Scroll Mini Player: Мини-плејер при померању
       When Scrolling Down: Задржи мини-плејер на екрану при померању надоле
       On All Tabs: Задржи мини-плејер на екрану при промени картице
+      On Navigation: Настави репродукцију при напуштању странице видеа
     Multiply Seek Interval by Playback Rate: Помножи интервал премотавања брзином репродукције
     Show Playback Rate Adjusted Timestamp: Прикажи временску ознаку прилагођену брзини репродукције
     Use YouTube-style Shorts: Користи Shorts у стилу YouTube-а

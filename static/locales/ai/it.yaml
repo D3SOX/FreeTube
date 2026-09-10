@@ -548,6 +548,7 @@ Settings:
       Scroll Mini Player: Mini lettore durante lo scorrimento
       When Scrolling Down: Mantieni un mini lettore sullo schermo durante lo scorrimento verso il basso
       On All Tabs: Mantieni un mini lettore sullo schermo quando si cambia scheda
+      On Navigation: Continua la riproduzione quando esci dalla pagina del video
     Multiply Seek Interval by Playback Rate: Moltiplica l'intervallo di avanzamento per la velocità di riproduzione
     Show Playback Rate Adjusted Timestamp: Mostra il tempo adattato alla velocità di riproduzione
     Use YouTube-style Shorts: Usa Shorts in stile YouTube

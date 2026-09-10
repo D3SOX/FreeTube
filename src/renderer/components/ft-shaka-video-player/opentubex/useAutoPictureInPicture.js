@@ -1,7 +1,8 @@
 import { isAppHidden } from '../../../helpers/appVisibility.js'
-import { computed, watch } from 'vue'
+import { computed, inject, watch } from 'vue'
 
 import store from '../../../store/index'
+import { watchNavigationKey } from '../../../tabs/TabContext'
 import { setAndroidAutoPictureInPicture } from '../../../helpers/androidUi'
 import {
   applyFocusState,
@@ -47,9 +48,11 @@ export function useAutoPictureInPicture({
   isPictureInPictureRestorePending = () => false,
   initialState = null
 }) {
+  const watchNavigation = inject(watchNavigationKey, null)
   const isActiveTab = computed(() => {
     return isTabPresented?.value !== false
   })
+  const isPictureInPictureTabActive = computed(() => watchNavigation?.tabPresented.value ?? isActiveTab.value)
   const isAndroidPictureInPictureTarget = computed(() => {
     return isActiveTab.value || isCrossTabMiniPlayerPresented?.value === true
   })
@@ -86,7 +89,7 @@ export function useAutoPictureInPicture({
   function shouldAutoPipNow() {
     return shouldAutoPictureInPicture(state, {
       canAutoPip: canAutoPipNow(),
-      isActiveTab: isActiveTab.value,
+      isActiveTab: isPictureInPictureTabActive.value,
       triggerOnTabChange: triggerOnTabChange.value,
       triggerOnMinimize: triggerOnMinimize.value,
       triggerOnBlur: triggerOnBlur.value
@@ -269,7 +272,7 @@ export function useAutoPictureInPicture({
       window.addEventListener('focus', refreshFocusState)
       window.addEventListener('blur', refreshFocusState)
     }
-    stopActiveTabWatch = watch(isActiveTab, updateAutoPip)
+    stopActiveTabWatch = watch([isActiveTab, isPictureInPictureTabActive], updateAutoPip)
     recoverStalePictureInPicture()
   }
 

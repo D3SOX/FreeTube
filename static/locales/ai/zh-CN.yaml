@@ -548,6 +548,7 @@ Settings:
       Scroll Mini Player: 滚动时使用迷你播放器
       When Scrolling Down: 向下滚动时在屏幕上保留迷你播放器
       On All Tabs: 切换标签页时在屏幕上保留迷你播放器
+      On Navigation: 离开视频页面时继续播放
     Multiply Seek Interval by Playback Rate: 按播放速度倍增快进快退间隔
     Show Playback Rate Adjusted Timestamp: 显示按播放速度调整后的时间戳
     Use YouTube-style Shorts: 使用 YouTube 风格的短视频

@@ -548,6 +548,7 @@ Settings:
       Scroll Mini Player: Kaydırma mini oynatıcısı
       When Scrolling Down: Aşağı kaydırırken mini oynatıcıyı ekranda tut
       On All Tabs: Sekme değiştirirken mini oynatıcıyı ekranda tut
+      On Navigation: Video sayfasından ayrılırken oynatmaya devam et
     Multiply Seek Interval by Playback Rate: Sarma Aralığını Oynatma Hızıyla Çarp
     Show Playback Rate Adjusted Timestamp: Oynatma Hızına Göre Ayarlanmış Zaman Damgasını Göster
     Use YouTube-style Shorts: YouTube Tarzı Kısa Videoları Kullan

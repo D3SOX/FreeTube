@@ -550,6 +550,7 @@ Settings:
       Scroll Mini Player: Миниплейър при превъртане
       When Scrolling Down: Показване на миниплейър при превъртане надолу
       On All Tabs: Показване на миниплейър при превключване между раздели
+      On Navigation: Продължаване на възпроизвеждането при напускане на страницата на видеоклипа
     Multiply Seek Interval by Playback Rate: Умножаване на интервала за превъртане по скоростта на възпроизвеждане
     Show Playback Rate Adjusted Timestamp: Показване на времето, коригирано спрямо скоростта на възпроизвеждане
     Use YouTube-style Shorts: Използване на кратки видеоклипове в стила на YouTube Shorts
