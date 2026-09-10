@@ -321,19 +321,46 @@ test.describe('default appearance', () => {
     })
   })
 
+  test('uses bundled Geist by default and keeps Roboto selectable', async ({ app, page }) => {
+    await goToSettingsSection(page, 'theme')
+
+    const appFont = page.getByRole('combobox', { name: 'App font' })
+    await expect(appFont).toHaveText('Geist')
+    expect(await page.evaluate(async () => {
+      const faces = await document.fonts.load('16px "Geist Variable"')
+      return faces.length > 0 && faces.every(face => face.status === 'loaded')
+    })).toBe(true)
+    expect(await page.locator('body').evaluate(body => getComputedStyle(body).fontFamily))
+      .toContain('Geist Variable')
+
+    await appFont.click()
+    const fontOptions = page.getByRole('option')
+    await expect(fontOptions.nth(0)).toHaveText('Geist')
+    await expect(fontOptions.nth(1)).toHaveText('Roboto')
+    await expect(fontOptions.nth(2)).toHaveText('System default')
+    await page.getByRole('option', { name: 'Roboto', exact: true }).click()
+    await expect(appFont).toHaveText('Roboto')
+
+    ;({ page } = await app.relaunch())
+    expect(await page.locator('body').evaluate(body => getComputedStyle(body).fontFamily))
+      .toContain('Roboto')
+  })
+
   test('lists installed fonts and persists the selected app font', async ({ app, page }) => {
     await goToSettingsSection(page, 'theme')
 
     const appFont = page.getByRole('combobox', { name: 'App font' })
-    await expect(appFont).toHaveText('Roboto')
+    await expect(appFont).toHaveText('Geist')
     await expect(page.locator('.select').filter({ has: appFont }).locator('.select-icon')).toBeVisible()
     await appFont.click()
 
     const fontDropdown = page.locator(`#${await appFont.getAttribute('aria-controls')}`)
     const fontOptions = fontDropdown.getByRole('option')
     await expect.poll(() => fontOptions.count()).toBeGreaterThan(3)
-    await expect(fontOptions.nth(0)).toHaveText('Roboto')
-    await expect(fontOptions.nth(1)).toHaveText('System default')
+    await expect(fontOptions.getByText('Roboto', { exact: true })).toHaveCount(1)
+    await expect(fontOptions.nth(0)).toHaveText('Geist')
+    await expect(fontOptions.nth(1)).toHaveText('Roboto')
+    await expect(fontOptions.nth(2)).toHaveText('System default')
     await expect(fontDropdown).toHaveClass(/below/)
     expect(await page.evaluate(([buttonId, dropdownId]) => {
       const button = document.getElementById(buttonId).getBoundingClientRect()
@@ -374,8 +401,9 @@ test.describe('default appearance', () => {
       .toContain(selectedFont)
 
     await appFont.click()
-    await expect(fontOptions.nth(0)).toHaveText('Roboto')
-    await expect(fontOptions.nth(1)).toHaveText('System default')
+    await expect(fontOptions.nth(0)).toHaveText('Geist')
+    await expect(fontOptions.nth(1)).toHaveText('Roboto')
+    await expect(fontOptions.nth(2)).toHaveText('System default')
     await expect(fontOptions.nth(3)).toHaveText(selectedFont)
     await expect(fontOptions.nth(3)).toHaveAttribute('aria-selected', 'true')
     await appFont.click()
@@ -397,8 +425,9 @@ test.describe('default appearance', () => {
     const relaunchedFontOptions = page.locator(`#${await relaunchedAppFont.getAttribute('aria-controls')}`)
       .getByRole('option')
     await expect.poll(() => relaunchedFontOptions.count()).toBeGreaterThan(3)
-    await expect(relaunchedFontOptions.nth(0)).toHaveText('Roboto')
-    await expect(relaunchedFontOptions.nth(1)).toHaveText('System default')
+    await expect(relaunchedFontOptions.nth(0)).toHaveText('Geist')
+    await expect(relaunchedFontOptions.nth(1)).toHaveText('Roboto')
+    await expect(relaunchedFontOptions.nth(2)).toHaveText('System default')
     await expect(relaunchedFontOptions.nth(3)).toHaveText(selectedFont)
     await expect(relaunchedFontOptions.nth(3)).toHaveAttribute('aria-selected', 'true')
   })

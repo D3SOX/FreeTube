@@ -478,6 +478,7 @@
 </template>
 
 <script setup>
+import '@fontsource-variable/geist'
 import FtRetryImage from './components/FtRetryImage.vue'
 import { initializeAndroidYtDlp, ytDlp } from './helpers/ytDlp'
 import { parseAutomaticDownloadRules } from './helpers/automaticDownloadRules'

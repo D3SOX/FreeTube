@@ -26,6 +26,7 @@ updates:
       - dependency-name: "@capawesome/capacitor-screen-orientation"
       - dependency-name: "@capawesome/capacitor-settings-launcher"
       - dependency-name: "@capawesome/capacitor-volume"
+      - dependency-name: "@fontsource-variable/geist"
       - dependency-name: "@hpke/core"
       - dependency-name: "@iconify-json/material-symbols"
       - dependency-name: "@iconify-json/ri"
