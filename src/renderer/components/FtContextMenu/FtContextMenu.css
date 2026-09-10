@@ -290,13 +290,6 @@
   }
 }
 
-@media (any-pointer: coarse) {
-  .videoMenu .menuItem {
-    min-block-size: 48px;
-    font-size: 16px;
-  }
-}
-
 @media (width <= 600px) {
   .videoMenu .submenu {
     position: static;
