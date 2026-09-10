@@ -1772,3 +1772,19 @@ Theme Discovery:
 Connection:
   Reconnecting: "Conexiune pierdută. Se încearcă reconectarea…"
   Back Online: "Din nou online"
+
+UnifiedPush:
+  Description: "Primește notificări printr-un furnizor UnifiedPush instalat pe acest dispozitiv."
+  Sender Hint: "Un expeditor compatibil trebuie să folosească datele tale de conexiune. Aceasta nu activează alertele automate pentru videoclipuri YouTube noi."
+  Provider: "Furnizor"
+  No Providers: "Instalează și configurează un distribuitor UnifiedPush, precum ntfy sau NextPush, apoi reîmprospătează."
+  Connect: "Conectare"
+  Disconnect: "Deconectare"
+  Refresh: "Reîmprospătare"
+  Waiting: "Se așteaptă furnizorul…"
+  Connected: "Conectat"
+  Failed: "Conectarea a eșuat. Verifică furnizorul, permisiunea pentru notificări și cheia VAPID, apoi încearcă din nou."
+  Unavailable: "Furnizor indisponibil"
+  VAPID Key: "Cheie publică VAPID (opțional)"
+  Copy Connection: "Copiază datele conexiunii"
+  Copied: "Datele conexiunii au fost copiate"

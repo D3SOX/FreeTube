@@ -1748,3 +1748,19 @@ Theme Discovery:
 Connection:
   Reconnecting: "انقطع الاتصال. جارٍ محاولة إعادة الاتصال…"
   Back Online: "تم الاتصال مجددًا"
+
+UnifiedPush:
+  Description: "استقبل الإشعارات عبر مزوّد UnifiedPush مثبّت على هذا الجهاز."
+  Sender Hint: "يجب أن يستخدم مرسل متوافق تفاصيل اتصالك. هذا لا يفعّل التنبيهات التلقائية لفيديوهات YouTube الجديدة."
+  Provider: "المزوّد"
+  No Providers: "ثبّت موزّع UnifiedPush مثل ntfy أو NextPush واضبطه، ثم حدّث القائمة."
+  Connect: "اتصال"
+  Disconnect: "قطع الاتصال"
+  Refresh: "تحديث"
+  Waiting: "بانتظار المزوّد…"
+  Connected: "متصل"
+  Failed: "تعذّر الاتصال. تحقّق من المزوّد وإذن الإشعارات ومفتاح VAPID، ثم أعد المحاولة."
+  Unavailable: "المزوّد غير متاح"
+  VAPID Key: "مفتاح VAPID العام (اختياري)"
+  Copy Connection: "نسخ تفاصيل الاتصال"
+  Copied: "نُسخت تفاصيل الاتصال"

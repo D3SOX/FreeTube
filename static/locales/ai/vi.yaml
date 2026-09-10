@@ -1760,3 +1760,19 @@ Theme Discovery:
 Connection:
   Reconnecting: "Mất kết nối. Đang thử kết nối lại…"
   Back Online: "Đã trực tuyến trở lại"
+
+UnifiedPush:
+  Description: "Nhận thông báo qua nhà cung cấp UnifiedPush được cài trên thiết bị này."
+  Sender Hint: "Bên gửi tương thích phải sử dụng thông tin kết nối của bạn. Tính năng này không bật thông báo tự động về video YouTube mới."
+  Provider: "Nhà cung cấp"
+  No Providers: "Cài đặt và cấu hình ứng dụng phân phối UnifiedPush như ntfy hoặc NextPush, rồi làm mới."
+  Connect: "Kết nối"
+  Disconnect: "Ngắt kết nối"
+  Refresh: "Làm mới"
+  Waiting: "Đang chờ nhà cung cấp…"
+  Connected: "Đã kết nối"
+  Failed: "Không thể kết nối. Kiểm tra nhà cung cấp, quyền thông báo và khóa VAPID, rồi thử lại."
+  Unavailable: "Nhà cung cấp không khả dụng"
+  VAPID Key: "Khóa công khai VAPID (tùy chọn)"
+  Copy Connection: "Sao chép thông tin kết nối"
+  Copied: "Đã sao chép thông tin kết nối"

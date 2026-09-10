@@ -1726,3 +1726,19 @@ Theme Discovery:
 Connection:
   Reconnecting: "Pripojenie sa stratilo. Pokus o opätovné pripojenie…"
   Back Online: "Znova online"
+
+UnifiedPush:
+  Description: "Prijímajte oznámenia cez poskytovateľa UnifiedPush nainštalovaného v tomto zariadení."
+  Sender Hint: "Kompatibilný odosielateľ musí používať vaše údaje pripojenia. Táto funkcia nezapína automatické upozornenia na nové videá na YouTube."
+  Provider: "Poskytovateľ"
+  No Providers: "Nainštalujte a nastavte distribútora UnifiedPush, napríklad ntfy alebo NextPush, a potom obnovte zoznam."
+  Connect: "Pripojiť"
+  Disconnect: "Odpojiť"
+  Refresh: "Obnoviť"
+  Waiting: "Čaká sa na poskytovateľa…"
+  Connected: "Pripojené"
+  Failed: "Nepodarilo sa pripojiť. Skontrolujte poskytovateľa, povolenie oznámení a kľúč VAPID a skúste to znova."
+  Unavailable: "Poskytovateľ je nedostupný"
+  VAPID Key: "Verejný kľúč VAPID (voliteľné)"
+  Copy Connection: "Kopírovať údaje pripojenia"
+  Copied: "Údaje pripojenia boli skopírované"

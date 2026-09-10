@@ -1807,3 +1807,19 @@ Theme Discovery:
 Connection:
   Reconnecting: "Forbindelsen er afbrudt. Forsøger at oprette forbindelse igen…"
   Back Online: "Online igen"
+
+UnifiedPush:
+  Description: "Modtag notifikationer via en UnifiedPush-udbyder installeret på denne enhed."
+  Sender Hint: "En kompatibel afsender skal bruge dine forbindelsesoplysninger. Dette aktiverer ikke automatiske beskeder om nye YouTube-videoer."
+  Provider: "Udbyder"
+  No Providers: "Installer og konfigurer en UnifiedPush-distributør som ntfy eller NextPush, og opdater derefter listen."
+  Connect: "Forbind"
+  Disconnect: "Afbryd"
+  Refresh: "Opdater"
+  Waiting: "Venter på udbyderen…"
+  Connected: "Forbundet"
+  Failed: "Kunne ikke forbinde. Kontrollér udbyderen, notifikationstilladelsen og VAPID-nøglen, og prøv igen."
+  Unavailable: "Udbyderen er utilgængelig"
+  VAPID Key: "Offentlig VAPID-nøgle (valgfri)"
+  Copy Connection: "Kopiér forbindelsesoplysninger"
+  Copied: "Forbindelsesoplysninger kopieret"

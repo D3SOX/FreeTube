@@ -1762,3 +1762,19 @@ Theme Discovery:
 Connection:
   Reconnecting: "Koneksi terputus. Mencoba menghubungkan kembali…"
   Back Online: "Kembali online"
+
+UnifiedPush:
+  Description: "Terima notifikasi melalui penyedia UnifiedPush yang terpasang di perangkat ini."
+  Sender Hint: "Pengirim yang kompatibel harus menggunakan detail koneksi Anda. Ini tidak mengaktifkan pemberitahuan otomatis untuk video YouTube baru."
+  Provider: "Penyedia"
+  No Providers: "Pasang dan konfigurasi distributor UnifiedPush seperti ntfy atau NextPush, lalu segarkan daftar."
+  Connect: "Hubungkan"
+  Disconnect: "Putuskan"
+  Refresh: "Segarkan"
+  Waiting: "Menunggu penyedia…"
+  Connected: "Terhubung"
+  Failed: "Tidak dapat terhubung. Periksa penyedia, izin notifikasi, dan kunci VAPID, lalu coba lagi."
+  Unavailable: "Penyedia tidak tersedia"
+  VAPID Key: "Kunci publik VAPID (opsional)"
+  Copy Connection: "Salin detail koneksi"
+  Copied: "Detail koneksi disalin"

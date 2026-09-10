@@ -1726,3 +1726,19 @@ Theme Discovery:
 Connection:
   Reconnecting: "连接已断开，正在尝试重新连接…"
   Back Online: "已恢复网络连接"
+
+UnifiedPush:
+  Description: "通过此设备上安装的 UnifiedPush 提供程序接收通知。"
+  Sender Hint: "兼容的发送方必须使用你的连接信息。这不会启用 YouTube 新视频的自动提醒。"
+  Provider: "提供程序"
+  No Providers: "安装并配置 ntfy 或 NextPush 等 UnifiedPush 分发器，然后刷新。"
+  Connect: "连接"
+  Disconnect: "断开连接"
+  Refresh: "刷新"
+  Waiting: "正在等待提供程序…"
+  Connected: "已连接"
+  Failed: "无法连接。请检查提供程序、通知权限和 VAPID 密钥，然后重试。"
+  Unavailable: "提供程序不可用"
+  VAPID Key: "VAPID 公钥（可选）"
+  Copy Connection: "复制连接信息"
+  Copied: "已复制连接信息"

@@ -2223,3 +2223,19 @@ Theme Discovery:
 Connection:
   Reconnecting: "Ryšys nutrūko. Bandoma prisijungti iš naujo…"
   Back Online: "Vėl prisijungta"
+
+UnifiedPush:
+  Description: "Gaukite pranešimus per šiame įrenginyje įdiegtą UnifiedPush teikėją."
+  Sender Hint: "Suderinamas siuntėjas turi naudoti jūsų ryšio duomenis. Tai neįjungia automatinių pranešimų apie naujus YouTube vaizdo įrašus."
+  Provider: "Teikėjas"
+  No Providers: "Įdiekite ir sukonfigūruokite UnifiedPush platintoją, pvz., ntfy arba NextPush, tada atnaujinkite."
+  Connect: "Prisijungti"
+  Disconnect: "Atsijungti"
+  Refresh: "Atnaujinti"
+  Waiting: "Laukiama teikėjo…"
+  Connected: "Prisijungta"
+  Failed: "Nepavyko prisijungti. Patikrinkite teikėją, pranešimų leidimą ir VAPID raktą, tada bandykite dar kartą."
+  Unavailable: "Teikėjas nepasiekiamas"
+  VAPID Key: "VAPID viešasis raktas (neprivalomas)"
+  Copy Connection: "Kopijuoti ryšio duomenis"
+  Copied: "Ryšio duomenys nukopijuoti"

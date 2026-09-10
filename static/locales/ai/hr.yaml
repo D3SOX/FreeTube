@@ -1748,3 +1748,19 @@ Theme Discovery:
 Connection:
   Reconnecting: "Veza je izgubljena. Pokušaj ponovnog povezivanja…"
   Back Online: "Ponovno na mreži"
+
+UnifiedPush:
+  Description: "Primajte obavijesti putem pružatelja UnifiedPush instaliranog na ovom uređaju."
+  Sender Hint: "Kompatibilni pošiljatelj mora koristiti vaše podatke o vezi. Ovo ne uključuje automatske obavijesti o novim YouTube videozapisima."
+  Provider: "Pružatelj"
+  No Providers: "Instalirajte i postavite distributer UnifiedPush poput ntfy ili NextPush pa osvježite popis."
+  Connect: "Poveži"
+  Disconnect: "Prekini vezu"
+  Refresh: "Osvježi"
+  Waiting: "Čekanje pružatelja…"
+  Connected: "Povezano"
+  Failed: "Povezivanje nije uspjelo. Provjerite pružatelja, dopuštenje za obavijesti i ključ VAPID pa pokušajte ponovno."
+  Unavailable: "Pružatelj nije dostupan"
+  VAPID Key: "Javni ključ VAPID (neobavezno)"
+  Copy Connection: "Kopiraj podatke o vezi"
+  Copied: "Podaci o vezi kopirani"

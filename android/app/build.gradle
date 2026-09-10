@@ -126,6 +126,7 @@ repositories {
 
 dependencies {
     implementation "com.squareup.okhttp3:okhttp:4.12.0"
+    implementation "org.unifiedpush.android:connector:3.3.5"
     implementation "io.github.junkfood02.youtubedl-android:library:0.18.1"
     implementation "io.github.junkfood02.youtubedl-android:ffmpeg:0.18.1"
     implementation "androidx.documentfile:documentfile:1.0.1"

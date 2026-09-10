@@ -1744,3 +1744,19 @@ Theme Discovery:
 Connection:
   Reconnecting: "Tilkoblingen ble brutt. Prøver å koble til igjen…"
   Back Online: "På nett igjen"
+
+UnifiedPush:
+  Description: "Motta varsler via en UnifiedPush-leverandør installert på denne enheten."
+  Sender Hint: "En kompatibel avsender må bruke tilkoblingsopplysningene dine. Dette aktiverer ikke automatiske varsler om nye YouTube-videoer."
+  Provider: "Leverandør"
+  No Providers: "Installer og konfigurer en UnifiedPush-distributør som ntfy eller NextPush, og oppdater deretter."
+  Connect: "Koble til"
+  Disconnect: "Koble fra"
+  Refresh: "Oppdater"
+  Waiting: "Venter på leverandør…"
+  Connected: "Tilkoblet"
+  Failed: "Kunne ikke koble til. Sjekk leverandøren, varslingstillatelsen og VAPID-nøkkelen, og prøv igjen."
+  Unavailable: "Leverandør utilgjengelig"
+  VAPID Key: "Offentlig VAPID-nøkkel (valgfritt)"
+  Copy Connection: "Kopier tilkoblingsopplysninger"
+  Copied: "Tilkoblingsopplysninger kopiert"

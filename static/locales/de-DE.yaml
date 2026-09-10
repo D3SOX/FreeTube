@@ -2919,3 +2919,19 @@ Theme Discovery:
 Connection:
   Reconnecting: "Verbindung verloren. Verbindung wird wiederhergestellt…"
   Back Online: "Wieder online"
+
+UnifiedPush:
+  Description: "Empfange Benachrichtigungen über einen auf diesem Gerät installierten UnifiedPush-Anbieter."
+  Sender Hint: "Ein kompatibler Absender muss deine Verbindungsdaten verwenden. Dadurch werden keine automatischen Hinweise auf neue YouTube-Videos aktiviert."
+  Provider: "Anbieter"
+  No Providers: "Installiere und konfiguriere einen UnifiedPush-Verteiler wie ntfy oder NextPush und aktualisiere anschließend die Liste."
+  Connect: "Verbinden"
+  Disconnect: "Trennen"
+  Refresh: "Aktualisieren"
+  Waiting: "Warte auf Anbieter…"
+  Connected: "Verbunden"
+  Failed: "Verbindung fehlgeschlagen. Prüfe den Anbieter, die Benachrichtigungsberechtigung und den VAPID-Schlüssel und versuche es erneut."
+  Unavailable: "Anbieter nicht verfügbar"
+  VAPID Key: "Öffentlicher VAPID-Schlüssel (optional)"
+  Copy Connection: "Verbindungsdaten kopieren"
+  Copied: "Verbindungsdaten kopiert"

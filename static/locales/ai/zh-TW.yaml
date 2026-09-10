@@ -1742,3 +1742,19 @@ Theme Discovery:
 Connection:
   Reconnecting: "連線已中斷，正在嘗試重新連線…"
   Back Online: "已恢復網路連線"
+
+UnifiedPush:
+  Description: "透過此裝置上安裝的 UnifiedPush 提供者接收通知。"
+  Sender Hint: "相容的傳送者必須使用你的連線資訊。這不會啟用 YouTube 新影片的自動提醒。"
+  Provider: "提供者"
+  No Providers: "安裝並設定 ntfy 或 NextPush 等 UnifiedPush 分發器，然後重新整理。"
+  Connect: "連線"
+  Disconnect: "中斷連線"
+  Refresh: "重新整理"
+  Waiting: "正在等待提供者…"
+  Connected: "已連線"
+  Failed: "無法連線。請檢查提供者、通知權限及 VAPID 金鑰，然後再試一次。"
+  Unavailable: "提供者無法使用"
+  VAPID Key: "VAPID 公開金鑰（選填）"
+  Copy Connection: "複製連線資訊"
+  Copied: "已複製連線資訊"

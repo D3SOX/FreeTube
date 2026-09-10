@@ -1770,3 +1770,19 @@ Theme Discovery:
 Connection:
   Reconnecting: "Yhteys katkesi. Yritetään yhdistää uudelleen…"
   Back Online: "Jälleen verkossa"
+
+UnifiedPush:
+  Description: "Vastaanota ilmoituksia tähän laitteeseen asennetun UnifiedPush-palveluntarjoajan kautta."
+  Sender Hint: "Yhteensopivan lähettäjän on käytettävä yhteystietojasi. Tämä ei ota käyttöön automaattisia ilmoituksia uusista YouTube-videoista."
+  Provider: "Palveluntarjoaja"
+  No Providers: "Asenna ja määritä UnifiedPush-jakelija, kuten ntfy tai NextPush, ja päivitä luettelo."
+  Connect: "Yhdistä"
+  Disconnect: "Katkaise yhteys"
+  Refresh: "Päivitä"
+  Waiting: "Odotetaan palveluntarjoajaa…"
+  Connected: "Yhdistetty"
+  Failed: "Yhdistäminen epäonnistui. Tarkista palveluntarjoaja, ilmoituslupa ja VAPID-avain ja yritä uudelleen."
+  Unavailable: "Palveluntarjoaja ei ole käytettävissä"
+  VAPID Key: "Julkinen VAPID-avain (valinnainen)"
+  Copy Connection: "Kopioi yhteystiedot"
+  Copied: "Yhteystiedot kopioitu"

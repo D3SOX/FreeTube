@@ -1769,3 +1769,19 @@ Theme Discovery:
 Connection:
   Reconnecting: "Tenging rofnaði. Reyni að tengjast aftur…"
   Back Online: "Aftur á netinu"
+
+UnifiedPush:
+  Description: "Fáðu tilkynningar í gegnum UnifiedPush-veitu sem er uppsett á þessu tæki."
+  Sender Hint: "Samhæfur sendandi þarf að nota tengiupplýsingarnar þínar. Þetta virkjar ekki sjálfvirkar tilkynningar um ný YouTube-myndskeið."
+  Provider: "Veita"
+  No Providers: "Settu upp og stilltu UnifiedPush-dreifara eins og ntfy eða NextPush og endurnýjaðu síðan listann."
+  Connect: "Tengjast"
+  Disconnect: "Aftengja"
+  Refresh: "Endurnýja"
+  Waiting: "Bíð eftir veitu…"
+  Connected: "Tengt"
+  Failed: "Ekki tókst að tengjast. Athugaðu veituna, tilkynningaheimildina og VAPID-lykilinn og reyndu aftur."
+  Unavailable: "Veita ekki tiltæk"
+  VAPID Key: "Opinber VAPID-lykill (valfrjálst)"
+  Copy Connection: "Afrita tengiupplýsingar"
+  Copied: "Tengiupplýsingar afritaðar"

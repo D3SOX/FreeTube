@@ -1,5 +1,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application>
+        <receiver android:name="org.opentubex.app.UnifiedPushTestDistributor" android:label="UnifiedPush test provider" android:exported="true">
+            <intent-filter>
+                <action android:name="org.unifiedpush.android.distributor.REGISTER" />
+                <action android:name="org.unifiedpush.android.distributor.UNREGISTER" />
+            </intent-filter>
+        </receiver>
         <receiver android:name="org.opentubex.app.YtDlpTestDocumentsProvider$GrantReceiver" android:exported="true" />
         <provider
             android:name="org.opentubex.app.YtDlpTestDocumentsProvider"

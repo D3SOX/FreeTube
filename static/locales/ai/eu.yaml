@@ -1753,3 +1753,19 @@ Theme Discovery:
 Connection:
   Reconnecting: "Konexioa galdu da. Berriz konektatzen saiatzen…"
   Back Online: "Berriro konektatuta"
+
+UnifiedPush:
+  Description: "Jaso jakinarazpenak gailu honetan instalatutako UnifiedPush hornitzaile baten bidez."
+  Sender Hint: "Igorle bateragarri batek zure konexio-datuak erabili behar ditu. Honek ez ditu YouTubeko bideo berrien abisu automatikoak gaitzen."
+  Provider: "Hornitzailea"
+  No Providers: "Instalatu eta konfiguratu UnifiedPush banatzaile bat, ntfy edo NextPush adibidez, eta freskatu zerrenda."
+  Connect: "Konektatu"
+  Disconnect: "Deskonektatu"
+  Refresh: "Freskatu"
+  Waiting: "Hornitzailearen zain…"
+  Connected: "Konektatuta"
+  Failed: "Ezin izan da konektatu. Egiaztatu hornitzailea, jakinarazpen-baimena eta VAPID gakoa, eta saiatu berriro."
+  Unavailable: "Hornitzailea ez dago erabilgarri"
+  VAPID Key: "VAPID gako publikoa (aukerakoa)"
+  Copy Connection: "Kopiatu konexio-datuak"
+  Copied: "Konexio-datuak kopiatuta"

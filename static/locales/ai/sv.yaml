@@ -1744,3 +1744,19 @@ Theme Discovery:
 Connection:
   Reconnecting: "Anslutningen bröts. Försöker ansluta igen…"
   Back Online: "Online igen"
+
+UnifiedPush:
+  Description: "Ta emot aviseringar via en UnifiedPush-leverantör som är installerad på den här enheten."
+  Sender Hint: "En kompatibel avsändare måste använda dina anslutningsuppgifter. Detta aktiverar inte automatiska aviseringar om nya YouTube-videor."
+  Provider: "Leverantör"
+  No Providers: "Installera och konfigurera en UnifiedPush-distributör som ntfy eller NextPush och uppdatera sedan."
+  Connect: "Anslut"
+  Disconnect: "Koppla från"
+  Refresh: "Uppdatera"
+  Waiting: "Väntar på leverantör…"
+  Connected: "Ansluten"
+  Failed: "Kunde inte ansluta. Kontrollera leverantören, aviseringsbehörigheten och VAPID-nyckeln och försök igen."
+  Unavailable: "Leverantören är inte tillgänglig"
+  VAPID Key: "Offentlig VAPID-nyckel (valfritt)"
+  Copy Connection: "Kopiera anslutningsuppgifter"
+  Copied: "Anslutningsuppgifter kopierade"

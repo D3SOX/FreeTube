@@ -1753,3 +1753,19 @@ Theme Discovery:
 Connection:
   Reconnecting: "Cysylltiad wedi’i golli. Yn ceisio ailgysylltu…"
   Back Online: "Ar-lein eto"
+
+UnifiedPush:
+  Description: "Derbyniwch hysbysiadau drwy ddarparwr UnifiedPush sydd wedi’i osod ar y ddyfais hon."
+  Sender Hint: "Rhaid i anfonwr cydnaws ddefnyddio manylion eich cysylltiad. Nid yw hyn yn galluogi rhybuddion awtomatig am fideos YouTube newydd."
+  Provider: "Darparwr"
+  No Providers: "Gosodwch a ffurfweddu dosbarthwr UnifiedPush fel ntfy neu NextPush, yna adnewyddwch y rhestr."
+  Connect: "Cysylltu"
+  Disconnect: "Datgysylltu"
+  Refresh: "Adnewyddu"
+  Waiting: "Yn aros am y darparwr…"
+  Connected: "Wedi cysylltu"
+  Failed: "Methu cysylltu. Gwiriwch y darparwr, caniatâd hysbysiadau a’r allwedd VAPID, yna ceisiwch eto."
+  Unavailable: "Darparwr ddim ar gael"
+  VAPID Key: "Allwedd gyhoeddus VAPID (dewisol)"
+  Copy Connection: "Copïo manylion cysylltu"
+  Copied: "Manylion cysylltu wedi’u copïo"

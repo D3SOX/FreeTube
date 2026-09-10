@@ -2176,3 +2176,19 @@ Theme Discovery:
 Connection:
   Reconnecting: "연결이 끊어졌습니다. 다시 연결하는 중…"
   Back Online: "다시 온라인 상태입니다"
+
+UnifiedPush:
+  Description: "이 기기에 설치된 UnifiedPush 제공자를 통해 알림을 받습니다."
+  Sender Hint: "호환되는 발신자가 연결 정보를 사용해야 합니다. YouTube 새 동영상 자동 알림은 활성화되지 않습니다."
+  Provider: "제공자"
+  No Providers: "ntfy 또는 NextPush 같은 UnifiedPush 배포 앱을 설치하고 설정한 다음 새로고침하세요."
+  Connect: "연결"
+  Disconnect: "연결 해제"
+  Refresh: "새로고침"
+  Waiting: "제공자 대기 중…"
+  Connected: "연결됨"
+  Failed: "연결할 수 없습니다. 제공자, 알림 권한 및 VAPID 키를 확인한 후 다시 시도하세요."
+  Unavailable: "제공자를 사용할 수 없음"
+  VAPID Key: "VAPID 공개 키 (선택 사항)"
+  Copy Connection: "연결 정보 복사"
+  Copied: "연결 정보 복사됨"

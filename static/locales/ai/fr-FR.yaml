@@ -1724,3 +1724,19 @@ Theme Discovery:
 Connection:
   Reconnecting: "Connexion perdue. Tentative de reconnexion…"
   Back Online: "De nouveau en ligne"
+
+UnifiedPush:
+  Description: "Recevez des notifications via un fournisseur UnifiedPush installé sur cet appareil."
+  Sender Hint: "Un expéditeur compatible doit utiliser vos informations de connexion. Cela n’active pas les alertes automatiques de nouvelles vidéos YouTube."
+  Provider: "Fournisseur"
+  No Providers: "Installez et configurez un distributeur UnifiedPush comme ntfy ou NextPush, puis actualisez la liste."
+  Connect: "Connecter"
+  Disconnect: "Déconnecter"
+  Refresh: "Actualiser"
+  Waiting: "En attente du fournisseur…"
+  Connected: "Connecté"
+  Failed: "Connexion impossible. Vérifiez le fournisseur, l’autorisation de notification et la clé VAPID, puis réessayez."
+  Unavailable: "Fournisseur indisponible"
+  VAPID Key: "Clé publique VAPID (facultative)"
+  Copy Connection: "Copier les informations de connexion"
+  Copied: "Informations de connexion copiées"
