@@ -590,7 +590,7 @@ function updateIconPack(value) {
 }
 
 const areColorThemesEnabled = computed(() => baseTheme.value === 'system'
-  ? !hasFixedThemeColors(systemLightTheme.value) && !hasFixedThemeColors(systemDarkTheme.value)
+  ? !hasFixedThemeColors(systemUsesDarkTheme.value ? systemDarkTheme.value : systemLightTheme.value)
   : !hasFixedThemeColors(baseTheme.value))
 const selectedCustomThemeId = computed(() => customThemeIdFromValue(baseTheme.value === 'system'
   ? (systemUsesDarkTheme.value ? systemDarkTheme.value : systemLightTheme.value)

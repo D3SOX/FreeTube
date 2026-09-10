@@ -1,5 +1,5 @@
 import { test, expect, goToSettingsSection } from '../../helpers/app.mjs'
-import { PALETTE_BASE_THEMES } from '../../../src/constants.js'
+import { CATPPUCCIN_MACCHIATO_COLORS, PALETTE_BASE_THEMES } from '../../../src/constants.js'
 import { sampleColors } from '../../helpers/colors.mjs'
 
 test.use({ seed: { settings: { currentLocale: 'en-US', quickSettings: ['baseTheme'] } } })
@@ -28,6 +28,7 @@ function contrast(first, second) {
 async function expectElementContrast(element, minimum = 4.5, pseudo = null, referenceBackground = null) {
   await expect.poll(async () => element.evaluate((node, { pseudo, referenceBackground }) => {
     const rgb = color => color.match(/[\d.]+/g).map(Number)
+      .map((value, index) => color.startsWith('color(srgb ') && index < 3 ? value * 255 : value)
     const over = (fg, bg) => fg.slice(0, 3).map((channel, index) =>
       channel * (fg[3] ?? 1) + bg[index] * (1 - (fg[3] ?? 1)))
     const ancestors = []
@@ -62,13 +63,23 @@ async function expectPaletteContrast(page) {
       'input-border-color', 'slider-track-color',
       'toggle-track-color', 'toggle-thumb-color', 'toggle-checked-track-color', 'toggle-checked-thumb-color',
     ]
+    const reset = document.createElement('div')
+    for (const property of properties) reset.style.setProperty(`--${property}`, 'initial')
     const probe = document.createElement('span')
-    document.body.append(probe)
+    probe.className = document.body.className
+    reset.append(probe)
+    document.body.append(reset)
     const result = Object.fromEntries(properties.map(property => {
+      if (getComputedStyle(probe).getPropertyValue(`--${property}`).trim() === '') {
+        throw new Error(`Active palette does not define --${property}`)
+      }
       probe.style.color = `var(--${property})`
-      return [property, getComputedStyle(probe).color.match(/[\d.]+/g).slice(0, 3).map(Number)]
+      const color = getComputedStyle(probe).color
+      const channels = color.match(/[\d.]+/g).slice(0, 3).map(Number)
+        .map(value => color.startsWith('color(srgb ') ? value * 255 : value)
+      return [property, channels]
     }))
-    probe.remove()
+    reset.remove()
     return result
   })
   const check = (foreground, background, minimum = 4.5) => {
@@ -147,6 +158,7 @@ for (const [index, theme] of [...PALETTE_BASE_THEMES, 'catppuccinMacchiato'].ent
         const focus = await button.evaluate(element => {
           const style = getComputedStyle(element)
           const rgb = color => color.match(/[\d.]+/g).slice(0, 3).map(Number)
+            .map(value => color.startsWith('color(srgb ') ? value * 255 : value)
           return { outline: rgb(style.outlineColor), background: rgb(style.backgroundColor) }
         })
         expect.soft(contrast(focus.outline, focus.background), 'Button focus outline against its fill')
@@ -196,8 +208,11 @@ for (const [index, theme] of [...PALETTE_BASE_THEMES, 'catppuccinMacchiato'].ent
           const filter = page.locator('.topNav .navFilterButton')
           // The absolutely positioned filter sits over its sibling input,
           // whose fill is absent from the button's ancestor backgrounds.
-          const inputBackground = await search.evaluate(element =>
-            getComputedStyle(element).backgroundColor.match(/[\d.]+/g).slice(0, 3).map(Number))
+          const inputBackground = await search.evaluate(element => {
+            const color = getComputedStyle(element).backgroundColor
+            return color.match(/[\d.]+/g).slice(0, 3).map(Number)
+              .map(value => color.startsWith('color(srgb ') ? value * 255 : value)
+          })
           await expectElementContrast(filter, 3, null, inputBackground)
           await filter.hover()
           await expectElementContrast(filter, 3, null, inputBackground)
@@ -237,8 +252,11 @@ test('offers the new palettes in quick settings, system choices and the custom e
   }
   await page.emulateMedia({ colorScheme: 'light' })
   await expect(page.locator('body')).toHaveClass(/rosePineDawn/)
+  await expect(page.getByRole('combobox', { name: /Main colou?r theme/i })).toBeDisabled()
   await page.emulateMedia({ colorScheme: 'dark' })
   await expect(page.locator('body')).toHaveClass(/catppuccinMacchiato/)
+  await expect(page.getByRole('combobox', { name: /Main colou?r theme/i })).toBeEnabled()
+  await expect(page.getByRole('combobox', { name: /Secondary colou?r theme/i })).toBeEnabled()
   await page.getByRole('button', { name: 'Create custom theme' }).click()
   const editor = page.locator('.customThemeEditor')
   await editor.getByRole('combobox', { name: 'Based on' }).click()
@@ -283,13 +301,10 @@ test.describe('Macchiato color choices', () => {
     await goToSettingsSection(page, 'theme')
     const main = page.getByRole('combobox', { name: /Main colou?r theme/i })
     const secondary = page.getByRole('combobox', { name: /Secondary colou?r theme/i })
-    const palette = [
-      ['Rosewater', '#f4dbd6'], ['Flamingo', '#f0c6c6'], ['Pink', '#f5bde6'],
-      ['Mauve', '#c6a0f6'], ['Red', '#ed8796'], ['Maroon', '#ee99a0'],
-      ['Peach', '#f5a97f'], ['Yellow', '#eed49f'], ['Green', '#a6da95'],
-      ['Teal', '#8bd5ca'], ['Sky', '#91d7e3'], ['Sapphire', '#7dc4e4'],
-      ['Blue', '#8aadf4'], ['Lavender', '#b7bdf8'],
-    ]
+    const prefix = 'CatppuccinMacchiato'
+    const palette = CATPPUCCIN_MACCHIATO_COLORS
+      .filter(({ name }) => name.startsWith(prefix))
+      .map(({ name, value }) => [name.slice(prefix.length), value])
     for (const [name, color] of palette) {
       for (const select of [main, secondary]) {
         await select.click()

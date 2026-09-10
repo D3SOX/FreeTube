@@ -839,93 +839,110 @@ it can be safely elided. This looks quite pleasant on this theme. */
 .mainCatppuccinMacchiatoSapphire,
 .mainCatppuccinMacchiatoBlue,
 .mainCatppuccinMacchiatoLavender {
+  --primary-color: var(--macchiato-color);
+  --primary-color-hover: var(--macchiato-color-hover);
+  --primary-color-active: var(--macchiato-color-active);
   --text-with-main-color: #24273a;
   --logo-icon-bar-color: url('../../_icons/iconBlackSmall.svg');
   --logo-text-bar-color: url('../../_icons/textBlackSmall.svg');
 }
 
-.mainCatppuccinMacchiatoRosewater {
-  --primary-color: #f4dbd6;
-  --primary-color-hover: #f5dfda;
-  --primary-color-active: #f6e2de;
+:is(.mainCatppuccinMacchiatoRosewater, .secCatppuccinMacchiatoRosewater) {
+  --macchiato-color: #f4dbd6;
+  --macchiato-color-rgb: 244 219 214;
+  --macchiato-color-hover: #f5dfda;
+  --macchiato-color-active: #f6e2de;
 }
 
-.mainCatppuccinMacchiatoFlamingo {
-  --primary-color: #f0c6c6;
-  --primary-color-hover: #f2cccc;
-  --primary-color-active: #f3d1d1;
+:is(.mainCatppuccinMacchiatoFlamingo, .secCatppuccinMacchiatoFlamingo) {
+  --macchiato-color: #f0c6c6;
+  --macchiato-color-rgb: 240 198 198;
+  --macchiato-color-hover: #f2cccc;
+  --macchiato-color-active: #f3d1d1;
 }
 
-.mainCatppuccinMacchiatoPink {
-  --primary-color: #f5bde6;
-  --primary-color-hover: #f6c4e8;
-  --primary-color-active: #f7caeb;
+:is(.mainCatppuccinMacchiatoPink, .secCatppuccinMacchiatoPink) {
+  --macchiato-color: #f5bde6;
+  --macchiato-color-rgb: 245 189 230;
+  --macchiato-color-hover: #f6c4e8;
+  --macchiato-color-active: #f7caeb;
 }
 
-.mainCatppuccinMacchiatoMauve {
-  --primary-color: #c6a0f6;
-  --primary-color-hover: #ccaaf7;
-  --primary-color-active: #d1b3f8;
+:is(.mainCatppuccinMacchiatoMauve, .secCatppuccinMacchiatoMauve) {
+  --macchiato-color: #c6a0f6;
+  --macchiato-color-rgb: 198 160 246;
+  --macchiato-color-hover: #ccaaf7;
+  --macchiato-color-active: #d1b3f8;
 }
 
-.mainCatppuccinMacchiatoRed {
-  --primary-color: #ed8796;
-  --primary-color-hover: #ef93a0;
-  --primary-color-active: #f19fab;
+:is(.mainCatppuccinMacchiatoRed, .secCatppuccinMacchiatoRed) {
+  --macchiato-color: #ed8796;
+  --macchiato-color-rgb: 237 135 150;
+  --macchiato-color-hover: #ef93a0;
+  --macchiato-color-active: #f19fab;
 }
 
-.mainCatppuccinMacchiatoMaroon {
-  --primary-color: #ee99a0;
-  --primary-color-hover: #f0a3aa;
-  --primary-color-active: #f1adb3;
+:is(.mainCatppuccinMacchiatoMaroon, .secCatppuccinMacchiatoMaroon) {
+  --macchiato-color: #ee99a0;
+  --macchiato-color-rgb: 238 153 160;
+  --macchiato-color-hover: #f0a3aa;
+  --macchiato-color-active: #f1adb3;
 }
 
-.mainCatppuccinMacchiatoPeach {
-  --primary-color: #f5a97f;
-  --primary-color-hover: #f6b28c;
-  --primary-color-active: #f7ba99;
+:is(.mainCatppuccinMacchiatoPeach, .secCatppuccinMacchiatoPeach) {
+  --macchiato-color: #f5a97f;
+  --macchiato-color-rgb: 245 169 127;
+  --macchiato-color-hover: #f6b28c;
+  --macchiato-color-active: #f7ba99;
 }
 
-.mainCatppuccinMacchiatoYellow {
-  --primary-color: #eed49f;
-  --primary-color-hover: #f0d8a9;
-  --primary-color-active: #f1ddb2;
+:is(.mainCatppuccinMacchiatoYellow, .secCatppuccinMacchiatoYellow) {
+  --macchiato-color: #eed49f;
+  --macchiato-color-rgb: 238 212 159;
+  --macchiato-color-hover: #f0d8a9;
+  --macchiato-color-active: #f1ddb2;
 }
 
-.mainCatppuccinMacchiatoGreen {
-  --primary-color: #a6da95;
-  --primary-color-hover: #afdea0;
-  --primary-color-active: #b8e1aa;
+:is(.mainCatppuccinMacchiatoGreen, .secCatppuccinMacchiatoGreen) {
+  --macchiato-color: #a6da95;
+  --macchiato-color-rgb: 166 218 149;
+  --macchiato-color-hover: #afdea0;
+  --macchiato-color-active: #b8e1aa;
 }
 
-.mainCatppuccinMacchiatoTeal {
-  --primary-color: #8bd5ca;
-  --primary-color-hover: #97d9cf;
-  --primary-color-active: #a2ddd5;
+:is(.mainCatppuccinMacchiatoTeal, .secCatppuccinMacchiatoTeal) {
+  --macchiato-color: #8bd5ca;
+  --macchiato-color-rgb: 139 213 202;
+  --macchiato-color-hover: #97d9cf;
+  --macchiato-color-active: #a2ddd5;
 }
 
-.mainCatppuccinMacchiatoSky {
-  --primary-color: #91d7e3;
-  --primary-color-hover: #9cdbe6;
-  --primary-color-active: #a7dfe9;
+:is(.mainCatppuccinMacchiatoSky, .secCatppuccinMacchiatoSky) {
+  --macchiato-color: #91d7e3;
+  --macchiato-color-rgb: 145 215 227;
+  --macchiato-color-hover: #9cdbe6;
+  --macchiato-color-active: #a7dfe9;
 }
 
-.mainCatppuccinMacchiatoSapphire {
-  --primary-color: #7dc4e4;
-  --primary-color-hover: #8acae7;
-  --primary-color-active: #97d0e9;
+:is(.mainCatppuccinMacchiatoSapphire, .secCatppuccinMacchiatoSapphire) {
+  --macchiato-color: #7dc4e4;
+  --macchiato-color-rgb: 125 196 228;
+  --macchiato-color-hover: #8acae7;
+  --macchiato-color-active: #97d0e9;
 }
 
-.mainCatppuccinMacchiatoBlue {
-  --primary-color: #8aadf4;
-  --primary-color-hover: #96b5f5;
-  --primary-color-active: #a1bdf6;
+:is(.mainCatppuccinMacchiatoBlue, .secCatppuccinMacchiatoBlue) {
+  --macchiato-color: #8aadf4;
+  --macchiato-color-rgb: 138 173 244;
+  --macchiato-color-hover: #96b5f5;
+  --macchiato-color-active: #a1bdf6;
 }
 
-.mainCatppuccinMacchiatoLavender {
-  --primary-color: #b7bdf8;
-  --primary-color-hover: #bec4f9;
-  --primary-color-active: #c5caf9;
+:is(.mainCatppuccinMacchiatoLavender, .secCatppuccinMacchiatoLavender) {
+  --macchiato-color: #b7bdf8;
+  --macchiato-color-rgb: 183 189 248;
+  --macchiato-color-hover: #bec4f9;
+  --macchiato-color-active: #c5caf9;
 }
 
 .mainCatppuccinMochaRosewater,
@@ -1638,119 +1655,11 @@ it can be safely elided. This looks quite pleasant on this theme. */
 .secCatppuccinMacchiatoSapphire,
 .secCatppuccinMacchiatoBlue,
 .secCatppuccinMacchiatoLavender {
+  --accent-color-rgb: var(--macchiato-color-rgb);
+  --accent-color-hover: var(--macchiato-color-hover);
+  --accent-color-active: var(--macchiato-color-active);
+  --accent-color-visited: var(--macchiato-color);
   --text-with-accent-color: #24273a;
-}
-
-.secCatppuccinMacchiatoRosewater {
-  --accent-color-rgb: 244 219 214;
-  --accent-color-hover: #f5dfda;
-  --accent-color-active: #f6e2de;
-  --accent-color-light: #f7e6e2;
-  --accent-color-visited: #f4dbd6;
-}
-
-.secCatppuccinMacchiatoFlamingo {
-  --accent-color-rgb: 240 198 198;
-  --accent-color-hover: #f2cccc;
-  --accent-color-active: #f3d1d1;
-  --accent-color-light: #f4d7d7;
-  --accent-color-visited: #f0c6c6;
-}
-
-.secCatppuccinMacchiatoPink {
-  --accent-color-rgb: 245 189 230;
-  --accent-color-hover: #f6c4e8;
-  --accent-color-active: #f7caeb;
-  --accent-color-light: #f8d1ee;
-  --accent-color-visited: #f5bde6;
-}
-
-.secCatppuccinMacchiatoMauve {
-  --accent-color-rgb: 198 160 246;
-  --accent-color-hover: #ccaaf7;
-  --accent-color-active: #d1b3f8;
-  --accent-color-light: #d7bcf9;
-  --accent-color-visited: #c6a0f6;
-}
-
-.secCatppuccinMacchiatoRed {
-  --accent-color-rgb: 237 135 150;
-  --accent-color-hover: #ef93a0;
-  --accent-color-active: #f19fab;
-  --accent-color-light: #f2abb6;
-  --accent-color-visited: #ed8796;
-}
-
-.secCatppuccinMacchiatoMaroon {
-  --accent-color-rgb: 238 153 160;
-  --accent-color-hover: #f0a3aa;
-  --accent-color-active: #f1adb3;
-  --accent-color-light: #f3b8bc;
-  --accent-color-visited: #ee99a0;
-}
-
-.secCatppuccinMacchiatoPeach {
-  --accent-color-rgb: 245 169 127;
-  --accent-color-hover: #f6b28c;
-  --accent-color-active: #f7ba99;
-  --accent-color-light: #f8c3a5;
-  --accent-color-visited: #f5a97f;
-}
-
-.secCatppuccinMacchiatoYellow {
-  --accent-color-rgb: 238 212 159;
-  --accent-color-hover: #f0d8a9;
-  --accent-color-active: #f1ddb2;
-  --accent-color-light: #f3e1bc;
-  --accent-color-visited: #eed49f;
-}
-
-.secCatppuccinMacchiatoGreen {
-  --accent-color-rgb: 166 218 149;
-  --accent-color-hover: #afdea0;
-  --accent-color-active: #b8e1aa;
-  --accent-color-light: #c1e5b5;
-  --accent-color-visited: #a6da95;
-}
-
-.secCatppuccinMacchiatoTeal {
-  --accent-color-rgb: 139 213 202;
-  --accent-color-hover: #97d9cf;
-  --accent-color-active: #a2ddd5;
-  --accent-color-light: #aee2da;
-  --accent-color-visited: #8bd5ca;
-}
-
-.secCatppuccinMacchiatoSky {
-  --accent-color-rgb: 145 215 227;
-  --accent-color-hover: #9cdbe6;
-  --accent-color-active: #a7dfe9;
-  --accent-color-light: #b2e3eb;
-  --accent-color-visited: #91d7e3;
-}
-
-.secCatppuccinMacchiatoSapphire {
-  --accent-color-rgb: 125 196 228;
-  --accent-color-hover: #8acae7;
-  --accent-color-active: #97d0e9;
-  --accent-color-light: #a4d6ec;
-  --accent-color-visited: #7dc4e4;
-}
-
-.secCatppuccinMacchiatoBlue {
-  --accent-color-rgb: 138 173 244;
-  --accent-color-hover: #96b5f5;
-  --accent-color-active: #a1bdf6;
-  --accent-color-light: #adc6f7;
-  --accent-color-visited: #8aadf4;
-}
-
-.secCatppuccinMacchiatoLavender {
-  --accent-color-rgb: 183 189 248;
-  --accent-color-hover: #bec4f9;
-  --accent-color-active: #c5caf9;
-  --accent-color-light: #cdd1fa;
-  --accent-color-visited: #b7bdf8;
 }
 
 .secCatppuccinMochaRosewater,
@@ -2787,11 +2696,22 @@ body .os-scrollbar {
   --toggle-checked-thumb-color: var(--bg-color);
   --accent-color: rgb(var(--accent-color-rgb));
   --accent-color-light: var(--accent-color-hover);
+  --link-color: var(--accent-color);
+  --link-visited-color: var(--accent-color-visited);
   --favorite-icon-color: var(--accent-color);
   --destructive-color: var(--red-500);
-  --destructive-hover-color: var(--red-500);
-  --destructive-active-color: var(--red-500);
+  --destructive-hover-color: color-mix(in srgb, var(--red-500) 88%, var(--primary-text-color));
+  --destructive-active-color: color-mix(in srgb, var(--red-500) 76%, var(--primary-text-color));
   --destructive-text-color: var(--text-with-main-color);
+  --selection-background-color: var(--primary-color);
+  --selection-text-color: var(--text-with-main-color);
+  --header-button-hover-color: var(--side-nav-hover-color);
+  --header-button-hover-text-color: var(--primary-text-color);
+  --header-button-pressed-text-color: var(--primary-text-color);
+  --colored-header-button-hover-color: var(--primary-color-hover);
+  --colored-header-button-hover-text-color: var(--text-with-main-color);
+  --colored-header-button-pressed-color: var(--primary-color-active);
+  --colored-header-button-pressed-text-color: var(--text-with-main-color);
   --logo-icon: url('../../_icons/iconWhiteSmall.svg');
   --logo-text: url('../../_icons/textWhiteSmall.svg');
 

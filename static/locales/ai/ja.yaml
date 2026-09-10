@@ -325,20 +325,20 @@ Settings:
     Engine Limit: カスタム検索エンジンは{count}件まで追加できます。
   Theme Settings:
     Main Color Theme:
-      Catppuccin Macchiato Rosewater: "キャプチーノ・Macchiato 淡いピンク"
-      Catppuccin Macchiato Flamingo: "キャプチーノ・Macchiato 明るいピンク"
-      Catppuccin Macchiato Pink: "キャプチーノ・Macchiato ピンク"
-      Catppuccin Macchiato Mauve: "キャプチーノ・Macchiato 淡い紫"
-      Catppuccin Macchiato Red: "キャプチーノ・Macchiato 赤色"
-      Catppuccin Macchiato Maroon: "キャプチーノ・Macchiato 暗い赤茶色"
-      Catppuccin Macchiato Peach: "キャプチーノ・Macchiato 桃色"
-      Catppuccin Macchiato Yellow: "キャプチーノ・Macchiato 黄色"
-      Catppuccin Macchiato Green: "キャプチーノ・Macchiato 緑色"
-      Catppuccin Macchiato Teal: "キャプチーノ・Macchiato 青緑"
-      Catppuccin Macchiato Sky: "キャプチーノ・Macchiato 空色"
-      Catppuccin Macchiato Sapphire: "キャプチーノ・Macchiato 深い青"
-      Catppuccin Macchiato Blue: "キャプチーノ・Macchiato 青色"
-      Catppuccin Macchiato Lavender: "キャプチーノ・Macchiato 淡い紫"
+      Catppuccin Macchiato Rosewater: "Catppuccin Macchiato 淡いピンク"
+      Catppuccin Macchiato Flamingo: "Catppuccin Macchiato 明るいピンク"
+      Catppuccin Macchiato Pink: "Catppuccin Macchiato ピンク"
+      Catppuccin Macchiato Mauve: "Catppuccin Macchiato 淡い紫"
+      Catppuccin Macchiato Red: "Catppuccin Macchiato 赤色"
+      Catppuccin Macchiato Maroon: "Catppuccin Macchiato 暗い赤茶色"
+      Catppuccin Macchiato Peach: "Catppuccin Macchiato 桃色"
+      Catppuccin Macchiato Yellow: "Catppuccin Macchiato 黄色"
+      Catppuccin Macchiato Green: "Catppuccin Macchiato 緑色"
+      Catppuccin Macchiato Teal: "Catppuccin Macchiato 青緑"
+      Catppuccin Macchiato Sky: "Catppuccin Macchiato 空色"
+      Catppuccin Macchiato Sapphire: "Catppuccin Macchiato 深い青"
+      Catppuccin Macchiato Blue: "Catppuccin Macchiato 青色"
+      Catppuccin Macchiato Lavender: "Catppuccin Macchiato 淡い紫"
     Move Downloads to App Header: ダウンロードをアプリのヘッダーに移動
     Move Settings to App Header: 設定をアプリのヘッダーに移動
     Hide Side Bar on Watch Pages: 動画再生ページでサイドバーを非表示

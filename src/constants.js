@@ -720,6 +720,23 @@ const DEFAULT_QUICK_PLAYBACK_SPEED_BAR_OPTIONS = Object.freeze([
   { speed: 3, name: '' },
 ])
 
+const CATPPUCCIN_MACCHIATO_COLORS = [
+  { name: 'CatppuccinMacchiatoRosewater', value: '#f4dbd6' },
+  { name: 'CatppuccinMacchiatoFlamingo', value: '#f0c6c6' },
+  { name: 'CatppuccinMacchiatoPink', value: '#f5bde6' },
+  { name: 'CatppuccinMacchiatoMauve', value: '#c6a0f6' },
+  { name: 'CatppuccinMacchiatoRed', value: '#ed8796' },
+  { name: 'CatppuccinMacchiatoMaroon', value: '#ee99a0' },
+  { name: 'CatppuccinMacchiatoPeach', value: '#f5a97f' },
+  { name: 'CatppuccinMacchiatoYellow', value: '#eed49f' },
+  { name: 'CatppuccinMacchiatoGreen', value: '#a6da95' },
+  { name: 'CatppuccinMacchiatoTeal', value: '#8bd5ca' },
+  { name: 'CatppuccinMacchiatoSky', value: '#91d7e3' },
+  { name: 'CatppuccinMacchiatoSapphire', value: '#7dc4e4' },
+  { name: 'CatppuccinMacchiatoBlue', value: '#8aadf4' },
+  { name: 'CatppuccinMacchiatoLavender', value: '#b7bdf8' },
+]
+
 const BUILTIN_BASE_THEMES = [
   { value: 'system', translationKey: 'System Default' },
   { value: 'light', translationKey: 'Light', classification: 'light', background: '#f1f1f1' },
@@ -804,6 +821,7 @@ export {
   DEFAULT_QUICK_PLAYBACK_SPEED_BAR_OPTIONS,
   DEFAULT_WATCHED_PERCENTAGE_THRESHOLD,
   WATCHED_MAX_REMAINING_SECONDS,
+  CATPPUCCIN_MACCHIATO_COLORS,
   BUILTIN_BASE_THEME_VALUES,
   BUILTIN_BASE_THEME_TRANSLATION_KEYS,
   BASE_THEME_BACKGROUND_COLORS,
