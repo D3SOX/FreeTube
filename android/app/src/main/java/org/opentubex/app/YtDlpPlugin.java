@@ -65,11 +65,11 @@ public final class YtDlpPlugin extends Plugin {
         });
     }
     @PluginMethod public void download(PluginCall call) {
-        run(call, () -> downloads.add(call.getObject("payload"), call.getArray("args"), call.getObject("configuration"), call.getLong("retryDownloadId", -1L)));
+        run(call, () -> downloads.add(call.getObject("payload"), call.getArray("args"), call.getObject("configuration"), call.getData().optLong("retryDownloadId", -1L)));
     }
     @PluginMethod public void list(PluginCall call) { run(call, () -> new JSONObject().put("downloads", downloads.list())); }
     @PluginMethod public void control(PluginCall call) {
-        run(call, () -> new JSONObject().put("ok", downloads.control(call.getLong("id", -1L), call.getString("action", ""), call.getInt("value", 0))));
+        run(call, () -> new JSONObject().put("ok", downloads.control(call.getData().optLong("id", -1L), call.getString("action", ""), call.getInt("value", 0))));
     }
     @PluginMethod public void queue(PluginCall call) {
         run(call, () -> new JSONObject().put("ok", downloads.queue(call.getString("action", ""), call.getObject("configuration"))));
@@ -83,19 +83,23 @@ public final class YtDlpPlugin extends Plugin {
     }
     @PluginMethod public void remove(PluginCall call) {
         run(call, () -> {
-            long id = call.getLong("id", -1L);
+            long id = call.getData().optLong("id", -1L);
             boolean ok = downloads.remove(id);
             if (ok) notifyListeners("downloadsRemoved", new JSObject().put("ids", new JSONArray().put(id)));
             return new JSONObject().put("ok", ok);
         });
     }
     @PluginMethod public void open(PluginCall call) {
+        open(getContext(), call);
+    }
+
+    void open(Context context, PluginCall call) {
         run(call, () -> {
-            Uri uri = downloads.firstFile(call.getLong("id", -1L));
+            Uri uri = downloads.firstFile(call.getData().optLong("id", -1L));
             if (uri == null) return new JSONObject().put("ok", false);
-            Intent intent = new Intent(Intent.ACTION_VIEW).setDataAndType(uri, getContext().getContentResolver().getType(uri))
+            Intent intent = new Intent(Intent.ACTION_VIEW).setDataAndType(uri, context.getContentResolver().getType(uri))
                 .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_ACTIVITY_NEW_TASK);
-            getContext().startActivity(intent);
+            context.startActivity(intent);
             return new JSONObject().put("ok", true);
         });
     }
