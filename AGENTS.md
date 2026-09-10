@@ -1,5 +1,9 @@
 # Project instructions
 
+## Pull requests
+
+- For every PR opened in this repository, copy the linked issue's milestone if it has one. Otherwise, automatically assign the currently open milestone with the lowest version in its title. Query open milestones with `gh api --paginate` at PR creation time and compare titles by numeric version order, not alphabetical order or milestone number. Use the exact title with `gh pr create --milestone` or `gh pr edit --milestone`. If the issue has no milestone and no version milestone is open, report that instead of creating one.
+
 ## Documentation
 
 - Do not create new documentation files, feature writeups, implementation notes, plans, or task summaries unless the user explicitly requests them. Put change explanations and validation details in the PR description. Update existing documentation only when the change makes it inaccurate.
