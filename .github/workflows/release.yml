@@ -201,10 +201,8 @@ jobs:
         ANDROID_VERSION_NAME="$(jq --raw-output .version package.json)"
         export ANDROID_VERSION_CODE ANDROID_VERSION_NAME
         pnpm run capacitor:sync:android
-        ./android/gradlew --project-dir android :app:assembleRelease :app:assembleNightly -PsplitApks \
-          -I ../tests/android/build-identity.init.gradle verifyBuildIdentity
+        ./android/gradlew --project-dir android :app:assembleRelease -PsplitApks
         python3 _scripts/android_apks.py android/app/build/outputs/apk/release android-apks --release
-        python3 _scripts/android_apks.py android/app/build/outputs/apk/nightly android-nightly-apks
 
     - name: Convert x64 AppImage to Anylinux AppImage
       if: startsWith(matrix.os, 'ubuntu') && startsWith(matrix.runtime, 'linux-x64')
@@ -265,7 +263,7 @@ jobs:
 
         case "$RUNTIME" in
           android)
-            cp android-apks/*.apk android-nightly-apks/*.apk release-assets/
+            cp android-apks/*.apk release-assets/
             ;;
           linux-x64)
             cp "build/opentubex-${VERSION}.zip" \
@@ -622,6 +620,7 @@ jobs:
   trigger-fdroid-update:
     name: Trigger F-Droid repository update
     needs: publish-release
+    if: inputs.publishRelease
     runs-on: ubuntu-latest
 
     permissions:

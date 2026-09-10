@@ -99,7 +99,7 @@ for (const file of ['build', 'release']) {
   })
 }
 
-test('stable releases build both Android identities and sort between nightlies by version code', async (t) => {
+test('stable releases build only production APKs and sort between nightlies by version code', async (t) => {
   const directory = await mkdtemp(join(tmpdir(), 'android-stable-promotion-'))
   t.after(() => rm(directory, { recursive: true, force: true }))
   await mkdir(join(directory, 'android'))
@@ -130,14 +130,13 @@ test('stable releases build both Android identities and sort between nightlies b
   assert.equal(result.status, 0, result.stderr)
   const invocations = (await readFile(join(directory, 'gradle.log'), 'utf8')).trim().split('\n')
   const stableCode = Number(invocations[0].split('|')[1])
-  for (const variant of ['Release', 'Nightly']) {
-    const invocation = invocations.find(line => line.includes(`:app:assemble${variant}`))
-    assert.ok(invocation, `Stable releases must build the ${variant} identity`)
-    assert.ok(invocation.endsWith(`|${stableCode}|0.35.0`))
-  }
+  assert.equal(invocations.length, 1)
+  assert.ok(invocations[0].includes(':app:assembleRelease'))
+  assert.ok(!invocations[0].includes(':app:assembleNightly'))
+  assert.ok(invocations[0].endsWith(`|${stableCode}|0.35.0`))
   const packaging = await readFile(join(directory, 'packaging.log'), 'utf8')
   assert.match(packaging, /apk\/release android-apks --release/)
-  assert.match(packaging, /apk\/nightly android-nightly-apks\n/)
+  assert.doesNotMatch(packaging, /apk\/nightly/)
 
   const nightlyWorkflow = load(await readFile('.github/workflows/build.yml', 'utf8'))
   const nightlyBuild = nightlyWorkflow.jobs.android.steps.find(step => step.name === 'Build signed Android APKs')
@@ -163,7 +162,7 @@ test('stable releases build both Android identities and sort between nightlies b
   }
 })
 
-test('stable releases attach both Android identities with distinct filenames', async (t) => {
+test('stable releases attach only production APKs', async (t) => {
   const directory = await mkdtemp(join(tmpdir(), 'android-release-assets-'))
   t.after(() => rm(directory, { recursive: true, force: true }))
   const source = join(directory, 'android-apks')
@@ -186,8 +185,8 @@ test('stable releases attach both Android identities with distinct filenames', a
     encoding: 'utf8'
   })
   assert.equal(result.status, 0, result.stderr)
-  assert.deepEqual((await readdir(join(directory, 'release-assets'))).sort(), [...names, ...nightlyNames].sort())
-  for (const name of [...names, ...nightlyNames]) {
+  assert.deepEqual((await readdir(join(directory, 'release-assets'))).sort(), names.sort())
+  for (const name of names) {
     assert.equal(await readFile(join(directory, 'release-assets', name), 'utf8'), name)
   }
   const upload = workflow.jobs.build.steps.find(step => step.name === 'Upload release assets')
