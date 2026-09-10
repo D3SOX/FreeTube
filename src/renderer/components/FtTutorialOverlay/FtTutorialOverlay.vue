@@ -78,7 +78,7 @@
                 :value="baseTheme"
                 setting-key="baseTheme"
                 :select-names="baseThemeNames"
-                :select-values="BASE_THEME_VALUES"
+                :select-values="BUILTIN_BASE_THEME_VALUES"
                 :icon="['fas', 'palette']"
                 @change="updateBaseTheme"
               />
@@ -166,7 +166,9 @@ import { useI18n } from 'vue-i18n'
 
 import store from '../../store/index'
 import { normalizeTabBarPosition, TAB_BAR_POSITIONS } from '../../constants/tabBarPosition'
+import { BUILTIN_BASE_THEME_VALUES } from '../../../constants'
 import { AUTO_QUALITY_FALLBACK, playbackEngineSupportsAutoQuality } from '../../helpers/player/autoQuality'
+import { useBaseThemeNames } from '../../composables/baseThemes'
 import { clampOverlayScrollTop, restoreOverlayScrollTop } from '../../helpers/overlayScrollbars'
 
 import FtButton from '../FtButton/FtButton.vue'
@@ -201,13 +203,6 @@ let contentResizeObserver = null
 let targetResizeObserver = null
 let observedTarget = null
 
-const BASE_THEME_VALUES = [
-  'system', 'light', 'dark', 'black', 'openTubeXLight', 'openTubeXDark', 'nordic', 'hotPink', 'pastelPink',
-  'catppuccinFrappe', 'catppuccinLatte', 'catppuccinMocha', 'dracula',
-  'everforestDarkHard', 'everforestDarkMedium', 'everforestDarkLow',
-  'everforestLightHard', 'everforestLightMedium', 'everforestLightLow',
-  'gruvboxDark', 'gruvboxLight', 'solarizedDark', 'solarizedLight'
-]
 const RESOLUTION_VALUES = ['2160', '1440', '1080', '720', '480', '360', '240', '144']
 
 const newUserSteps = computed(() => [
@@ -275,31 +270,7 @@ const tabBarPositionNames = computed(() => [
   t('Settings.Theme Settings.Tab Layout.Vertical Right')
 ])
 const tabBarPosition = computed(() => normalizeTabBarPosition(store.getters.getTabBarPosition))
-const baseThemeNames = computed(() => [
-  t('Settings.Theme Settings.Base Theme.System Default'),
-  t('Settings.Theme Settings.Base Theme.Light'),
-  t('Settings.Theme Settings.Base Theme.Dark'),
-  t('Settings.Theme Settings.Base Theme.Black'),
-  t('Settings.Theme Settings.Base Theme.OpenTubeX Light'),
-  t('Settings.Theme Settings.Base Theme.OpenTubeX Dark'),
-  t('Settings.Theme Settings.Base Theme.Nordic'),
-  t('Settings.Theme Settings.Base Theme.Hot Pink'),
-  t('Settings.Theme Settings.Base Theme.Pastel Pink'),
-  t('Settings.Theme Settings.Base Theme.Catppuccin Frappe'),
-  t('Settings.Theme Settings.Base Theme.Catppuccin Latte'),
-  t('Settings.Theme Settings.Base Theme.Catppuccin Mocha'),
-  t('Settings.Theme Settings.Base Theme.Dracula'),
-  t('Settings.Theme Settings.Base Theme.Everforest Dark Hard'),
-  t('Settings.Theme Settings.Base Theme.Everforest Dark Medium'),
-  t('Settings.Theme Settings.Base Theme.Everforest Dark Low'),
-  t('Settings.Theme Settings.Base Theme.Everforest Light Hard'),
-  t('Settings.Theme Settings.Base Theme.Everforest Light Medium'),
-  t('Settings.Theme Settings.Base Theme.Everforest Light Low'),
-  t('Settings.Theme Settings.Base Theme.Gruvbox Dark'),
-  t('Settings.Theme Settings.Base Theme.Gruvbox Light'),
-  t('Settings.Theme Settings.Base Theme.Solarized Dark'),
-  t('Settings.Theme Settings.Base Theme.Solarized Light')
-])
+const baseThemeNames = useBaseThemeNames()
 const baseTheme = computed(() => store.getters.getBaseTheme)
 const autoQualityAvailable = computed(() => playbackEngineSupportsAutoQuality(store.getters.getVideoPlaybackEngine))
 const qualityValues = computed(() => autoQualityAvailable.value ? [...RESOLUTION_VALUES, 'auto'] : RESOLUTION_VALUES)

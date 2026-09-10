@@ -329,6 +329,21 @@ Settings:
     Invalid Engine: பெயரையும் %s உள்ள சரியான HTTP அல்லது HTTPS தேடல் URL-ஐயும் உள்ளிடவும்.
     Engine Limit: அதிகபட்சம் {count} தனிப்பயன் தேடுபொறிகளைச் சேர்க்கலாம்.
   Theme Settings:
+    Main Color Theme:
+      Catppuccin Macchiato Rosewater: "Catppuccin Macchiato ரோஸ் வாட்டர்"
+      Catppuccin Macchiato Flamingo: "Catppuccin Macchiato ஃபிளமிங்கோ"
+      Catppuccin Macchiato Pink: "Catppuccin Macchiato இளஞ்சிவப்பு"
+      Catppuccin Macchiato Mauve: "Catppuccin Macchiato mauve"
+      Catppuccin Macchiato Red: "Catppuccin Macchiato சிவப்பு"
+      Catppuccin Macchiato Maroon: "Catppuccin Macchiato மெரூன்"
+      Catppuccin Macchiato Peach: "Catppuccin Macchiato குழிப்பேரி"
+      Catppuccin Macchiato Yellow: "Catppuccin Macchiato மஞ்சள்"
+      Catppuccin Macchiato Green: "Catppuccin Macchiato பச்சை"
+      Catppuccin Macchiato Teal: "Catppuccin Macchiato டீல்"
+      Catppuccin Macchiato Sky: "Catppuccin Macchiato வானம்"
+      Catppuccin Macchiato Sapphire: "Catppuccin Macchiato sapphire"
+      Catppuccin Macchiato Blue: "Catppuccin Macchiato நீலம்"
+      Catppuccin Macchiato Lavender: "Catppuccin Macchiato சுகந்தி"
     Move Downloads to App Header: பதிவிறக்கங்களைச் செயலித் தலைப்புக்கு நகர்த்து
     Move Settings to App Header: அமைப்புகளைச் செயலித் தலைப்புக்கு நகர்த்து
     Hide Side Bar on Watch Pages: காணொளிப் பக்கங்களில் பக்கப் பட்டையை மறை
@@ -375,6 +390,22 @@ Settings:
       Unable to Load: நிறுவப்பட்ட கணினி எழுத்துருக்களை ஏற்ற முடியவில்லை
     Always Show Scrollbars: உருள் பட்டைகளை எப்போதும் காட்டு
     Base Theme:
+      Tokyo Night Night: Tokyo Night Night
+      Tokyo Night Storm: Tokyo Night Storm
+      Tokyo Night Moon: Tokyo Night Moon
+      Tokyo Night Day: Tokyo Night Day
+      Rosé Pine: Rosé Pine
+      Rosé Pine Moon: Rosé Pine Moon
+      Rosé Pine Dawn: Rosé Pine Dawn
+      Kanagawa Wave: Kanagawa Wave
+      Kanagawa Dragon: Kanagawa Dragon
+      Kanagawa Lotus: Kanagawa Lotus
+      Ayu Dark: Ayu Dark
+      Ayu Mirage: Ayu Mirage
+      Ayu Light: Ayu Light
+      One Dark: One Dark
+      Carbonfox: Carbonfox
+      Catppuccin Macchiato: Catppuccin Macchiato
       OpenTubeX Light: "OpenTubeX ஒளி"
       OpenTubeX Dark: "OpenTubeX இருண்ட"
       Custom: தனிப்பயன்

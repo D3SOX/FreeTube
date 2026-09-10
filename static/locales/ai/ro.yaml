@@ -326,6 +326,21 @@ Settings:
     Invalid Engine: Introduceți un nume și o adresă URL de căutare HTTP sau HTTPS validă, care conține %s.
     Engine Limit: Puteți adăuga până la {count} motoare de căutare personalizate.
   Theme Settings:
+    Main Color Theme:
+      Catppuccin Macchiato Rosewater: "Catppuccin Macchiato Apă de Trandafiri"
+      Catppuccin Macchiato Flamingo: "Catppuccin Macchiato Flamingo"
+      Catppuccin Macchiato Pink: "Catppuccin Macchiato Roz"
+      Catppuccin Macchiato Mauve: "Catppuccin Macchiato Mov"
+      Catppuccin Macchiato Red: "Catppuccin Macchiato Roșu"
+      Catppuccin Macchiato Maroon: "Catppuccin Macchiato Maro"
+      Catppuccin Macchiato Peach: "Catppuccin Macchiato Piersică"
+      Catppuccin Macchiato Yellow: "Catppuccin Macchiato Galben"
+      Catppuccin Macchiato Green: "Catppuccin Macchiato Verde"
+      Catppuccin Macchiato Teal: "Catppuccin Macchiato Teal"
+      Catppuccin Macchiato Sky: "Catppuccin Macchiato Albastru deschis"
+      Catppuccin Macchiato Sapphire: "Catppuccin Macchiato Safir"
+      Catppuccin Macchiato Blue: "Catppuccin Macchiato Albastru"
+      Catppuccin Macchiato Lavender: "Catppuccin Macchiato Lavandă"
     Move Downloads to App Header: Mută Descărcări în antetul aplicației
     Move Settings to App Header: Mută Setări în antetul aplicației
     Hide Side Bar on Watch Pages: Ascunde bara laterală pe paginile de vizionare
@@ -372,6 +387,22 @@ Settings:
       Unable to Load: Fonturile instalate în sistem nu au putut fi încărcate
     Always Show Scrollbars: Afișează întotdeauna barele de derulare
     Base Theme:
+      Tokyo Night Night: Tokyo Night Night
+      Tokyo Night Storm: Tokyo Night Storm
+      Tokyo Night Moon: Tokyo Night Moon
+      Tokyo Night Day: Tokyo Night Day
+      Rosé Pine: Rosé Pine
+      Rosé Pine Moon: Rosé Pine Moon
+      Rosé Pine Dawn: Rosé Pine Dawn
+      Kanagawa Wave: Kanagawa Wave
+      Kanagawa Dragon: Kanagawa Dragon
+      Kanagawa Lotus: Kanagawa Lotus
+      Ayu Dark: Ayu Dark
+      Ayu Mirage: Ayu Mirage
+      Ayu Light: Ayu Light
+      One Dark: One Dark
+      Carbonfox: Carbonfox
+      Catppuccin Macchiato: Catppuccin Macchiato
       OpenTubeX Light: "OpenTubeX Luminoasă"
       OpenTubeX Dark: "OpenTubeX Întunecată"
       Custom: Personalizată

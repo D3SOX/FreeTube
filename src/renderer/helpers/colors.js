@@ -1,7 +1,6 @@
 import { randomArrayItem } from './utils'
+import { CATPPUCCIN_MACCHIATO_COLORS } from '../../constants'
 
-// When adding new colors here,
-// remember to update the name translations in `src/renderer/composables/colors.js`
 export const colors = [
   { name: 'Red', value: '#d50000' },
   { name: 'Pink', value: '#C51162' },
@@ -35,6 +34,7 @@ export const colors = [
   { name: 'CatppuccinFrappeLavender', value: '#babbf1' },
   { name: 'CatppuccinLatteMauve', value: '#8839ef' },
   { name: 'CatppuccinLatteRed', value: '#d20f39' },
+  ...CATPPUCCIN_MACCHIATO_COLORS,
   { name: 'CatppuccinMochaRosewater', value: '#F5E0DC' },
   { name: 'CatppuccinMochaFlamingo', value: '#F2CDCD' },
   { name: 'CatppuccinMochaPink', value: '#F5C2E7' },

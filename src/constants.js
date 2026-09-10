@@ -720,33 +720,74 @@ const DEFAULT_QUICK_PLAYBACK_SPEED_BAR_OPTIONS = Object.freeze([
   { speed: 3, name: '' },
 ])
 
-const LIGHT_BASE_THEMES = [
-  'light',
-  'openTubeXLight',
-  'pastelPink',
-  'catppuccinLatte',
-  'everforestLightHard',
-  'everforestLightMedium',
-  'everforestLightLow',
-  'gruvboxLight',
-  'solarizedLight',
+const CATPPUCCIN_MACCHIATO_COLORS = [
+  { name: 'CatppuccinMacchiatoRosewater', value: '#f4dbd6' },
+  { name: 'CatppuccinMacchiatoFlamingo', value: '#f0c6c6' },
+  { name: 'CatppuccinMacchiatoPink', value: '#f5bde6' },
+  { name: 'CatppuccinMacchiatoMauve', value: '#c6a0f6' },
+  { name: 'CatppuccinMacchiatoRed', value: '#ed8796' },
+  { name: 'CatppuccinMacchiatoMaroon', value: '#ee99a0' },
+  { name: 'CatppuccinMacchiatoPeach', value: '#f5a97f' },
+  { name: 'CatppuccinMacchiatoYellow', value: '#eed49f' },
+  { name: 'CatppuccinMacchiatoGreen', value: '#a6da95' },
+  { name: 'CatppuccinMacchiatoTeal', value: '#8bd5ca' },
+  { name: 'CatppuccinMacchiatoSky', value: '#91d7e3' },
+  { name: 'CatppuccinMacchiatoSapphire', value: '#7dc4e4' },
+  { name: 'CatppuccinMacchiatoBlue', value: '#8aadf4' },
+  { name: 'CatppuccinMacchiatoLavender', value: '#b7bdf8' },
 ]
 
-const DARK_BASE_THEMES = [
-  'dark',
-  'openTubeXDark',
-  'black',
-  'nordic',
-  'hotPink',
-  'catppuccinFrappe',
-  'catppuccinMocha',
-  'dracula',
-  'everforestDarkHard',
-  'everforestDarkMedium',
-  'everforestDarkLow',
-  'gruvboxDark',
-  'solarizedDark',
+const BUILTIN_BASE_THEMES = [
+  { value: 'system', translationKey: 'System Default' },
+  { value: 'light', translationKey: 'Light', classification: 'light', background: '#f1f1f1' },
+  { value: 'dark', translationKey: 'Dark', classification: 'dark', background: '#0f0f0f' },
+  { value: 'black', translationKey: 'Black', classification: 'dark', background: '#000000' },
+  { value: 'openTubeXLight', translationKey: 'OpenTubeX Light', classification: 'light', background: '#e8f2f0', fixedColors: true },
+  { value: 'openTubeXDark', translationKey: 'OpenTubeX Dark', classification: 'dark', background: '#0b1416', fixedColors: true },
+  { value: 'nordic', translationKey: 'Nordic', classification: 'dark', background: '#2b2f3a' },
+  { value: 'hotPink', translationKey: 'Hot Pink', classification: 'dark', background: '#ff008a', fixedColors: true },
+  { value: 'pastelPink', translationKey: 'Pastel Pink', classification: 'light', background: '#ffeadd' },
+  { value: 'catppuccinFrappe', translationKey: 'Catppuccin Frappe', classification: 'dark', background: '#303446' },
+  { value: 'catppuccinLatte', translationKey: 'Catppuccin Latte', classification: 'light', background: '#eff1f5' },
+  { value: 'catppuccinMacchiato', translationKey: 'Catppuccin Macchiato', classification: 'dark', background: '#24273a' },
+  { value: 'catppuccinMocha', translationKey: 'Catppuccin Mocha', classification: 'dark', background: '#1e1e2e' },
+  { value: 'dracula', translationKey: 'Dracula', classification: 'dark', background: '#282a36' },
+  { value: 'everforestDarkHard', translationKey: 'Everforest Dark Hard', classification: 'dark', background: '#272e33' },
+  { value: 'everforestDarkMedium', translationKey: 'Everforest Dark Medium', classification: 'dark', background: '#2d353b' },
+  { value: 'everforestDarkLow', translationKey: 'Everforest Dark Low', classification: 'dark', background: '#333c43' },
+  { value: 'everforestLightHard', translationKey: 'Everforest Light Hard', classification: 'light', background: '#fffbef' },
+  { value: 'everforestLightMedium', translationKey: 'Everforest Light Medium', classification: 'light', background: '#fdf6e3' },
+  { value: 'everforestLightLow', translationKey: 'Everforest Light Low', classification: 'light', background: '#f3ead3' },
+  { value: 'gruvboxDark', translationKey: 'Gruvbox Dark', classification: 'dark', background: '#282828' },
+  { value: 'gruvboxLight', translationKey: 'Gruvbox Light', classification: 'light', background: '#fbf1c7' },
+  { value: 'solarizedDark', translationKey: 'Solarized Dark', classification: 'dark', background: '#002B36' },
+  { value: 'solarizedLight', translationKey: 'Solarized Light', classification: 'light', background: '#fdf6e3' },
+  { value: 'tokyoNightNight', translationKey: 'Tokyo Night Night', classification: 'dark', background: '#1a1b26', fixedPalette: true },
+  { value: 'tokyoNightStorm', translationKey: 'Tokyo Night Storm', classification: 'dark', background: '#24283b', fixedPalette: true },
+  { value: 'tokyoNightMoon', translationKey: 'Tokyo Night Moon', classification: 'dark', background: '#222436', fixedPalette: true },
+  { value: 'tokyoNightDay', translationKey: 'Tokyo Night Day', classification: 'light', background: '#e1e2e7', fixedPalette: true },
+  { value: 'rosePine', translationKey: 'Rosé Pine', classification: 'dark', background: '#191724', fixedPalette: true },
+  { value: 'rosePineMoon', translationKey: 'Rosé Pine Moon', classification: 'dark', background: '#232136', fixedPalette: true },
+  { value: 'rosePineDawn', translationKey: 'Rosé Pine Dawn', classification: 'light', background: '#faf4ed', fixedPalette: true },
+  { value: 'kanagawaWave', translationKey: 'Kanagawa Wave', classification: 'dark', background: '#1f1f28', fixedPalette: true },
+  { value: 'kanagawaDragon', translationKey: 'Kanagawa Dragon', classification: 'dark', background: '#181616', fixedPalette: true },
+  { value: 'kanagawaLotus', translationKey: 'Kanagawa Lotus', classification: 'light', background: '#f2ecbc', fixedPalette: true },
+  { value: 'ayuDark', translationKey: 'Ayu Dark', classification: 'dark', background: '#0d1017', fixedPalette: true },
+  { value: 'ayuMirage', translationKey: 'Ayu Mirage', classification: 'dark', background: '#1f2430', fixedPalette: true },
+  { value: 'ayuLight', translationKey: 'Ayu Light', classification: 'light', background: '#f8f9fa', fixedPalette: true },
+  { value: 'oneDark', translationKey: 'One Dark', classification: 'dark', background: '#282c34', fixedPalette: true },
+  { value: 'carbonfox', translationKey: 'Carbonfox', classification: 'dark', background: '#161616', fixedPalette: true },
 ]
+
+const BUILTIN_BASE_THEME_VALUES = BUILTIN_BASE_THEMES.map(({ value }) => value)
+const BUILTIN_BASE_THEME_TRANSLATION_KEYS = BUILTIN_BASE_THEMES.map(({ translationKey }) => translationKey)
+const BASE_THEME_BACKGROUND_COLORS = Object.fromEntries(
+  BUILTIN_BASE_THEMES.filter(({ background }) => background).map(({ value, background }) => [value, background])
+)
+const PALETTE_BASE_THEMES = BUILTIN_BASE_THEMES.filter(({ fixedPalette }) => fixedPalette).map(({ value }) => value)
+const FIXED_COLOR_BASE_THEMES = BUILTIN_BASE_THEMES.filter(({ fixedColors, fixedPalette }) => fixedColors || fixedPalette).map(({ value }) => value)
+const LIGHT_BASE_THEMES = BUILTIN_BASE_THEMES.filter(({ classification }) => classification === 'light').map(({ value }) => value)
+const DARK_BASE_THEMES = BUILTIN_BASE_THEMES.filter(({ classification }) => classification === 'dark').map(({ value }) => value)
 
 export {
   IpcChannels,
@@ -780,6 +821,12 @@ export {
   DEFAULT_QUICK_PLAYBACK_SPEED_BAR_OPTIONS,
   DEFAULT_WATCHED_PERCENTAGE_THRESHOLD,
   WATCHED_MAX_REMAINING_SECONDS,
+  CATPPUCCIN_MACCHIATO_COLORS,
+  BUILTIN_BASE_THEME_VALUES,
+  BUILTIN_BASE_THEME_TRANSLATION_KEYS,
+  BASE_THEME_BACKGROUND_COLORS,
+  PALETTE_BASE_THEMES,
+  FIXED_COLOR_BASE_THEMES,
   LIGHT_BASE_THEMES,
   DARK_BASE_THEMES,
   DOWNLOADED_MEDIA_MIME_TYPES,

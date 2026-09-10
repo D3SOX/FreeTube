@@ -328,6 +328,21 @@ Settings:
     Invalid Engine: Masukkan nama dan URL pencarian HTTP atau HTTPS valid yang berisi %s.
     Engine Limit: Anda dapat menambahkan hingga {count} mesin pencari khusus.
   Theme Settings:
+    Main Color Theme:
+      Catppuccin Macchiato Rosewater: "Catppuccin Macchiato Rosewater"
+      Catppuccin Macchiato Flamingo: "Catppuccin Macchiato Flamingo"
+      Catppuccin Macchiato Pink: "Catppuccin Macchiato Pink"
+      Catppuccin Macchiato Mauve: "Catppuccin Macchiato Mauve"
+      Catppuccin Macchiato Red: "Catppuccin Macchiato Merah"
+      Catppuccin Macchiato Maroon: "Catppuccin Macchiato Maroon"
+      Catppuccin Macchiato Peach: "Catppuccin Macchiato Peach"
+      Catppuccin Macchiato Yellow: "Catppuccin Macchiato Kuning"
+      Catppuccin Macchiato Green: "Catppuccin Macchiato Hijau"
+      Catppuccin Macchiato Teal: "Catppuccin Macchiato Teal"
+      Catppuccin Macchiato Sky: "Catppuccin Macchiato Sky"
+      Catppuccin Macchiato Sapphire: "Catppuccin Macchiato Sapphire"
+      Catppuccin Macchiato Blue: "Catppuccin Macchiato Biru"
+      Catppuccin Macchiato Lavender: "Catppuccin Macchiato Lavender"
     Move Downloads to App Header: Pindahkan Unduhan ke Header Aplikasi
     Move Settings to App Header: Pindahkan Pengaturan ke Header Aplikasi
     Hide Side Bar on Watch Pages: Sembunyikan Bilah Samping di Halaman Tonton
@@ -374,6 +389,22 @@ Settings:
       Unable to Load: Tidak dapat memuat font sistem yang terpasang
     Always Show Scrollbars: Selalu Tampilkan Bilah Gulir
     Base Theme:
+      Tokyo Night Night: Tokyo Night Night
+      Tokyo Night Storm: Tokyo Night Storm
+      Tokyo Night Moon: Tokyo Night Moon
+      Tokyo Night Day: Tokyo Night Day
+      Rosé Pine: Rosé Pine
+      Rosé Pine Moon: Rosé Pine Moon
+      Rosé Pine Dawn: Rosé Pine Dawn
+      Kanagawa Wave: Kanagawa Wave
+      Kanagawa Dragon: Kanagawa Dragon
+      Kanagawa Lotus: Kanagawa Lotus
+      Ayu Dark: Ayu Dark
+      Ayu Mirage: Ayu Mirage
+      Ayu Light: Ayu Light
+      One Dark: One Dark
+      Carbonfox: Carbonfox
+      Catppuccin Macchiato: Catppuccin Macchiato
       OpenTubeX Light: "OpenTubeX Terang"
       OpenTubeX Dark: "OpenTubeX Gelap"
       Custom: Khusus

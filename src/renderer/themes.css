@@ -174,7 +174,19 @@ it can be safely elided. This looks quite pleasant on this theme. */
 .catppuccinFrappe,
 .everforestDarkHard,
 .everforestDarkMedium,
-.everforestDarkLow {
+.everforestDarkLow,
+.tokyoNightNight,
+.tokyoNightStorm,
+.tokyoNightMoon,
+.rosePine,
+.rosePineMoon,
+.kanagawaWave,
+.kanagawaDragon,
+.ayuDark,
+.ayuMirage,
+.oneDark,
+.carbonfox,
+.catppuccinMacchiato {
   --focus-ring-contrast-color: #fff;
   --primary-shadow-color: rgb(0 0 0 / 75%);
   --members-only-color: #55c86b;
@@ -812,6 +824,126 @@ it can be safely elided. This looks quite pleasant on this theme. */
 
 
 /* PRIMARY THEME COLORS CORRESPONDING TO BASE THEMES */
+
+.mainCatppuccinMacchiatoRosewater,
+.mainCatppuccinMacchiatoFlamingo,
+.mainCatppuccinMacchiatoPink,
+.mainCatppuccinMacchiatoMauve,
+.mainCatppuccinMacchiatoRed,
+.mainCatppuccinMacchiatoMaroon,
+.mainCatppuccinMacchiatoPeach,
+.mainCatppuccinMacchiatoYellow,
+.mainCatppuccinMacchiatoGreen,
+.mainCatppuccinMacchiatoTeal,
+.mainCatppuccinMacchiatoSky,
+.mainCatppuccinMacchiatoSapphire,
+.mainCatppuccinMacchiatoBlue,
+.mainCatppuccinMacchiatoLavender {
+  --primary-color: var(--macchiato-color);
+  --primary-color-hover: var(--macchiato-color-hover);
+  --primary-color-active: var(--macchiato-color-active);
+  --text-with-main-color: #24273a;
+  --logo-icon-bar-color: url('../../_icons/iconBlackSmall.svg');
+  --logo-text-bar-color: url('../../_icons/textBlackSmall.svg');
+}
+
+:is(.mainCatppuccinMacchiatoRosewater, .secCatppuccinMacchiatoRosewater) {
+  --macchiato-color: #f4dbd6;
+  --macchiato-color-rgb: 244 219 214;
+  --macchiato-color-hover: #f5dfda;
+  --macchiato-color-active: #f6e2de;
+}
+
+:is(.mainCatppuccinMacchiatoFlamingo, .secCatppuccinMacchiatoFlamingo) {
+  --macchiato-color: #f0c6c6;
+  --macchiato-color-rgb: 240 198 198;
+  --macchiato-color-hover: #f2cccc;
+  --macchiato-color-active: #f3d1d1;
+}
+
+:is(.mainCatppuccinMacchiatoPink, .secCatppuccinMacchiatoPink) {
+  --macchiato-color: #f5bde6;
+  --macchiato-color-rgb: 245 189 230;
+  --macchiato-color-hover: #f6c4e8;
+  --macchiato-color-active: #f7caeb;
+}
+
+:is(.mainCatppuccinMacchiatoMauve, .secCatppuccinMacchiatoMauve) {
+  --macchiato-color: #c6a0f6;
+  --macchiato-color-rgb: 198 160 246;
+  --macchiato-color-hover: #ccaaf7;
+  --macchiato-color-active: #d1b3f8;
+}
+
+:is(.mainCatppuccinMacchiatoRed, .secCatppuccinMacchiatoRed) {
+  --macchiato-color: #ed8796;
+  --macchiato-color-rgb: 237 135 150;
+  --macchiato-color-hover: #ef93a0;
+  --macchiato-color-active: #f19fab;
+}
+
+:is(.mainCatppuccinMacchiatoMaroon, .secCatppuccinMacchiatoMaroon) {
+  --macchiato-color: #ee99a0;
+  --macchiato-color-rgb: 238 153 160;
+  --macchiato-color-hover: #f0a3aa;
+  --macchiato-color-active: #f1adb3;
+}
+
+:is(.mainCatppuccinMacchiatoPeach, .secCatppuccinMacchiatoPeach) {
+  --macchiato-color: #f5a97f;
+  --macchiato-color-rgb: 245 169 127;
+  --macchiato-color-hover: #f6b28c;
+  --macchiato-color-active: #f7ba99;
+}
+
+:is(.mainCatppuccinMacchiatoYellow, .secCatppuccinMacchiatoYellow) {
+  --macchiato-color: #eed49f;
+  --macchiato-color-rgb: 238 212 159;
+  --macchiato-color-hover: #f0d8a9;
+  --macchiato-color-active: #f1ddb2;
+}
+
+:is(.mainCatppuccinMacchiatoGreen, .secCatppuccinMacchiatoGreen) {
+  --macchiato-color: #a6da95;
+  --macchiato-color-rgb: 166 218 149;
+  --macchiato-color-hover: #afdea0;
+  --macchiato-color-active: #b8e1aa;
+}
+
+:is(.mainCatppuccinMacchiatoTeal, .secCatppuccinMacchiatoTeal) {
+  --macchiato-color: #8bd5ca;
+  --macchiato-color-rgb: 139 213 202;
+  --macchiato-color-hover: #97d9cf;
+  --macchiato-color-active: #a2ddd5;
+}
+
+:is(.mainCatppuccinMacchiatoSky, .secCatppuccinMacchiatoSky) {
+  --macchiato-color: #91d7e3;
+  --macchiato-color-rgb: 145 215 227;
+  --macchiato-color-hover: #9cdbe6;
+  --macchiato-color-active: #a7dfe9;
+}
+
+:is(.mainCatppuccinMacchiatoSapphire, .secCatppuccinMacchiatoSapphire) {
+  --macchiato-color: #7dc4e4;
+  --macchiato-color-rgb: 125 196 228;
+  --macchiato-color-hover: #8acae7;
+  --macchiato-color-active: #97d0e9;
+}
+
+:is(.mainCatppuccinMacchiatoBlue, .secCatppuccinMacchiatoBlue) {
+  --macchiato-color: #8aadf4;
+  --macchiato-color-rgb: 138 173 244;
+  --macchiato-color-hover: #96b5f5;
+  --macchiato-color-active: #a1bdf6;
+}
+
+:is(.mainCatppuccinMacchiatoLavender, .secCatppuccinMacchiatoLavender) {
+  --macchiato-color: #b7bdf8;
+  --macchiato-color-rgb: 183 189 248;
+  --macchiato-color-hover: #bec4f9;
+  --macchiato-color-active: #c5caf9;
+}
 
 .mainCatppuccinMochaRosewater,
 .mainCatppuccinMochaFlamingo,
@@ -1508,6 +1640,27 @@ it can be safely elided. This looks quite pleasant on this theme. */
 
 
 /* SECONDARY THEME COLORS CORRESPONDING TO BASE THEMES */
+
+.secCatppuccinMacchiatoRosewater,
+.secCatppuccinMacchiatoFlamingo,
+.secCatppuccinMacchiatoPink,
+.secCatppuccinMacchiatoMauve,
+.secCatppuccinMacchiatoRed,
+.secCatppuccinMacchiatoMaroon,
+.secCatppuccinMacchiatoPeach,
+.secCatppuccinMacchiatoYellow,
+.secCatppuccinMacchiatoGreen,
+.secCatppuccinMacchiatoTeal,
+.secCatppuccinMacchiatoSky,
+.secCatppuccinMacchiatoSapphire,
+.secCatppuccinMacchiatoBlue,
+.secCatppuccinMacchiatoLavender {
+  --accent-color-rgb: var(--macchiato-color-rgb);
+  --accent-color-hover: var(--macchiato-color-hover);
+  --accent-color-active: var(--macchiato-color-active);
+  --accent-color-visited: var(--macchiato-color);
+  --text-with-accent-color: #24273a;
+}
 
 .secCatppuccinMochaRosewater,
 .secCatppuccinMochaFlamingo,
@@ -2493,4 +2646,458 @@ body .os-scrollbar {
   --logo-secondary-color: var(--text-with-main-color);
   --logo-tertiary-color: var(--text-with-main-color);
   --logo-pressed-color: var(--text-with-main-color);
+}
+
+
+/* Adapted palettes: https://github.com/folke/tokyonight.nvim,
+   https://github.com/rose-pine/neovim, https://github.com/rebelot/kanagawa.nvim,
+   https://github.com/ayu-theme/ayu-colors, https://github.com/joshdick/onedark.vim,
+   https://github.com/EdenEast/nightfox.nvim and https://github.com/catppuccin/palette.
+   Keep after selectable accents. Each preset owns its complete palette, with
+   text and interaction colors adjusted for contrast on every neutral surface. */
+:is(
+  .tokyoNightNight,
+  .tokyoNightStorm,
+  .tokyoNightMoon,
+  .tokyoNightDay,
+  .rosePine,
+  .rosePineMoon,
+  .rosePineDawn,
+  .kanagawaWave,
+  .kanagawaDragon,
+  .kanagawaLotus,
+  .ayuDark,
+  .ayuMirage,
+  .ayuLight,
+  .oneDark,
+  .carbonfox,
+  .catppuccinMacchiato
+) {
+  --title-color: var(--primary-text-color);
+  --tertiary-text-color: var(--secondary-text-color);
+  --border-color: var(--secondary-text-color);
+  --subtle-surface-color: var(--side-nav-active-color);
+  --secondary-card-bg-color: var(--card-bg-color);
+  --side-nav-color: var(--card-bg-color);
+  --search-bar-color: var(--bg-color);
+  --dropdown-item-hover-color: var(--side-nav-hover-color);
+  --dropdown-item-hover-text-color: var(--primary-text-color);
+  --header-button-pressed-color: var(--side-nav-active-color);
+  --scrollbar-color: var(--secondary-text-color);
+  --scrollbar-color-hover: var(--primary-color);
+  --scrollbar-color-active: var(--primary-color-active);
+  --scrollbar-text-color-hover: var(--text-with-main-color);
+  --settings-changed-color: var(--accent-color);
+  --slider-track-color: var(--secondary-text-color);
+  --input-border-color: var(--secondary-text-color);
+  --toggle-track-color: var(--secondary-text-color);
+  --toggle-checked-track-color: var(--accent-color);
+  --toggle-thumb-color: var(--bg-color);
+  --toggle-checked-thumb-color: var(--bg-color);
+  --accent-color: rgb(var(--accent-color-rgb));
+  --accent-color-light: var(--accent-color-hover);
+  --link-color: var(--accent-color);
+  --link-visited-color: var(--accent-color-visited);
+  --favorite-icon-color: var(--accent-color);
+  --destructive-color: var(--red-500);
+  --destructive-hover-color: color-mix(in srgb, var(--red-500) 88%, var(--primary-text-color));
+  --destructive-active-color: color-mix(in srgb, var(--red-500) 76%, var(--primary-text-color));
+  --destructive-text-color: var(--text-with-main-color);
+  --selection-background-color: var(--primary-color);
+  --selection-text-color: var(--text-with-main-color);
+  --header-button-hover-color: var(--side-nav-hover-color);
+  --header-button-hover-text-color: var(--primary-text-color);
+  --header-button-pressed-text-color: var(--primary-text-color);
+  --colored-header-button-hover-color: var(--primary-color-hover);
+  --colored-header-button-hover-text-color: var(--text-with-main-color);
+  --colored-header-button-pressed-color: var(--primary-color-active);
+  --colored-header-button-pressed-text-color: var(--text-with-main-color);
+  --logo-icon: url('../../_icons/iconWhiteSmall.svg');
+  --logo-text: url('../../_icons/textWhiteSmall.svg');
+
+  /* The thumb extends beyond its track, so its edge also needs contrast
+     against the surrounding surface in both switch positions. */
+  .switch-input:not(:disabled) + .switch-label::after {
+    outline: 2px solid var(--secondary-text-color);
+    outline-offset: -2px;
+  }
+
+  /* Tint the existing logo for neutral and colored headers. */
+  .topNav .logoIcon,
+  .topNav .logoText {
+    /* stylelint-disable-next-line declaration-no-important */
+    background-image: none !important;
+    background-color: var(--primary-text-color);
+    mask-repeat: no-repeat;
+    mask-position: center;
+  }
+
+  .topNav .logoIcon {
+    mask-image: var(--logo-icon);
+    mask-size: 25px;
+  }
+
+  .topNav .logoText {
+    mask-image: var(--logo-text);
+    mask-size: 100px;
+  }
+
+  .topNavBarColor :is(.logoIcon, .logoText) {
+    background-color: var(--text-with-main-color);
+  }
+
+  .forceTextColor {
+    --primary-input-color: #20232b;
+  }
+
+  .ft-input-component .ft-input::placeholder {
+    color: var(--tertiary-text-color);
+    opacity: 1;
+  }
+
+  .forceTextColor .ft-input::placeholder {
+    color: #eee;
+  }
+
+  .topNav.topNavBarColor .navFilterButton:not(:hover, :active) {
+    color: #eee;
+  }
+
+  .btn:focus-visible {
+    outline-color: currentcolor;
+  }
+
+  /* Search fields retain a dark fill in colored headers, while hovered
+     search actions use the preset's primary fill and its paired text. */
+  .forceTextColor :is(.inputAction.enabled, .clearInputTextButton.visible):is(:hover, :active) {
+    color: var(--text-with-main-color);
+  }
+}
+
+.tokyoNightNight {
+  --primary-text-color: #c0caf5;
+  --secondary-text-color: #a9b1d6;
+  --bg-color: #1a1b26;
+  --card-bg-color: #16161e;
+  --side-nav-hover-color: #20212b;
+  --side-nav-active-color: #272834;
+  --primary-color: #7aa2f7;
+  --primary-color-hover: #87abf8;
+  --primary-color-active: #95b5f9;
+  --text-with-main-color: #111;
+  --accent-color-rgb: 125 207 255;
+  --accent-color-hover: #8ad4ff;
+  --accent-color-active: #97d9ff;
+  --accent-color-visited: #bb9af7;
+  --text-with-accent-color: #111;
+  --red-500: #f07178;
+  --primary-shadow-color: rgb(0 0 0 / 35%);
+  --focus-ring-contrast-color: #fff;
+}
+
+.tokyoNightStorm {
+  --primary-text-color: #c0caf5;
+  --secondary-text-color: #a9b1d6;
+  --bg-color: #24283b;
+  --card-bg-color: #1f2335;
+  --side-nav-hover-color: #292d41;
+  --side-nav-active-color: #2f3448;
+  --primary-color: #7aa2f7;
+  --primary-color-hover: #87abf8;
+  --primary-color-active: #95b5f9;
+  --text-with-main-color: #111;
+  --accent-color-rgb: 125 207 255;
+  --accent-color-hover: #8ad4ff;
+  --accent-color-active: #97d9ff;
+  --accent-color-visited: #bb9af7;
+  --text-with-accent-color: #111;
+  --red-500: #f28187;
+  --primary-shadow-color: rgb(0 0 0 / 35%);
+  --focus-ring-contrast-color: #fff;
+}
+
+.tokyoNightMoon {
+  --primary-text-color: #c8d3f5;
+  --secondary-text-color: #969ec3;
+  --bg-color: #222436;
+  --card-bg-color: #1e2030;
+  --side-nav-hover-color: #282b3c;
+  --side-nav-active-color: #2f3244;
+  --primary-color: #82aaff;
+  --primary-color-hover: #8eb2ff;
+  --primary-color-active: #9bbbff;
+  --text-with-main-color: #111;
+  --accent-color-rgb: 134 225 252;
+  --accent-color-hover: #92e4fc;
+  --accent-color-active: #9ee7fd;
+  --accent-color-visited: #c099ff;
+  --text-with-accent-color: #111;
+  --red-500: #f17e84;
+  --primary-shadow-color: rgb(0 0 0 / 35%);
+  --focus-ring-contrast-color: #fff;
+}
+
+.tokyoNightDay {
+  --primary-text-color: #3359b2;
+  --secondary-text-color: #4e5b8d;
+  --bg-color: #e1e2e7;
+  --card-bg-color: #ebecf0;
+  --side-nav-hover-color: #e0e4ed;
+  --side-nav-active-color: #d9deeb;
+  --primary-color: #225cac;
+  --primary-color-hover: #1f539b;
+  --primary-color-active: #1b4a8a;
+  --text-with-main-color: #fff;
+  --accent-color-rgb: 0 101 134;
+  --accent-color-hover: #005b79;
+  --accent-color-active: #00516b;
+  --accent-color-visited: #7541ba;
+  --text-with-accent-color: #fff;
+  --red-500: #a63639;
+  --primary-shadow-color: rgb(0 0 0 / 12%);
+  --focus-ring-contrast-color: #000;
+}
+
+.rosePine {
+  --primary-text-color: #e0def4;
+  --secondary-text-color: #a09cb6;
+  --bg-color: #191724;
+  --card-bg-color: #1f1d2e;
+  --side-nav-hover-color: #2b293a;
+  --side-nav-active-color: #323042;
+  --primary-color: #ebbcba;
+  --primary-color-hover: #edc3c1;
+  --primary-color-active: #efc9c8;
+  --text-with-main-color: #111;
+  --accent-color-rgb: 156 207 216;
+  --accent-color-hover: #a6d4dc;
+  --accent-color-active: #b0d9e0;
+  --accent-color-visited: #c4a7e7;
+  --text-with-accent-color: #111;
+  --red-500: #f17b81;
+  --primary-shadow-color: rgb(0 0 0 / 35%);
+  --focus-ring-contrast-color: #fff;
+}
+
+.rosePineMoon {
+  --primary-text-color: #e0def4;
+  --secondary-text-color: #aca9bf;
+  --bg-color: #232136;
+  --card-bg-color: #2a273f;
+  --side-nav-hover-color: #35324a;
+  --side-nav-active-color: #3c3951;
+  --primary-color: #ea9a97;
+  --primary-color-hover: #eca4a1;
+  --primary-color-active: #eeaeac;
+  --text-with-main-color: #111;
+  --accent-color-rgb: 156 207 216;
+  --accent-color-hover: #a6d4dc;
+  --accent-color-active: #b0d9e0;
+  --accent-color-visited: #c4a7e7;
+  --text-with-accent-color: #111;
+  --red-500: #f38f94;
+  --primary-shadow-color: rgb(0 0 0 / 35%);
+  --focus-ring-contrast-color: #fff;
+}
+
+.rosePineDawn {
+  --primary-text-color: #464261;
+  --secondary-text-color: #64617a;
+  --bg-color: #faf4ed;
+  --card-bg-color: #fffaf3;
+  --side-nav-hover-color: #f4efea;
+  --side-nav-active-color: #ece8e4;
+  --primary-color: #925063;
+  --primary-color-hover: #834859;
+  --primary-color-active: #75404f;
+  --text-with-main-color: #fff;
+  --accent-color-rgb: 40 105 131;
+  --accent-color-hover: #245e76;
+  --accent-color-active: #205469;
+  --accent-color-visited: #6d5d80;
+  --text-with-accent-color: #fff;
+  --red-500: #b13a3d;
+  --primary-shadow-color: rgb(0 0 0 / 12%);
+  --focus-ring-contrast-color: #000;
+}
+
+.kanagawaWave {
+  --primary-text-color: #dcd7ba;
+  --secondary-text-color: #c8c093;
+  --bg-color: #1f1f28;
+  --card-bg-color: #181820;
+  --side-nav-hover-color: #242329;
+  --side-nav-active-color: #2c2b2f;
+  --primary-color: #7e9cd8;
+  --primary-color-hover: #8ba6dc;
+  --primary-color-active: #98b0e0;
+  --text-with-main-color: #111;
+  --accent-color-rgb: 122 168 159;
+  --accent-color-hover: #87b1a9;
+  --accent-color-active: #95b9b2;
+  --accent-color-visited: #a28ec1;
+  --text-with-accent-color: #111;
+  --red-500: #f07178;
+  --primary-shadow-color: rgb(0 0 0 / 35%);
+  --focus-ring-contrast-color: #fff;
+}
+
+.kanagawaDragon {
+  --primary-text-color: #c5c9c5;
+  --secondary-text-color: #a6a69c;
+  --bg-color: #181616;
+  --card-bg-color: #12120f;
+  --side-nav-hover-color: #1d1d1a;
+  --side-nav-active-color: #242421;
+  --primary-color: #8a9a7b;
+  --primary-color-hover: #96a488;
+  --primary-color-active: #a1ae95;
+  --text-with-main-color: #111;
+  --accent-color-rgb: 127 180 202;
+  --accent-color-hover: #8cbccf;
+  --accent-color-active: #99c3d5;
+  --accent-color-visited: #a292a3;
+  --text-with-accent-color: #111;
+  --red-500: #f07178;
+  --primary-shadow-color: rgb(0 0 0 / 35%);
+  --focus-ring-contrast-color: #fff;
+}
+
+.kanagawaLotus {
+  --primary-text-color: #545464;
+  --secondary-text-color: #656256;
+  --bg-color: #f2ecbc;
+  --card-bg-color: #faf5d5;
+  --side-nav-hover-color: #f0ebce;
+  --side-nav-active-color: #e9e5ca;
+  --primary-color: #486290;
+  --primary-color-hover: #415882;
+  --primary-color-active: #3a4e73;
+  --text-with-main-color: #fff;
+  --accent-color-rgb: 75 103 98;
+  --accent-color-hover: #445d58;
+  --accent-color-active: #3c524e;
+  --accent-color-visited: #624c83;
+  --text-with-accent-color: #fff;
+  --red-500: #ac383b;
+  --primary-shadow-color: rgb(0 0 0 / 12%);
+  --focus-ring-contrast-color: #000;
+}
+
+.ayuDark {
+  --primary-text-color: #bfbdb6;
+  --secondary-text-color: #8a909f;
+  --bg-color: #0d1017;
+  --card-bg-color: #10141c;
+  --side-nav-hover-color: #1a1e25;
+  --side-nav-active-color: #22252b;
+  --primary-color: #e6b450;
+  --primary-color-hover: #e8bc62;
+  --primary-color-active: #ebc373;
+  --text-with-main-color: #111;
+  --accent-color-rgb: 89 194 255;
+  --accent-color-hover: #6ac8ff;
+  --accent-color-active: #7aceff;
+  --accent-color-visited: #d2a6ff;
+  --text-with-accent-color: #111;
+  --red-500: #f07178;
+  --primary-shadow-color: rgb(0 0 0 / 35%);
+  --focus-ring-contrast-color: #fff;
+}
+
+.ayuMirage {
+  --primary-text-color: #cccac2;
+  --secondary-text-color: #a2a9b4;
+  --bg-color: #1f2430;
+  --card-bg-color: #242936;
+  --side-nav-hover-color: #2e333e;
+  --side-nav-active-color: #353944;
+  --primary-color: #fc6;
+  --primary-color-hover: #ffd175;
+  --primary-color-active: #ffd685;
+  --text-with-main-color: #111;
+  --accent-color-rgb: 115 208 255;
+  --accent-color-hover: #81d5ff;
+  --accent-color-active: #8fd9ff;
+  --accent-color-visited: #dfbfff;
+  --text-with-accent-color: #111;
+  --red-500: #f3898f;
+  --primary-shadow-color: rgb(0 0 0 / 35%);
+  --focus-ring-contrast-color: #fff;
+}
+
+.ayuLight {
+  --primary-text-color: #5c6166;
+  --secondary-text-color: #5e6672;
+  --bg-color: #f8f9fa;
+  --card-bg-color: #fcfcfc;
+  --side-nav-hover-color: #f2f3f3;
+  --side-nav-active-color: #ececed;
+  --primary-color: #8f590e;
+  --primary-color-hover: #81500d;
+  --primary-color-active: #72470b;
+  --text-with-main-color: #fff;
+  --accent-color-rgb: 22 108 152;
+  --accent-color-hover: #146189;
+  --accent-color-active: #12567a;
+  --accent-color-visited: #775995;
+  --text-with-accent-color: #fff;
+  --red-500: #b53c3e;
+  --primary-shadow-color: rgb(0 0 0 / 12%);
+  --focus-ring-contrast-color: #000;
+}
+
+.oneDark {
+  --primary-text-color: #abb2bf;
+  --secondary-text-color: #9ca0a8;
+  --bg-color: #282c34;
+  --card-bg-color: #21252b;
+  --side-nav-hover-color: #292d34;
+  --side-nav-active-color: #2f333a;
+  --primary-color: #61afef;
+  --primary-color-hover: #71b7f1;
+  --primary-color-active: #81bff2;
+  --text-with-main-color: #111;
+  --accent-color-rgb: 86 182 194;
+  --accent-color-hover: #67bdc8;
+  --accent-color-active: #78c5ce;
+  --accent-color-visited: #cc86e0;
+  --text-with-accent-color: #111;
+  --red-500: #f17c83;
+  --primary-shadow-color: rgb(0 0 0 / 35%);
+  --focus-ring-contrast-color: #fff;
+}
+
+.carbonfox {
+  --primary-text-color: #f2f4f8;
+  --secondary-text-color: #a3a3a3;
+  --bg-color: #161616;
+  --card-bg-color: #202020;
+  --side-nav-hover-color: #2d2d2d;
+  --side-nav-active-color: #353536;
+  --primary-color: #78a9ff;
+  --primary-color-hover: #86b2ff;
+  --primary-color-active: #93baff;
+  --text-with-main-color: #111;
+  --accent-color-rgb: 61 219 217;
+  --accent-color-hover: #50dfdd;
+  --accent-color-active: #64e2e1;
+  --accent-color-visited: #be95ff;
+  --text-with-accent-color: #111;
+  --red-500: #f28187;
+  --primary-shadow-color: rgb(0 0 0 / 35%);
+  --focus-ring-contrast-color: #fff;
+}
+
+.catppuccinMacchiato {
+  --primary-text-color: #cad3f5;
+  --secondary-text-color: #a5adcb;
+  --bg-color: #24273a;
+  --card-bg-color: #1e2030;
+  --side-nav-hover-color: #282b3c;
+  --side-nav-active-color: #2f3244;
+  --destructive-text-color: #111;
+  --red-500: #f17e84;
+  --primary-shadow-color: rgb(0 0 0 / 35%);
+  --focus-ring-contrast-color: #fff;
 }

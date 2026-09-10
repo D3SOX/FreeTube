@@ -380,6 +380,22 @@ Settings:
       Unable to Load: Није могуће учитати инсталиране системске фонтове
     Always Show Scrollbars: Увек приказуј траке за померање
     Base Theme:
+      Tokyo Night Night: Tokyo Night Night
+      Tokyo Night Storm: Tokyo Night Storm
+      Tokyo Night Moon: Tokyo Night Moon
+      Tokyo Night Day: Tokyo Night Day
+      Rosé Pine: Rosé Pine
+      Rosé Pine Moon: Rosé Pine Moon
+      Rosé Pine Dawn: Rosé Pine Dawn
+      Kanagawa Wave: Kanagawa Wave
+      Kanagawa Dragon: Kanagawa Dragon
+      Kanagawa Lotus: Kanagawa Lotus
+      Ayu Dark: Ayu Dark
+      Ayu Mirage: Ayu Mirage
+      Ayu Light: Ayu Light
+      One Dark: One Dark
+      Carbonfox: Carbonfox
+      Catppuccin Macchiato: Catppuccin Macchiato
       OpenTubeX Light: "OpenTubeX Светла"
       OpenTubeX Dark: "OpenTubeX Тамна"
       Custom: Прилагођена
@@ -476,6 +492,20 @@ Settings:
         Destructive pressed: Деструктивна радња при притиску
         Text and icons on destructive actions: Текст и иконе деструктивних радњи
     Main Color Theme:
+      Catppuccin Macchiato Rosewater: "Catppuccin Macchiato ружина водица"
+      Catppuccin Macchiato Flamingo: "Catppuccin Macchiato фламингос"
+      Catppuccin Macchiato Pink: "Catppuccin Macchiato розе"
+      Catppuccin Macchiato Mauve: "Catppuccin Macchiato бледољубичаста"
+      Catppuccin Macchiato Red: "Catppuccin Macchiato црвена"
+      Catppuccin Macchiato Maroon: "Catppuccin Macchiato тамноцрвена"
+      Catppuccin Macchiato Peach: "Catppuccin Macchiato бресква"
+      Catppuccin Macchiato Yellow: "Catppuccin Macchiato жута"
+      Catppuccin Macchiato Green: "Catppuccin Macchiato зелена"
+      Catppuccin Macchiato Teal: "Catppuccin Macchiato тиркизна"
+      Catppuccin Macchiato Sky: "Catppuccin Macchiato небеска"
+      Catppuccin Macchiato Sapphire: "Catppuccin Macchiato сафирна"
+      Catppuccin Macchiato Blue: "Catppuccin Macchiato плава"
+      Catppuccin Macchiato Lavender: "Catppuccin Macchiato лаванда"
       Catppuccin Latte Mauve: Catppuccin Latte Mauve
       Catppuccin Latte Red: Catppuccin Latte Red
   Player Settings:

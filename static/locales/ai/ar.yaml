@@ -328,6 +328,21 @@ Settings:
     Invalid Engine: أدخل اسمًا وعنوان URL صالحًا للبحث HTTP أو HTTPS يحتوي على %s.
     Engine Limit: يمكنك إضافة ما يصل إلى {count} محرك بحث مخصص.
   Theme Settings:
+    Main Color Theme:
+      Catppuccin Macchiato Rosewater: "كاتبوتشين Macchiato ماء الورد"
+      Catppuccin Macchiato Flamingo: "كاتبوتشين Macchiato فلامنغو"
+      Catppuccin Macchiato Pink: "كاتبوتشين Macchiato الوردية"
+      Catppuccin Macchiato Mauve: "كاتبوتشين Macchiato موف"
+      Catppuccin Macchiato Red: "كاتبوتشين Macchiato أحمر"
+      Catppuccin Macchiato Maroon: "كاتبوتشين Macchiato مارون"
+      Catppuccin Macchiato Peach: "كاتبوتشين Macchiato الخوخ"
+      Catppuccin Macchiato Yellow: "كاتبوتشين Macchiato أصفر"
+      Catppuccin Macchiato Green: "كاتبوتشين Macchiato اخضر"
+      Catppuccin Macchiato Teal: "كاتبوتشين Macchiato تيل"
+      Catppuccin Macchiato Sky: "كاتبوتشين Macchiato سماوي"
+      Catppuccin Macchiato Sapphire: "كاتبوتشين Macchiato سافير"
+      Catppuccin Macchiato Blue: "كاتبوتشين Macchiato ازرق"
+      Catppuccin Macchiato Lavender: "كاتبوتشين Macchiato لافندر"
     Move Downloads to App Header: انقل التنزيلات إلى رأس التطبيق
     Move Settings to App Header: انقل الإعدادات إلى رأس التطبيق
     Hide Side Bar on Watch Pages: إخفاء الشريط الجانبي في صفحات المشاهدة
@@ -374,6 +389,22 @@ Settings:
       Unable to Load: غير قادر على تحميل خطوط النظام المثبتة
     Always Show Scrollbars: إظهار أشرطة التمرير دائمًا
     Base Theme:
+      Tokyo Night Night: Tokyo Night Night
+      Tokyo Night Storm: Tokyo Night Storm
+      Tokyo Night Moon: Tokyo Night Moon
+      Tokyo Night Day: Tokyo Night Day
+      Rosé Pine: Rosé Pine
+      Rosé Pine Moon: Rosé Pine Moon
+      Rosé Pine Dawn: Rosé Pine Dawn
+      Kanagawa Wave: Kanagawa Wave
+      Kanagawa Dragon: Kanagawa Dragon
+      Kanagawa Lotus: Kanagawa Lotus
+      Ayu Dark: Ayu Dark
+      Ayu Mirage: Ayu Mirage
+      Ayu Light: Ayu Light
+      One Dark: One Dark
+      Carbonfox: Carbonfox
+      Catppuccin Macchiato: Catppuccin Macchiato
       OpenTubeX Light: "OpenTubeX فاتح"
       OpenTubeX Dark: "OpenTubeX داكن"
       Custom: مخصص

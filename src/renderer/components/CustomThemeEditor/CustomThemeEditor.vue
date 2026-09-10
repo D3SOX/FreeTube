@@ -152,6 +152,7 @@ import FtColorPicker from '../FtColorPicker/FtColorPicker.vue'
 
 import store from '../../store/index'
 import { useColorTranslations } from '../../composables/colors'
+import { useBaseThemeNames } from '../../composables/baseThemes'
 import {
   cloneDefaultCustomTheme,
   CUSTOM_THEME_BLURS,
@@ -164,6 +165,7 @@ import {
   normalizeCustomTheme,
 } from '../../../customTheme'
 import { getThemeClassification } from '../../../appearanceSettings'
+import { BUILTIN_BASE_THEME_VALUES } from '../../../constants'
 import {
   applyThemeToDocument,
   deleteCustomTheme,
@@ -198,20 +200,7 @@ const basedOnTheme = ref('dark')
 const pendingColorPreviews = new Map()
 let colorPreviewTimer = null
 
-const BASE_THEME_VALUES = [
-  'light', 'dark', 'black', 'openTubeXLight', 'openTubeXDark', 'nordic', 'hotPink', 'pastelPink',
-  'catppuccinFrappe', 'catppuccinLatte', 'catppuccinMocha', 'dracula',
-  'everforestDarkHard', 'everforestDarkMedium', 'everforestDarkLow',
-  'everforestLightHard', 'everforestLightMedium', 'everforestLightLow',
-  'gruvboxDark', 'gruvboxLight', 'solarizedDark', 'solarizedLight'
-]
-const BASE_THEME_TRANSLATION_KEYS = [
-  'Light', 'Dark', 'Black', 'OpenTubeX Light', 'OpenTubeX Dark', 'Nordic', 'Hot Pink', 'Pastel Pink',
-  'Catppuccin Frappe', 'Catppuccin Latte', 'Catppuccin Mocha', 'Dracula',
-  'Everforest Dark Hard', 'Everforest Dark Medium', 'Everforest Dark Low',
-  'Everforest Light Hard', 'Everforest Light Medium', 'Everforest Light Low',
-  'Gruvbox Dark', 'Gruvbox Light', 'Solarized Dark', 'Solarized Light'
-]
+const BASE_THEME_VALUES = BUILTIN_BASE_THEME_VALUES.slice(1)
 const MAIN_COLOR_KEYS = [
   'primary', 'primaryHover', 'primaryActive', 'textWithPrimary',
   'selectionBackground', 'selectionText',
@@ -223,10 +212,7 @@ const SECONDARY_COLOR_KEYS = [
   'textWithAccent', 'link', 'linkVisited'
 ]
 const blurProperties = new Map(CUSTOM_THEME_BLURS.map(([key, property]) => [key, property]))
-const baseThemeNames = computed(() => {
-  const translations = tm('Settings.Theme Settings.Base Theme')
-  return BASE_THEME_TRANSLATION_KEYS.map(key => translations[key] ?? key)
-})
+const baseThemeNames = useBaseThemeNames(false)
 const COLOR_VALUES = colors.map(color => color.name)
 const COLOR_SWATCHES = colors.map(color => color.value)
 const themeColorNames = useColorTranslations()

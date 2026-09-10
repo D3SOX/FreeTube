@@ -21,6 +21,7 @@ import {
   getElectronAccelerator,
   SEARCH_CHAR_LIMIT,
   MULTIPLE_TABS_CONFIRM_THRESHOLD,
+  BASE_THEME_BACKGROUND_COLORS,
   LIGHT_BASE_THEMES,
   DARK_BASE_THEMES,
   DOWNLOADED_MEDIA_MIME_TYPES,
@@ -2647,55 +2648,8 @@ function runApp() {
         return (await getSelectedCustomTheme(theme))?.colors.background ??
           (nativeTheme.shouldUseDarkColors ? '#0f0f0f' : '#f1f1f1')
       }
-      switch (theme) {
-        case 'dark':
-          return '#0f0f0f'
-        case 'light':
-          return '#f1f1f1'
-        case 'openTubeXLight':
-          return '#e8f2f0'
-        case 'openTubeXDark':
-          return '#0b1416'
-        case 'black':
-          return '#000000'
-        case 'dracula':
-          return '#282a36'
-        case 'catppuccin-mocha':
-          return '#1e1e2e'
-        case 'pastelPink':
-          return '#ffeadd'
-        case 'hotPink':
-          return '#ff008a'
-        case 'nordic':
-          return '#2b2f3a'
-        case 'solarized-dark':
-          return '#002B36'
-        case 'solarized-light':
-          return '#fdf6e3'
-        case 'gruvbox-dark':
-          return '#282828'
-        case 'gruvbox-light':
-          return '#fbf1c7'
-        case 'catppuccin-frappe':
-          return '#303446'
-        case 'everforest-dark-hard':
-          return '#272e33'
-        case 'everforest-dark-medium':
-          return '#2d353b'
-        case 'everforest-dark-low':
-          return '#333c43'
-        case 'everforest-light-hard':
-          return '#fffbef'
-        case 'everforest-light-medium':
-          return '#fdf6e3'
-        case 'everforest-light-low':
-          return '#f3ead3'
-        case 'catppuccin-latte':
-          return '#eff1f5'
-        case 'system':
-        default:
-          return nativeTheme.shouldUseDarkColors ? '#0f0f0f' : '#f1f1f1'
-      }
+      return BASE_THEME_BACKGROUND_COLORS[theme] ??
+        (nativeTheme.shouldUseDarkColors ? '#0f0f0f' : '#f1f1f1')
     }).catch((error) => {
       console.error(error)
       // Default to nativeTheme settings if nothing is found.

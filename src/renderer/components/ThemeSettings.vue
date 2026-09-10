@@ -399,10 +399,12 @@ import QuickSettingsCustomizer from './QuickSettingsCustomizer/QuickSettingsCust
 
 import store from '../store/index'
 import { getThemeClassification, hasFixedThemeColors } from '../../appearanceSettings'
+import { BUILTIN_BASE_THEME_VALUES } from '../../constants'
 import { customThemeIdFromValue, customThemeValue } from '../../customTheme'
 
 import { colors } from '../helpers/colors'
 import { useColorTranslations } from '../composables/colors'
+import { useBaseThemeNames } from '../composables/baseThemes'
 import { useThumbnailSizeSlider } from '../composables/useThumbnailSizeSlider'
 import {
   MIN_THUMBNAIL_SIZE,
@@ -447,68 +449,7 @@ const capacitorLayoutModeNames = computed(() => [
   t('Settings.General Settings.Mobile Layout.Tablet')
 ])
 
-// Themes are devided into 3 groups.
-// The first group contains the default themes.
-// The second group are themes that don't have specific primary and secondary colors.
-// The third group are themes that do have specific primary and secondary colors available.
-
-const BUILTIN_BASE_THEME_VALUES = [
-  // First group
-  'system',
-  'light',
-  'dark',
-  'black',
-  // Second group
-  'openTubeXLight',
-  'openTubeXDark',
-  'nordic',
-  'hotPink',
-  'pastelPink',
-  // Third group
-  'catppuccinFrappe',
-  'catppuccinLatte',
-  'catppuccinMocha',
-  'dracula',
-  'everforestDarkHard',
-  'everforestDarkMedium',
-  'everforestDarkLow',
-  'everforestLightHard',
-  'everforestLightMedium',
-  'everforestLightLow',
-  'gruvboxDark',
-  'gruvboxLight',
-  'solarizedDark',
-  'solarizedLight'
-]
-
-const builtInBaseThemeNames = computed(() => [
-  // First group
-  t('Settings.Theme Settings.Base Theme.System Default'),
-  t('Settings.Theme Settings.Base Theme.Light'),
-  t('Settings.Theme Settings.Base Theme.Dark'),
-  t('Settings.Theme Settings.Base Theme.Black'),
-  t('Settings.Theme Settings.Base Theme.OpenTubeX Light'),
-  t('Settings.Theme Settings.Base Theme.OpenTubeX Dark'),
-  // Second group
-  t('Settings.Theme Settings.Base Theme.Nordic'),
-  t('Settings.Theme Settings.Base Theme.Hot Pink'),
-  t('Settings.Theme Settings.Base Theme.Pastel Pink'),
-  // Third group
-  t('Settings.Theme Settings.Base Theme.Catppuccin Frappe'),
-  t('Settings.Theme Settings.Base Theme.Catppuccin Latte'),
-  t('Settings.Theme Settings.Base Theme.Catppuccin Mocha'),
-  t('Settings.Theme Settings.Base Theme.Dracula'),
-  t('Settings.Theme Settings.Base Theme.Everforest Dark Hard'),
-  t('Settings.Theme Settings.Base Theme.Everforest Dark Medium'),
-  t('Settings.Theme Settings.Base Theme.Everforest Dark Low'),
-  t('Settings.Theme Settings.Base Theme.Everforest Light Hard'),
-  t('Settings.Theme Settings.Base Theme.Everforest Light Medium'),
-  t('Settings.Theme Settings.Base Theme.Everforest Light Low'),
-  t('Settings.Theme Settings.Base Theme.Gruvbox Dark'),
-  t('Settings.Theme Settings.Base Theme.Gruvbox Light'),
-  t('Settings.Theme Settings.Base Theme.Solarized Dark'),
-  t('Settings.Theme Settings.Base Theme.Solarized Light')
-])
+const builtInBaseThemeNames = useBaseThemeNames()
 const customThemes = computed(() => store.getters.getCustomThemes)
 const baseThemeValues = computed(() => [
   ...BUILTIN_BASE_THEME_VALUES,
@@ -649,7 +590,7 @@ function updateIconPack(value) {
 }
 
 const areColorThemesEnabled = computed(() => baseTheme.value === 'system'
-  ? !hasFixedThemeColors(systemLightTheme.value) && !hasFixedThemeColors(systemDarkTheme.value)
+  ? !hasFixedThemeColors(systemUsesDarkTheme.value ? systemDarkTheme.value : systemLightTheme.value)
   : !hasFixedThemeColors(baseTheme.value))
 const selectedCustomThemeId = computed(() => customThemeIdFromValue(baseTheme.value === 'system'
   ? (systemUsesDarkTheme.value ? systemDarkTheme.value : systemLightTheme.value)

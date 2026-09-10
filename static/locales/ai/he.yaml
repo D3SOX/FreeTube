@@ -328,6 +328,21 @@ Settings:
     Invalid Engine: יש להזין שם וכתובת URL תקינה לחיפוש מסוג HTTP או HTTPS שמכילה את %s.
     Engine Limit: אפשר להוסיף עד {count} מנועי חיפוש מותאמים אישית.
   Theme Settings:
+    Main Color Theme:
+      Catppuccin Macchiato Rosewater: "Macchiato קפוצ׳ינו מי ורדים"
+      Catppuccin Macchiato Flamingo: "Macchiato קפוצ׳ינו פלמינגו"
+      Catppuccin Macchiato Pink: "Macchiato קפוצ׳ינו ורוד"
+      Catppuccin Macchiato Mauve: "Macchiato קפוצ׳ינו ארגמן"
+      Catppuccin Macchiato Red: "Macchiato קפוצ׳ינו אדום"
+      Catppuccin Macchiato Maroon: "Macchiato קפוצ׳ינו ערמון"
+      Catppuccin Macchiato Peach: "Macchiato קפוצ׳ינו אפרסק"
+      Catppuccin Macchiato Yellow: "Macchiato קפוצ׳ינו צהוב"
+      Catppuccin Macchiato Green: "Macchiato קפוצ׳ינו ירוק"
+      Catppuccin Macchiato Teal: "Macchiato קפוצ׳ינו ירקרק-כחלחל"
+      Catppuccin Macchiato Sky: "Macchiato קפוצ׳ינו שמיים"
+      Catppuccin Macchiato Sapphire: "Macchiato קפוצ׳ינו ספיר"
+      Catppuccin Macchiato Blue: "Macchiato קפוצ׳ינו כחול"
+      Catppuccin Macchiato Lavender: "Macchiato קפוצ׳ינו לבנדר"
     Move Downloads to App Header: העברת ההורדות לכותרת היישום
     Move Settings to App Header: העברת ההגדרות לכותרת היישום
     Hide Side Bar on Watch Pages: הסתרת סרגל הצד בדפי צפייה
@@ -374,6 +389,22 @@ Settings:
       Unable to Load: לא ניתן לטעון גופני מערכת מותקנים
     Always Show Scrollbars: הצגת פסי גלילה תמיד
     Base Theme:
+      Tokyo Night Night: Tokyo Night Night
+      Tokyo Night Storm: Tokyo Night Storm
+      Tokyo Night Moon: Tokyo Night Moon
+      Tokyo Night Day: Tokyo Night Day
+      Rosé Pine: Rosé Pine
+      Rosé Pine Moon: Rosé Pine Moon
+      Rosé Pine Dawn: Rosé Pine Dawn
+      Kanagawa Wave: Kanagawa Wave
+      Kanagawa Dragon: Kanagawa Dragon
+      Kanagawa Lotus: Kanagawa Lotus
+      Ayu Dark: Ayu Dark
+      Ayu Mirage: Ayu Mirage
+      Ayu Light: Ayu Light
+      One Dark: One Dark
+      Carbonfox: Carbonfox
+      Catppuccin Macchiato: Catppuccin Macchiato
       OpenTubeX Light: "OpenTubeX בהירה"
       OpenTubeX Dark: "OpenTubeX כהה"
       Custom: מותאמת אישית

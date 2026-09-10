@@ -391,6 +391,22 @@ Settings:
       Unable to Load: No se pudieron cargar las fuentes instaladas en el sistema
     Always Show Scrollbars: Mostrar siempre las barras de desplazamiento
     Base Theme:
+      Tokyo Night Night: Tokyo Night Night
+      Tokyo Night Storm: Tokyo Night Storm
+      Tokyo Night Moon: Tokyo Night Moon
+      Tokyo Night Day: Tokyo Night Day
+      Rosé Pine: Rosé Pine
+      Rosé Pine Moon: Rosé Pine Moon
+      Rosé Pine Dawn: Rosé Pine Dawn
+      Kanagawa Wave: Kanagawa Wave
+      Kanagawa Dragon: Kanagawa Dragon
+      Kanagawa Lotus: Kanagawa Lotus
+      Ayu Dark: Ayu Dark
+      Ayu Mirage: Ayu Mirage
+      Ayu Light: Ayu Light
+      One Dark: One Dark
+      Carbonfox: Carbonfox
+      Catppuccin Macchiato: Catppuccin Macchiato
       OpenTubeX Light: "OpenTubeX Claro"
       OpenTubeX Dark: "OpenTubeX Oscuro"
       Custom: Personalizado
@@ -497,6 +513,20 @@ Settings:
         Destructive pressed: Acción destructiva al pulsarla
         Text and icons on destructive actions: Texto e iconos de las acciones destructivas
     Main Color Theme:
+      Catppuccin Macchiato Rosewater: "Catppuccin Macchiato Rosa Claro"
+      Catppuccin Macchiato Flamingo: "Catppuccin Macchiato Flamenco"
+      Catppuccin Macchiato Pink: "Catppuccin Macchiato Rosa"
+      Catppuccin Macchiato Mauve: "Catppuccin Macchiato Violeta Claro"
+      Catppuccin Macchiato Red: "Catppuccin Macchiato Rojo"
+      Catppuccin Macchiato Maroon: "Catppuccin Macchiato Bordó"
+      Catppuccin Macchiato Peach: "Catppuccin Macchiato Durazno"
+      Catppuccin Macchiato Yellow: "Catppuccin Macchiato Amarillo"
+      Catppuccin Macchiato Green: "Catppuccin Macchiato Verde"
+      Catppuccin Macchiato Teal: "Catppuccin Macchiato Turquesa"
+      Catppuccin Macchiato Sky: "Catppuccin Macchiato Cielo"
+      Catppuccin Macchiato Sapphire: "Catppuccin Macchiato Zafiro"
+      Catppuccin Macchiato Blue: "Catppuccin Macchiato Azul"
+      Catppuccin Macchiato Lavender: "Catppuccin Macchiato Lavanda"
       Catppuccin Frappe Rosewater: Catppuccin Frappe Rosewater
       Catppuccin Frappe Flamingo: Catppuccin Frappe Flamingo
       Catppuccin Frappe Pink: Catppuccin Frappe Rosa

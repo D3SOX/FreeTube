@@ -324,6 +324,21 @@ Settings:
     Invalid Engine: Zadejte název a platnou adresu URL vyhledávání s protokolem HTTP nebo HTTPS, která obsahuje %s.
     Engine Limit: Můžete přidat až {count} vlastních vyhledávačů.
   Theme Settings:
+    Main Color Theme:
+      Catppuccin Macchiato Rosewater: "Catppuccin Macchiato Rosewater"
+      Catppuccin Macchiato Flamingo: "Catppuccin Macchiato Flamingo"
+      Catppuccin Macchiato Pink: "Catppuccin Macchiato Pink"
+      Catppuccin Macchiato Mauve: "Catppuccin Macchiato Mauve"
+      Catppuccin Macchiato Red: "Catppuccin Macchiato Red"
+      Catppuccin Macchiato Maroon: "Catppuccin Macchiato Maroon"
+      Catppuccin Macchiato Peach: "Catppuccin Macchiato Peach"
+      Catppuccin Macchiato Yellow: "Catppuccin Macchiato Yellow"
+      Catppuccin Macchiato Green: "Catppuccin Macchiato Green"
+      Catppuccin Macchiato Teal: "Catppuccin Macchiato Teal"
+      Catppuccin Macchiato Sky: "Catppuccin Macchiato Sky"
+      Catppuccin Macchiato Sapphire: "Catppuccin Macchiato Sapphire"
+      Catppuccin Macchiato Blue: "Catppuccin Macchiato Blue"
+      Catppuccin Macchiato Lavender: "Catppuccin Macchiato Lavender"
     Move Downloads to App Header: Přesunout stahování do záhlaví aplikace
     Move Settings to App Header: Přesunout nastavení do záhlaví aplikace
     Hide Side Bar on Watch Pages: Skrýt postranní panel na stránkách sledování
@@ -370,6 +385,22 @@ Settings:
       Unable to Load: Nainstalovaná systémová písma se nepodařilo načíst
     Always Show Scrollbars: Vždy zobrazovat posuvníky
     Base Theme:
+      Tokyo Night Night: Tokyo Night Night
+      Tokyo Night Storm: Tokyo Night Storm
+      Tokyo Night Moon: Tokyo Night Moon
+      Tokyo Night Day: Tokyo Night Day
+      Rosé Pine: Rosé Pine
+      Rosé Pine Moon: Rosé Pine Moon
+      Rosé Pine Dawn: Rosé Pine Dawn
+      Kanagawa Wave: Kanagawa Wave
+      Kanagawa Dragon: Kanagawa Dragon
+      Kanagawa Lotus: Kanagawa Lotus
+      Ayu Dark: Ayu Dark
+      Ayu Mirage: Ayu Mirage
+      Ayu Light: Ayu Light
+      One Dark: One Dark
+      Carbonfox: Carbonfox
+      Catppuccin Macchiato: Catppuccin Macchiato
       OpenTubeX Light: "OpenTubeX Světlý"
       OpenTubeX Dark: "OpenTubeX Tmavý"
       Custom: Vlastní
