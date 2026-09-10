@@ -1770,3 +1770,9 @@ Theme Discovery:
 Connection:
   Reconnecting: "Conexiune pierdută. Se încearcă reconectarea…"
   Back Online: "Din nou online"
+
+App Icon:
+  Restart: "Repornește aplicația"
+  Saved Message: "Pictograma a fost salvată. Actualizarea lansatorului poate dura puțin."
+  Title: "Pictograma aplicației"
+  Error: "Nu s-a putut încărca sau schimba pictograma aplicației"

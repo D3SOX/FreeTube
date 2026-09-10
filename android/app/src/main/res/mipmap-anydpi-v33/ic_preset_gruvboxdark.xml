@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background android:drawable="@color/ic_preset_gruvboxdark" />
+    <foreground android:drawable="@drawable/ic_preset_gruvboxdark" />
+    <monochrome android:drawable="@drawable/ic_preset_monochrome" />
+</adaptive-icon>

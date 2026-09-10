@@ -1724,3 +1724,9 @@ Theme Discovery:
 Connection:
   Reconnecting: "Bağlantı kesildi. Yeniden bağlanmaya çalışılıyor…"
   Back Online: "Yeniden çevrimiçi"
+
+App Icon:
+  Restart: "Uygulamayı yeniden başlat"
+  Saved Message: "Simge kaydedildi. Başlatıcınızın güncellenmesi biraz zaman alabilir."
+  Title: "Uygulama simgesi"
+  Error: "Uygulama simgesi yüklenemedi veya değiştirilemedi"

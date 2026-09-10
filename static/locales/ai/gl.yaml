@@ -1770,3 +1770,9 @@ Theme Discovery:
 Connection:
   Reconnecting: "Perdeuse a conexión. Tentando conectar de novo…"
   Back Online: "De novo en liña"
+
+App Icon:
+  Restart: "Reiniciar a aplicación"
+  Saved Message: "Icona gardada. O iniciador pode tardar un momento en actualizarse."
+  Title: "Icona da aplicación"
+  Error: "Non se puido cargar ou cambiar a icona da aplicación"

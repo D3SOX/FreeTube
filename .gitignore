@@ -28,6 +28,8 @@ csak-timelog.json
 debug/
 !android/app/src/debug/
 !android/app/src/debug/**
+!static/app-icons/debug/
+!static/app-icons/debug/**
 
 # Lefthook
 lefthook-local.yml

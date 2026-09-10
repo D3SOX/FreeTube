@@ -488,9 +488,9 @@ public class AndroidMediaSessionService extends Service {
     }
 
     private PendingIntent openAppIntent() {
-        Intent launch = getPackageManager().getLaunchIntentForPackage(getPackageName());
-        if (launch == null) launch = new Intent(this, MainActivity.class);
-        launch.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        // Launcher aliases can change while this notification is still present.
+        Intent launch = new Intent(this, MainActivity.class)
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         return PendingIntent.getActivity(
             this,
             100,

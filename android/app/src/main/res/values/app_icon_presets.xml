@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="ic_preset_light">#f1f1f1</color>
+    <color name="ic_preset_dark">#0f0f0f</color>
+    <color name="ic_preset_black">#000000</color>
+    <color name="ic_preset_opentubexlight">#e8f2f0</color>
+    <color name="ic_preset_opentubexdark">#0b1416</color>
+    <color name="ic_preset_nordic">#2b2f3a</color>
+    <color name="ic_preset_hotpink">#ff008a</color>
+    <color name="ic_preset_pastelpink">#ffeadd</color>
+    <color name="ic_preset_catppuccinfrappe">#303446</color>
+    <color name="ic_preset_catppuccinlatte">#eff1f5</color>
+    <color name="ic_preset_catppuccinmacchiato">#24273a</color>
+    <color name="ic_preset_catppuccinmocha">#1e1e2e</color>
+    <color name="ic_preset_dracula">#282a36</color>
+    <color name="ic_preset_everforestdarkmedium">#2d353b</color>
+    <color name="ic_preset_everforestlightmedium">#fdf6e3</color>
+    <color name="ic_preset_gruvboxdark">#282828</color>
+    <color name="ic_preset_gruvboxlight">#fbf1c7</color>
+    <color name="ic_preset_solarizeddark">#002B36</color>
+    <color name="ic_preset_solarizedlight">#fdf6e3</color>
+    <color name="ic_preset_tokyonightnight">#1a1b26</color>
+    <color name="ic_preset_tokyonightday">#e1e2e7</color>
+    <color name="ic_preset_rosepine">#191724</color>
+    <color name="ic_preset_rosepinedawn">#faf4ed</color>
+    <color name="ic_preset_kanagawawave">#1f1f28</color>
+    <color name="ic_preset_kanagawalotus">#f2ecbc</color>
+    <color name="ic_preset_ayudark">#0d1017</color>
+    <color name="ic_preset_ayumirage">#1f2430</color>
+    <color name="ic_preset_ayulight">#f8f9fa</color>
+    <color name="ic_preset_onedark">#282c34</color>
+    <color name="ic_preset_carbonfox">#161616</color>
+</resources>

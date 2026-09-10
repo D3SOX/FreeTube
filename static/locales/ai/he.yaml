@@ -1770,3 +1770,9 @@ Theme Discovery:
 Connection:
   Reconnecting: "החיבור אבד. מנסה להתחבר מחדש…"
   Back Online: "החיבור חזר"
+
+App Icon:
+  Restart: "הפעלת היישום מחדש"
+  Saved Message: "הסמל נשמר. ייתכן שיידרש רגע לעדכון מסך הבית."
+  Title: "סמל היישום"
+  Error: "לא ניתן לטעון או לשנות את סמל היישום"

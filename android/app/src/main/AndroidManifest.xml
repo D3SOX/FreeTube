@@ -43,11 +43,6 @@
             android:exported="true">
 
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-
-            <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
@@ -58,6 +53,457 @@
             </intent-filter>
 
         </activity>
+
+        <activity
+            android:name=".LauncherActivity"
+            android:theme="@android:style/Theme.NoDisplay"
+            android:taskAffinity=""
+            android:excludeFromRecents="true"
+            android:exported="true" />
+
+        <activity
+            android:name=".RestartActivity"
+            android:process=":restart"
+            android:taskAffinity="${applicationId}.restart"
+            android:theme="@android:style/Theme.NoDisplay"
+            android:excludeFromRecents="true"
+            android:exported="false" />
+
+        <!-- App icon presets:start -->
+        <activity-alias
+            android:name="org.opentubex.app.launcher.default"
+            android:targetActivity=".LauncherActivity"
+            android:enabled="true"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:icon="@mipmap/ic_launcher"
+            android:roundIcon="@mipmap/ic_launcher_round">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name="org.opentubex.app.launcher.light"
+            android:targetActivity=".LauncherActivity"
+            android:enabled="false"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:icon="@mipmap/ic_preset_light"
+            android:roundIcon="@mipmap/ic_preset_light">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name="org.opentubex.app.launcher.dark"
+            android:targetActivity=".LauncherActivity"
+            android:enabled="false"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:icon="@mipmap/ic_preset_dark"
+            android:roundIcon="@mipmap/ic_preset_dark">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name="org.opentubex.app.launcher.black"
+            android:targetActivity=".LauncherActivity"
+            android:enabled="false"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:icon="@mipmap/ic_preset_black"
+            android:roundIcon="@mipmap/ic_preset_black">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name="org.opentubex.app.launcher.openTubeXLight"
+            android:targetActivity=".LauncherActivity"
+            android:enabled="false"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:icon="@mipmap/ic_preset_opentubexlight"
+            android:roundIcon="@mipmap/ic_preset_opentubexlight">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name="org.opentubex.app.launcher.openTubeXDark"
+            android:targetActivity=".LauncherActivity"
+            android:enabled="false"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:icon="@mipmap/ic_preset_opentubexdark"
+            android:roundIcon="@mipmap/ic_preset_opentubexdark">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name="org.opentubex.app.launcher.nordic"
+            android:targetActivity=".LauncherActivity"
+            android:enabled="false"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:icon="@mipmap/ic_preset_nordic"
+            android:roundIcon="@mipmap/ic_preset_nordic">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name="org.opentubex.app.launcher.hotPink"
+            android:targetActivity=".LauncherActivity"
+            android:enabled="false"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:icon="@mipmap/ic_preset_hotpink"
+            android:roundIcon="@mipmap/ic_preset_hotpink">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name="org.opentubex.app.launcher.pastelPink"
+            android:targetActivity=".LauncherActivity"
+            android:enabled="false"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:icon="@mipmap/ic_preset_pastelpink"
+            android:roundIcon="@mipmap/ic_preset_pastelpink">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name="org.opentubex.app.launcher.catppuccinFrappe"
+            android:targetActivity=".LauncherActivity"
+            android:enabled="false"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:icon="@mipmap/ic_preset_catppuccinfrappe"
+            android:roundIcon="@mipmap/ic_preset_catppuccinfrappe">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name="org.opentubex.app.launcher.catppuccinLatte"
+            android:targetActivity=".LauncherActivity"
+            android:enabled="false"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:icon="@mipmap/ic_preset_catppuccinlatte"
+            android:roundIcon="@mipmap/ic_preset_catppuccinlatte">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name="org.opentubex.app.launcher.catppuccinMacchiato"
+            android:targetActivity=".LauncherActivity"
+            android:enabled="false"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:icon="@mipmap/ic_preset_catppuccinmacchiato"
+            android:roundIcon="@mipmap/ic_preset_catppuccinmacchiato">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name="org.opentubex.app.launcher.catppuccinMocha"
+            android:targetActivity=".LauncherActivity"
+            android:enabled="false"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:icon="@mipmap/ic_preset_catppuccinmocha"
+            android:roundIcon="@mipmap/ic_preset_catppuccinmocha">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name="org.opentubex.app.launcher.dracula"
+            android:targetActivity=".LauncherActivity"
+            android:enabled="false"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:icon="@mipmap/ic_preset_dracula"
+            android:roundIcon="@mipmap/ic_preset_dracula">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name="org.opentubex.app.launcher.everforestDarkMedium"
+            android:targetActivity=".LauncherActivity"
+            android:enabled="false"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:icon="@mipmap/ic_preset_everforestdarkmedium"
+            android:roundIcon="@mipmap/ic_preset_everforestdarkmedium">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name="org.opentubex.app.launcher.everforestLightMedium"
+            android:targetActivity=".LauncherActivity"
+            android:enabled="false"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:icon="@mipmap/ic_preset_everforestlightmedium"
+            android:roundIcon="@mipmap/ic_preset_everforestlightmedium">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name="org.opentubex.app.launcher.gruvboxDark"
+            android:targetActivity=".LauncherActivity"
+            android:enabled="false"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:icon="@mipmap/ic_preset_gruvboxdark"
+            android:roundIcon="@mipmap/ic_preset_gruvboxdark">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name="org.opentubex.app.launcher.gruvboxLight"
+            android:targetActivity=".LauncherActivity"
+            android:enabled="false"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:icon="@mipmap/ic_preset_gruvboxlight"
+            android:roundIcon="@mipmap/ic_preset_gruvboxlight">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name="org.opentubex.app.launcher.solarizedDark"
+            android:targetActivity=".LauncherActivity"
+            android:enabled="false"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:icon="@mipmap/ic_preset_solarizeddark"
+            android:roundIcon="@mipmap/ic_preset_solarizeddark">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name="org.opentubex.app.launcher.solarizedLight"
+            android:targetActivity=".LauncherActivity"
+            android:enabled="false"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:icon="@mipmap/ic_preset_solarizedlight"
+            android:roundIcon="@mipmap/ic_preset_solarizedlight">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name="org.opentubex.app.launcher.tokyoNightNight"
+            android:targetActivity=".LauncherActivity"
+            android:enabled="false"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:icon="@mipmap/ic_preset_tokyonightnight"
+            android:roundIcon="@mipmap/ic_preset_tokyonightnight">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name="org.opentubex.app.launcher.tokyoNightDay"
+            android:targetActivity=".LauncherActivity"
+            android:enabled="false"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:icon="@mipmap/ic_preset_tokyonightday"
+            android:roundIcon="@mipmap/ic_preset_tokyonightday">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name="org.opentubex.app.launcher.rosePine"
+            android:targetActivity=".LauncherActivity"
+            android:enabled="false"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:icon="@mipmap/ic_preset_rosepine"
+            android:roundIcon="@mipmap/ic_preset_rosepine">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name="org.opentubex.app.launcher.rosePineDawn"
+            android:targetActivity=".LauncherActivity"
+            android:enabled="false"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:icon="@mipmap/ic_preset_rosepinedawn"
+            android:roundIcon="@mipmap/ic_preset_rosepinedawn">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name="org.opentubex.app.launcher.kanagawaWave"
+            android:targetActivity=".LauncherActivity"
+            android:enabled="false"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:icon="@mipmap/ic_preset_kanagawawave"
+            android:roundIcon="@mipmap/ic_preset_kanagawawave">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name="org.opentubex.app.launcher.kanagawaLotus"
+            android:targetActivity=".LauncherActivity"
+            android:enabled="false"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:icon="@mipmap/ic_preset_kanagawalotus"
+            android:roundIcon="@mipmap/ic_preset_kanagawalotus">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name="org.opentubex.app.launcher.ayuDark"
+            android:targetActivity=".LauncherActivity"
+            android:enabled="false"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:icon="@mipmap/ic_preset_ayudark"
+            android:roundIcon="@mipmap/ic_preset_ayudark">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name="org.opentubex.app.launcher.ayuMirage"
+            android:targetActivity=".LauncherActivity"
+            android:enabled="false"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:icon="@mipmap/ic_preset_ayumirage"
+            android:roundIcon="@mipmap/ic_preset_ayumirage">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name="org.opentubex.app.launcher.ayuLight"
+            android:targetActivity=".LauncherActivity"
+            android:enabled="false"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:icon="@mipmap/ic_preset_ayulight"
+            android:roundIcon="@mipmap/ic_preset_ayulight">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name="org.opentubex.app.launcher.oneDark"
+            android:targetActivity=".LauncherActivity"
+            android:enabled="false"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:icon="@mipmap/ic_preset_onedark"
+            android:roundIcon="@mipmap/ic_preset_onedark">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name="org.opentubex.app.launcher.carbonfox"
+            android:targetActivity=".LauncherActivity"
+            android:enabled="false"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:icon="@mipmap/ic_preset_carbonfox"
+            android:roundIcon="@mipmap/ic_preset_carbonfox">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+        <!-- App icon presets:end -->
 
         <provider
             android:name="androidx.core.content.FileProvider"

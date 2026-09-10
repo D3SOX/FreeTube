@@ -1724,3 +1724,9 @@ Theme Discovery:
 Connection:
   Reconnecting: "Připojení ztraceno. Probíhá pokus o obnovení…"
   Back Online: "Znovu online"
+
+App Icon:
+  Restart: "Restartovat aplikaci"
+  Saved Message: "Ikona byla uložena. Aktualizace spouštěče může chvíli trvat."
+  Title: "Ikona aplikace"
+  Error: "Ikonu aplikace se nepodařilo načíst nebo změnit"

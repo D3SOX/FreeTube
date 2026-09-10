@@ -1758,3 +1758,9 @@ Theme Discovery:
 Connection:
   Reconnecting: "Mất kết nối. Đang thử kết nối lại…"
   Back Online: "Đã trực tuyến trở lại"
+
+App Icon:
+  Restart: "Khởi động lại ứng dụng"
+  Saved Message: "Đã lưu biểu tượng. Trình khởi chạy có thể mất một lúc để cập nhật."
+  Title: "Biểu tượng ứng dụng"
+  Error: "Không thể tải hoặc thay đổi biểu tượng ứng dụng"

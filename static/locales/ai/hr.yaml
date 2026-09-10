@@ -1746,3 +1746,9 @@ Theme Discovery:
 Connection:
   Reconnecting: "Veza je izgubljena. Pokušaj ponovnog povezivanja…"
   Back Online: "Ponovno na mreži"
+
+App Icon:
+  Restart: "Ponovno pokreni aplikaciju"
+  Saved Message: "Ikona je spremljena. Ažuriranje pokretača može potrajati trenutak."
+  Title: "Ikona aplikacije"
+  Error: "Nije moguće učitati ili promijeniti ikonu aplikacije"

@@ -1742,3 +1742,9 @@ Theme Discovery:
 Connection:
   Reconnecting: "Anslutningen bröts. Försöker ansluta igen…"
   Back Online: "Online igen"
+
+App Icon:
+  Restart: "Starta om appen"
+  Saved Message: "Ikonen har sparats. Det kan ta en stund innan startskärmen uppdateras."
+  Title: "Appikon"
+  Error: "Kunde inte läsa in eller ändra appikonen"

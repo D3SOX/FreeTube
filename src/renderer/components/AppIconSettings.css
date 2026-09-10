@@ -1,0 +1,45 @@
+.appIconPresets {
+  border: 0;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(min(112px, 100%), 1fr));
+  margin: 0;
+  min-inline-size: 0;
+  padding: 0;
+}
+
+.appIconPreset {
+  align-items: center;
+  border: 2px solid var(--secondary-card-bg-color);
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-block: 12px;
+  padding-inline: 8px;
+  text-align: center;
+}
+
+.appIconPreset:has(:checked) {
+  border-color: var(--primary-color);
+}
+
+.appIconPreset:focus-within {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+.appIconPreset:hover {
+  background: var(--secondary-card-bg-color);
+}
+
+.appIconPreset:has(:disabled) {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+.appIconPreset input {
+  accent-color: var(--primary-color);
+  margin-block-start: auto;
+}

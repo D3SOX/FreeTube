@@ -1740,3 +1740,9 @@ Theme Discovery:
 Connection:
   Reconnecting: "Kollet eo ar cʼhennask. O klask adkennaskañ…"
   Back Online: "Enlinenn en-dro"
+
+App Icon:
+  Restart: "Adloc'hañ an arload"
+  Saved Message: "Enrollet eo an arlun. Un tamm amzer a c'hall bezañ ret d'al lañser evit hizivaat anezhañ."
+  Title: "Arlun an arload"
+  Error: "N'eus ket bet gallet kargañ pe cheñch arlun an arload"

@@ -1751,3 +1751,9 @@ Theme Discovery:
 Connection:
   Reconnecting: "Konexioa galdu da. Berriz konektatzen saiatzen…"
   Back Online: "Berriro konektatuta"
+
+App Icon:
+  Restart: "Berrabiarazi aplikazioa"
+  Saved Message: "Ikonoa gorde da. Abiarazleak une bat behar izan dezake eguneratzeko."
+  Title: "Aplikazioaren ikonoa"
+  Error: "Ezin izan da aplikazioaren ikonoa kargatu edo aldatu"

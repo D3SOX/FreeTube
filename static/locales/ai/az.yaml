@@ -1734,3 +1734,9 @@ Theme Discovery:
 Connection:
   Reconnecting: Bağlantı kəsildi. Yenidən qoşulmağa cəhd edilir…
   Back Online: Yenidən onlayndır
+
+App Icon:
+  Restart: "Tətbiqi yenidən başlat"
+  Saved Message: "Nişan saxlanıldı. Başladıcının yenilənməsi bir qədər vaxt ala bilər."
+  Title: "Tətbiq nişanı"
+  Error: "Tətbiq nişanını yükləmək və ya dəyişmək mümkün olmadı"

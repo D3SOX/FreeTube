@@ -1740,3 +1740,9 @@ Theme Discovery:
 Connection:
   Reconnecting: "連線已中斷，正在嘗試重新連線…"
   Back Online: "已恢復網路連線"
+
+App Icon:
+  Restart: "重新啟動應用程式"
+  Saved Message: "圖示已儲存。啟動器可能需要一點時間更新。"
+  Title: "應用程式圖示"
+  Error: "無法載入或變更應用程式圖示"

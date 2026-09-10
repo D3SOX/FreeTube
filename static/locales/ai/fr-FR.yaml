@@ -1722,3 +1722,9 @@ Theme Discovery:
 Connection:
   Reconnecting: "Connexion perdue. Tentative de reconnexion…"
   Back Online: "De nouveau en ligne"
+
+App Icon:
+  Restart: "Redémarrer l'application"
+  Saved Message: "Icône enregistrée. Votre lanceur peut mettre un moment à se mettre à jour."
+  Title: "Icône de l'application"
+  Error: "Impossible de charger ou de modifier l'icône de l'application"

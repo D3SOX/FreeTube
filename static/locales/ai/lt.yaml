@@ -2221,3 +2221,9 @@ Theme Discovery:
 Connection:
   Reconnecting: "Ryšys nutrūko. Bandoma prisijungti iš naujo…"
   Back Online: "Vėl prisijungta"
+
+App Icon:
+  Restart: "Paleisti programėlę iš naujo"
+  Saved Message: "Piktograma išsaugota. Paleidyklės atnaujinimas gali šiek tiek užtrukti."
+  Title: "Programėlės piktograma"
+  Error: "Nepavyko įkelti ar pakeisti programėlės piktogramos"

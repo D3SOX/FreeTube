@@ -1779,3 +1779,9 @@ Theme Discovery:
 Connection:
   Reconnecting: "Verbinding verbroken. Bezig met opnieuw verbinden…"
   Back Online: "Weer online"
+
+App Icon:
+  Restart: "App herstarten"
+  Saved Message: "Pictogram opgeslagen. Het kan even duren voordat je launcher is bijgewerkt."
+  Title: "App-pictogram"
+  Error: "Kan het app-pictogram niet laden of wijzigen"
