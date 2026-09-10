@@ -5,6 +5,7 @@ import { enrichFallbackInvidiousPublicationDates } from './invidious-channel-vid
 import { getInvidiousCommentAuthorThumbnail } from './invidious-comments'
 import { filterUnavailableInvidiousPlaylistVideos } from './invidious-playlists'
 import { classifyInvidiousMusicMediaType } from '../player/musicMediaType'
+import { getCompatibleAdaptiveFormats } from '../player/compatibleAdaptiveFormats'
 import autolinker from 'autolinker'
 import { FormatUtils, Misc, Player } from 'youtubei.js'
 
@@ -977,7 +978,7 @@ export async function generateInvidiousDashManifestLocally(formats) {
   }
 
   return await FormatUtils.toDash({
-    adaptive_formats: formats
+    adaptive_formats: getCompatibleAdaptiveFormats(formats)
   }, false, urlTransformer, undefined, undefined, player)
 }
 

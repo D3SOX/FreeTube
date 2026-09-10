@@ -3,6 +3,7 @@ import { FormatUtils, Misc } from 'youtubei.js'
 
 import { MANIFEST_TYPE_DASH, MANIFEST_TYPE_HLS } from './utils'
 import { probeStreamByteRanges } from './streamByteRanges'
+import { getCompatibleAdaptiveFormats } from './compatibleAdaptiveFormats'
 import { generateAudioTrackField } from '../api/local'
 import { waitForYtDlpFormatAvailability } from './ytDlpFormatAvailability'
 import { getEarliestYtDlpFormatExpiry, YtDlpPlaybackSourceCache } from './ytDlpPlaybackCache'
@@ -686,7 +687,7 @@ async function loadYtDlpPlaybackSource(
     // the DVR window possible
     if (!isLive) {
       const adaptiveFormats = httpFormats.filter(format => !(isVideoFormat(format) && isAudioFormat(format)))
-      const localFormats = await convertAdaptiveFormats(adaptiveFormats, info.duration)
+      const localFormats = getCompatibleAdaptiveFormats(await convertAdaptiveFormats(adaptiveFormats, info.duration))
 
       if (localFormats.some(format => format.has_video) && localFormats.some(format => format.has_audio)) {
         const manifest = await FormatUtils.toDash({ adaptive_formats: localFormats })
