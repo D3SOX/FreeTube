@@ -669,6 +669,7 @@ Settings:
     yt-dlp Download Error Template: 'Methodd lawrlwytho yt-dlp: {error}'
     FFmpeg Source: Ffynhonnell FFmpeg
     Detected FFmpeg Version Template: 'Fersiwn FFmpeg a ganfuwyd: {version}'
+    Detected FFmpeg and FFprobe Version Template: 'Fersiwn FFmpeg/FFprobe a ganfuwyd: {version}'
     FFmpeg Managed Not Downloaded: Nid yw FFmpeg wedi'i lawrlwytho eto. Cliciwch y botwm isod i'w lawrlwytho.
     System FFmpeg Missing Warning: Ni chanfuwyd FFmpeg ar eich system. Mae ei angen i uno fideo a sain ac i drosi sain. Gosodwch ef, gosodwch lwybr personol isod, neu newidiwch y ffynhonnell i "Rheolir gan OpenTubeX".
     Download FFmpeg: Lawrlwytho FFmpeg

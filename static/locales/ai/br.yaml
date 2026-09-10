@@ -667,6 +667,7 @@ Settings:
     yt-dlp Download Error Template: "C'hwitet eo pellgargañ yt-dlp: {error}"
     FFmpeg Source: "Tarzh FFmpeg"
     Detected FFmpeg Version Template: "Stumm FFmpeg dinoet: {version}"
+    Detected FFmpeg and FFprobe Version Template: "Stumm FFmpeg/FFprobe dinoet: {version}"
     FFmpeg Managed Not Downloaded: "N'eo ket bet pellgarget FFmpeg c'hoazh. Klikit war ar bouton amañ dindan evit e bellgargañ."
     System FFmpeg Missing Warning: "N'eo ket bet kavet FFmpeg war ho reizhiad. Rekis eo evit kendeuziñ ar video hag ar son hag evit amdreiñ ar son. Staliit anezhañ, lakait un hent personelaet amañ dindan pe dibabit «Meret gant OpenTubeX» evel tarzh."
     Download FFmpeg: "Pellgargañ FFmpeg"

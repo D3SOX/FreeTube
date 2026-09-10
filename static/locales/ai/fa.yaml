@@ -696,6 +696,7 @@ Settings:
     yt-dlp Download Error Template: 'بارگیری yt-dlp ناموفق بود: {error}'
     FFmpeg Source: منبع FFmpeg
     Detected FFmpeg Version Template: 'نسخهٔ شناسایی‌شدهٔ FFmpeg: {version}'
+    Detected FFmpeg and FFprobe Version Template: 'نسخهٔ شناسایی‌شدهٔ FFmpeg/FFprobe: {version}'
     FFmpeg Managed Not Downloaded: FFmpeg هنوز بارگیری نشده است. برای بارگیری، روی دکمهٔ زیر کلیک کنید.
     System FFmpeg Missing Warning: FFmpeg در سیستم شما پیدا نشد. برای ادغام ویدیو و صدا و تبدیل صدا لازم است. آن را نصب کنید، در پایین مسیر سفارشی تعیین کنید یا منبع را به «تحت مدیریت OpenTubeX» تغییر دهید.
     Download FFmpeg: بارگیری FFmpeg

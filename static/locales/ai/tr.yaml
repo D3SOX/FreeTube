@@ -667,6 +667,7 @@ Settings:
     yt-dlp Download Error Template: 'yt-dlp indirilemedi: {error}'
     FFmpeg Source: FFmpeg Kaynağı
     Detected FFmpeg Version Template: 'Algılanan FFmpeg sürümü: {version}'
+    Detected FFmpeg and FFprobe Version Template: 'Algılanan FFmpeg/FFprobe sürümü: {version}'
     FFmpeg Managed Not Downloaded: FFmpeg henüz indirilmedi. İndirmek için aşağıdaki düğmeye tıklayın.
     System FFmpeg Missing Warning: FFmpeg sisteminizde bulunamadı. Video ve sesi birleştirmenin yanı sıra ses dönüştürme için de gereklidir. Yükleyin, aşağıda özel bir yol ayarlayın veya kaynağı "OpenTubeX tarafından yönetilen" olarak değiştirin.
     Download FFmpeg: FFmpeg'i İndir

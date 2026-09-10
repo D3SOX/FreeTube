@@ -667,6 +667,7 @@ Settings:
     yt-dlp Download Error Template: 'Nem sikerült letölteni az yt-dlp programot: {error}'
     FFmpeg Source: FFmpeg forrása
     Detected FFmpeg Version Template: 'Észlelt FFmpeg-verzió: {version}'
+    Detected FFmpeg and FFprobe Version Template: 'Észlelt FFmpeg/FFprobe-verzió: {version}'
     FFmpeg Managed Not Downloaded: Az FFmpeg még nincs letöltve. A letöltéshez kattintson az alábbi gombra.
     System FFmpeg Missing Warning: Az FFmpeg nem található a rendszeren. A videó és a hang egyesítéséhez, valamint a hang átalakításához szükséges. Telepítse, adjon meg alább egy egyéni elérési utat, vagy váltson „Az OpenTubeX felügyeletével” forrásra.
     Download FFmpeg: FFmpeg letöltése

@@ -750,6 +750,7 @@ Settings:
     yt-dlp Download Error Template: 'No se pudo descargar yt-dlp: {error}'
     FFmpeg Source: Fuente de FFmpeg
     Detected FFmpeg Version Template: 'Versión de FFmpeg detectada: {version}'
+    Detected FFmpeg and FFprobe Version Template: 'Versión de FFmpeg/FFprobe detectada: {version}'
     FFmpeg Managed Not Downloaded: FFmpeg aún no se ha descargado. Hacé clic en el botón de abajo para descargarlo.
     System FFmpeg Missing Warning: No se encontró FFmpeg en el sistema. Es necesario para combinar video y audio y para convertir audio. Instalalo, definí una ruta personalizada abajo o cambiá la fuente a «Gestionada por OpenTubeX».
     Download FFmpeg: Descargar FFmpeg

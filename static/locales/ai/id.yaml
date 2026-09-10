@@ -675,6 +675,7 @@ Settings:
     yt-dlp Download Error Template: 'Gagal mengunduh yt-dlp: {error}'
     FFmpeg Source: Sumber FFmpeg
     Detected FFmpeg Version Template: 'Versi FFmpeg yang terdeteksi: {version}'
+    Detected FFmpeg and FFprobe Version Template: 'Versi FFmpeg/FFprobe yang terdeteksi: {version}'
     FFmpeg Managed Not Downloaded: FFmpeg belum diunduh. Klik tombol di bawah untuk mengunduhnya.
     System FFmpeg Missing Warning: FFmpeg tidak ditemukan di sistem Anda. FFmpeg diperlukan untuk menggabungkan video dan audio serta mengonversi audio. Pasang FFmpeg, tentukan jalur khusus di bawah, atau ubah sumber ke "Dikelola oleh OpenTubeX".
     Download FFmpeg: Unduh FFmpeg

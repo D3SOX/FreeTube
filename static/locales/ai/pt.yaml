@@ -682,6 +682,7 @@ Settings:
     yt-dlp Download Error Template: 'Falha ao transferir o yt-dlp: {error}'
     FFmpeg Source: Origem do FFmpeg
     Detected FFmpeg Version Template: 'Versão do FFmpeg detetada: {version}'
+    Detected FFmpeg and FFprobe Version Template: 'Versão do FFmpeg/FFprobe detetada: {version}'
     FFmpeg Managed Not Downloaded: O FFmpeg ainda não foi transferido. Clique no botão abaixo para o transferir.
     System FFmpeg Missing Warning: O FFmpeg não foi encontrado no sistema. É necessário para combinar vídeo e áudio e para converter áudio. Instale-o, defina um caminho personalizado abaixo ou altere a origem para «Gerido pelo OpenTubeX».
     Download FFmpeg: Transferir FFmpeg

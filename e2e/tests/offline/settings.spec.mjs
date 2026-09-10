@@ -493,6 +493,9 @@ test.describe('settings', () => {
     await expect(ytDlpTool.getByPlaceholder('yt-dlp Executable Path')).toBeVisible()
     await expect(ffmpegTool.getByRole('combobox', { name: 'FFmpeg Source' })).toBeVisible()
     await expect(ffmpegTool.getByPlaceholder('FFmpeg Executable Path')).toBeVisible()
+    await expect(ffmpegTool.locator('.externalSoftwareToolStatus')).toHaveText(
+      'Detected FFmpeg/FFprobe version: 8.0'
+    )
 
     const ytDlpSource = ytDlpTool.locator('.select').filter({ hasText: 'yt-dlp Source' })
     const ffmpegSource = ffmpegTool.locator('.select').filter({ hasText: 'FFmpeg Source' })
@@ -540,6 +543,30 @@ test.describe('settings', () => {
     await expect(ffmpegTool.getByPlaceholder('FFmpeg Executable Path')).toHaveCount(0)
     await expect(ffmpegTool.getByRole('button', { name: 'Update FFmpeg and FFprobe' })).toBeVisible()
     await expect(externalSoftware.getByRole('combobox', { name: 'Managed Tool Updates' })).toBeVisible()
+  })
+
+  test('shows separate FFmpeg and FFprobe statuses when their versions differ', async ({ app, page }) => {
+    await app.electronApp.evaluate(({ ipcMain }) => {
+      ipcMain.removeHandler('yt-dlp-get-info')
+      ipcMain.handle('yt-dlp-get-info', (_event, options) => ({
+        ytDlp: {
+          source: options.ytDlpSource,
+          available: true,
+          version: '2026.08.19',
+          supportedBrowsers: []
+        },
+        ffmpeg: { source: options.ffmpegSource, available: true, version: '8.0' },
+        ffprobe: { source: options.ffmpegSource, available: true, version: '8.1' }
+      }))
+    })
+
+    const advanced = await goToSettingsSection(page, 'advanced')
+    const ffmpegStatus = advanced.locator('.externalSoftwareTool').nth(1).locator('.externalSoftwareToolStatus')
+
+    await expect(ffmpegStatus.locator('p')).toHaveText([
+      'Detected FFmpeg version: 8.0',
+      'Detected FFprobe version: 8.1'
+    ])
   })
 
   test.describe('external software at 95% UI scale', () => {

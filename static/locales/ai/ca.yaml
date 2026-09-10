@@ -917,6 +917,7 @@ Settings:
     yt-dlp Download Error Template: 'Ha fallat la baixada de yt-dlp: {error}'
     FFmpeg Source: Origen de FFmpeg
     Detected FFmpeg Version Template: 'Versió de FFmpeg detectada: {version}'
+    Detected FFmpeg and FFprobe Version Template: 'Versió de FFmpeg/FFprobe detectada: {version}'
     FFmpeg Managed Not Downloaded: Encara no s'ha baixat FFmpeg. Feu clic al botó de sota per baixar-lo.
     System FFmpeg Missing Warning: No s'ha trobat FFmpeg al sistema. És necessari per combinar vídeo i àudio i per convertir àudio. Instal·leu-lo, definiu un camí personalitzat a sota o canvieu l'origen a "Gestionat per l'OpenTubeX".
     Download FFmpeg: Baixa FFmpeg

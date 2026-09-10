@@ -669,6 +669,7 @@ Settings:
     yt-dlp Download Error Template: 'Изтеглянето на yt-dlp беше неуспешно: {error}'
     FFmpeg Source: Източник на FFmpeg
     Detected FFmpeg Version Template: 'Открита версия на FFmpeg: {version}'
+    Detected FFmpeg and FFprobe Version Template: 'Открита версия на FFmpeg/FFprobe: {version}'
     FFmpeg Managed Not Downloaded: FFmpeg все още не е изтеглен. Натиснете бутона по-долу, за да го изтеглите.
     System FFmpeg Missing Warning: FFmpeg не е намерен в системата. Той е необходим за обединяване на видео и аудио и за преобразуване на аудио. Инсталирайте го, задайте друг път по-долу или сменете източника на „Управляван от OpenTubeX“.
     Download FFmpeg: Изтегляне на FFmpeg

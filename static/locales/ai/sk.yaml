@@ -667,6 +667,7 @@ Settings:
     yt-dlp Download Error Template: 'yt-dlp sa nepodarilo stiahnuť: {error}'
     FFmpeg Source: Zdroj FFmpeg
     Detected FFmpeg Version Template: 'Zistená verzia FFmpeg: {version}'
+    Detected FFmpeg and FFprobe Version Template: 'Zistená verzia FFmpeg/FFprobe: {version}'
     FFmpeg Managed Not Downloaded: FFmpeg ešte nebol stiahnutý. Stiahnite ho tlačidlom nižšie.
     System FFmpeg Missing Warning: FFmpeg sa v systéme nenašiel. Je potrebný na spájanie obrazu so zvukom a na prevod zvuku. Nainštalujte ho, nastavte vlastnú cestu nižšie alebo zmeňte zdroj na „Spravované aplikáciou OpenTubeX“.
     Download FFmpeg: Stiahnuť FFmpeg

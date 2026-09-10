@@ -667,6 +667,7 @@ Settings:
     yt-dlp Download Error Template: 'yt-dlp allalaadimine nurjus: {error}'
     FFmpeg Source: FFmpegi allikas
     Detected FFmpeg Version Template: 'Tuvastatud FFmpegi versioon: {version}'
+    Detected FFmpeg and FFprobe Version Template: 'Tuvastatud FFmpegi/FFprobei versioon: {version}'
     FFmpeg Managed Not Downloaded: FFmpeg pole veel alla laaditud. Allalaadimiseks klõpsa allolevat nuppu.
     System FFmpeg Missing Warning: Sinu süsteemist ei leitud FFmpegi. Seda on vaja video ja heli ühendamiseks ning heli teisendamiseks. Paigalda see, määra allpool kohandatud asukoht või vali allikaks "OpenTubeXi hallatav".
     Download FFmpeg: Laadi FFmpeg alla

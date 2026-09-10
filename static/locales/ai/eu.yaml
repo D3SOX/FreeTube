@@ -669,6 +669,7 @@ Settings:
     yt-dlp Download Error Template: 'Ezin izan da yt-dlp deskargatu: {error}'
     FFmpeg Source: FFmpeg-en jatorria
     Detected FFmpeg Version Template: 'Hautemandako FFmpeg bertsioa: {version}'
+    Detected FFmpeg and FFprobe Version Template: 'Hautemandako FFmpeg/FFprobe bertsioa: {version}'
     FFmpeg Managed Not Downloaded: FFmpeg ez da deskargatu oraindik. Egin klik beheko botoian deskargatzeko.
     System FFmpeg Missing Warning: Ez da FFmpeg aurkitu sisteman. Beharrezkoa da bideoa eta audioa bateratzeko eta audioa bihurtzeko. Instalatu, ezarri bide-izen pertsonalizatu bat behean edo aldatu jatorria "OpenTubeX aplikazioak kudeatua" aukerara.
     Download FFmpeg: Deskargatu FFmpeg
