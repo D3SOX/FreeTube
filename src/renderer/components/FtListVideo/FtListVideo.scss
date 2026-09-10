@@ -24,12 +24,6 @@
   opacity: 0.3;
 }
 
-.ft-list-item.premiereVideo .info .title,
-.ft-list-item.premiereVideo .info .infoLine,
-.ft-list-item.premiereVideo .info .infoLine .channelName {
-  color: var(--tertiary-text-color);
-}
-
 .draggable:not(.draggable:only-child):focus .grabBar,
 .draggable:not(.draggable:only-child):hover .grabBar {
   display: revert;

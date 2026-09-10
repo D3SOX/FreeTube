@@ -331,7 +331,7 @@ test.describe('seeded playlists', () => {
     await expect(page.getByTestId('progress-toast')).toHaveCount(0)
   })
 
-  test('restores running premiere styling when the scheduled time arrives', async ({ page }) => {
+  test('keeps normal title styling when a premiere reaches its scheduled time', async ({ page }) => {
     await goTo(page, 'userplaylists')
     await page.clock.install({ time: seededPremiereStart - 86_400_000 })
     await page.getByText('My seeded playlist').click()
@@ -346,7 +346,7 @@ test.describe('seeded playlists', () => {
 
     await page.clock.fastForward(86_400_001)
 
-    await expect(title).toHaveCSS('color', 'rgb(101, 67, 33)')
+    await expect(title).toHaveCSS('color', 'rgb(18, 52, 86)')
   })
 
   test('playlist artwork keeps its native aspect ratio', async ({ page }) => {

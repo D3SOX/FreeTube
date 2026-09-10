@@ -89,6 +89,26 @@ const seed = {
 
 test.use({ seed })
 
+for (const theme of ['openTubeXLight', 'openTubeXDark']) {
+  test.describe(`${theme} premiere colors`, () => {
+    test.use({ seed: { ...seed, settings: { ...seed.settings, baseTheme: theme } } })
+
+    test('running premieres use normal video text colors', async ({ page }) => {
+      await goTo(page, 'subscriptions')
+      const premiere = page.locator('.ft-list-video').filter({ hasText: 'Running premiere video' })
+      const video = page.locator('.ft-list-video').filter({ hasText: 'Video A older' })
+      await expect(premiere).toBeVisible()
+      await expect(video).toBeVisible()
+      await expect(premiere.locator('.videoDuration')).toHaveText('Premiere')
+
+      for (const selector of ['.title', '.infoLine', '.channelName']) {
+        const color = await video.locator(selector).evaluate(element => getComputedStyle(element).color)
+        await expect(premiere.locator(selector)).toHaveCSS('color', color)
+      }
+    })
+  })
+}
+
 test.describe('subscriptions feed from cache', () => {
   test('does not animate cards while calculating the initial grid size', async ({ page }) => {
     await page.evaluate(() => {
@@ -275,7 +295,6 @@ test.describe('subscriptions feed from cache', () => {
     await page.clock.runFor(200)
     await expect(premiere.locator('.videoDuration')).toHaveText('11:42')
     await expect(premiere.locator('.viewCount')).toContainText('9k views')
-    await expect(premiere).not.toHaveClass(/premiereVideo/)
 
     const completedRequestCount = requests.length
     await page.clock.fastForward(121_000)
