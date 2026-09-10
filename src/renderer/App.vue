@@ -4010,9 +4010,10 @@ async function backMobileContextMenu() {
     closeMobileLinkActions()
     return
   }
+  const triggerLabel = mobileContextMenuStack.value.at(-1).label
   mobileContextMenuPath.value = mobileContextMenuPath.value.slice(0, mobileContextMenuStack.value.length - 2)
   await nextTick()
-  mobileLinkActionsRef.value?.querySelector('[role="menuitem"]:not(:disabled)')?.focus({ preventScroll: true })
+  mobileLinkActionsRef.value?.querySelector(`[role="menuitem"][aria-label="${CSS.escape(triggerLabel)}"]:not(:disabled)`)?.focus({ preventScroll: true })
 }
 
 async function runMobileContextAction(action) {
