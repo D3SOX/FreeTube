@@ -297,6 +297,7 @@ Settings:
       Load previously loaded tabs: بارگذاری زبانه‌های قبلاً بارگذاری‌شده
       Load last active tab: بارگذاری آخرین زبانه فعال
       Start with an empty session: شروع با نشست خالی
+      Load landing page, keep other tabs unloaded: بارگذاری صفحهٔ آغازین و باز نگه داشتن سایر زبانه‌ها بدون بارگذاری
     Use AI Translation Completions: ترجمه‌های جاافتاده را با موارد تولیدشده توسط هوش مصنوعی تکمیل کنید
     Reduced Motion:
       Reduced Motion: کاهش حرکت

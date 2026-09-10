@@ -284,6 +284,7 @@ Settings:
       Load previously loaded tabs: Carregar os separadores anteriormente carregados
       Load last active tab: Carregar o último separador ativo
       Start with an empty session: Iniciar com uma sessão vazia
+      Load landing page, keep other tabs unloaded: Carregar a página inicial e manter os outros separadores por carregar
     Use AI Translation Completions: Preencher traduções em falta com outras geradas por IA
     Reduced Motion:
       Reduced Motion: Movimento reduzido

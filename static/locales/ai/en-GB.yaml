@@ -280,6 +280,7 @@ Settings:
       Load previously loaded tabs: Load previously loaded tabs
       Load last active tab: Load last active tab
       Start with an empty session: Start with an empty session
+      Load landing page, keep other tabs unloaded: Load landing page, keep other tabs unloaded
     Comment Translation:
       Title: Comment translations
       Enable: Enable comment translations

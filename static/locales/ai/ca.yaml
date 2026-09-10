@@ -415,6 +415,7 @@ Settings:
       Load previously loaded tabs: Carrega les pestanyes carregades anteriorment
       Load last active tab: Carrega la darrera pestanya activa
       Start with an empty session: Inicia una sessió buida
+      Load landing page, keep other tabs unloaded: Carrega la pàgina inicial i mantén les altres pestanyes sense carregar
     Use AI Translation Completions: Completa les traduccions que falten amb altres de generades per IA
     Reduced Motion:
       Reduced Motion: Moviment reduït

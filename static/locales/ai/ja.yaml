@@ -280,6 +280,7 @@ Settings:
       Load previously loaded tabs: 前回読み込まれていたタブを読み込む
       Load last active tab: 最後に使用したタブを読み込む
       Start with an empty session: 空のセッションで開始
+      Load landing page, keep other tabs unloaded: 起動ページを読み込み、他のタブは未読み込みのまま保持
     Use AI Translation Completions: 未翻訳部分をAI生成の翻訳で補完
     Reduced Motion:
       Reduced Motion: 視覚効果を減らす

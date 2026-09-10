@@ -282,6 +282,7 @@ Settings:
       Load previously loaded tabs: Зареди по-рано заредените раздели
       Load last active tab: Зареди последния активен раздел
       Start with an empty session: Започни с празна сесия
+      Load landing page, keep other tabs unloaded: Зареждане на началната страница, другите раздели остават незаредени
     Use AI Translation Completions: Попълвай липсващите преводи с преводи, генерирани от ИИ
     Reduced Motion:
       Reduced Motion: Намалено движение

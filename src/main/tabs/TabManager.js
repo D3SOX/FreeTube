@@ -3401,10 +3401,10 @@ export class TabManager {
 
   /**
    * @param {{ tabs?: Array<{id?: string, url: string, title?: string, avatarFileName?: string | null, isPinned?: boolean, color?: string | null, skipSilence?: boolean, isUnloaded?: boolean, previewFileName?: string | null, previewCapturedAt?: number, placementOpenerTabId?: string | null, history?: object[], historyIndex?: number}>, activeTabId?: string }} sessionData
-   * @param {{ loadInactiveTabs?: boolean, restoreTabLoadState?: boolean }} [options]
+   * @param {{ loadInactiveTabs?: boolean, restoreTabLoadState?: boolean, loadLandingPage?: boolean }} [options]
    * @returns {Promise<boolean>}
    */
-  async restoreFromData(sessionData, { loadInactiveTabs = false, restoreTabLoadState = false } = {}) {
+  async restoreFromData(sessionData, { loadInactiveTabs = false, restoreTabLoadState = false, loadLandingPage = false } = {}) {
     if (!sessionData || !Array.isArray(sessionData.tabs) || sessionData.tabs.length === 0) {
       return false
     }
@@ -3420,7 +3420,10 @@ export class TabManager {
     try {
       const restoreNavigationHistory = await TabManager.getStoredRememberTabNavigationHistory()
       this._restoreTabGroups(sessionData.groups)
-      const activeTabData = sessionData.tabs.find(tab => tab.id === sessionData.activeTabId)
+      const landingRoute = loadLandingPage ? await TabManager.getStoredLandingRoute() : null
+      const activeTabData = loadLandingPage
+        ? sessionData.tabs.find(tab => TabManager.getRouteFromUrl(tab.url).path === landingRoute)
+        : sessionData.tabs.find(tab => tab.id === sessionData.activeTabId)
       const prioritizeActiveWatchTab = activeTabData != null &&
         TabManager.getRouteFromUrl(activeTabData.url).path.startsWith('/watch/')
       const deferredStartupWatchTabIds = new Set()
@@ -3437,17 +3440,17 @@ export class TabManager {
 
       await this.runBatched(() => {
         for (const tabData of sessionData.tabs) {
-          const makeActive = tabData.id === sessionData.activeTabId
+          const makeActive = tabData === activeTabData
           const hasSavedTitle = typeof tabData.title === 'string' && tabData.title.trim().length > 0
           const previewFileName = normalizeTabPreviewFileName(tabData.previewFileName)
           const avatarFileName = normalizeTabPreviewFileName(tabData.avatarFileName)
           const avatarDataUrl = avatars.get(avatarFileName) ?? null
-          const loadInBackground = loadInactiveTabs || (restoreTabLoadState && tabData.isUnloaded === false)
+          const loadInBackground = !loadLandingPage && (loadInactiveTabs || (restoreTabLoadState && tabData.isUnloaded === false))
           const deferForActiveWatchTab = prioritizeActiveWatchTab &&
             !makeActive &&
             loadInBackground &&
             TabManager.getRouteFromUrl(tabData.url).path.startsWith('/watch/')
-          const restoreAsUnloaded = deferForActiveWatchTab || (!loadInactiveTabs && !makeActive && (
+          const restoreAsUnloaded = (loadLandingPage && !makeActive) || deferForActiveWatchTab || (!loadInactiveTabs && !makeActive && (
             (restoreTabLoadState && tabData.isUnloaded === true) ||
             (!loadInBackground && hasSavedTitle)
           ))
@@ -3496,6 +3499,10 @@ export class TabManager {
         }
 
         restoreTabPlacementOpeners(this.tabs, sessionData.tabs)
+
+        if (loadLandingPage && !activeTabData) {
+          this.createTab({ route: landingRoute, makeActive: true, openPosition: 'end' })
+        }
 
         if (!this.activeTabId) {
           const firstTabId = this.tabs.keys().next().value

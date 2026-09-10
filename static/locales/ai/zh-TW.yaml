@@ -280,6 +280,7 @@ Settings:
       Load previously loaded tabs: 載入先前已載入的分頁
       Load last active tab: 載入上次使用的分頁
       Start with an empty session: 以空白工作階段啟動
+      Load landing page, keep other tabs unloaded: 載入起始頁，保持其他分頁未載入
     Use AI Translation Completions: 使用 AI 產生的翻譯補上缺少的部分
     Reduced Motion:
       Reduced Motion: 減少動態效果

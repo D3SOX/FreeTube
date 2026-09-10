@@ -284,6 +284,7 @@ Settings:
       Load previously loaded tabs: Завантажувати раніше завантажені вкладки
       Load last active tab: Завантажувати останню активну вкладку
       Start with an empty session: Починати з порожнього сеансу
+      Load landing page, keep other tabs unloaded: Завантажити початкову сторінку, інші вкладки залишити незавантаженими
     Use AI Translation Completions: Заповнювати пропущені переклади перекладами, створеними ШІ
     Reduced Motion:
       Reduced Motion: Зменшення руху

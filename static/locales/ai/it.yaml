@@ -280,6 +280,7 @@ Settings:
       Load previously loaded tabs: Carica le schede già caricate in precedenza
       Load last active tab: Carica l'ultima scheda attiva
       Start with an empty session: Avvia con una sessione vuota
+      Load landing page, keep other tabs unloaded: Carica la pagina iniziale e lascia le altre schede non caricate
     Use AI Translation Completions: Completa le traduzioni mancanti con quelle generate dall'IA
     Reduced Motion:
       Reduced Motion: Movimento ridotto

@@ -284,6 +284,7 @@ Settings:
       Load previously loaded tabs: Tải các thẻ đã tải trước đó
       Load last active tab: Tải thẻ hoạt động gần nhất
       Start with an empty session: Bắt đầu với phiên trống
+      Load landing page, keep other tabs unloaded: Tải trang khởi đầu, giữ các thẻ khác chưa tải
     Use AI Translation Completions: Điền các bản dịch còn thiếu bằng những bản dịch do AI tạo
     Reduced Motion:
       Reduced Motion: Giảm chuyển động

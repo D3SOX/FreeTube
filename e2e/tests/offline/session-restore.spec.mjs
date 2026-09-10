@@ -378,3 +378,36 @@ test.describe('restored watch tab startup priority', () => {
     await expect(backgroundWatchTab).not.toHaveClass(/unloaded/)
   })
 })
+
+for (const existingLanding of [false, true]) {
+  test.describe(`landing-page startup ${existingLanding ? 'reuses' : 'creates'} a tab`, () => {
+    test.use({
+      seed: {
+        settings: { startupBehavior: 'loadLandingPage', landingPage: 'history' },
+        tabSessions: [{
+          _id: 'e2e-window-session',
+          value: {
+            tabs: [
+              { id: WATCH_TAB_ID, url: 'app://bundle/index.html#/watch/jNQXAC9IVRw', title: 'Saved video', isUnloaded: false },
+              ...(existingLanding ? [{ id: HISTORY_TAB_ID, url: 'app://bundle/index.html#/history', title: 'History', isUnloaded: true }] : [])
+            ],
+            activeTabId: WATCH_TAB_ID
+          }
+        }]
+      }
+    })
+
+    test('loads only the landing page and keeps the previous tabs', async ({ page }) => {
+      await expect(page).toHaveURL(/#\/history$/)
+      await expect.poll(async () => page.evaluate(async () => {
+        const state = await window.ftElectron.tabs.getState()
+        return state.tabs.map(tab => ({ id: tab.id, isUnloaded: tab.isUnloaded, active: tab.id === state.activeTabId }))
+      })).toEqual([
+        { id: WATCH_TAB_ID, isUnloaded: true, active: false },
+        { id: existingLanding ? HISTORY_TAB_ID : expect.any(String), isUnloaded: false, active: true }
+      ])
+      await expect(page.locator('.tabContent[aria-hidden="false"]')).toHaveCount(1)
+      await expect(page.locator('.videoPlayerPlaceholder')).toHaveCount(0)
+    })
+  })
+}

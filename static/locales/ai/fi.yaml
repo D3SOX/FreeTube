@@ -284,6 +284,7 @@ Settings:
       Load previously loaded tabs: Lataa aiemmin ladatut välilehdet
       Load last active tab: Lataa viimeksi aktiivinen välilehti
       Start with an empty session: Aloita tyhjällä istunnolla
+      Load landing page, keep other tabs unloaded: Lataa aloitussivu, jätä muut välilehdet lataamatta
     Use AI Translation Completions: Täydennä puuttuvat käännökset tekoälyn tuottamilla käännöksillä
     Reduced Motion:
       Reduced Motion: Vähennetty liike

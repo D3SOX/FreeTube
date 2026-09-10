@@ -309,6 +309,7 @@ Settings:
       Load previously loaded tabs: Cargar las pestañas que estaban cargadas
       Load last active tab: Cargar la última pestaña activa
       Start with an empty session: Iniciar con una sesión vacía
+      Load landing page, keep other tabs unloaded: Cargar la página de inicio y mantener las demás pestañas sin cargar
     Use AI Translation Completions: Completar las traducciones que faltan con otras generadas por IA
     Reduced Motion:
       Reduced Motion: Movimiento reducido

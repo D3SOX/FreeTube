@@ -282,6 +282,7 @@ Settings:
       Load previously loaded tabs: Încarcă filele încărcate anterior
       Load last active tab: Încarcă ultima filă activă
       Start with an empty session: Pornește cu o sesiune goală
+      Load landing page, keep other tabs unloaded: Încarcă pagina de pornire, păstrează celelalte file neîncărcate
     Use AI Translation Completions: Completează traducerile lipsă cu unele generate de IA
     Reduced Motion:
       Reduced Motion: Mișcare redusă

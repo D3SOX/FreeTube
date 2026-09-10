@@ -458,3 +458,35 @@ for (const rememberHistory of [true, false, undefined]) {
     }
   })
 }
+
+for (const existingLanding of [false, true]) {
+  test(`mobile landing-page startup ${existingLanding ? 'reuses' : 'adds'} the landing tab and unloads the previous active tab`, async () => {
+    const session = createThreeTabSession()
+    const persisted = {
+      ...session,
+      tabs: session.tabs.map(tab => ({ ...tab, isUnloaded: false })),
+    }
+    const previousStorage = globalThis.localStorage
+    globalThis.localStorage = { getItem: () => JSON.stringify(persisted), setItem() {} }
+    const store = createStore(createLoadedSession())
+    store.getters.getStartupBehavior = 'loadLandingPage'
+    store.getters.getLandingPage = existingLanding ? 'home' : 'subscriptions'
+    const router = createRouter()
+    router.afterEach = () => () => {}
+    const navigation = createNavigation(store, true)
+    navigation.projectRoute = async route => { router.currentRoute.value = route }
+    navigation.restoreScroll = () => {}
+    const service = new CapacitorTabService(router, store, navigation)
+    try {
+      await service.initialize({ path: '/', fullPath: '/' })
+      assert.equal(store.getters.getTabs.length, existingLanding ? 3 : 4)
+      assert.equal(store.getters.getActiveTab.route.path, existingLanding ? '/home' : '/subscriptions')
+      assert.equal(store.getters.getActiveTab.loadState, 'mounting')
+      if (existingLanding) assert.equal(store.getters.getActiveTabId, 'tab-a')
+      assert.ok(store.getters.getTabs.filter(tab => tab.id !== store.getters.getActiveTabId).every(tab => tab.loadState === 'unloaded'))
+    } finally {
+      service.dispose()
+      globalThis.localStorage = previousStorage
+    }
+  })
+}

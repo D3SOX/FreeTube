@@ -407,6 +407,7 @@ Settings:
       Load previously loaded tabs: Naloži prej naložene zavihke
       Load last active tab: Naloži zadnji dejavni zavihek
       Start with an empty session: Začni s prazno sejo
+      Load landing page, keep other tabs unloaded: Naloži začetno stran, druge zavihke pusti nenaložene
     Use AI Translation Completions: Dopolni manjkajoče prevode s prevodi, ustvarjenimi z umetno inteligenco
     Reduced Motion:
       Reduced Motion: Zmanjšano gibanje

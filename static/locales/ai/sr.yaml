@@ -290,6 +290,7 @@ Settings:
       Load previously loaded tabs: Учитај претходно учитане картице
       Load last active tab: Учитај последњу активну картицу
       Start with an empty session: Покрени празну сесију
+      Load landing page, keep other tabs unloaded: Учитај почетну страницу, остале картице остави неучитане
     Use AI Translation Completions: Попуни преводе који недостају преводима које је генерисала ВИ
     Reduced Motion:
       Reduced Motion: Смањено кретање

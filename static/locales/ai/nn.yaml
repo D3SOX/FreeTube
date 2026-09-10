@@ -340,6 +340,7 @@ Settings:
       Load previously loaded tabs: Last inn tidlegare innlasta faner
       Load last active tab: Last inn den sist aktive fana
       Start with an empty session: Start med ei tom økt
+      Load landing page, keep other tabs unloaded: Last inn startsida, lat andre faner vere ulasta
     Use AI Translation Completions: Fyll inn manglande omsetjingar med KI-genererte omsetjingar
     Reduced Motion:
       Reduced Motion: Redusert rørsle

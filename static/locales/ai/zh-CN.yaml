@@ -280,6 +280,7 @@ Settings:
       Load previously loaded tabs: 加载之前已加载的标签页
       Load last active tab: 加载最后使用的标签页
       Start with an empty session: 启动空会话
+      Load landing page, keep other tabs unloaded: 加载起始页，保持其他标签页未加载
     Use AI Translation Completions: 用 AI 生成的翻译补全缺失部分
     Reduced Motion:
       Reduced Motion: 减少动态效果

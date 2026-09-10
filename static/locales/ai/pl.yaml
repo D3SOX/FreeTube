@@ -124,6 +124,8 @@ Settings:
       Automatic: 'Automatycznie'
       Phone: 'Telefon'
       Tablet: 'Tablet'
+    Startup Behavior:
+      Load landing page, keep other tabs unloaded: Wczytaj stronę startową, pozostaw inne karty niewczytane
   Theme Settings:
     Main Color Theme:
       Catppuccin Macchiato Rosewater: "Catppuccin Macchiato Woda Różana"
