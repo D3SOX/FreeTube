@@ -222,6 +222,7 @@ const state = {
   androidAutoPictureInPicture: false,
   scrollMiniPlayerEnabled: true,
   scrollMiniPlayerOnAllTabs: false,
+  keepPlayingOnNavigation: false,
   scrollMiniPlayerSavedRect: '',
   crossTabMiniPlayerSavedRect: '',
   scrollbarThumbWidth: DEFAULT_SCROLLBAR_THUMB_WIDTH,

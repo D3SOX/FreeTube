@@ -1,4 +1,4 @@
-import { computed, nextTick, ref, watch } from 'vue'
+import { computed, inject, nextTick, ref, watch } from 'vue'
 
 import store from '../../../store/index'
 import { applyAnimationSpeed, getAnimationSpeedMultiplier } from '../../../helpers/animationSpeed'
@@ -13,6 +13,7 @@ import {
 } from '../../../helpers/crossTabMiniPlayer'
 import { isReducedMotionEnabled } from '../../../helpers/reducedMotion'
 import { getCapacitorTabService } from '../../../tabs/CapacitorTabService'
+import { watchNavigationKey } from '../../../tabs/TabContext'
 import {
   animateScrollMiniPlayerBounce,
   clampScrollMiniPlayerRect,
@@ -67,11 +68,13 @@ const SCROLL_MINI_LAYOUT_ANIMATION_DURATION_MS = 300
  * }} options
  */
 export function useScrollMiniPlayer({ container, fullWindowEnabled, getUi, isActiveTab, pictureInPictureActive, props, tabId = null, video }) {
+  const watchNavigation = inject(watchNavigationKey, null)
   const scrollMiniVideoAspectRatio = ref(DEFAULT_ASPECT_RATIO)
   const scrollMiniPlayerEnabled = computed(() => store.getters.getScrollMiniPlayerEnabled)
-  const scrollMiniPlayerOnAllTabs = computed(() => store.getters.getScrollMiniPlayerOnAllTabs)
+  const scrollMiniPlayerOnAllTabs = computed(() => store.getters.getKeepPlayingOnNavigation || store.getters.getScrollMiniPlayerOnAllTabs)
   const autoPictureInPictureOnTabChange = computed(
-    () => store.getters.getAutoPictureInPictureTriggers.includes('tab')
+    () => !(watchNavigation?.detached.value && watchNavigation.tabPresented.value) &&
+      store.getters.getAutoPictureInPictureTriggers.includes('tab')
   )
   const scrollMiniPlayerActive = ref(false)
   const scrollMiniPlayerAnimating = ref(false)
@@ -868,6 +871,9 @@ export function useScrollMiniPlayer({ container, fullWindowEnabled, getUi, isAct
     event?.stopPropagation()
 
     if (scrollMiniPlayerDetached.value && tabId) {
+      if (watchNavigation?.detached.value) {
+        watchNavigation.returnToVideo()
+      }
       if (process.env.IS_CAPACITOR) {
         getCapacitorTabService().activateTab(tabId)
       } else {
@@ -1198,6 +1204,9 @@ export function useScrollMiniPlayer({ container, fullWindowEnabled, getUi, isAct
   )
 
   watch(scrollMiniPlayerEnabled, () => updateScrollMiniPlayer())
+  watch(() => watchNavigation?.detached.value, detached => {
+    if (detached) fullWindowEnabled.value = false
+  }, { flush: 'sync' })
   watch(scrollMiniPlayerOnAllTabs, () => updateScrollMiniPlayer())
   watch(autoPictureInPictureOnTabChange, () => updateScrollMiniPlayer())
   watch(fullWindowEnabled, () => {

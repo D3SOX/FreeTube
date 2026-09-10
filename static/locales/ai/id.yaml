@@ -556,6 +556,7 @@ Settings:
       Scroll Mini Player: Pemutar mini saat menggulir
       When Scrolling Down: Pertahankan pemutar mini di layar saat menggulir ke bawah
       On All Tabs: Pertahankan pemutar mini di layar saat berganti tab
+      On Navigation: Terus putar saat meninggalkan halaman video
     Multiply Seek Interval by Playback Rate: Kalikan Interval Pencarian dengan Kecepatan Pemutaran
     Show Playback Rate Adjusted Timestamp: Tampilkan Stempel Waktu yang Disesuaikan dengan Kecepatan Pemutaran
     Use YouTube-style Shorts: Gunakan Shorts Bergaya YouTube

@@ -218,9 +218,17 @@
           :label="t('Settings.Player Settings.Scroll Mini Player.On All Tabs')"
           :compact="true"
           :default-value="scrollMiniPlayerOnAllTabs"
-          :disabled="autoPictureInPictureTriggers.includes('tab')"
+          :disabled="autoPictureInPictureTriggers.includes('tab') || store.getters.getKeepPlayingOnNavigation"
           setting-key="scrollMiniPlayerOnAllTabs"
           @change="updateScrollMiniPlayerOnAllTabs"
+        />
+        <FtToggleSwitch
+          v-if="USING_ELECTRON || IS_CAPACITOR"
+          :label="t('Settings.Player Settings.Scroll Mini Player.On Navigation')"
+          :compact="true"
+          :default-value="store.getters.getKeepPlayingOnNavigation"
+          setting-key="keepPlayingOnNavigation"
+          @change="store.dispatch('updateKeepPlayingOnNavigation', $event)"
         />
       </div>
     </div>
@@ -990,7 +998,7 @@ function updateAndroidAutoPictureInPicture(value) {
 const scrollMiniPlayerEnabled = computed(() => store.getters.getScrollMiniPlayerEnabled)
 
 /** @type {import('vue').ComputedRef<boolean>} */
-const scrollMiniPlayerOnAllTabs = computed(() => store.getters.getScrollMiniPlayerOnAllTabs)
+const scrollMiniPlayerOnAllTabs = computed(() => store.getters.getKeepPlayingOnNavigation || store.getters.getScrollMiniPlayerOnAllTabs)
 
 /**
  * @param {boolean} value

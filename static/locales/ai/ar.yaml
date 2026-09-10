@@ -556,6 +556,7 @@ Settings:
       Scroll Mini Player: إبقاء المشغل المصغّر عند التمرير
       When Scrolling Down: احتفظ بمشغل صغير على الشاشة عند التمرير لأسفل
       On All Tabs: احتفظ بمشغل صغير على الشاشة عند التبديل بين علامات التبويب
+      On Navigation: متابعة التشغيل عند مغادرة صفحة الفيديو
     Multiply Seek Interval by Playback Rate: اضرب الفاصل الزمني للبحث بمعدل التشغيل
     Show Playback Rate Adjusted Timestamp: عرض الطابع الزمني المعدل لمعدل التشغيل
     Use YouTube-style Shorts: استخدم فيديوهات قصيرة بأسلوب YouTube

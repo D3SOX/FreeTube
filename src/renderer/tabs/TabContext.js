@@ -8,6 +8,7 @@ import { fetchTabAvatarBytes } from '../helpers/tabAvatar'
 export const tabIdKey = Symbol('logical-tab-id')
 export const tabPresentedKey = Symbol('logical-tab-presented')
 export const tabLifecycleKey = Symbol('logical-tab-lifecycle')
+export const watchNavigationKey = Symbol('watch-navigation')
 
 export function useTabContext() {
   return {
@@ -19,6 +20,7 @@ export function useTabContext() {
 
 export function useTabTitle() {
   const { tabId } = useTabContext()
+  const watchNavigation = inject(watchNavigationKey, null)
   let isMounted = true
 
   onBeforeUnmount(() => {
@@ -27,6 +29,10 @@ export function useTabTitle() {
 
   return (title, options) => {
     if (!isMounted) {
+      return
+    }
+    if (watchNavigation?.detached.value) {
+      watchNavigation.setTitle(title)
       return
     }
 
@@ -44,6 +50,7 @@ export function useTabTitle() {
 
 export function useTabAvatar() {
   const { tabId } = useTabContext()
+  const watchNavigation = inject(watchNavigationKey, null)
   let isMounted = true
 
   onBeforeUnmount(() => {
@@ -51,12 +58,12 @@ export function useTabAvatar() {
   })
 
   return async (avatarUrl) => {
-    if (!isMounted || !process.env.IS_ELECTRON || !tabId || !store.getters.getShowTabIcons) return
+    if (!isMounted || watchNavigation?.detached.value || !process.env.IS_ELECTRON || !tabId || !store.getters.getShowTabIcons) return
 
     try {
       const route = store.getters.getTabById(tabId)?.route
       const avatarBytes = await fetchTabAvatarBytes(avatarUrl)
-      if (!isMounted || avatarBytes == null || route?.path == null) return
+      if (!isMounted || watchNavigation?.detached.value || avatarBytes == null || route?.path == null) return
 
       const cached = await window.ftElectron.tabs.updateAvatar(avatarBytes, tabId, route.path)
       if (cached) {

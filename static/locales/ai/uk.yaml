@@ -556,6 +556,7 @@ Settings:
       Scroll Mini Player: Мініпрогравач під час прокручування
       When Scrolling Down: Залишати мініпрогравач на екрані під час прокручування вниз
       On All Tabs: Залишати мініпрогравач на екрані під час перемикання вкладок
+      On Navigation: Продовжувати відтворення після виходу зі сторінки відео
     Multiply Seek Interval by Playback Rate: Множити крок перемотування на швидкість відтворення
     Show Playback Rate Adjusted Timestamp: Показувати час з урахуванням швидкості відтворення
     Use YouTube-style Shorts: Використовувати Shorts у стилі YouTube

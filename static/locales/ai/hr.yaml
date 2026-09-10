@@ -550,6 +550,7 @@ Settings:
       Scroll Mini Player: Minireproduktor pri pomicanju
       When Scrolling Down: Zadrži minireproduktor na zaslonu pri pomicanju prema dolje
       On All Tabs: Zadrži minireproduktor na zaslonu pri promjeni kartice
+      On Navigation: Nastavi reprodukciju pri napuštanju stranice videozapisa
     Multiply Seek Interval by Playback Rate: Pomnoži interval premotavanja brzinom reprodukcije
     Show Playback Rate Adjusted Timestamp: Prikaži vremensku oznaku prilagođenu brzini reprodukcije
     Use YouTube-style Shorts: Upotrebljavaj Shorts u stilu YouTubea

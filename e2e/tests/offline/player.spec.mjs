@@ -1056,9 +1056,10 @@ test('uses mobile surface taps for controls and keeps an on-video play button', 
   ))).toBeLessThanOrEqual(1)
   const player = page.locator(`${activeTab} .ftVideoPlayer`)
   const surface = player.locator('.shaka-controls-container')
-  const playButtons = player.locator('.shaka-play-button')
+  const playButtons = player.locator('.shaka-big-buttons-container .shaka-play-button')
 
   await expect(playButtons).toHaveCount(1)
+  await expect(player.locator('.shaka-controls-button-panel .shaka-play-button')).toBeVisible()
   await expect(player.locator('.shaka-controls-button-panel .shaka-pip-button')).toBeVisible()
   await expect(player.locator('.shaka-settings-menu .shaka-pip-button')).toHaveCount(0)
   await expect(player.locator('.shaka-mute-button, .shaka-volume-bar-container')).toHaveCount(0)
@@ -1639,15 +1640,16 @@ test.describe('scroll mini player', () => {
       await expect.poll(async () => (await size()).height).toBe(landscape.width)
 
       const handle = player.locator('.scrollMiniResizeHandle')
-      await handle.dispatchEvent('pointerdown', { button: 0, clientX: 0, clientY: 0, pointerId: 1 })
-      await page.evaluate(() => {
-        const rect = document.querySelector('.scrollMiniPlayer').getBoundingClientRect()
+      const handleBounds = await handle.boundingBox()
+      const startX = handleBounds.x + handleBounds.width / 2
+      const startY = handleBounds.y + handleBounds.height / 2
+      const portrait = await size()
+      await handle.dispatchEvent('pointerdown', { button: 0, clientX: startX, clientY: startY, pointerId: 1 })
+      await page.evaluate(({ clientX, clientY }) => {
         for (const type of ['pointermove', 'pointerup']) {
-          window.dispatchEvent(new PointerEvent(type, {
-            clientX: rect.right - 270, clientY: rect.top, pointerId: 1
-          }))
+          window.dispatchEvent(new PointerEvent(type, { clientX, clientY, pointerId: 1 }))
         }
-      })
+      }, { clientX: startX + portrait.width - 270, clientY: startY })
       await expect.poll(async () => (await size()).height).toBe(480)
       await page.locator('.tabBar .tab').first().click()
       const watch = await page.evaluateHandle(findWatchComponent)
@@ -2228,5 +2230,121 @@ test.describe('skip silence default', () => {
       const store = document.querySelector('#app').__vue_app__.config.globalProperties.$store
       return store.getters.getTabSkipSilence(store.getters.getActiveTabId)
     })).toBe(true)
+  })
+})
+
+for (const uiScale of [100, 125]) {
+  test.describe(`playback when navigating away at ${uiScale}%`, () => {
+    test.use({ seed: { settings: { ...PLAYER_SEED, keepPlayingOnNavigation: true, uiScale } } })
+
+    test('keeps the same video playing while browsing and returning', async ({ app, page, attachScreenshot }) => {
+      await openDemoVideo({ app, page })
+      const player = page.locator('.ftVideoPlayer')
+      const video = player.locator('video')
+      const originalVideo = await video.elementHandle()
+      const time = await video.evaluate(element => element.currentTime)
+      const title = await page.locator('.tabBar .tab').innerText()
+      await page.getByRole('link', { name: 'Go to Subscriptions', exact: true }).click()
+      await expect(page).toHaveURL(/#\/subscriptions$/)
+      await expect(player).toBeVisible()
+      await expect(player).toHaveClass(/scrollMiniPlayer/)
+      await expect(page.locator('.tabBar .tab')).toHaveCount(1)
+      await expect.poll(() => video.evaluate(element => element.currentTime)).toBeGreaterThan(time)
+      await attachScreenshot('video continues while browsing subscriptions')
+      await player.locator('.scrollMiniScrollTop').click()
+      await expect(page).toHaveURL(/#\/watch\/jNQXAC9IVRw/)
+      await expect(player).not.toHaveClass(/scrollMiniPlayer/)
+      expect(await video.evaluate((element, original) => element === original, originalVideo)).toBe(true)
+      await expect(page.locator('.tabBar .tab')).toHaveText(title)
+    })
+  })
+}
+
+test.describe('navigation playback lifecycle', () => {
+  test.use({ seed: { settings: { ...PLAYER_SEED, keepPlayingOnNavigation: true } } })
+
+  test('returns through history without restarting playback', async ({ app, page }) => {
+    await openDemoVideo({ app, page })
+    const component = await page.evaluateHandle(findWatchComponent)
+    const original = await page.locator('.ftVideoPlayer video').elementHandle()
+    await page.getByRole('button', { name: 'Expand side navigation', exact: true }).click()
+    await goTo(page, 'history')
+    await expect(page).toHaveURL(/#\/history$/)
+    await expect(page.locator('.ftVideoPlayer')).toHaveClass(/scrollMiniPlayer/)
+    await component.evaluate(component => component.proxy.tabRouter.back())
+    await expect(page).toHaveURL(/#\/watch\/jNQXAC9IVRw/)
+    await expect(page.locator('.ftVideoPlayer')).not.toHaveClass(/scrollMiniPlayer/)
+    expect(await page.locator('.ftVideoPlayer video').evaluate((element, original) => element === original, original)).toBe(true)
+  })
+
+  test('does not retain paused playback when navigating away', async ({ app, page }) => {
+    const video = await openDemoVideo({ app, page })
+    await video.evaluate(element => element.pause())
+    await page.getByRole('button', { name: 'Expand side navigation', exact: true }).click()
+    await goTo(page, 'history')
+    await expect(page).toHaveURL(/#\/history$/)
+    await expect(page.locator('.ftVideoPlayer')).toHaveCount(0)
+  })
+
+  test('disabling navigation playback disposes the retained player', async ({ app, page }) => {
+    await openDemoVideo({ app, page })
+    const component = await page.evaluateHandle(findWatchComponent)
+    await page.getByRole('button', { name: 'Expand side navigation', exact: true }).click()
+    await goTo(page, 'history')
+    await expect(page).toHaveURL(/#\/history$/)
+    await expect(page.locator('.ftVideoPlayer')).toHaveClass(/scrollMiniPlayer/)
+    await component.evaluate(component => component.proxy.$store.dispatch('updateKeepPlayingOnNavigation', false))
+    await expect(page.locator('.ftVideoPlayer')).toHaveCount(0)
+    await openDemoVideo({ app, page })
+    await page.getByRole('button', { name: 'Expand side navigation', exact: true }).click()
+    await goTo(page, 'history')
+    await expect(page).toHaveURL(/#\/history$/)
+    await expect(page.locator('.ftVideoPlayer')).toHaveCount(0)
+  })
+
+  test('replaces retained playback when opening another video', async ({ app, page }) => {
+    await openDemoVideo({ app, page })
+    await page.getByRole('button', { name: 'Expand side navigation', exact: true }).click()
+    await goTo(page, 'history')
+    await expect(page).toHaveURL(/#\/history$/)
+    await expect(page.locator('.ftVideoPlayer')).toHaveClass(/scrollMiniPlayer/)
+    await openMockedVideo(page, 'L_LUpnjgPso')
+    await expect(page.locator('.ftVideoPlayer')).toHaveCount(1)
+    await expect(page.locator('.ftVideoPlayer')).not.toHaveClass(/scrollMiniPlayer/)
+  })
+})
+
+test('navigation stops playback with the setting disabled', async ({ app, page }) => {
+  await openDemoVideo({ app, page })
+  await page.getByRole('button', { name: 'Expand side navigation', exact: true }).click()
+  await goTo(page, 'history')
+  await expect(page).toHaveURL(/#\/history$/)
+  await expect(page.locator('.ftVideoPlayer')).toHaveCount(0)
+})
+
+test.describe('retained navigation player across tabs', () => {
+  test.use({ seed: { settings: { ...PLAYER_SEED, keepPlayingOnNavigation: true } } })
+
+  test('keeps playback across video tabs with only navigation playback enabled', async ({ app, page }) => {
+    const { firstVideo, firstPlayer } = await openCrossTabMiniPlayerOverWatchTab({ app, page })
+    const before = await firstVideo.evaluate(element => element.currentTime)
+    await expect(firstPlayer).toHaveClass(/scrollMiniPlayer/)
+    await expect.poll(() => firstVideo.evaluate(element => element.paused)).toBe(false)
+    await expect.poll(() => firstVideo.evaluate(element => element.currentTime)).toBeGreaterThan(before)
+  })
+
+  test('returns to the source page from another tab and cleans up on close', async ({ app, page }) => {
+    await openDemoVideo({ app, page })
+    const video = await page.locator('.ftVideoPlayer video').elementHandle()
+    await page.getByRole('link', { name: 'Go to Subscriptions', exact: true }).click()
+    await page.locator('.tabBar .newTabButton').click()
+    await expect(page.locator('.ftVideoPlayer')).toHaveClass(/scrollMiniPlayer/)
+    await page.locator('.scrollMiniScrollTop').click()
+    await expect(page).toHaveURL(/#\/watch\/jNQXAC9IVRw/)
+    await expect(page.locator('.ftVideoPlayer')).not.toHaveClass(/scrollMiniPlayer/)
+    expect(await page.locator('.ftVideoPlayer video').evaluate((element, original) => element === original, video)).toBe(true)
+    await page.getByRole('link', { name: 'Go to Subscriptions', exact: true }).click()
+    await page.locator('.tabBar .tab').first().getByRole('button', { name: 'Close Tab', exact: true }).click()
+    await expect(page.locator('.ftVideoPlayer')).toHaveCount(0)
   })
 })

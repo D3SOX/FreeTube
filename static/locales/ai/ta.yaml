@@ -555,6 +555,7 @@ Settings:
       Scroll Mini Player: உருளும் சிறிய இயக்கி
       When Scrolling Down: கீழே உருட்டும்போது சிறிய இயக்கியைத் திரையில் வைத்திரு
       On All Tabs: தாவல்களை மாற்றும்போது சிறிய இயக்கியைத் திரையில் வைத்திரு
+      On Navigation: காணொளிப் பக்கத்தை விட்டு வெளியேறும்போது தொடர்ந்து இயக்கு
     Multiply Seek Interval by Playback Rate: நகர்த்தல் இடைவெளியை இயக்க வேகத்தால் பெருக்கு
     Show Playback Rate Adjusted Timestamp: இயக்க வேகத்திற்கேற்பச் சரிசெய்த நேரத்தைக் காட்டு
     Use YouTube-style Shorts: YouTube பாணி Shorts-ஐப் பயன்படுத்து

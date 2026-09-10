@@ -556,6 +556,7 @@ Settings:
       Scroll Mini Player: Smáspilari við skrun
       When Scrolling Down: Halda smáspilara á skjánum þegar skrunað er niður
       On All Tabs: Halda smáspilara á skjánum þegar skipt er um flipa
+      On Navigation: Halda spilun áfram þegar farið er af myndskeiðssíðunni
     Multiply Seek Interval by Playback Rate: Margfalda spólunarskref með spilunarhraða
     Show Playback Rate Adjusted Timestamp: Sýna tímamerki aðlagað að spilunarhraða
     Use YouTube-style Shorts: Nota Shorts að hætti YouTube

@@ -651,6 +651,7 @@ Settings:
       Scroll Mini Player: Minirreproductor al desplazarse
       When Scrolling Down: Mantener un minirreproductor en pantalla al desplazarse hacia abajo
       On All Tabs: Mantener un minirreproductor en pantalla al cambiar de pestaña
+      On Navigation: Seguir reproduciendo al salir de la página del video
     Multiply Seek Interval by Playback Rate: Multiplicar el intervalo de avance por la velocidad de reproducción
     Enter Fullscreen on Display Rotate: Entrar en pantalla completa al girar la pantalla
     Show Playback Rate Adjusted Timestamp: Mostrar la marca de tiempo ajustada a la velocidad de reproducción
