@@ -160,11 +160,8 @@ test('inline playback presents the native surface without copying frames through
   await page.evaluate(() => window.nativeScreenTest.destroy())
 })
 
-test('SABR and preroll countdown rings cover native transport buttons', async ({ app, page }) => {
-  await mockPlayableWatchPage(app, page)
-  await openMockedVideo(page)
-  await openNativeScreen(page, false)
-  await page.evaluate(() => {
+async function addCountdownNotice(page) {
+  await page.locator('.ftVideoPlayer').evaluate(player => {
     // Both native source timers use this shared ring. Supply the notice without
     // requiring a remote SABR server to request backoff during an offline test.
     const overlay = document.createElement('div')
@@ -172,7 +169,6 @@ test('SABR and preroll countdown rings cover native transport buttons', async ({
     const ring = document.createElement('div')
     ring.className = 'countdownProgress'
     ring.textContent = '1.2s'
-    const player = document.querySelector('.ftVideoPlayer')
     for (const attribute of player.getAttributeNames().filter(name => name.startsWith('data-v-'))) {
       overlay.setAttribute(attribute, '')
       ring.setAttribute(attribute, '')
@@ -180,6 +176,13 @@ test('SABR and preroll countdown rings cover native transport buttons', async ({
     overlay.append(ring)
     player.append(overlay)
   })
+}
+
+test('SABR and preroll countdown rings cover native transport buttons', async ({ app, page }) => {
+  await mockPlayableWatchPage(app, page)
+  await openMockedVideo(page)
+  await openNativeScreen(page, false)
+  await addCountdownNotice(page)
   const ring = page.locator('.countdownProgress')
   await expect(ring).toBeVisible()
   for (const fullscreen of [false, true]) {
@@ -195,6 +198,62 @@ test('SABR and preroll countdown rings cover native transport buttons', async ({
   }
   await page.evaluate(() => window.nativeScreenTest.destroy())
 })
+
+for (const uiScale of [100, 125]) {
+  test.describe(`native countdown scrolling at ${uiScale}%`, () => {
+    test.use({ seed: { settings: { videoPlaybackEngine: 'built-in', ytDlpPlaybackEngineDefaultMigration: true, uiScale, enterFullscreenOnDisplayRotate: false } } })
+    test('does not cut a hole for a hidden backoff countdown during mini-player scrolling', async ({ app, page }) => {
+      await mockPlayableWatchPage(app, page)
+      await openMockedVideo(page)
+      await openNativeScreen(page, false)
+      const player = page.locator('.ftVideoPlayer')
+      await addCountdownNotice(page)
+      await player.evaluate(element => window.scrollTo(0, window.scrollY + element.getBoundingClientRect().bottom))
+      await expect(player).toHaveClass(/scrollMiniPlayer/)
+      await expect(player).not.toHaveAttribute('data-native-player-transition')
+      // Match the Android template's Teleport into the floating player layer.
+      await player.evaluate(element => document.querySelector('#cross-tab-mini-player-layer').append(element))
+      const ring = page.locator('.countdownProgress')
+      const clipsRing = () => ring.evaluate(element => {
+        const box = element.getBoundingClientRect()
+        return window.nativeLayoutTest.menus.some(menu =>
+          Math.abs(menu.x - box.x) < 1 && Math.abs(menu.y - box.y) < 1 &&
+          Math.abs(menu.width - box.width) < 1 && Math.abs(menu.height - box.height) < 1)
+      })
+      await expect(ring).toBeVisible()
+      await expect.poll(clipsRing).toBe(true)
+      for (const action of ['scroll', 'gesture', 'transition']) {
+        await player.evaluate((element, action) => {
+          if (action === 'scroll') window.nativeScreenTest.action('scroll-start')
+          else if (action === 'gesture') element.dispatchEvent(new CustomEvent('native-player-gesture', { detail: true }))
+          else {
+            const layout = window.nativeScreenTestController.layout
+            window.nativeScreenTestController.layout = async value => {
+              await layout(value)
+              if (value.transition) await new Promise(resolve => { window.finishCountdownMotion = resolve })
+            }
+            const bounds = element.getBoundingClientRect().toJSON()
+            element.dispatchEvent(new CustomEvent('native-player-transition', {
+              cancelable: true, detail: { from: bounds, to: bounds, duration: 200 }
+            }))
+          }
+        }, action)
+        await expect(ring).toBeHidden()
+        // Android raises its texture above the page during motion. A retained
+        // countdown rectangle cuts straight through it to the chapters below.
+        await expect.poll(clipsRing).toBe(false)
+        await player.evaluate((element, action) => {
+          if (action === 'scroll') window.nativeScreenTest.action('scroll-end')
+          else if (action === 'gesture') element.dispatchEvent(new CustomEvent('native-player-gesture', { detail: false }))
+          else window.finishCountdownMotion()
+        }, action)
+        await expect(ring).toBeVisible()
+        await expect.poll(clipsRing).toBe(true)
+      }
+      await page.evaluate(() => window.nativeScreenTest.destroy())
+    })
+  })
+}
 
 for (const uiScale of [100, 125]) {
   test.describe(`inline native surface at ${uiScale}%`, () => {
