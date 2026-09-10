@@ -815,6 +815,7 @@ Settings:
     Posts Auto Refresh Interval: فاصلهٔ تازه‌سازی خودکار پست‌ها
     Refresh Subscriptions While App Is Closed: "تازه‌سازی اشتراک‌ها هنگام بسته بودن برنامه"
   Distraction Free Settings:
+    Hide Startup Splash: پنهان کردن صفحهٔ آغازین
     Hide Repeat Stats: پنهان کردن آمار تکرار
     Sections:
       Visible While Paused: نمایش هنگام توقف در پنجرهٔ کامل / تمام‌صفحه

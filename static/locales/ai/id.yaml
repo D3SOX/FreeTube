@@ -793,6 +793,7 @@ Settings:
     Posts Auto Refresh Interval: Interval Pembaruan Otomatis Postingan
     Refresh Subscriptions While App Is Closed: "Perbarui Langganan Saat Aplikasi Ditutup"
   Distraction Free Settings:
+    Hide Startup Splash: Sembunyikan Layar Pembuka
     Hide Repeat Stats: Sembunyikan statistik pengulangan
     Sections:
       Visible While Paused: Terlihat Saat Dijeda dalam Jendela Penuh / Layar Penuh

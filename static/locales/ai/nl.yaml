@@ -798,6 +798,7 @@ Settings:
     Posts Auto Refresh Interval: Interval voor automatisch vernieuwen van berichten
     Refresh Subscriptions While App Is Closed: "Abonnementen vernieuwen terwijl de app gesloten is"
   Distraction Free Settings:
+    Hide Startup Splash: Opstartscherm verbergen
     Hide Repeat Stats: Herhaalstatistieken verbergen
     Sections:
       Visible While Paused: Zichtbaar wanneer gepauzeerd in volledig venster of volledig scherm

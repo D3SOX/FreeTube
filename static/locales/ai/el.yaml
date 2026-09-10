@@ -798,6 +798,7 @@ Settings:
     Posts Auto Refresh Interval: Διάστημα αυτόματης ανανέωσης αναρτήσεων
     Refresh Subscriptions While App Is Closed: "Ανανέωση συνδρομών όταν η εφαρμογή είναι κλειστή"
   Distraction Free Settings:
+    Hide Startup Splash: Απόκρυψη οθόνης εκκίνησης
     Hide Repeat Stats: Απόκρυψη στατιστικών επανάληψης
     Sections:
       Visible While Paused: Ορατά κατά την παύση σε πλήρες παράθυρο / πλήρη οθόνη

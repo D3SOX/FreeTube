@@ -785,6 +785,7 @@ Settings:
     Posts Auto Refresh Interval: 貼文自動重新整理間隔
     Refresh Subscriptions While App Is Closed: "應用程式關閉時重新整理訂閱"
   Distraction Free Settings:
+    Hide Startup Splash: 隱藏啟動畫面
     Hide Repeat Stats: 隱藏循環統計
     Sections:
       Visible While Paused: 在全視窗／全螢幕模式暫停播放時顯示

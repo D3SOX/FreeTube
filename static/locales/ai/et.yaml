@@ -785,6 +785,7 @@ Settings:
     Posts Auto Refresh Interval: Postituste automaatse värskendamise intervall
     Refresh Subscriptions While App Is Closed: "Värskenda tellimusi, kui rakendus on suletud"
   Distraction Free Settings:
+    Hide Startup Splash: Peida käivituskuva
     Hide Repeat Stats: Peida korduste statistika
     Sections:
       Visible While Paused: Pausi ajal täisaknas või täisekraanil nähtav

@@ -52,3 +52,31 @@ test('the initial splash uses native appearance and cached plain-text localizati
   context.localStorage.getItem = () => { throw new Error('Storage unavailable') }
   assert.doesNotThrow(() => vm.runInNewContext(script, context))
 })
+
+for (const hideSplash of [true, false, undefined]) {
+  test(`early startup honors hideSplash=${hideSplash} before loading the renderer`, async () => {
+    const script = await readFile(new URL('../../src/renderer/startup/boot.js', import.meta.url), 'utf8')
+    let removed = false
+    let inert = true
+    let presented = false
+    const label = { textContent: 'OpenTubeX' }
+    vm.runInNewContext(script, {
+      window: { ftElectron: {
+        startupAppearance: { hideSplash },
+        startupSplashReady: () => { presented = true }
+      } },
+      document: {
+        documentElement: {},
+        getElementById: id => id === 'startup-splash'
+          ? { remove: () => { removed = true } }
+          : { removeAttribute: name => { if (name === 'inert') inert = false } },
+        querySelector: () => removed ? null : label
+      },
+      localStorage: { getItem: () => 'Loading…' },
+      requestAnimationFrame: callback => callback()
+    })
+    assert.equal(removed, hideSplash === true)
+    assert.equal(inert, hideSplash !== true)
+    assert.equal(presented, true, 'the native window still becomes visible')
+  })
+}

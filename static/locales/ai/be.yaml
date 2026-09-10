@@ -815,6 +815,7 @@ Settings:
     Posts Auto Refresh Interval: Інтэрвал аўтаматычнага абнаўлення допісаў
     Refresh Subscriptions While App Is Closed: "Абнаўляць падпіскі, калі праграма закрыта"
   Distraction Free Settings:
+    Hide Startup Splash: Схаваць стартавы экран
     Hide Repeat Stats: Схаваць статыстыку паўтораў
     Sections:
       Visible While Paused: Бачныя падчас паўзы ў поўным акне або поўнаэкранным рэжыме

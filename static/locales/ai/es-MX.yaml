@@ -913,6 +913,7 @@ Settings:
     To: A
     Confirm Before Unsubscribing: Evitar bajas accidentales
   Distraction Free Settings:
+    Hide Startup Splash: Ocultar pantalla de inicio
     Hide Repeat Stats: Ocultar estadísticas de repetición
     Sections:
       Side Bar: Barra lateral

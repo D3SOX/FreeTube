@@ -787,6 +787,7 @@ Settings:
     Posts Auto Refresh Interval: Argitalpenen freskatze automatikoaren tartea
     Refresh Subscriptions While App Is Closed: "Freskatu harpidetzak aplikazioa itxita dagoenean"
   Distraction Free Settings:
+    Hide Startup Splash: Ezkutatu abio-pantaila
     Hide Repeat Stats: Ezkutatu errepikapenen estatistikak
     Sections:
       Visible While Paused: Ikusgai pausatuta dagoenean leiho osoan edo pantaila osoan

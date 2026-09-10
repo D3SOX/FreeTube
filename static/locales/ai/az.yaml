@@ -787,6 +787,7 @@ Settings:
     Posts Auto Refresh Interval: Paylaşımların avtomatik yenilənmə aralığı
     Refresh Subscriptions While App Is Closed: Tətbiq bağlı olarkən abunəlikləri yenilə
   Distraction Free Settings:
+    Hide Startup Splash: Başlanğıc ekranını gizlət
     Sections:
       Visible While Paused: Tam pəncərədə / tam ekranda fasilə zamanı görünənlər
     Hide Channel Avatars: Kanal avatarlarını gizlət

@@ -811,6 +811,7 @@ Settings:
     Refresh Subscriptions While App Is Closed: "Opdater abonnementer, mens appen er lukket"
     Limit the number of videos displayed for each channel: Begræns antallet af viste videoer for hver kanal
   Distraction Free Settings:
+    Hide Startup Splash: Skjul opstartsskærm
     Hide Repeat Stats: Skjul gentagelsesstatistik
     Sections:
       Visible While Paused: Synligt ved pause i helt vindue eller fuld skærm

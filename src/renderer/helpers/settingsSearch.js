@@ -281,6 +281,7 @@ function isSettingsSearchMessageVisible(sectionType, path, options) {
   }
 
   if (sectionType === 'distraction') {
+    if (group === 'Hide Startup Splash') return usingElectron
     if (group === 'Show Added Items') {
       return store.getters.getChannelsHiddenParsed.length > 0 ||
         store.getters.getForbiddenTitlesParsed.length > 0

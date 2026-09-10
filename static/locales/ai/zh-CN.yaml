@@ -785,6 +785,7 @@ Settings:
     Posts Auto Refresh Interval: 帖子自动刷新间隔
     Refresh Subscriptions While App Is Closed: "应用关闭时刷新订阅"
   Distraction Free Settings:
+    Hide Startup Splash: 隐藏启动画面
     Hide Repeat Stats: 隐藏循环统计
     Sections:
       Visible While Paused: 全窗口或全屏暂停时显示

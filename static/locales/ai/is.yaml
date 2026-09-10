@@ -793,6 +793,7 @@ Settings:
     Posts Auto Refresh Interval: Bil milli sjálfvirkra uppfærslna færslna
     Refresh Subscriptions While App Is Closed: "Uppfæra áskriftir þegar forritið er lokað"
   Distraction Free Settings:
+    Hide Startup Splash: Fela upphafsskjá
     Hide Repeat Stats: Fela tölfræði endurtekninga
     Sections:
       Visible While Paused: Sýnilegt þegar gert er hlé í heilum glugga eða á öllum skjánum

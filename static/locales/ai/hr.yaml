@@ -787,6 +787,7 @@ Settings:
     Posts Auto Refresh Interval: Razmak automatskog osvježavanja objava
     Refresh Subscriptions While App Is Closed: "Osvježavaj pretplate dok je aplikacija zatvorena"
   Distraction Free Settings:
+    Hide Startup Splash: Sakrij početni zaslon
     Hide Repeat Stats: Sakrij statistiku ponavljanja
     Sections:
       Visible While Paused: Vidljivo tijekom pauze u punom prozoru / preko cijelog zaslona

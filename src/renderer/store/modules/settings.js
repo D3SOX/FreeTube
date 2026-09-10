@@ -343,6 +343,7 @@ const state = {
   hideLiveChatReplay: false,
   hideLiveStreams: false,
   hideHeaderLogo: false,
+  hideStartupSplash: false,
   // Former navigation switches remain loadable so older settings can migrate.
   hideHome: false,
   // This also controls playlist actions outside navigation.

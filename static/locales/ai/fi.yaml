@@ -798,6 +798,7 @@ Settings:
     Posts Auto Refresh Interval: Julkaisujen automaattisen päivityksen aikaväli
     Refresh Subscriptions While App Is Closed: "Päivitä tilaukset sovelluksen ollessa suljettuna"
   Distraction Free Settings:
+    Hide Startup Splash: Piilota käynnistysruutu
     Hide Repeat Stats: Piilota toistotilastot
     Sections:
       Visible While Paused: Näkyvissä keskeytyksen aikana koko ikkunan tai koko näytön tilassa

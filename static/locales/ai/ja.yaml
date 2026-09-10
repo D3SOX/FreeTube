@@ -785,6 +785,7 @@ Settings:
     Posts Auto Refresh Interval: 投稿の自動更新間隔
     Refresh Subscriptions While App Is Closed: "アプリを閉じている間も登録チャンネルを更新"
   Distraction Free Settings:
+    Hide Startup Splash: 起動画面を非表示
     Hide Repeat Stats: リピート統計を非表示
     Sections:
       Visible While Paused: 全ウィンドウ表示・全画面表示で一時停止中に表示

@@ -770,6 +770,7 @@ Settings:
     Posts Auto Refresh Interval: Интервал автообновления публикаций
     Refresh Subscriptions While App Is Closed: "Обновлять подписки, когда приложение закрыто"
   Distraction Free Settings:
+    Hide Startup Splash: Скрыть стартовый экран
     Hide Repeat Stats: Скрыть статистику повторов
     Sections:
       Visible While Paused: Показывать во время паузы в полнооконном и полноэкранном режимах

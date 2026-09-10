@@ -798,6 +798,7 @@ Settings:
     Posts Auto Refresh Interval: מרווח ריענון אוטומטי של פוסטים
     Refresh Subscriptions While App Is Closed: "ריענון מינויים כשהיישום סגור"
   Distraction Free Settings:
+    Hide Startup Splash: הסתרת מסך הפתיחה
     Hide Repeat Stats: הסתרת נתוני חזרה
     Sections:
       Visible While Paused: מוצג בזמן השהיה בחלון מלא או במסך מלא
