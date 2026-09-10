@@ -18,7 +18,7 @@ export function createAndroidNativeScreen({ element, container, getController, g
   let attachmentSequence = 0
   let lastInlineClip = ''
   let clippedPage = null
-  const inlineOwner = {}
+  const inlineOwner = { clearPageClip }
   let transitionSequence = 0
   let transitioning = false
   let pageScrolling = false
@@ -114,7 +114,10 @@ export function createAndroidNativeScreen({ element, container, getController, g
 
   function syncInlineBackground(visible) {
     if (!attached || open) return
-    if (inlineScreenOwner !== inlineOwner) lastInlineClip = ''
+    if (inlineScreenOwner !== inlineOwner) {
+      inlineScreenOwner?.clearPageClip()
+      lastInlineClip = ''
+    }
     inlineScreenOwner = inlineOwner
     if (!inlineBackdrop) {
       inlineBackdrop = document.createElement('div')

@@ -445,6 +445,62 @@ test('closing an inactive player cannot remove the active inline surface window'
   await page.evaluate(() => window.nativeScreenTest.destroy())
 })
 
+for (const differentPage of [false, true]) {
+  test(`transferring native ownership cleans page clips (${differentPage ? 'different pages' : 'same page'})`, async ({ app, page }) => {
+    await mockPlayableWatchPage(app, page)
+    await openMockedVideo(page)
+    await openNativeScreen(page, false)
+    await page.locator('.ftVideoPlayer').evaluate(element => document.querySelector('#cross-tab-mini-player-layer').append(element))
+    await expect(page.locator('[data-native-player-backdrop]')).toBeAttached()
+    const result = await page.evaluate(async differentPage => {
+      const previousPage = document.querySelector('[data-native-player-backdrop]')
+      const host = document.createElement('div')
+      host.className = 'app'
+      const nextPage = differentPage ? document.createElement('div') : previousPage
+      if (differentPage) {
+        nextPage.className = 'flexBox'
+        host.append(nextPage)
+        document.body.prepend(host)
+      }
+      const container = document.createElement('div')
+      const element = document.createElement('video')
+      Object.assign(container.style, { position: 'fixed', left: '20px', top: '80px', width: '180px', height: '100px' })
+      container.append(element)
+      document.querySelector('#cross-tab-mini-player-layer').append(container)
+      const second = window.createNativeScreenTest({
+        element,
+        container,
+        getController: () => ({ async show() {}, async layout() {} }),
+        getLocale: () => 'en-US',
+        onError: error => { throw error }
+      })
+      // Commit the handoff synchronously so the retiring screen's queued layout
+      // cannot obscure whether cleanup happens before ownership changes.
+      window.holdNativeLayout = true
+      try {
+        await second.attach()
+        second.action('scroll-end')
+        const previousCleared = !previousPage.hasAttribute('data-native-player-backdrop') && previousPage.style.clipPath === ''
+        const nextClip = nextPage.style.clipPath
+        window.nativeScreenTest.destroy()
+        const preserved = nextPage.hasAttribute('data-native-player-backdrop') && nextPage.style.clipPath === nextClip && nextClip !== ''
+        second.reset()
+        const released = !nextPage.hasAttribute('data-native-player-backdrop') && nextPage.style.clipPath === ''
+        return { previousCleared, preserved, released }
+      } finally {
+        window.nativeScreenTest.destroy()
+        second.destroy()
+        container.remove()
+        host.remove()
+        window.holdNativeLayout = false
+      }
+    }, differentPage)
+    if (differentPage) expect(result.previousCleared).toBe(true)
+    expect(result.preserved).toBe(true)
+    expect(result.released).toBe(true)
+  })
+}
+
 test('global Quick Settings clips native controls wherever its menu overlaps inline video', async ({ app, page }) => {
   await mockPlayableWatchPage(app, page)
   const video = await openMockedVideo(page)
