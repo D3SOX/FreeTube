@@ -1730,7 +1730,7 @@ function updateUploadedTime() {
   uploadedTimeIsRelative.value = false
   published.value = undefined
 
-  if (props.data.premiereDate !== undefined) {
+  if (props.data.premiereDate != null) {
     let premiereDate = props.data.premiereDate
 
     // premiereDate will be a string when the subscriptions are restored from the cache
