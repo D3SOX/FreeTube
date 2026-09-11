@@ -1,3 +1,7 @@
+.mobileSheet {
+  color: var(--primary-text-color);
+}
+
 .mobileSheet:not([open], .mobileSheetEnabled) {
   display: contents;
 }
@@ -18,7 +22,6 @@
   padding-inline: env(safe-area-inset-left, 0) env(safe-area-inset-right, 0);
   border: 0;
   background: var(--card-bg-color);
-  color: var(--primary-text-color);
   overflow: hidden;
   overscroll-behavior: contain;
 }

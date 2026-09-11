@@ -40,6 +40,24 @@ async function controlContrast(app, control, kind) {
   return { surface, edge, ratio: Math.max(...edge.map(color => contrastRatio(color, surface))) }
 }
 
+test.describe('desktop phone-panel fallbacks', () => {
+  test.use({ seed: { settings: { baseTheme: 'dark', currentLocale: 'en-US' } } })
+
+  test('description and comment text inherit the active theme color', async ({ app, page }) => {
+    await mockPlayableWatchPage(app, page)
+    await openMockedVideo(page)
+    const elements = [
+      page.locator('.videoDescription .description').first(),
+      page.locator('.commentText').first(),
+    ]
+    const bodyColor = await page.locator('body').evaluate(element => getComputedStyle(element).color)
+    for (const element of elements) {
+      await expect(element).toBeVisible()
+      await expect(element).toHaveCSS('color', bodyColor)
+    }
+  })
+})
+
 for (const theme of ['openTubeXLight', 'openTubeXDark']) {
   for (const scale of [100, 125]) {
     test.describe(`${theme} comment contrast at ${scale}%`, () => {
