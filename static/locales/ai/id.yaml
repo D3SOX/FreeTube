@@ -284,7 +284,7 @@ Settings:
       Load previously loaded tabs: Muat tab yang sebelumnya dimuat
       Load last active tab: Muat tab yang terakhir aktif
       Start with an empty session: Mulai dengan sesi kosong
-      Load landing page, keep other tabs unloaded: Muat halaman awal, biarkan tab lain tidak dimuat
+      Load landing page, keep other tabs unloaded: Muat halaman awal, biarkan tab lain dibongkar dari memori
     Use AI Translation Completions: Isi terjemahan yang hilang dengan terjemahan buatan AI
     Reduced Motion:
       Reduced Motion: Kurangi Gerakan

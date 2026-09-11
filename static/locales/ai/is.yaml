@@ -284,7 +284,7 @@ Settings:
       Load previously loaded tabs: Hlaða inn flipum sem voru áður hlaðnir inn
       Load last active tab: Hlaða inn síðasta virka flipa
       Start with an empty session: Hefja tóma setu
-      Load landing page, keep other tabs unloaded: Hlaða upphafssíðu, halda öðrum flipum óhlöðnum
+      Load landing page, keep other tabs unloaded: Hlaða upphafssíðu, halda öðrum flipum opnum en ekki í minni
     Use AI Translation Completions: Fylla inn þýðingar sem vantar með þýðingum sem gervigreind hefur búið til
     Reduced Motion:
       Reduced Motion: Minni hreyfing
