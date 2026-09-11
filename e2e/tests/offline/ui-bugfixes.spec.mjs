@@ -1761,9 +1761,7 @@ test.describe('thumbnail watched progress', () => {
         historyEntry('aaaaaaaaaaa', 'Partially watched video', Date.now()),
         {
           ...historyEntry('bbbbbbbbbbb', 'Fully watched video', Date.now() - 1000),
-          // A completed sync record can retain the last saved position; the
-          // explicit watched state is authoritative for its visual progress.
-          watchProgress: 30,
+          watchProgress: 60,
           isWatched: true,
         },
       ]

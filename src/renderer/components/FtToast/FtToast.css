@@ -14,7 +14,7 @@
   /* Higher than any prompt */
   z-index: 300;
   inline-size: var(--width);
-  font-family: inherit;
+  font-family: var(--app-font-family);
   pointer-events: none;
 
   /* The offsets shift when the persistent progress toast appears or goes away,

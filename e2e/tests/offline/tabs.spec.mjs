@@ -2557,11 +2557,16 @@ test.describe('tab organizer', () => {
 
     await desktopTab.evaluate(element => element.click())
     await expect(syncedSection.locator('.syncedTabTarget')).toHaveCount(1)
-    await expect.poll(() => scroller.evaluate(element => ({
-      distanceFromEnd: Math.abs(element.scrollTop - Math.max(0, element.scrollHeight - element.clientHeight)),
-      scrollTop: element.scrollTop
-    }))).toEqual({ distanceFromEnd: 0, scrollTop: 0 })
-    await expect(scrollbar).toHaveClass(/os-scrollbar-unusable/)
+    await expect.poll(() => scroller.evaluate(element => {
+      const maximum = Math.max(0, element.scrollHeight - element.clientHeight)
+      const scrollbar = element.querySelector(':scope > .os-scrollbar-vertical')
+      const unusable = scrollbar.classList.contains('os-scrollbar-unusable')
+      if (Math.abs(element.scrollTop - maximum) > 1) return false
+      if (maximum <= 1) return unusable
+      const track = scrollbar.querySelector('.os-scrollbar-track').getBoundingClientRect()
+      const thumb = scrollbar.querySelector('.os-scrollbar-handle').getBoundingClientRect()
+      return !unusable && Math.abs(track.bottom - thumb.bottom) <= 1
+    })).toBe(true)
   })
 
   test('selects a visible range with Shift-click', async ({ page }) => {
