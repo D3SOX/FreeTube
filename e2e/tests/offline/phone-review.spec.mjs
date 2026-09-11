@@ -20,14 +20,17 @@ test('Escape closes a foreground prompt above a docked phone panel', async ({ ap
 })
 
 test('Escape closes only the latest of multiple prompts', async ({ page }) => {
-  await page.evaluate(async () => {
+  await page.evaluate(() => {
     const store = document.querySelector('#app').__vue_app__.config.globalProperties.$store
-    await store.dispatch('showSearchFilters')
-    await store.dispatch('showCreatePlaylistPrompt', { title: '', description: '', sourcePlaylistId: null })
+    return store.dispatch('showSearchFilters')
   })
   const searchFilters = page.locator('.searchFiltersCard')
-  const createPlaylist = page.locator('.playlistNameInput')
   await expect(searchFilters).toBeVisible()
+  await page.evaluate(() => {
+    const store = document.querySelector('#app').__vue_app__.config.globalProperties.$store
+    return store.dispatch('showCreatePlaylistPrompt', { title: '', description: '', sourcePlaylistId: null })
+  })
+  const createPlaylist = page.locator('.playlistNameInput')
   await expect(createPlaylist).toBeVisible()
   await page.keyboard.press('Escape')
   await expect(createPlaylist).toHaveCount(0)
