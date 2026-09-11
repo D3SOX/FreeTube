@@ -229,13 +229,13 @@ export function createAndroidNativeScreen({ element, container, getController, g
     // Keep their whole rectangle above native controls, not just the center hit.
     // Scroll and scrollbar style updates change geometry, not membership.
     // Avoid searching the whole Watch page again on every scrolling frame.
-    if (!open && globalElementsDirty) {
+    if (globalElementsDirty) {
       appChromeElements = [...document.querySelectorAll(appChromeSelector)]
-      globalMenuElements = [...document.querySelectorAll('[role="dialog"], [role="menu"], [aria-modal="true"]')]
+      globalMenuElements = [...document.querySelectorAll('dialog[open], [role="dialog"], [role="menu"], [aria-modal="true"]')]
       globalElementsDirty = false
     }
     const appChrome = open ? [] : appChromeElements
-    const globalMenus = open ? [] : globalMenuElements.filter(menu => !container.contains(menu))
+    const globalMenus = globalMenuElements
     // Hidden notices retain their layout box during native scrolling/gestures.
     // Clipping that box would punch through the raised video into the page.
     const menuElements = [...playerMenus, ...countdowns, ...globalMenus, ...appChrome]
@@ -293,7 +293,7 @@ export function createAndroidNativeScreen({ element, container, getController, g
   const mutations = new MutationObserver(records => {
     if (records.some(record => record.type === 'childList'
       ? [...record.addedNodes, ...record.removedNodes].some(node => node.nodeType === 1)
-      : ['role', 'aria-modal'].includes(record.attributeName) ||
+      : ['role', 'aria-modal', 'open'].includes(record.attributeName) ||
         (record.attributeName === 'class' && (appChromeElements.includes(record.target) || record.target.matches(appChromeSelector))))) {
       globalElementsDirty = true
     }
@@ -303,7 +303,7 @@ export function createAndroidNativeScreen({ element, container, getController, g
   resize.observe(container)
   resize.observe(element)
   // Popups outside the player must invalidate clipping even during paused video.
-  mutations.observe(document.body, { subtree: true, attributes: true, attributeFilter: ['class', 'style', 'shown', 'hidden', 'inert', 'role', 'aria-modal'], childList: true })
+  mutations.observe(document.body, { subtree: true, attributes: true, attributeFilter: ['class', 'style', 'shown', 'hidden', 'inert', 'role', 'aria-modal', 'open'], childList: true })
   mutations.observe(document.documentElement, { attributes: true, attributeFilter: ['class', 'style'] })
   window.addEventListener('resize', scheduleLayout)
   window.addEventListener('scroll', scheduleLayout, true)

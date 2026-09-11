@@ -1066,6 +1066,8 @@ Channel:
   Search Result Types: Arama sonucu türleri
   All Results: Tümü
 Video:
+  Move Queue Item Up: "{title} bölümünü yukarı taşı"
+  Move Queue Item Down: "{title} bölümünü aşağı taşı"
   Includes paid promotion: Ücretli tanıtım içeriyor
   Age Restricted Badge: Yaş kısıtlamalı
   Queue: Kuyruk
@@ -1453,6 +1455,7 @@ Comments:
   Translating comment, please wait: Yorum çevriliyor, lütfen bekleyin
   Comment translation failed: Yorum çevrilemedi
 Description:
+  Title: Açıklama
   Copy Description: Açıklamayı Kopyala
   Description Copied: Açıklama panoya kopyalandı
   Video Category: 'Video Kategorisi:'

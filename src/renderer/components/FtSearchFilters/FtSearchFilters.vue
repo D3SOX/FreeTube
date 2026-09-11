@@ -1,6 +1,8 @@
 <template>
   <FtPrompt
     theme="slim"
+    fixed-layout
+    card-class="searchFiltersCard"
     @click="hideSearchFilters"
   >
     <template #label="{ labelId }">
@@ -11,14 +13,23 @@
         >
           {{ title }}
         </h2>
+        <p
+          v-if="activeLabels.length"
+          class="activeFilters"
+        >
+          {{ activeLabels.join(' · ') }}
+        </p>
         <button
+          type="button"
           class="clearFilterButton"
+          :aria-label="$t('Search Filters.Clear Filters')"
           :title="$t('Search Filters.Clear Filters')"
           :style="{visibility: (searchFilterValueChanged ? 'visible' : 'hidden')}"
           @click="clearFilters"
         >
           <FtIcon
             class="clearFilterIcon"
+            aria-hidden="true"
             :icon="['fas', 'filter-circle-xmark']"
           />
         </button>
@@ -62,15 +73,17 @@
         class="searchRadio"
       />
     </FtFlexBox>
-    <div class="searchFilterCloseButtonContainer">
-      <FtButton
-        :label="$t('Close')"
-        :icon="['fas', 'xmark']"
-        background-color="null"
-        text-color="null"
-        @click="hideSearchFilters"
-      />
-    </div>
+    <template #footer>
+      <div class="searchFilterCloseButtonContainer">
+        <FtButton
+          :label="$t('Close')"
+          :icon="['fas', 'xmark']"
+          background-color="null"
+          text-color="null"
+          @click="hideSearchFilters"
+        />
+      </div>
+    </template>
   </FtPrompt>
 </template>
 
@@ -244,6 +257,14 @@ watch(featuresValue, (values) => {
 
   store.commit('setSearchFeatures', { tabId, value: [...values] })
 }, { deep: true })
+
+const activeLabels = computed(() => [
+  typeValue.value !== TYPE_VALUES[0] && typeLabels.value[TYPE_VALUES.indexOf(typeValue.value)],
+  durationValue.value !== DURATION_VALUES[0] && durationLabels.value[DURATION_VALUES.indexOf(durationValue.value)],
+  timeValue.value !== TIME_VALUES[0] && timeLabels.value[TIME_VALUES.indexOf(timeValue.value)],
+  prioritizeValue.value !== PRIORITIZE_VALUES[0] && prioritizeLabels.value[PRIORITIZE_VALUES.indexOf(prioritizeValue.value)],
+  ...featuresValue.value.map(value => featureLabels.value[FEATURE_VALUES.indexOf(value)])
+].filter(Boolean))
 
 const searchFilterValueChanged = computed(() => {
   return prioritizeValue.value !== PRIORITIZE_VALUES[0] ||

@@ -3,90 +3,96 @@
     class="transcriptCard"
     :class="{ transcriptCardFullscreen: fullscreenOverlay }"
   >
-    <div class="transcriptHeader">
-      <h3 class="transcriptTitle">
-        <FtIcon
-          v-if="fullscreenOverlay"
-          :icon="['fas', 'file-lines']"
-        />
-        {{ t('Video.Transcript.Title') }}
-      </h3>
-      <div
-        class="transcriptHeaderActions"
-        @focusout="handleHeaderActionsFocusout"
-        @keydown.esc.stop.prevent="languageMenuOpen = false"
-      >
-        <button
-          type="button"
-          class="transcriptHeaderAction"
-          :class="{ active: searchOpen }"
-          :title="t('Video.Transcript.Search')"
-          :aria-label="t('Video.Transcript.Search')"
-          :aria-expanded="String(searchOpen)"
-          @click="toggleTranscriptSearch"
-        >
-          <FtIcon :icon="['fas', 'magnifying-glass']" />
-        </button>
-        <button
-          v-if="captions.length > 1"
-          type="button"
-          class="transcriptHeaderAction"
-          :class="{ active: languageMenuOpen }"
-          :title="t('Video.Transcript.Language')"
-          :aria-label="t('Video.Transcript.Language')"
-          :aria-expanded="String(languageMenuOpen)"
-          @click="languageMenuOpen = !languageMenuOpen"
-        >
-          <FtIcon :icon="['fas', 'language']" />
-        </button>
-        <div
-          v-if="captions.length > 0"
-          class="transcriptActions"
-        >
-          <FtIconButton
-            :title="t('Copy')"
-            :icon="['fas', 'copy']"
-            :disabled="isLoading || segments.length === 0"
-            theme="base-no-default"
-            :use-shadow="false"
-            @click="copyTranscript"
+    <Teleport
+      :to="phonePanelHeader || 'body'"
+      :disabled="!phonePanelHeader"
+    >
+      <div class="transcriptHeader">
+        <h3 class="transcriptTitle">
+          <FtIcon
+            v-if="fullscreenOverlay"
+            :icon="['fas', 'file-lines']"
           />
-          <FtIconButton
-            :title="t('Video.Transcript.Save')"
-            :icon="['fas', 'download']"
-            :disabled="isLoading || segments.length === 0"
-            theme="base-no-default"
-            :use-shadow="false"
-            @click="saveTranscript"
-          />
-        </div>
-        <FtIconButton
-          :title="t('Video.Transcript.Close')"
-          :icon="['fas', 'xmark']"
-          theme="base-no-default"
-          :use-shadow="false"
-          @click="emit('close')"
-        />
+          {{ t('Video.Transcript.Title') }}
+        </h3>
         <div
-          v-if="languageMenuOpen"
-          class="transcriptLanguageMenu"
+          class="transcriptHeaderActions"
+          @focusout="handleHeaderActionsFocusout"
+          @keydown.esc.stop.prevent="languageMenuOpen = false"
         >
           <button
-            v-for="(caption, index) in captions"
-            :key="index"
             type="button"
-            :class="{ selected: selectedCaptionIndex === String(index) }"
-            @click="selectCaptionLanguage(index)"
+            class="transcriptHeaderAction"
+            :class="{ active: searchOpen }"
+            :title="t('Video.Transcript.Search')"
+            :aria-label="t('Video.Transcript.Search')"
+            :aria-expanded="String(searchOpen)"
+            @click="toggleTranscriptSearch"
           >
-            <span>{{ caption.label }}</span>
-            <FtIcon
-              v-if="selectedCaptionIndex === String(index)"
-              :icon="['fas', 'check']"
-            />
+            <FtIcon :icon="['fas', 'magnifying-glass']" />
           </button>
+          <button
+            v-if="captions.length > 1"
+            type="button"
+            class="transcriptHeaderAction"
+            :class="{ active: languageMenuOpen }"
+            :title="t('Video.Transcript.Language')"
+            :aria-label="t('Video.Transcript.Language')"
+            :aria-expanded="String(languageMenuOpen)"
+            @click="languageMenuOpen = !languageMenuOpen"
+          >
+            <FtIcon :icon="['fas', 'language']" />
+          </button>
+          <div
+            v-if="captions.length > 0"
+            class="transcriptActions"
+          >
+            <FtIconButton
+              :title="t('Copy')"
+              :icon="['fas', 'copy']"
+              :disabled="isLoading || segments.length === 0"
+              theme="base-no-default"
+              :use-shadow="false"
+              @click="copyTranscript"
+            />
+            <FtIconButton
+              :title="t('Video.Transcript.Save')"
+              :icon="['fas', 'download']"
+              :disabled="isLoading || segments.length === 0"
+              theme="base-no-default"
+              :use-shadow="false"
+              @click="saveTranscript"
+            />
+          </div>
+          <FtIconButton
+            v-if="!phonePanelHeader"
+            :title="t('Video.Transcript.Close')"
+            :icon="['fas', 'xmark']"
+            theme="base-no-default"
+            :use-shadow="false"
+            @click="emit('close')"
+          />
+          <div
+            v-if="languageMenuOpen"
+            class="transcriptLanguageMenu"
+          >
+            <button
+              v-for="(caption, index) in captions"
+              :key="index"
+              type="button"
+              :class="{ selected: selectedCaptionIndex === String(index) }"
+              @click="selectCaptionLanguage(index)"
+            >
+              <span>{{ caption.label }}</span>
+              <FtIcon
+                v-if="selectedCaptionIndex === String(index)"
+                :icon="['fas', 'check']"
+              />
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+    </Teleport>
 
     <div
       v-if="captions.length > 0 && searchOpen"
@@ -140,7 +146,7 @@
 
 <script setup>
 import { FtIcon } from '@opentubex/icons'
-import { computed, nextTick, onBeforeUnmount, ref, useTemplateRef, watch } from 'vue'
+import { inject, computed, nextTick, onBeforeUnmount, ref, useTemplateRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import store from '../../store/index'
 import { getSubtitleRequestUrl } from '../../helpers/player/subtitleCookies'
@@ -161,6 +167,7 @@ import {
   writeFileWithPicker
 } from '../../helpers/utils'
 
+const phonePanelHeader = inject('phonePanelHeader', null)
 const props = defineProps({
   captions: {
     type: Array,

@@ -1,3 +1,4 @@
+import { setupPhoneOptionsMenu } from '../../helpers/player/phoneOptionsMenu'
 import { chooseAndroidDirectory } from '../../helpers/androidStorage'
 import { isAppHidden } from '../../helpers/appVisibility.js'
 import { playbackScreenWake } from '../../helpers/playbackScreenWake'
@@ -4426,7 +4427,7 @@ export default defineComponent({
           'ft_ab_repeat',
           'ft_screenshot',
           pictureInPictureElement,
-          'ft_full_window',
+          ...(!process.env.IS_CAPACITOR ? ['ft_full_window'] : []),
           'recenter_vr',
           'toggle_stereoscopic',
         ]
@@ -4456,7 +4457,7 @@ export default defineComponent({
           'overflow_menu',
           pictureInPictureElement,
           'ft_theatre_mode',
-          'ft_full_window',
+          ...(!process.env.IS_CAPACITOR ? ['ft_full_window'] : []),
           'fullscreen'
         )
 
@@ -5324,6 +5325,8 @@ export default defineComponent({
      * @param {HTMLElement} controlsContainer
      */
     function setupOverflowMenuLayout(controlsContainer) {
+      cleanupPhoneOptionsMenu?.()
+      cleanupPhoneOptionsMenu = null
       overflowMenuResizeObserver?.disconnect()
       overflowMenuResizeObserver = null
       overflowMenuMutationObserver?.disconnect()
@@ -5362,6 +5365,7 @@ export default defineComponent({
       }
 
       addOverlayScrollbars(menu)
+      cleanupPhoneOptionsMenu = setupPhoneOptionsMenu(menu, ui.getControls(), t)
 
       if (!usePlayerMenuGrid.value) {
         menu.style.minBlockSize = ''
@@ -5650,6 +5654,7 @@ export default defineComponent({
 
     /** @type {HTMLElement|null} */
     let overflowMenuElement = null
+    let cleanupPhoneOptionsMenu = null
 
     /** @type {ResizeObserver|null} */
     let controlPanelResizeObserver = null
@@ -6541,6 +6546,7 @@ export default defineComponent({
       scrollMiniResizeCorner,
       scrollMiniResizeHandleOnLightBg,
       scrollMiniScrollToTop,
+      restoreInlinePlayer,
       scrollMiniTogglePlayPause,
       restoreStashedScrollMiniPlayer,
       scrollMiniVolume,
@@ -7729,6 +7735,7 @@ export default defineComponent({
         const shouldOpen = event.detail && props.chapters.length > 0
 
         if (!isNativeFullscreenActive() && !fullWindowEnabled.value) {
+          if (shouldOpen) ui?.getControls().hideSettingsMenus()
           emit('chapters-overlay-change', shouldOpen)
           return
         }
@@ -9637,7 +9644,7 @@ export default defineComponent({
             }))
           }
           break
-        case matches(KeyboardShortcuts.VIDEO_PLAYER.GENERAL.FULLWINDOW):
+        case !process.env.IS_CAPACITOR && matches(KeyboardShortcuts.VIDEO_PLAYER.GENERAL.FULLWINDOW):
           // Toggle full window mode
           event.preventDefault()
           events.dispatchEvent(new CustomEvent('setFullWindow', {
@@ -10431,7 +10438,7 @@ export default defineComponent({
       registerAbRepeatControl()
 
       registerTheatreModeButton()
-      registerFullWindowButton()
+      if (!process.env.IS_CAPACITOR) registerFullWindowButton()
       registerAndroidPictureInPictureButton()
       registerShortsVideoInfoButton()
 
@@ -11092,6 +11099,8 @@ export default defineComponent({
         overflowMenuTitleFrame = null
       }
 
+      cleanupPhoneOptionsMenu?.()
+      cleanupPhoneOptionsMenu = null
       if (overflowMenuElement) {
         removeOverlayScrollbars(overflowMenuElement)
         overflowMenuElement = null
@@ -11636,6 +11645,7 @@ export default defineComponent({
       dismissCrossTabMiniPlayer,
       scrollMiniTogglePlayPause,
       scrollMiniScrollToTop,
+      restoreInlinePlayer,
       restoreStashedScrollMiniPlayer,
       updateScrollMiniVolume,
       handleScrollMiniVolumeMouseEnter,

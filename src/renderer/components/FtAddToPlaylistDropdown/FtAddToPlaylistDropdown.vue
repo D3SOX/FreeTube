@@ -1,58 +1,86 @@
 <template>
-  <div class="addToPlaylistDropdown">
-    <p class="dropdownHeader">
-      {{ t('User Playlists.Save to') }}
-    </p>
-    <ul
-      v-overlay-scrollbars
-      class="playlistList"
-      role="listbox"
-      :aria-label="t('User Playlists.Add to Playlist')"
+  <FtMobileSheet
+    below-player
+    :enabled="phoneLayout"
+    :open="sheetOpen"
+    :title="t('User Playlists.Save to')"
+    @close="sheetOpen = false"
+    @closed="closeDropdown"
+  >
+    <div
+      class="addToPlaylistDropdown"
+      :class="{ phonePlaylistPicker: phoneLayout }"
     >
-      <li
-        v-for="playlist in playlists"
-        :key="playlist._id"
-        class="playlistRow"
-        role="option"
-        :aria-selected="containedIds.has(playlist._id)"
-        tabindex="0"
-        @click="togglePlaylist(playlist)"
-        @keydown.enter.prevent="togglePlaylist(playlist)"
-        @keydown.space.prevent="togglePlaylist(playlist)"
+      <p class="dropdownHeader">
+        {{ t('User Playlists.Save to') }}
+      </p>
+      <input
+        v-model="search"
+        class="playlistSearch"
+        type="search"
+        :aria-label="t('User Playlists.AddVideoPrompt.Search in Playlists')"
+        :placeholder="t('User Playlists.AddVideoPrompt.Search in Playlists')"
       >
-        <img
-          alt=""
-          class="playlistThumbnail"
-          :src="playlistThumbnail(playlist)"
+      <div
+        ref="listScroller"
+        v-overlay-scrollbars
+        class="playlistList"
+      >
+        <ul
+          ref="listContent"
+          class="playlistListContent"
+          role="listbox"
+          :aria-label="t('User Playlists.Add to Playlist')"
         >
-        <span class="playlistDetails">
-          <span class="playlistName">{{ playlist.playlistName }}</span>
-          <span class="videoCount">{{ t('Global.Counts.Video Count', { count: playlist.videos.length }, playlist.videos.length) }}</span>
-        </span>
+          <li
+            v-for="playlist in filteredPlaylists"
+            :key="playlist._id"
+            class="playlistRow"
+            role="option"
+            :aria-selected="containedIds.has(playlist._id)"
+            tabindex="0"
+            @click="togglePlaylist(playlist)"
+            @keydown.enter.prevent="togglePlaylist(playlist)"
+            @keydown.space.prevent="togglePlaylist(playlist)"
+          >
+            <img
+              alt=""
+              class="playlistThumbnail"
+              :src="playlistThumbnail(playlist)"
+            >
+            <span class="playlistDetails">
+              <span class="playlistName">{{ playlist.playlistName }}</span>
+              <span class="videoCount">{{ t('Global.Counts.Video Count', { count: playlist.videos.length }, playlist.videos.length) }}</span>
+            </span>
+            <FtIcon
+              class="stateIcon"
+              :icon="containedIds.has(playlist._id) ? ['fas', 'bookmark'] : ['far', 'bookmark']"
+              fixed-width
+            />
+          </li>
+        </ul>
+      </div>
+      <button
+        type="button"
+        class="playlistRow createRow"
+        @click="openCreatePlaylistPrompt"
+      >
         <FtIcon
-          class="stateIcon"
-          :icon="containedIds.has(playlist._id) ? ['fas', 'bookmark'] : ['far', 'bookmark']"
+          :icon="['fas', 'plus']"
           fixed-width
         />
-      </li>
-    </ul>
-    <button
-      type="button"
-      class="playlistRow createRow"
-      @click="openCreatePlaylistPrompt"
-    >
-      <FtIcon
-        :icon="['fas', 'plus']"
-        fixed-width
-      />
-      <span>{{ t('User Playlists.Create New Playlist') }}</span>
-    </button>
-  </div>
+        <span>{{ t('User Playlists.Create New Playlist') }}</span>
+      </button>
+    </div>
+  </FtMobileSheet>
 </template>
 
 <script setup>
 import { FtIcon } from '@opentubex/icons'
-import { computed } from 'vue'
+import { computed, inject, ref, useTemplateRef } from 'vue'
+import FtMobileSheet from '../FtMobileSheet/FtMobileSheet.vue'
+import { usePhoneLayout } from '../../composables/usePhoneLayout'
+import { useScrollClamp } from '../../composables/useScrollClamp'
 import { useI18n } from 'vue-i18n'
 
 import store from '../../store/index'
@@ -68,6 +96,15 @@ const props = defineProps({
 })
 
 const { t } = useI18n()
+const phoneLayout = usePhoneLayout()
+const search = ref('')
+const closeDropdown = inject('closeIconDropdown', () => {})
+const sheetOpen = ref(true)
+const listScroller = useTemplateRef('listScroller')
+const listContent = useTemplateRef('listContent')
+useScrollClamp(listScroller, listContent)
+const filteredPlaylists = computed(() => playlists.value.filter(playlist =>
+  playlist.playlistName.toLocaleLowerCase().includes(search.value.trim().toLocaleLowerCase())))
 
 const allPlaylists = computed(() => store.getters.getAllPlaylists)
 
@@ -170,6 +207,7 @@ async function togglePlaylist(playlist) {
 }
 
 function openCreatePlaylistPrompt() {
+  closeDropdown()
   store.dispatch('showCreatePlaylistPrompt', {
     title: store.getters.getNewPlaylistDefaultProperties.title || '',
     // The new playlist is created with this video already in it

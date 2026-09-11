@@ -71,76 +71,82 @@
         </div>
       </div>
     </header>
-    <div
+    <Teleport
       v-else
-      class="titleContainer"
+      :to="phonePanelHeader || 'body'"
+      :disabled="!phonePanelHeader"
     >
-      <h4 class="title">
-        {{ isReplay ? t('Video.Live Chat Replay') : t('Video.Live Chat') }}
-        <span
-          v-if="!hideVideoViews && watchingCount !== null"
-          class="watchingCount"
-        >
-          {{ t('Global.Counts.Watching Count', { count: formattedWatchingCount }, watchingCount) }}
-        </span>
-      </h4>
       <div
-        ref="liveChatActionsRef"
-        class="liveChatActions"
-        @keydown.esc.stop.prevent="settingsMenuOpen = false"
+        class="titleContainer"
       >
-        <button
-          type="button"
-          class="liveChatActionButton"
-          :class="{ active: settingsMenuOpen }"
-          :aria-label="t('Video.Live Chat Settings')"
-          :title="t('Video.Live Chat Settings')"
-          :aria-expanded="String(settingsMenuOpen)"
-          @click="settingsMenuOpen = !settingsMenuOpen"
-        >
-          <FtIcon :icon="['fas', 'sliders-h']" />
-        </button>
-        <a
-          v-if="!isReplay"
-          :href="`https://www.youtube.com/live_chat?is_popout=1&v=${props.videoId}`"
-          :aria-label="t('Video.Popout Live Chat')"
-          :title="t('Video.Popout Live Chat')"
-          target="_blank"
-          class="liveChatActionButton"
-        >
-          <FtIcon :icon="['fas', 'arrow-up-right-from-square']" />
-        </a>
-        <button
-          type="button"
-          class="liveChatActionButton"
-          :aria-label="closeButtonTitle"
-          :title="closeButtonTitle"
-          @click="emit('close')"
-        >
-          <FtIcon :icon="['fas', 'xmark']" />
-        </button>
+        <h4 class="title">
+          {{ isReplay ? t('Video.Live Chat Replay') : t('Video.Live Chat') }}
+          <span
+            v-if="!hideVideoViews && watchingCount !== null"
+            class="watchingCount"
+          >
+            {{ t('Global.Counts.Watching Count', { count: formattedWatchingCount }, watchingCount) }}
+          </span>
+        </h4>
         <div
-          v-if="settingsMenuOpen"
-          class="liveChatSettingsMenu"
+          ref="liveChatActionsRef"
+          class="liveChatActions"
+          @keydown.esc.stop.prevent="settingsMenuOpen = false"
         >
-          <FtToggleSwitch
-            :label="t('Video.Show Live Chat Timestamps')"
-            :default-value="showLiveChatTimestamps"
-            :compact="true"
-            @change="updateShowLiveChatTimestamps"
-          />
-          <FtRadioButton
-            v-if="canFilter"
-            class="liveChatFilter"
-            :title="t('Video.Chat Filter')"
-            :labels="[t('Video.Top Chat'), t('Video.All Messages')]"
-            :values="['TOP_CHAT', 'LIVE_CHAT']"
-            :model-value="liveChatFilter"
-            @update:model-value="updateLiveChatFilter"
-          />
+          <button
+            type="button"
+            class="liveChatActionButton"
+            :class="{ active: settingsMenuOpen }"
+            :aria-label="t('Video.Live Chat Settings')"
+            :title="t('Video.Live Chat Settings')"
+            :aria-expanded="String(settingsMenuOpen)"
+            @click="settingsMenuOpen = !settingsMenuOpen"
+          >
+            <FtIcon :icon="['fas', 'sliders-h']" />
+          </button>
+          <a
+            v-if="!isReplay"
+            :href="`https://www.youtube.com/live_chat?is_popout=1&v=${props.videoId}`"
+            :aria-label="t('Video.Popout Live Chat')"
+            :title="t('Video.Popout Live Chat')"
+            target="_blank"
+            class="liveChatActionButton"
+          >
+            <FtIcon :icon="['fas', 'arrow-up-right-from-square']" />
+          </a>
+          <button
+            v-if="!phonePanelHeader"
+            type="button"
+            class="liveChatActionButton"
+            :aria-label="closeButtonTitle"
+            :title="closeButtonTitle"
+            @click="emit('close')"
+          >
+            <FtIcon :icon="['fas', 'xmark']" />
+          </button>
+          <div
+            v-if="settingsMenuOpen"
+            class="liveChatSettingsMenu"
+          >
+            <FtToggleSwitch
+              :label="t('Video.Show Live Chat Timestamps')"
+              :default-value="showLiveChatTimestamps"
+              :compact="true"
+              @change="updateShowLiveChatTimestamps"
+            />
+            <FtRadioButton
+              v-if="canFilter"
+              class="liveChatFilter"
+              :title="t('Video.Chat Filter')"
+              :labels="[t('Video.Top Chat'), t('Video.All Messages')]"
+              :values="['TOP_CHAT', 'LIVE_CHAT']"
+              :model-value="liveChatFilter"
+              @update:model-value="updateLiveChatFilter"
+            />
+          </div>
         </div>
       </div>
-    </div>
+    </Teleport>
     <div
       v-if="isLoading"
       class="liveChatSkeleton"
@@ -414,7 +420,7 @@
 <script setup>
 import { FtIcon } from '@opentubex/icons'
 import autolinker from 'autolinker'
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, shallowReactive, useTemplateRef, watch } from 'vue'
+import { inject, computed, nextTick, onBeforeUnmount, onMounted, ref, shallowReactive, useTemplateRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { YTNodes } from 'youtubei.js'
 
@@ -440,6 +446,7 @@ import {
   takeDueReplayComments
 } from './liveChatReplay.js'
 
+const phonePanelHeader = inject('phonePanelHeader', null)
 const props = defineProps({
   fullscreenOverlay: {
     type: Boolean,
@@ -1191,7 +1198,7 @@ function updateLiveChatFilter(value) {
 
 function onScroll() {
   const liveChatComments = commentsRef.value
-  if (liveChatComments === null) {
+  if (liveChatComments === null || liveChatComments.clientHeight === 0) {
     return
   }
 

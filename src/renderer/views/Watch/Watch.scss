@@ -1629,3 +1629,31 @@
     inline-size: 60%;
   }
 }
+
+.phonePanelActions {
+  display: contents;
+}
+
+.phoneCommentsButton {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-sizing: border-box;
+  inline-size: 100%;
+  min-block-size: var(--phone-touch-target, 48px);
+  margin-block: 12px;
+  margin-inline: 16px;
+  padding-block: 12px;
+  padding-inline: 16px;
+  border: 0;
+  border-radius: calc(12px * var(--ui-roundness));
+  background: var(--card-bg-color);
+  color: var(--primary-text-color);
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+
+  .phoneCommentsLabel {
+    flex: 1;
+  }
+}

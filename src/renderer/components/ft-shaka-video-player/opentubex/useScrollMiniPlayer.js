@@ -397,6 +397,7 @@ export function useScrollMiniPlayer({ container, fullWindowEnabled, getUi, isAct
   }
 
   function canUseScrollMiniPlayerBase() {
+    if (container.value?.hasAttribute('data-phone-panel-video')) return false
     if (props.format === 'audio') return false
     if (fullWindowEnabled.value) return false
     if (isNativeFullscreenActive()) return false
@@ -866,6 +867,11 @@ export function useScrollMiniPlayer({ container, fullWindowEnabled, getUi, isAct
     updateScrollMiniPlayer()
   }
 
+  function restoreInlinePlayer() {
+    window.scrollTo({ top: 0, behavior: 'instant' })
+    if (scrollMiniPlayerActive.value) deactivateScrollMiniPlayer()
+  }
+
   function scrollMiniScrollToTop(event) {
     event?.preventDefault()
     event?.stopPropagation()
@@ -1256,6 +1262,7 @@ export function useScrollMiniPlayer({ container, fullWindowEnabled, getUi, isAct
     scrollMiniResizeCorner,
     scrollMiniResizeHandleOnLightBg,
     scrollMiniScrollToTop,
+    restoreInlinePlayer,
     scrollMiniTogglePlayPause,
     restoreStashedScrollMiniPlayer,
     scrollMiniVolume,

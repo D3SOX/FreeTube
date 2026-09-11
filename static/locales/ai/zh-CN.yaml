@@ -1066,6 +1066,8 @@ Channel:
   Search Result Types: 搜索结果类型
   All Results: 全部
 Video:
+  Move Queue Item Up: "将{title}上移"
+  Move Queue Item Down: "将{title}下移"
   Includes paid promotion: 包含付费宣传内容
   Age Restricted Badge: 年龄限制
   Queue: 队列
@@ -1453,6 +1455,7 @@ Comments:
   Translating comment, please wait: 正在翻译评论，请稍候
   Comment translation failed: 评论翻译失败
 Description:
+  Title: 简介
   Copy Description: 复制视频简介
   Description Copied: 已将视频简介复制到剪贴板
   Video Category: '视频类别：'

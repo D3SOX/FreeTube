@@ -1121,6 +1121,8 @@ Channel:
   All Results: همه
   View All: مشاهدهٔ همه
 Video:
+  Move Queue Item Up: "انتقال {title} به بالا"
+  Move Queue Item Down: "انتقال {title} به پایین"
   Includes paid promotion: دارای تبلیغ پولی
   Age Restricted Badge: دارای محدودیت سنی
   Queue: صف
@@ -1529,6 +1531,7 @@ Comments:
   Translating comment, please wait: دیدگاه در حال ترجمه است، لطفاً صبر کنید
   Comment translation failed: ترجمهٔ دیدگاه ناموفق بود
 Description:
+  Title: توضیحات
   Copy Description: کپی توضیحات
   Description Copied: توضیحات در بریده‌دان کپی شد
   Video Category: 'دسته‌بندی ویدیو:'

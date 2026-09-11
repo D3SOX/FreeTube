@@ -1685,6 +1685,8 @@ Channel:
   Search Result Types: Suchergebnistypen
   All Results: Alle
 Video:
+  Move Queue Item Up: "{title} nach oben verschieben"
+  Move Queue Item Down: "{title} nach unten verschieben"
   Age Restricted Badge: Altersbeschränkt
   Transcript:
     Title: Transkript
@@ -2459,6 +2461,7 @@ shortcutJoinOperator: +
 Right-click or hold to see history: Mit der rechten Maustaste klicken oder halten, um den Verlauf zu sehen
 Autoplay Interruption Timer: Automatische Wiedergabe wurde aufgrund von {autoplayInterruptionIntervalHours} Stunden Inaktivität abgebrochen
 Description:
+  Title: Beschreibung
   Collapse Description: Weniger anzeigen
   Expand Description: '...mehr'
   Video Category: 'Video-Kategorie:'

@@ -1,4 +1,4 @@
 .playlistNameInput {
-  inline-size: min(600px, calc(100vw - 100px));
+  inline-size: min(600px, 100%);
   max-inline-size: 600px;
 }

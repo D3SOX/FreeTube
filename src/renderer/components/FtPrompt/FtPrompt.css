@@ -119,3 +119,53 @@
     inset-inline-start: 10%;
   }
 }
+
+.promptContent {
+  display: flow-root;
+  min-inline-size: 0;
+}
+
+@media (width <= 600px), (height <= 600px) {
+  .prompt {
+    block-size: var(--phone-viewport-height, 100dvh);
+    inset-block-start: var(--phone-viewport-top, 0);
+    padding-block: max(8px, env(safe-area-inset-top)) max(8px, env(safe-area-inset-bottom));
+    padding-inline: max(8px, env(safe-area-inset-left)) max(8px, env(safe-area-inset-right));
+  }
+
+  .promptCard.autosize,
+  .promptCard:not(.autosize),
+  .promptCard.slim,
+  .promptCard:not(.autosize).slim {
+    position: relative;
+    inset: auto;
+    inline-size: 100%;
+    max-inline-size: 100%;
+    max-block-size: 100%;
+    margin: 0;
+    padding: 12px;
+  }
+
+  .promptCard.fixedLayout {
+    block-size: 100%;
+  }
+
+  .promptContentScroller {
+    flex: 1;
+  }
+}
+
+.promptManagedContent,
+.promptManagedContent > .promptContent {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-block-size: 0;
+  overflow: hidden;
+}
+
+.promptCard.autosize.content-width {
+  inline-size: fit-content;
+  max-inline-size: 100%;
+  margin-inline: auto;
+}

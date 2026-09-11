@@ -1359,6 +1359,8 @@ Channel:
     Hide Answers: 답변 숨기기
     Video hidden by OpenTubeX: OpenTubeX에서 숨긴 동영상
 Video:
+  Move Queue Item Up: "{title} 위로 이동"
+  Move Queue Item Down: "{title} 아래로 이동"
   Includes paid promotion: 유료 프로모션 포함
   Age Restricted Badge: 연령 제한
   Queue: 대기열
@@ -1819,6 +1821,7 @@ Comments:
   Translating comment, please wait: 댓글 번역 중입니다. 잠시 기다려 주세요
   Comment translation failed: 댓글 번역에 실패했습니다
 Description:
+  Title: 설명
   Expand Description: ...더보기
   Collapse Description: 간략히
   Copy Description: 설명 복사

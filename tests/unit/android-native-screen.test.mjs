@@ -7,7 +7,7 @@ import { overrideShakaMethods } from '../../src/renderer/helpers/player/override
 const source = (await readFile(new URL('../../src/renderer/helpers/player/androidNativeScreen.js', import.meta.url), 'utf8'))
   .replace(/^import .*\n/gm, '').replace('export function ', 'function ')
 
-async function fixture({ fullscreen = true, chrome = [], deferTransitions = false, deferFullscreen = false } = {}) {
+async function fixture({ fullscreen = true, chrome = [], dialogs = [], deferTransitions = false, deferFullscreen = false } = {}) {
   const frames = new Map()
   const layouts = []
   const presentations = []
@@ -43,7 +43,7 @@ async function fixture({ fullscreen = true, chrome = [], deferTransitions = fals
   const element = Object.assign(new EventTarget(), {
     getBoundingClientRect: () => bounds, getAnimations: () => [],
   })
-  const document = Object.assign(new EventTarget(), { body: { append() {}, getBoundingClientRect: () => ({ height: 2000 }) }, createElement: () => ({ setAttribute() {}, remove() {}, style: { getPropertyValue() { return '' }, setProperty(name, value) { styleWrites.push({ name, value }) } } }), elementFromPoint: () => null, querySelectorAll: selector => selector.includes('.topNav') ? chrome : [], documentElement: { classList: { toggle() {} }, style: { getPropertyValue() { return '' }, setProperty(name, value) { styleWrites.push({ name, value }) }, removeProperty() {} } } })
+  const document = Object.assign(new EventTarget(), { body: { append() {}, getBoundingClientRect: () => ({ height: 2000 }) }, createElement: () => ({ setAttribute() {}, remove() {}, style: { getPropertyValue() { return '' }, setProperty(name, value) { styleWrites.push({ name, value }) } } }), elementFromPoint: () => null, querySelectorAll: selector => selector.includes('.topNav') ? chrome : selector.includes('dialog[open]') ? dialogs : [], documentElement: { classList: { toggle() {} }, style: { getPropertyValue() { return '' }, setProperty(name, value) { styleWrites.push({ name, value }) }, removeProperty() {} } } })
   document.addEventListener('fullscreenchange', () => fullscreenEvents.push(presentations.length))
   class Observer {
     constructor(callback) { this.callback = callback; observers.push(this) }
@@ -327,4 +327,28 @@ for (const fullscreen of [false, true]) {
     assert.equal(f.layouts.at(-1).controlsVisible, true)
     f.screen.destroy()
   })
+}
+
+
+for (const fullscreen of [false, true]) {
+  test(`open HTML sheets clip native controls and update when dismissed (${fullscreen ? 'fullscreen' : 'inline'})`, async () => {
+    let open = true
+    const dialog = {
+      matches: () => false,
+      getAnimations: () => [],
+      getBoundingClientRect: () => ({ x: 0, y: 200, width: open ? 640 : 0, height: open ? 500 : 0 })
+    }
+    const f = await fixture({ fullscreen, dialogs: [dialog] })
+    assert.equal(f.layouts.at(-1).overlayActive, true)
+    assert.ok(f.layouts.at(-1).menus.some(rect => rect.y === 200 && rect.height === 500))
+    const observer = f.observers.find(observer => observer.options?.attributeFilter.includes('open'))
+    assert.ok(observer, 'Opening and closing a dialog must invalidate native occlusion')
+    open = false
+    observer.callback([{ type: 'attributes', attributeName: 'open', target: dialog }])
+    await f.flush()
+    assert.equal(f.layouts.at(-1).overlayActive, false)
+    assert.equal(f.layouts.at(-1).menus.length, 0)
+    f.screen.destroy()
+  })
+
 }

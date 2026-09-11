@@ -14,7 +14,7 @@ h3 {
 .profileName,
 .colorSelection {
   margin: auto;
-  inline-size: 350px;
+  inline-size: min(350px, 100%);
 }
 
 .profileIconHeading {
@@ -33,7 +33,7 @@ h3 {
   flex-wrap: wrap;
   justify-content: center;
   gap: 6px;
-  max-inline-size: 350px;
+  max-inline-size: min(350px, 100%);
 }
 
 .emojiOption {
@@ -143,7 +143,7 @@ h3 {
 .colorOptions {
   margin-inline: auto;
   justify-content: center;
-  min-inline-size: 250px;
+  min-inline-size: 0;
 }
 
 .profileColorPicker {
@@ -210,5 +210,19 @@ h3 {
 @media only screen and (width <= 680px) {
   .card {
     inline-size: 90%;
+  }
+}
+
+@media (width <= 600px), (height <= 600px) {
+  .card {
+    box-sizing: border-box;
+    inline-size: 100%;
+    max-inline-size: 100%;
+  }
+
+  .emojiOption,
+  .colorOption {
+    inline-size: var(--phone-touch-target, 48px);
+    block-size: var(--phone-touch-target, 48px);
   }
 }

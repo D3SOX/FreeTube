@@ -4614,3 +4614,126 @@ html[data-reduced-motion='reduce'] .musicVisualizerCanvas {
     content: none;
   }
 }
+
+:deep(.phonePlayerOptions:not([open])) {
+  display: none;
+}
+
+:deep(.phonePlayerOptions[open]) {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  inline-size: 100%;
+  block-size: 100%;
+  max-inline-size: none;
+  max-block-size: none;
+  margin: 0;
+  padding-block: var(--phone-touch-target, 48px);
+  padding-inline: 0;
+  border: 0;
+  background: rgb(0 0 0 / 80%);
+  color: #fff;
+  overflow: hidden;
+  text-shadow: none;
+  z-index: 10;
+}
+
+:deep(.phonePlayerOptions > .shaka-overflow-menu) {
+  position: relative !important;
+  inset: auto !important;
+  inline-size: min(100%, 640px) !important;
+  flex: 1;
+  block-size: auto !important;
+  min-block-size: 0 !important;
+  max-block-size: none !important;
+  margin-block: 0;
+  margin-inline: auto;
+  padding: 8px;
+  border-radius: 0;
+  box-sizing: border-box;
+  background: transparent;
+  box-shadow: none;
+}
+
+:deep(.phonePlayerOptions > .shaka-overflow-menu.ft-menu-grid) {
+  grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+  grid-auto-rows: 68px;
+  gap: 3px;
+  align-content: safe center;
+}
+
+:deep(.phonePlayerOptions .shaka-sub-menu) {
+  max-block-size: none;
+}
+
+:deep(.phonePlayerOptions > .shaka-back-to-overflow-button) {
+  display: flex;
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline: 0 var(--phone-touch-target, 48px);
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  min-block-size: var(--phone-touch-target, 48px);
+  margin: 0;
+  padding-block: 8px;
+  padding-inline: 12px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+}
+
+:deep(.phonePlayerOptions .shaka-sub-menu.ft-menu-grid) {
+  padding-block-start: 0;
+}
+
+:deep(.phonePlayerOptionsClose) {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-end: 0;
+  display: grid;
+  place-items: center;
+  inline-size: var(--phone-touch-target, 48px);
+  block-size: var(--phone-touch-target, 48px);
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  z-index: 1;
+}
+
+.ftVideoPlayer:is(:fullscreen, [data-native-player-screen], .fullWindow) :deep(.phonePlayerOptions[open]) {
+  padding-block: calc(var(--phone-touch-target, 48px) + var(--safe-area-inset-top, env(safe-area-inset-top, 0px))) calc(var(--phone-touch-target, 48px) + var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)));
+}
+
+.ftVideoPlayer:is(:fullscreen, [data-native-player-screen], .fullWindow) :deep(.phonePlayerOptions > :is(.phonePlayerOptionsClose, .shaka-back-to-overflow-button)) {
+  inset-block-start: var(--safe-area-inset-top, env(safe-area-inset-top, 0));
+}
+
+:deep(.phonePlayerOptions > .shaka-overflow-menu.ft-menu-grid:has(.shaka-sub-menu:not(.shaka-hidden))) {
+  grid-auto-rows: minmax(min-content, 1fr);
+}
+
+:deep(.phonePlayerOptions > .shaka-overflow-menu.ft-menu-grid > button) {
+  padding: 2px;
+  gap: 1px;
+}
+
+/* An open touch menu should advertise its remaining content even without a mouse. */
+:deep(.phonePlayerOptions .os-scrollbar-visible) {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* A compatibility mouse hover can remain on a different row after a touch tap. */
+:deep(.phonePlayerOptions[data-touch-input] .shaka-overflow-menu:not(.ft-menu-grid) > button:not(:active, :focus-visible)) {
+  background: transparent;
+}
+
+/* Inline video is short: reserve the close row, but use the space below it. */
+.ftVideoPlayer:not(:fullscreen, [data-native-player-screen], .fullWindow) :deep(.phonePlayerOptions[open]) {
+  padding-block-end: 8px;
+}

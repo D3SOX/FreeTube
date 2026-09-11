@@ -1091,6 +1091,8 @@ Channel:
   All Results: الجميع
   View All: عرض الكل
 Video:
+  Move Queue Item Up: "نقل {title} لأعلى"
+  Move Queue Item Down: "نقل {title} لأسفل"
   Includes paid promotion: يشمل الترويج المدفوع
   Age Restricted Badge: العمر مقيد
   Queue: طابور
@@ -1485,6 +1487,7 @@ Comments:
   Translating comment, please wait: ترجمة التعليق، يرجى الانتظار
   Comment translation failed: فشلت ترجمة التعليق
 Description:
+  Title: الوصف
   Copy Description: نسخ الوصف
   Description Copied: تم نسخ الوصف إلى الحافظة
   Video Category: 'فئة الفيديو:'

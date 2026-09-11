@@ -1066,6 +1066,8 @@ Channel:
   Search Result Types: Typy výsledků hledání
   All Results: Vše
 Video:
+  Move Queue Item Up: "Přesunout {title} nahoru"
+  Move Queue Item Down: "Přesunout {title} dolů"
   Includes paid promotion: Obsahuje placenou propagaci
   Age Restricted Badge: Věkové omezení
   Queue: Fronta
@@ -1453,6 +1455,7 @@ Comments:
   Translating comment, please wait: Překlad komentáře, čekejte
   Comment translation failed: Překlad komentáře se nezdařil
 Description:
+  Title: Popis
   Copy Description: Kopírovat popis
   Description Copied: Popis byl zkopírován do schránky
   Video Category: 'Kategorie videa:'

@@ -1096,6 +1096,8 @@ Channel:
   All Results: הכול
   View All: הצגת הכול
 Video:
+  Move Queue Item Up: "העברת {title} למעלה"
+  Move Queue Item Down: "העברת {title} למטה"
   Includes paid promotion: כולל תוכן שיווקי בתשלום
   Age Restricted Badge: מוגבל לפי גיל
   Queue: תור
@@ -1492,6 +1494,7 @@ Comments:
   Translating comment, please wait: התגובה מתורגמת, נא להמתין
   Comment translation failed: תרגום התגובה נכשל
 Description:
+  Title: תיאור
   Copy Description: העתקת התיאור
   Description Copied: התיאור הועתק ללוח
   Video Category: 'קטגוריית הסרטון:'

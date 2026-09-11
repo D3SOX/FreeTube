@@ -278,7 +278,7 @@
   padding-block: 0;
 }
 
-.sliderGroup :deep(.pure-material-slider .input) {
+.sliderGroup :deep(.input) {
   block-size: 24px;
 }
 
@@ -346,4 +346,63 @@
   .quickSettingControl.pairedQuickSetting {
     grid-column: 1 / -1;
   }
+}
+
+.quickSettingsMenu.phoneQuickSettings {
+  position: relative;
+  inset: auto;
+  flex: 1;
+  min-block-size: 0;
+  max-block-size: none;
+  inline-size: 100%;
+  max-inline-size: none;
+  margin: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.phoneQuickSettings .menuSection {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.phoneQuickSettings .quickSettingControl {
+  grid-column: 1;
+}
+
+.phoneQuickSettings .profileHeaderRow {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.phoneQuickSettings .profileSummary {
+  flex: 1 0 100%;
+}
+
+.phoneQuickSettings :is(.quickSettingsShortcut, .profilePanelHeader button) {
+  inline-size: var(--phone-touch-target, 48px);
+  block-size: var(--phone-touch-target, 48px);
+}
+
+.phoneQuickSettings .menuSection :deep(.select-text),
+.phoneQuickSettings .sliderGroup :deep(.input) {
+  block-size: var(--phone-touch-target, 48px);
+}
+
+.phoneQuickSettings .sliderGroup :deep(.pure-material-slider) {
+  grid-template-rows: auto var(--phone-touch-target, 48px);
+}
+
+.phoneQuickHeaderActions {
+  display: flex;
+  align-items: center;
+  flex: none;
+}
+
+.phoneQuickHeaderActions .quickSettingsShortcut {
+  display: grid;
+  place-items: center;
+  inline-size: var(--phone-touch-target, 48px);
+  block-size: var(--phone-touch-target, 48px);
+  padding: 0;
+  font-size: 20px;
 }

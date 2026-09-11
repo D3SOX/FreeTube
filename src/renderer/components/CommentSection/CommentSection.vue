@@ -1,91 +1,100 @@
 <template>
   <FtCard
     class="card"
-    :class="{ fullscreenCommentCard: fullscreenOverlay }"
+    :class="{ fullscreenCommentCard: fullscreenOverlay, phoneCommentCard: phonePanelHeader }"
   >
-    <header
-      v-if="fullscreenOverlay"
-      class="fullscreenCommentHeader"
+    <Teleport
+      :to="phonePanelHeader || 'body'"
+      :disabled="!phonePanelHeader"
     >
-      <h3>
-        <FtIcon :icon="['fas', 'comment']" />
-        {{ commentsTitle }}
-      </h3>
-      <div
-        class="fullscreenCommentActions"
-        @focusout="handleFullscreenActionsFocusout"
-        @keydown.esc.stop.prevent="closeCommentMenus"
+      <header
+        v-if="fullscreenOverlay || phonePanelHeader"
+        class="fullscreenCommentHeader"
+        :class="{ phoneCommentHeader: phonePanelHeader }"
       >
-        <CommentFilterMenu
-          v-if="canUseCommentTools"
-          ref="commentFilterMenu"
-          :open="commentFilterMenuOpen"
-          fullscreen
-          :channel-thumbnail="channelThumbnail"
-          :creator-comments-only="creatorCommentsOnly"
-          :timestamp-comments-only="timestampCommentsOnly"
-          :search-open="commentSearchOpen"
-          @update:open="setCommentFilterMenuOpen"
-          @toggle-search="toggleCommentSearch"
-          @toggle-creator="toggleCreatorCommentsFilter"
-          @toggle-timestamps="toggleTimestampCommentsFilter"
-        />
-        <button
-          v-if="showSortBy && !commentsDisabled"
-          type="button"
-          class="fullscreenCommentAction"
-          :class="{ active: sortMenuOpen }"
-          :aria-label="$t('Global.Sort By')"
-          :title="$t('Global.Sort By')"
-          :aria-expanded="String(sortMenuOpen)"
-          @click="toggleSortMenu"
-        >
-          <FtIcon :icon="['fas', 'arrow-down-short-wide']" />
-        </button>
-        <button
-          v-if="!commentsDisabled"
-          type="button"
-          class="fullscreenCommentAction"
-          :aria-label="$t('Comments.Reload Comments')"
-          :title="$t('Comments.Reload Comments')"
-          @click="reloadCommentData"
-        >
-          <FtIcon :icon="['fas', 'sync']" />
-        </button>
-        <button
-          type="button"
-          class="fullscreenCommentAction"
-          :aria-label="$t('Comments.Hide Comments')"
-          :title="$t('Comments.Hide Comments')"
-          @click="emit('close-comments')"
-        >
-          <FtIcon :icon="['fas', 'xmark']" />
-        </button>
+        <h3>
+          <FtIcon :icon="['fas', 'comment']" />
+          {{ commentsTitle }}
+        </h3>
         <div
-          v-if="sortMenuOpen"
-          class="fullscreenSortMenu"
+          class="fullscreenCommentActions"
+          @focusout="handleFullscreenActionsFocusout"
+          @keydown.esc.stop.prevent="closeCommentMenus"
         >
+          <CommentFilterMenu
+            v-if="canUseCommentTools"
+            ref="commentFilterMenu"
+            :open="commentFilterMenuOpen"
+            fullscreen
+            :channel-thumbnail="channelThumbnail"
+            :creator-comments-only="creatorCommentsOnly"
+            :timestamp-comments-only="timestampCommentsOnly"
+            :search-open="commentSearchOpen"
+            @update:open="setCommentFilterMenuOpen"
+            @toggle-search="toggleCommentSearch"
+            @toggle-creator="toggleCreatorCommentsFilter"
+            @toggle-timestamps="toggleTimestampCommentsFilter"
+          />
           <button
-            v-for="(name, index) in sortNames"
-            :key="sortValues[index]"
+            v-if="showSortBy && !commentsDisabled"
             type="button"
-            :class="{ selected: currentSortValue === sortValues[index] }"
-            @click="handleSortChange(sortValues[index])"
+            class="fullscreenCommentAction"
+            :class="{ active: sortMenuOpen }"
+            :aria-label="$t('Global.Sort By')"
+            :title="$t('Global.Sort By')"
+            :aria-expanded="String(sortMenuOpen)"
+            @click="toggleSortMenu"
           >
-            <span>{{ name }}</span>
-            <FtIcon
-              v-if="currentSortValue === sortValues[index]"
-              :icon="['fas', 'check']"
-            />
+            <FtIcon :icon="['fas', 'arrow-down-short-wide']" />
           </button>
+          <button
+            v-if="!commentsDisabled"
+            type="button"
+            class="fullscreenCommentAction"
+            :aria-label="$t('Comments.Reload Comments')"
+            :title="$t('Comments.Reload Comments')"
+            @click="reloadCommentData"
+          >
+            <FtIcon :icon="['fas', 'sync']" />
+          </button>
+          <button
+            type="button"
+            class="fullscreenCommentAction"
+            :aria-label="phonePanelHeader && !showComments ? $t('Comments.Click to View Comments') : $t('Comments.Hide Comments')"
+            @click="phonePanelHeader ? toggleCommentVisibility() : emit('close-comments')"
+          >
+            <FtIcon :icon="['fas', phonePanelHeader ? (showComments ? 'eye-slash' : 'eye') : 'xmark']" />
+          </button>
+          <div
+            v-if="sortMenuOpen"
+            class="fullscreenSortMenu"
+          >
+            <button
+              v-for="(name, index) in sortNames"
+              :key="sortValues[index]"
+              class="commentSortOption"
+              type="button"
+              :class="{ selected: currentSortValue === sortValues[index] }"
+              @click="handleSortChange(sortValues[index])"
+            >
+              <span>{{ name }}</span>
+              <FtIcon
+                v-if="currentSortValue === sortValues[index]"
+                :icon="['fas', 'check']"
+              />
+            </button>
+          </div>
         </div>
-      </div>
-    </header>
+      </header>
+    </Teleport>
     <div
-      v-if="!fullscreenOverlay && showComments && !isLoading && commentEntries.length > 0"
+      v-if="!fullscreenOverlay && !phonePanelHeader && showComments && !isLoading && commentEntries.length > 0"
       class="commentHeader"
     >
-      <h3 class="commentsTitle">
+      <h3
+        v-if="!phonePanelHeader"
+        class="commentsTitle"
+      >
         <span>{{ commentsTitle }}</span>
         <span
           class="commentTitleAction"
@@ -582,6 +591,7 @@
         v-if="!isLoading && !isLoadingMoreComments"
         v-observe-visibility="observeVisibilityOptions"
         class="commentAutoLoadSentinel"
+        :class="{ commentAutoLoadSpace: phonePanelHeader && canAutomaticallyLoadMoreComments }"
       >
       <!--
         Dummy element to be observed by Intersection Observer
@@ -593,7 +603,7 @@
 
 <script setup>
 import { FtIcon } from '@opentubex/icons'
-import { computed, nextTick, ref, shallowRef, useTemplateRef, watch } from 'vue'
+import { inject, computed, nextTick, ref, shallowRef, useTemplateRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import FtCard from '../ft-card/ft-card.vue'
@@ -647,6 +657,7 @@ import {
   invidiousGetComments
 } from '../../helpers/api/invidious'
 
+const phonePanelHeader = inject('phonePanelHeader', null)
 const { locale, t } = useI18n()
 const relativeTimeNow = useRelativeTimeClock()
 const shortenViewCounts = computed(() => store.getters.getShortenViewCounts)
@@ -755,6 +766,13 @@ watch(() => props.fullscreenOverlay, (fullscreenOverlay, wasFullscreenOverlay) =
  * are gone, and OverlayScrollbars restores it over the shorter list once that
  * has rendered, leaving the dock parked past its end until it is scrolled up.
  */
+function toggleCommentVisibility() {
+  if (canPerformInitialCommentLoading.value) getCommentData()
+  else showComments.value = !showComments.value
+  closeCommentMenus()
+  nextTick(resetCommentsScroll)
+}
+
 function resetCommentsScroll() {
   fullscreenScrollTop = 0
 
@@ -1365,7 +1383,7 @@ const observeVisibilityOptions = computed(() => {
       }
     },
     intersection: {
-      root: props.fullscreenOverlay ? commentsContentWrapper.value : null,
+      root: (props.fullscreenOverlay || phonePanelHeader?.value) ? commentsContentWrapper.value : null,
       // Only when it intersects with N% above bottom
       rootMargin: '0% 0% 0% 0%',
     },

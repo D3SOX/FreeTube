@@ -9,7 +9,7 @@
     }"
   >
     <FtIconButton
-      v-if="shownDescription.length > 0"
+      v-if="shownDescription.length > 0 && !previewOnly"
       ref="descriptionCopyButton"
       class="descriptionCopyButton"
       :title="t('Description.Copy Description')"
@@ -42,7 +42,10 @@
         ref="descriptionContainer"
         class="description"
         :input-html="processedShownDescription"
+        :role="previewOnly ? 'button' : null"
+        :tabindex="previewOnly ? 0 : null"
         :link-tab-index="linkTabIndex"
+        @keydown.enter.space="previewOnly && ( $event.preventDefault(), expandDescription() )"
         @timestamp-event="onTimestamp"
         @click="expandDescriptionWithClick"
       />
@@ -167,13 +170,14 @@ const props = defineProps({
     type: Array,
     default: () => [],
   },
+  previewOnly: { type: Boolean, default: false },
   alwaysExpanded: {
     type: Boolean,
     default: false,
   }
 })
 
-const emit = defineEmits(['timestamp-event'])
+const emit = defineEmits(['timestamp-event', 'expand'])
 const { t } = useI18n()
 
 let shownDescription = ''
@@ -257,6 +261,7 @@ function expandDescriptionWithClick(e) {
  * Enables user to view entire contents of description
  */
 function expandDescription() {
+  if (props.previewOnly) { emit('expand'); return }
   showFullDescription.value = true
 }
 

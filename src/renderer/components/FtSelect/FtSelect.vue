@@ -112,21 +112,38 @@
       aria-hidden="true"
     />
     <Teleport :to="dropdownTarget">
-      <Transition name="select-dropdown">
+      <FtMobileSheet
+        v-if="dropdownRendered"
+        :enabled="phoneLayout"
+        :open="dropdownShown"
+        :title="placeholder"
+        @closed="dropdownRendered = false"
+        @close="closeDropdown"
+      >
+        <input
+          v-if="phoneLayout && selectNames.length > 10"
+          v-model="search"
+          class="pickerSearch"
+          type="search"
+          :aria-label="$t('Search Bar.Search')"
+          :placeholder="$t('Search Bar.Search')"
+        >
         <ul
-          v-if="dropdownShown"
+          v-if="dropdownRendered"
           :id="`${id}-listbox`"
           ref="dropdown"
           v-overlay-scrollbars
           class="selectDropdown"
-          :class="dropdownPlacement"
+          :class="[dropdownPlacement, { phonePicker: phoneLayout }]"
           role="listbox"
+          tabindex="-1"
           :aria-labelledby="`${id}-label`"
-          :style="dropdownStyle"
+          :style="phoneLayout ? null : dropdownStyle"
           @pointerdown="handleDropdownPointerDown"
+          @keydown="handlePickerKeydown"
         >
           <li
-            v-for="(name, index) in selectNames"
+            v-for="{ name, index } in filteredOptions"
             :id="`${id}-option-${index}`"
             :key="selectValues[index]"
             ref="options"
@@ -137,7 +154,7 @@
               hasOptionVisuals
             }"
             role="option"
-            tabindex="-1"
+            tabindex="0"
             :aria-selected="selectValues[index] === value"
             :dir="isLocaleSelector ? 'auto' : null"
             :lang="isLocaleSelector && selectValues[index] !== 'system' && selectValues[index] !== '' ? selectValues[index] : null"
@@ -160,9 +177,14 @@
               aria-hidden="true"
             />
             <span class="optionName">{{ name }}</span>
+            <FtIcon
+              v-if="phoneLayout && selectValues[index] === value"
+              :icon="['fas', 'check']"
+              aria-hidden="true"
+            />
           </li>
         </ul>
-      </Transition>
+      </FtMobileSheet>
     </Teleport>
   </div>
 </template>
@@ -170,6 +192,9 @@
 <script setup>
 import { FtIcon } from '@opentubex/icons'
 import { computed, nextTick, onBeforeUnmount, ref, shallowRef, useId, useTemplateRef, watch } from 'vue'
+
+import FtMobileSheet from '../FtMobileSheet/FtMobileSheet.vue'
+import { usePhoneLayout } from '../../composables/usePhoneLayout'
 
 import FtTooltip from '../FtTooltip/FtTooltip.vue'
 import FtPerformanceImpact from '../FtPerformanceImpact/FtPerformanceImpact.vue'
@@ -251,7 +276,13 @@ const selectButton = useTemplateRef('selectButton')
 const dropdown = useTemplateRef('dropdown')
 const options = useTemplateRef('options')
 
+const phoneLayout = usePhoneLayout()
+const search = ref('')
+const filteredOptions = computed(() => props.selectNames
+  .map((name, index) => ({ name, index }))
+  .filter(({ name }) => !phoneLayout.value || name.toLocaleLowerCase().includes(search.value.trim().toLocaleLowerCase())))
 const dropdownShown = ref(false)
+const dropdownRendered = ref(false)
 const activeIndex = ref(0)
 const dropdownStyle = ref({ zIndex: props.dropdownZIndex })
 const dropdownTarget = shallowRef(document.fullscreenElement ?? document.body)
@@ -278,12 +309,19 @@ const selectedLocale = computed(() => {
 
 watch(dropdownShown, (shown) => {
   if (shown) {
+    dropdownRendered.value = true
     document.addEventListener('pointerdown', handleOutsidePointerDown, true)
     window.addEventListener('resize', refreshDropdownLayout)
     window.addEventListener('scroll', updateDropdownPosition, true)
   } else {
+    if (!phoneLayout.value) dropdownRendered.value = false
     removeDropdownListeners()
   }
+})
+
+watch([search, phoneLayout], async () => {
+  await nextTick()
+  await refreshDropdownLayout()
 })
 
 watch(() => props.disabled, (disabled) => {
@@ -317,6 +355,7 @@ function toggleDropdown() {
 function openDropdown() {
   if (props.disabled) return
 
+  search.value = ''
   emit('open')
   activeIndex.value = Math.max(0, selectedIndex.value)
   dropdownTarget.value = selectRoot.value?.closest('.prompt, .tutorialCard, .tabOrganizerBackdrop') ?? document.fullscreenElement ?? document.body
@@ -333,6 +372,7 @@ function closeDropdown() {
 }
 
 function updateDropdownPosition() {
+  if (phoneLayout.value) return
   const button = selectButton.value
   const menu = dropdown.value
   if (button === null || menu === null) {
@@ -554,6 +594,7 @@ function selectOption(index) {
 }
 
 function handleOutsidePointerDown(event) {
+  if (phoneLayout.value) return
   const target = event.target
   if (target instanceof Node && (selectRoot.value?.contains(target) || dropdown.value?.contains(target))) {
     return
@@ -563,6 +604,7 @@ function handleOutsidePointerDown(event) {
 }
 
 function handleFocusOut(event) {
+  if (phoneLayout.value) return
   if (pointerDownInDropdown) {
     return
   }
@@ -575,6 +617,19 @@ function handleFocusOut(event) {
   if (!focusStaysInControl) {
     closeDropdown()
   }
+}
+
+function handlePickerKeydown(event) {
+  if (!phoneLayout.value || !['ArrowUp', 'ArrowDown', 'Home', 'End'].includes(event.key)) return
+  event.preventDefault()
+  const rows = options.value ?? []
+  const current = rows.indexOf(document.activeElement)
+  const next = event.key === 'Home'
+    ? 0
+    : event.key === 'End'
+      ? rows.length - 1
+      : Math.max(0, Math.min(rows.length - 1, current + (event.key === 'ArrowDown' ? 1 : -1)))
+  rows[next]?.focus()
 }
 
 function handleDropdownPointerDown() {

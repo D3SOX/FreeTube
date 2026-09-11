@@ -1,28 +1,34 @@
 <template>
   <FtPrompt
     theme="flex-column"
+    fixed-layout
     :label="title"
     :inert="showingCreatePlaylistPrompt"
     @click="hide"
   >
-    <p class="selected-count">
-      {{ t('User Playlists.AddVideoPrompt.N playlists selected', {
-        playlistCount: selectedPlaylistCount,
-      }, selectedPlaylistCount) }}
-    </p>
-    <div
-      v-if="allPlaylists.length > 1"
-      class="searchInputsRow"
-    >
-      <FtInput
-        ref="searchBar"
-        input-type="search"
-        :placeholder="t('User Playlists.AddVideoPrompt.Search in Playlists')"
-        :show-action-button="false"
-        :maxlength="255"
-        @input="updateQueryDebounce"
-      />
-    </div>
+    <template #label="{ labelId }">
+      <h2 :id="labelId">
+        {{ title }}
+      </h2>
+      <p class="selected-count">
+        {{ t('User Playlists.AddVideoPrompt.N playlists selected', {
+          playlistCount: selectedPlaylistCount,
+        }, selectedPlaylistCount) }}
+      </p>
+      <div
+        v-if="allPlaylists.length > 1"
+        class="searchInputsRow"
+      >
+        <FtInput
+          ref="searchBar"
+          input-type="search"
+          :placeholder="t('User Playlists.AddVideoPrompt.Search in Playlists')"
+          :show-action-button="false"
+          :maxlength="255"
+          @input="updateQueryDebounce"
+        />
+      </div>
+    </template>
     <div
       v-if="allPlaylists.length > 1"
       class="optionsRow"
@@ -57,7 +63,6 @@
       />
     </div>
     <div
-      v-overlay-scrollbars
       class="playlists-container"
     >
       <FtFlexBox>
@@ -81,27 +86,29 @@
         </div>
       </FtFlexBox>
     </div>
-    <div class="actions-container">
-      <FtFlexBox>
-        <FtButton
-          :label="t('User Playlists.Create New Playlist')"
-          :icon="['fas', 'playlist-add']"
-          @click="openCreatePlaylistPrompt"
-        />
-        <FtButton
-          :label="t('User Playlists.AddVideoPrompt.Save')"
-          :icon="['fas', 'floppy-disk']"
-          @click="addSelectedToPlaylists"
-        />
-        <FtButton
-          :label="t('User Playlists.Cancel')"
-          :icon="['fas', 'xmark']"
-          :text-color="null"
-          :background-color="null"
-          @click="hide"
-        />
-      </FtFlexBox>
-    </div>
+    <template #footer>
+      <div class="actions-container">
+        <FtFlexBox>
+          <FtButton
+            :label="t('User Playlists.Create New Playlist')"
+            :icon="['fas', 'playlist-add']"
+            @click="openCreatePlaylistPrompt"
+          />
+          <FtButton
+            :label="t('User Playlists.AddVideoPrompt.Save')"
+            :icon="['fas', 'floppy-disk']"
+            @click="addSelectedToPlaylists"
+          />
+          <FtButton
+            :label="t('User Playlists.Cancel')"
+            :icon="['fas', 'xmark']"
+            :text-color="null"
+            :background-color="null"
+            @click="hide"
+          />
+        </FtFlexBox>
+      </div>
+    </template>
   </FtPrompt>
 </template>
 

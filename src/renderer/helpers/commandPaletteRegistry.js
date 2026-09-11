@@ -442,10 +442,11 @@ function addDownloadCommands(commands, { t, groups, store, isElectron }) {
 }
 
 function addPlaybackCommands(commands, context) {
-  const { t, groups, routePath, videoShortcuts, runShortcut } = context
+  const { t, groups, routePath, videoShortcuts, runShortcut, isCapacitor } = context
   const onVideo = routePath.startsWith('/watch/')
 
   for (const [id, section, code, labelKey, icon, aliases] of PLAYBACK_COMMANDS) {
+    if (isCapacitor && code === 'FULLWINDOW') continue
     const configuredShortcut = videoShortcuts[section][code]
     const executionShortcut = configuredShortcut || DefaultKeyboardShortcuts.VIDEO_PLAYER[section][code]
     // eslint-disable-next-line @intlify/vue-i18n/no-dynamic-keys

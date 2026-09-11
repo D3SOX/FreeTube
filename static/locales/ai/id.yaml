@@ -1089,6 +1089,8 @@ Channel:
   All Results: Semua
   View All: Lihat Semua
 Video:
+  Move Queue Item Up: "Pindahkan {title} ke atas"
+  Move Queue Item Down: "Pindahkan {title} ke bawah"
   Includes paid promotion: Memuat promosi berbayar
   Age Restricted Badge: Dibatasi usia
   Queue: Antrean
@@ -1484,6 +1486,7 @@ Comments:
   Translating comment, please wait: Menerjemahkan komentar, harap tunggu
   Comment translation failed: Terjemahan komentar gagal
 Description:
+  Title: Deskripsi
   Copy Description: Salin Deskripsi
   Description Copied: Deskripsi disalin ke papan klip
   Video Category: 'Kategori Video:'

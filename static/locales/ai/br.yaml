@@ -1068,6 +1068,8 @@ Channel:
   Search Result Types: "Doareoù disoc'hoù enklask"
   All Results: "Pep tra"
 Video:
+  Move Queue Item Up: "Dilec'hiañ {title} d'ar c'hrec'h"
+  Move Queue Item Down: "Dilec'hiañ {title} d'an traoñ"
   Includes paid promotion: "Enderc'hel a ra bruderezh paeet"
   Age Restricted Badge: "Bevennet diouzh an oad"
   Queue: "Lost"
@@ -1467,6 +1469,7 @@ Comments:
   Translating comment, please wait: "O treiñ an evezhiadenn, gortozit"
   Comment translation failed: "C'hwitet eo treiñ an evezhiadenn"
 Description:
+  Title: Deskrivadur
   Copy Description: "Eilañ an deskrivadur"
   Description Copied: "Eilet eo bet an deskrivadur er golver"
   Video Category: "Rummad ar video:"

@@ -369,7 +369,7 @@ const localizedShortcutNameToShortcutsMappings = computed(() => {
     [t('KeyboardShortcutPrompt.Captions'), ['CAPTIONS']],
     [t('KeyboardShortcutPrompt.Theatre Mode'), ['THEATRE_MODE']],
     [t('KeyboardShortcutPrompt.Fullscreen'), ['FULLSCREEN']],
-    [t('KeyboardShortcutPrompt.Full Window'), ['FULLWINDOW']],
+    ...(!process.env.IS_CAPACITOR ? [[t('KeyboardShortcutPrompt.Full Window'), ['FULLWINDOW']]] : []),
     [t('KeyboardShortcutPrompt.Picture in Picture'), ['PICTURE_IN_PICTURE']],
     [t('KeyboardShortcutPrompt.Mute'), ['MUTE']],
     [t('KeyboardShortcutPrompt.Volume Up'), ['VOLUME_UP']],

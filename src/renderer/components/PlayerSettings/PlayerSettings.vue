@@ -909,7 +909,8 @@ const defaultViewingMode = computed(() => {
   /** @type {'default' | 'theatre' | 'fullwindow' | 'fullscreen' | 'pip' | 'external_player'} */
   const defaultViewingMode = store.getters.getDefaultViewingMode
 
-  if ((defaultViewingMode === 'external_player' && (!process.env.IS_ELECTRON || externalPlayer.value === '')) ||
+  if ((process.env.IS_CAPACITOR && ['fullwindow', 'fullwindow_always_on'].includes(defaultViewingMode)) ||
+    (defaultViewingMode === 'external_player' && (!process.env.IS_ELECTRON || externalPlayer.value === '')) ||
     (!process.env.IS_ELECTRON && (defaultViewingMode === 'fullscreen' || defaultViewingMode === 'pip'))) {
     return 'default'
   }
@@ -921,8 +922,12 @@ const viewingModeNames = computed(() => {
   const viewingModeNames = [
     t('Settings.General Settings.Thumbnail Preference.Default'),
     t('Settings.Player Settings.Default Viewing Mode.Theater'),
-    t('Video.Player.Full Window'),
-    t('Settings.Player Settings.Default Viewing Mode.Full Window (Always On)'),
+    ...(!process.env.IS_CAPACITOR
+      ? [
+          t('Video.Player.Full Window'),
+          t('Settings.Player Settings.Default Viewing Mode.Full Window (Always On)'),
+        ]
+      : []),
 
     ...process.env.IS_ELECTRON
       ? [
@@ -946,8 +951,7 @@ const viewingModeValues = computed(() => {
   const viewingModeValues = [
     'default',
     'theatre',
-    'fullwindow',
-    'fullwindow_always_on',
+    ...(!process.env.IS_CAPACITOR ? ['fullwindow', 'fullwindow_always_on'] : []),
 
     ...process.env.IS_ELECTRON
       ? [

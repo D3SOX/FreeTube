@@ -137,7 +137,7 @@
           :published="videoPublished"
           :is-live="isLive"
           :is-upcoming="isUpcoming"
-          :transcript-open="showTranscript"
+          :transcript-open="phonePanelsEnabled ? mobilePanel === 'transcript' : showTranscript"
           :sponsor-block-info-open="showSidebarSponsorBlock"
           :video-genre-is-music="videoGenreIsMusic"
           :current-playback-rate="currentPlaybackRate"
@@ -530,6 +530,7 @@
               :title="$t('User Playlists.Add to Playlist')"
               :icon="isInAnyPlaylist ? ['fac', 'playlist-check'] : ['fac', 'playlist-add']"
               force-dropdown
+              mobile-sheet
               dropdown-position-x="left"
               dropdown-position-y="top"
             >
@@ -653,7 +654,7 @@
             :current-subtitles-state="currentSubtitlesState"
             :current-volume="currentVolume"
             :sponsor-block-panel-open="showSidebarSponsorBlock"
-            :transcript-open="showTranscript"
+            :transcript-open="phonePanelsEnabled ? mobilePanel === 'transcript' : showTranscript"
             :transcript-available="transcriptAvailable"
             channel-setting-dropdown-portal
             hide-share-button
@@ -790,10 +791,10 @@
           :current-subtitles-state="currentSubtitlesState"
           :current-volume="currentVolume"
           :sponsor-block-panel-open="showSidebarSponsorBlock"
-          :transcript-open="showTranscript"
+          :transcript-open="phonePanelsEnabled ? mobilePanel === 'transcript' : showTranscript"
           :transcript-available="transcriptAvailable"
           :live-chat-available="liveChatAvailable"
-          :live-chat-open="showLiveChat"
+          :live-chat-open="phonePanelsEnabled ? mobilePanel === 'chat' : showLiveChat"
           :live-chat-replay="liveChatIsReplay"
           :hide-share-button="fullscreenMetadataOpen"
           :hide-playlist-actions="fullscreenMetadataOpen"
@@ -813,19 +814,64 @@
           @toggle-sponsorblock-info="toggleSponsorBlockInfo"
           @toggle-transcript="toggleTranscript"
           @toggle-live-chat="toggleLiveChat"
-        />
+        >
+          <template
+            v-if="phonePanelsEnabled"
+            #phone-actions
+          >
+            <span class="phonePanelActions">
+              <FtIconButton
+                v-if="$store.getters.getWatchQueueLength"
+                :title="$t('Video.Queue')"
+                :icon="['fas', 'list']"
+                @click="openPhonePanel('queue')"
+              />
+            </span>
+          </template>
+        </watch-video-info>
+        <button
+          v-if="phonePanelsEnabled && commentsAvailable && !isLoading"
+          type="button"
+          class="phoneCommentsButton watchVideo"
+          @click="openPhonePanel('comments')"
+        >
+          <ft-icon
+            :icon="['fas', 'comment']"
+            aria-hidden="true"
+          />
+          <span class="phoneCommentsLabel">{{ $t('Comments.Comments') }}</span>
+          <ft-icon
+            :icon="['fas', 'angle-down']"
+            aria-hidden="true"
+          />
+        </button>
         <watch-video-description
-          v-if="!isLoading && !hideVideoDescription && (!customShortsPlayerActive || fullscreenMetadataOpen)"
+          v-if="phonePanelsEnabled && !isLoading && !hideVideoDescription"
           :description="videoDescription"
           :description-html="videoDescriptionHtml"
-          :tags="videoTags"
-          :license="license"
-          :games="videoGames"
-          :always-expanded="fullscreenMetadataOpen"
-          class="watchVideo"
-          :class="{ theatreWatchVideo: useTheatreMode }"
-          @timestamp-event="changeTimestamp"
+          preview-only
+          class="watchVideo phoneDescriptionPreview"
+          @expand="openPhonePanel('description')"
         />
+        <FtPhonePanel
+          :enabled="phonePanelsEnabled"
+          :open="mobilePanel === 'description'"
+          :title="$t('Description.Title')"
+          @close="mobilePanel = null"
+        >
+          <watch-video-description
+            v-if="!isLoading && !hideVideoDescription && (!customShortsPlayerActive || fullscreenMetadataOpen)"
+            :description="videoDescription"
+            :description-html="videoDescriptionHtml"
+            :tags="videoTags"
+            :license="license"
+            :games="videoGames"
+            :always-expanded="fullscreenMetadataOpen || phonePanelsEnabled"
+            class="watchVideo"
+            :class="{ theatreWatchVideo: useTheatreMode }"
+            @timestamp-event="changeTimestamp"
+          />
+        </FtPhonePanel>
       </Teleport>
     </div>
     <div
@@ -880,40 +926,48 @@
           </div>
         </div>
       </div>
-      <transition
-        name="chapters-panel"
-        @before-leave="handleSidebarPanelBeforeLeave"
-        @after-leave="handleSidebarPanelAfterLeave"
-        @leave-cancelled="handleSidebarPanelAfterLeave"
+      <FtPhonePanel
+        :enabled="phonePanelsEnabled"
+        :open="mobilePanel === 'chapters'"
+        fill
+        :title="$t('Chapters.Chapters')"
+        @close="closeSidebarChapters"
       >
-        <div
-          v-if="showSidebarChapters && !isLoading && videoChapters.length > 0"
-          class="watchVideoSideBar watchVideoChaptersPanel"
+        <transition
+          name="chapters-panel"
+          @before-leave="handleSidebarPanelBeforeLeave"
+          @after-leave="handleSidebarPanelAfterLeave"
+          @leave-cancelled="handleSidebarPanelAfterLeave"
         >
-          <div class="chaptersPanelHeader">
-            <h3 class="chaptersPanelTitle">
-              {{ videoChaptersKind === 'keyMoments' ? $t('Chapters.Key Moments') : $t('Chapters.Chapters') }}
-            </h3>
-            <button
-              type="button"
-              class="chaptersPanelClose"
-              :aria-label="$t('Chapters.Close Chapters')"
-              :title="$t('Chapters.Close Chapters')"
-              @click="closeSidebarChapters"
-            >
-              <ft-icon :icon="['fas', 'xmark']" />
-            </button>
+          <div
+            v-if="showSidebarChapters && !isLoading && videoChapters.length > 0"
+            class="watchVideoSideBar watchVideoChaptersPanel"
+          >
+            <div class="chaptersPanelHeader">
+              <h3 class="chaptersPanelTitle">
+                {{ videoChaptersKind === 'keyMoments' ? $t('Chapters.Key Moments') : $t('Chapters.Chapters') }}
+              </h3>
+              <button
+                type="button"
+                class="chaptersPanelClose"
+                :aria-label="$t('Chapters.Close Chapters')"
+                :title="$t('Chapters.Close Chapters')"
+                @click="closeSidebarChapters"
+              >
+                <ft-icon :icon="['fas', 'xmark']" />
+              </button>
+            </div>
+            <watch-video-chapters
+              :chapters="videoChapters"
+              :chapter-thumbnails="videoChapterThumbnails"
+              :current-chapter-index="videoCurrentChapterIndex"
+              :fallback-thumbnail="thumbnail"
+              @copy-timestamp="copyChapterTimestamp"
+              @timestamp-event="changeTimestamp"
+            />
           </div>
-          <watch-video-chapters
-            :chapters="videoChapters"
-            :chapter-thumbnails="videoChapterThumbnails"
-            :current-chapter-index="videoCurrentChapterIndex"
-            :fallback-thumbnail="thumbnail"
-            @copy-timestamp="copyChapterTimestamp"
-            @timestamp-event="changeTimestamp"
-          />
-        </div>
-      </transition>
+        </transition>
+      </FtPhonePanel>
       <Teleport
         :to="fullscreenSponsorBlockTarget || 'body'"
         :disabled="!fullscreenSponsorBlockOpen"
@@ -958,17 +1012,26 @@
           @after-leave="handleSidebarPanelAfterLeave"
           @leave-cancelled="handleSidebarPanelAfterLeave"
         >
-          <watch-video-transcript
-            v-if="showTranscript && transcriptAvailable && !isLoading && !isLive && !isUpcoming && (!customShortsPlayerActive || fullscreenTranscriptOpen)"
-            :captions="captions"
-            :current-time="currentTime"
-            :preferred-caption-index="preferredTranscriptCaptionIndex"
-            :video-title="videoTitle"
-            :fullscreen-overlay="fullscreenTranscriptOpen"
-            class="watchVideoSideBar watchVideoTranscript"
-            @close="closeTranscript"
-            @timestamp-event="playTranscriptSegment"
-          />
+          <FtPhonePanel
+            :enabled="phonePanelsEnabled"
+            :open="mobilePanel === 'transcript'"
+            custom-header
+            :title="$t('Video.Transcript.Title')"
+            fill
+            @close="mobilePanel = null"
+          >
+            <watch-video-transcript
+              v-if="showTranscript && transcriptAvailable && !isLoading && !isLive && !isUpcoming && (!customShortsPlayerActive || fullscreenTranscriptOpen)"
+              :captions="captions"
+              :current-time="currentTime"
+              :preferred-caption-index="preferredTranscriptCaptionIndex"
+              :video-title="videoTitle"
+              :fullscreen-overlay="fullscreenTranscriptOpen"
+              class="watchVideoSideBar watchVideoTranscript"
+              @close="closeTranscript"
+              @timestamp-event="playTranscriptSegment"
+            />
+          </FtPhonePanel>
         </transition>
       </Teleport>
       <Teleport
@@ -981,24 +1044,42 @@
           @after-leave="handleSidebarPanelAfterLeave"
           @leave-cancelled="handleSidebarPanelAfterLeave"
         >
-          <watch-video-live-chat
-            v-if="!isLoading && showLiveChat"
-            :live-chat="liveChat"
-            :video-id="videoId"
-            :channel-id="channelId"
-            :current-time="liveChatCurrentTime"
-            :fullscreen-overlay="fullscreenLiveChatOpen"
-            class="watchVideoSideBar watchVideoPlaylist"
-            :class="{ theatrePlaylist: useTheatreMode }"
-            @close="closeLiveChat"
-          />
+          <FtPhonePanel
+            :enabled="phonePanelsEnabled"
+            :open="mobilePanel === 'chat'"
+            custom-header
+            :title="$t('Video.Live Chat')"
+            fill
+            @close="mobilePanel = null"
+          >
+            <watch-video-live-chat
+              v-if="!isLoading && showLiveChat"
+              :live-chat="liveChat"
+              :video-id="videoId"
+              :channel-id="channelId"
+              :current-time="liveChatCurrentTime"
+              :fullscreen-overlay="fullscreenLiveChatOpen"
+              class="watchVideoSideBar watchVideoPlaylist phoneLiveChat"
+              :class="{ theatrePlaylist: useTheatreMode }"
+              @close="closeLiveChat"
+            />
+          </FtPhonePanel>
         </transition>
       </Teleport>
-      <watch-video-queue
-        v-if="$store.getters.getWatchQueueLength > 0"
-        class="watchVideoSideBar watchVideoQueue"
-        @pause-player="pausePlayer"
-      />
+      <FtPhonePanel
+        :enabled="phonePanelsEnabled"
+        :open="mobilePanel === 'queue'"
+        custom-header
+        fill
+        :title="$t('Video.Queue')"
+        @close="mobilePanel = null"
+      >
+        <watch-video-queue
+          v-if="$store.getters.getWatchQueueLength > 0"
+          class="watchVideoSideBar watchVideoQueue"
+          @pause-player="pausePlayer"
+        />
+      </FtPhonePanel>
       <Teleport
         :to="fullscreenPlaylistTarget || 'body'"
         :disabled="!fullscreenPlaylistOpen"
@@ -1042,19 +1123,28 @@
         :to="fullscreenCommentsTarget || (shortsCommentsOpen ? $refs.shortsCommentsTarget : null) || 'body'"
         :disabled="!fullscreenCommentsOpen && !shortsCommentsOpen"
       >
-        <CommentSection
-          v-if="!isLoading && commentsAvailable"
-          :id="videoId"
-          class="watchVideo"
-          :class="{ theatreWatchVideo: useTheatreMode }"
-          :channel-thumbnail="channelThumbnail"
-          :channel-name="channelName"
-          :comments-disabled="commentsDisabled"
-          :fullscreen-overlay="fullscreenCommentsOpen || shortsCommentsOpen"
-          :highlighted-comment-id="tabRoute.query.commentId"
-          @close-comments="closeFullscreenComments"
-          @timestamp-event="changeTimestamp"
-        />
+        <FtPhonePanel
+          :enabled="phonePanelsEnabled"
+          :open="mobilePanel === 'comments'"
+          fill
+          custom-header
+          :title="$t('Comments.Comments')"
+          @close="mobilePanel = null"
+        >
+          <CommentSection
+            v-if="!isLoading && commentsAvailable"
+            :id="videoId"
+            class="watchVideo"
+            :class="{ theatreWatchVideo: useTheatreMode }"
+            :channel-thumbnail="channelThumbnail"
+            :channel-name="channelName"
+            :comments-disabled="commentsDisabled"
+            :fullscreen-overlay="fullscreenCommentsOpen || shortsCommentsOpen"
+            :highlighted-comment-id="tabRoute.query.commentId"
+            @close-comments="closeFullscreenComments"
+            @timestamp-event="changeTimestamp"
+          />
+        </FtPhonePanel>
       </Teleport>
     </div>
   </div>
