@@ -337,7 +337,7 @@ watch(dropdownShown, (shown) => {
 function syncFullscreenDropdownTarget() {
   const target = fullscreenDropdownTarget.value
   if (target && !target.matches(':fullscreen, [data-native-player-screen], .fullWindow')) {
-    dropdownShown.value = false
+    handleDropdownEscape()
   }
 }
 
@@ -493,11 +493,13 @@ function keepDropdownInViewport() {
       left = buttonRect.left + (buttonRect.width - dropdownRect.width) / 2
     }
 
+    const aboveButton = buttonRect.top - dropdownRect.height - 4
+    const belowButton = buttonRect.bottom + 4
     const top = fullscreenDropdownTarget.value
       ? window.innerHeight - bottomMargin - dropdownRect.height
-      : props.dropdownPositionY === 'top'
-        ? buttonRect.top - dropdownRect.height - 4
-        : buttonRect.bottom + 4
+      : props.dropdownPositionY === 'top' && (aboveButton >= minTop || belowButton + dropdownRect.height > window.innerHeight - bottomMargin)
+        ? aboveButton
+        : belowButton
     const maxLeft = window.innerWidth - viewportMargin - dropdownRect.width
     const maxTop = window.innerHeight - bottomMargin - dropdownRect.height
 

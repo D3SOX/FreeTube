@@ -633,6 +633,7 @@ const defaultQuality = computed(() => {
 function toggleMenu() {
   menuOpen.value = !menuOpen.value
   if (menuOpen.value) {
+    openCommandPaletteAfterClose = false
     profilePanelOpen.value = false
     nextTick(() => {
       menuRef.value?.$el?.focus()
@@ -815,17 +816,22 @@ function closeMenu() {
   triggerRef.value?.focus()
 }
 
+function closeMenuForAction() {
+  openCommandPaletteAfterClose = false
+  menuOpen.value = false
+}
+
 function translateProfileName(profile) {
   return getTranslatedProfileName(profile, t)
 }
 
 function setActiveProfile(profile) {
   switchActiveProfile(store, profile, t)
-  menuOpen.value = false
+  closeMenuForAction()
 }
 
 function openProfileSettings() {
-  menuOpen.value = false
+  closeMenuForAction()
   store.dispatch('showSettingsWindow', 'profile')
 }
 
@@ -891,17 +897,17 @@ function handleHideRecommendedVideos(value) {
 }
 
 function openSettings() {
-  menuOpen.value = false
+  closeMenuForAction()
   store.dispatch('toggleSettingsWindow')
 }
 
 function openDownloads() {
-  menuOpen.value = false
+  closeMenuForAction()
   store.dispatch('showSettingsWindow', 'downloads')
 }
 
 function openKeyboardShortcuts() {
-  menuOpen.value = false
+  closeMenuForAction()
   store.dispatch('showKeyboardShortcutPrompt')
 }
 
@@ -916,7 +922,7 @@ function openCommandPalette() {
 }
 
 function openAbout() {
-  menuOpen.value = false
+  closeMenuForAction()
   store.dispatch('showSettingsWindow', 'about')
 }
 

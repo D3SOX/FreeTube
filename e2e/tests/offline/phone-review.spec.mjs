@@ -195,8 +195,10 @@ test('fullscreen dropdowns close when native player presentation ends', async ({
   const layer = page.locator('.fullscreenDropdownLayer')
   await expect(layer).toBeVisible()
   await expect(layer).toHaveCSS('z-index', '100')
+  await layer.locator('.iconDropdown').focus()
   await presentation.evaluate(el => el.removeAttribute('data-native-player-screen'))
   await expect(layer).toHaveCount(0)
+  await expect(button).toBeFocused()
 })
 
 test('Settings consumes Escape after closing', async ({ page }) => {
@@ -222,6 +224,7 @@ for (const [panel, flag] of [
     await watch.evaluate((vm, panel) => vm.openPhonePanel(panel), panel)
     const sheet = page.locator('.mobileSheet[open]')
     await expect(sheet).toBeVisible()
+    expect(await watch.evaluate((vm, flag) => vm[flag], flag)).toBe(true)
     await sheet.getByRole('button', { name: 'Close', exact: true }).click()
     await expect(sheet).toHaveCount(0)
     expect(await watch.evaluate((vm, flag) => ({
@@ -240,6 +243,21 @@ test('a new watch load closes the current phone panel', async ({ app, page }) =>
     vm.resetVideoState()
     return vm.mobilePanel
   })).toBeNull()
+})
+
+test('leaving the phone layout clears an open watch panel', async ({ app, page }) => {
+  await mockPlayableWatchPage(app, page, { captionTranslations: true })
+  await openMockedVideo(page)
+  await setWindowSize(app, page, { width: 480, height: 800 })
+  const watch = await watchViewHandle(page)
+  await watch.evaluate(vm => vm.openPhonePanel('transcript'))
+  await expect(page.locator('.dockedSheet[open]')).toBeVisible()
+
+  await setWindowSize(app, page, { width: 1000, height: 700 })
+  await expect.poll(() => watch.evaluate(vm => ({
+    mobilePanel: vm.mobilePanel,
+    showTranscript: vm.showTranscript
+  }))).toEqual({ mobilePanel: null, showTranscript: false })
 })
 
 test('phone key-moment panels use the matching title', async ({ app, page }) => {

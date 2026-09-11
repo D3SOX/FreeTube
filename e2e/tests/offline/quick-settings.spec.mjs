@@ -318,6 +318,17 @@ test.describe('quick settings menu', () => {
     await expect(palette.locator('input')).toBeFocused()
   })
 
+  test('cancels a pending phone command palette when another action runs', async ({ app, page }) => {
+    await setWindowSize(app, page, { width: 480, height: 800 })
+    await page.locator('.profileTrigger').click()
+    await page.locator('.mobileSheet[open]').evaluate(sheet => {
+      sheet.querySelector('.commandPaletteShortcut').click()
+      sheet.querySelector('.allSettingsShortcut').click()
+    })
+    await expect(page.locator('.settingsWindow')).toBeVisible()
+    await expect(page.getByRole('dialog', { name: 'Command palette' })).toHaveCount(0)
+  })
+
   test('clears the open state when leaving the phone layout', async ({ app, page }) => {
     await setWindowSize(app, page, { width: 480, height: 800 })
     const trigger = page.locator('.profileTrigger')
@@ -550,7 +561,7 @@ test.describe('quick settings menu', () => {
     await menu.locator('.profileSummary').click()
 
     await expect(menu.locator('.quickSettingsScroll').locator('.profilePanelHeader')).toHaveCount(0)
-    await menu.getByRole('button', { name: 'Back' }).click()
+    await page.locator('.mobileSheetHeader').getByRole('button', { name: 'Back' }).click()
     await expect(menu.locator('.profileHeaderRow')).toBeVisible()
     await expect(mainScroll).toHaveJSProperty('scrollTop', 0)
   })

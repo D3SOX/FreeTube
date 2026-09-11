@@ -72,7 +72,8 @@ watch(() => props.open, async (open) => {
 }, { flush: 'pre' })
 
 function handleClosed() {
-  if (!props.open) panelRendered.value = false
+  panelRendered.value = false
+  if (props.open) emit('close')
 }
 </script>
 

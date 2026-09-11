@@ -266,6 +266,19 @@ test('hidden mounted dialogs do not keep Android native overlays active', async 
   f.screen.destroy()
 })
 
+test('transparent entry animations keep Android Back routed to an open dialog', async () => {
+  const dialog = {
+    matches: () => false,
+    checkVisibility: options => !options.checkOpacity,
+    getAnimations: () => [{ playState: 'running' }],
+    getBoundingClientRect: () => ({ x: 0, y: 200, width: 640, height: 500 })
+  }
+  const f = await fixture({ dialogs: [dialog] })
+  assert.equal(f.layouts.at(-1).overlayActive, true)
+  assert.equal(f.layouts.at(-1).menus.length, 0)
+  f.screen.destroy()
+})
+
 test('side panels and menus retain transport controls inside the video column', async () => {
   const f = await fixture()
   f.change({ panelOpen: true })
