@@ -358,6 +358,7 @@ Settings:
       Start with an empty session: Mit leerer Sitzung starten
 
       Load previously loaded tabs: Zuvor geladene Tabs laden
+      Load landing page, keep other tabs unloaded: Startseite laden, andere Tabs ungeladen lassen
     Locale Preference: Sprache
     Date Format: Datumsformat
     Time Format: Zeitformat

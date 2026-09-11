@@ -284,6 +284,7 @@ Settings:
       Load previously loaded tabs: Läs in tidigare inlästa flikar
       Load last active tab: Läs in senast aktiva fliken
       Start with an empty session: Starta med en tom session
+      Load landing page, keep other tabs unloaded: Läs in startsidan, behåll andra flikar oladdade
     Use AI Translation Completions: Fyll i saknade översättningar med AI-genererade översättningar
     Reduced Motion:
       Reduced Motion: Minskade rörelser

@@ -286,6 +286,7 @@ Settings:
       Load previously loaded tabs: טעינת הכרטיסיות שנטענו קודם
       Load last active tab: טעינת הכרטיסייה הפעילה האחרונה
       Start with an empty session: התחלה בהפעלה ריקה
+      Load landing page, keep other tabs unloaded: טעינת דף הפתיחה והשארת שאר הלשוניות ללא טעינה
     Use AI Translation Completions: השלמת תרגומים חסרים באמצעות תרגומים שנוצרו בבינה מלאכותית
     Reduced Motion:
       Reduced Motion: הפחתת תנועה

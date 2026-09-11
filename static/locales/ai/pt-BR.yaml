@@ -282,6 +282,7 @@ Settings:
       Load previously loaded tabs: Carregar as guias carregadas anteriormente
       Load last active tab: Carregar a última guia ativa
       Start with an empty session: Iniciar com uma sessão vazia
+      Load landing page, keep other tabs unloaded: Carregar a página inicial e manter as outras abas sem carregar
     Use AI Translation Completions: Preencher traduções ausentes com outras geradas por IA
     Reduced Motion:
       Reduced Motion: Movimento reduzido

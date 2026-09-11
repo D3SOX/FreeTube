@@ -375,6 +375,7 @@ Settings:
       Load previously loaded tabs: 이전에 불러온 탭 불러오기
       Load last active tab: 마지막 활성 탭 불러오기
       Start with an empty session: 빈 세션으로 시작
+      Load landing page, keep other tabs unloaded: 시작 페이지를 로드하고 다른 탭은 로드하지 않은 상태로 유지
     Use AI Translation Completions: 누락된 번역을 AI 생성 번역으로 채우기
     Reduced Motion:
       Reduced Motion: 모션 줄이기

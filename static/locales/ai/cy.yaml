@@ -284,6 +284,7 @@ Settings:
       Load previously loaded tabs: Llwytho tabiau a lwythwyd o'r blaen
       Load last active tab: Llwytho'r tab a oedd yn weithredol ddiwethaf
       Start with an empty session: Cychwyn â sesiwn wag
+      Load landing page, keep other tabs unloaded: Llwytho’r dudalen gychwyn, cadw’r tabiau eraill heb eu llwytho
     Use AI Translation Completions: Llenwi cyfieithiadau coll â rhai a gynhyrchwyd gan AI
     Reduced Motion:
       Reduced Motion: Llai o symudiad

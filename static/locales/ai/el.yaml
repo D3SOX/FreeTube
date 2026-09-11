@@ -286,6 +286,7 @@ Settings:
       Load previously loaded tabs: Φόρτωση των καρτελών που ήταν ήδη φορτωμένες
       Load last active tab: Φόρτωση της τελευταίας ενεργής καρτέλας
       Start with an empty session: Έναρξη με κενή συνεδρία
+      Load landing page, keep other tabs unloaded: Φόρτωση αρχικής σελίδας, διατήρηση των άλλων καρτελών χωρίς φόρτωση
     Use AI Translation Completions: Συμπλήρωση μεταφράσεων που λείπουν με μεταφράσεις παραγόμενες από AI
     Reduced Motion:
       Reduced Motion: Μειωμένη κίνηση

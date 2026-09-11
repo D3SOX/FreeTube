@@ -560,6 +560,7 @@ Settings:
       Load previously loaded tabs: Load previously loaded tabs
       Load last active tab: Load last active tab
       Start with an empty session: Start with an empty session
+      Load landing page, keep other tabs unloaded: Load landing page, keep other tabs unloaded
     Locale Preference: Locale Preference
     Date Format: Date Format
     Time Format: Time Format

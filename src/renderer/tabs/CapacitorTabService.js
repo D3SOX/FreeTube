@@ -67,6 +67,13 @@ export class CapacitorTabService {
       undefined,
       this.store.getters.getRememberTabNavigationHistory === true
     )
+    if (startupBehavior === 'loadLandingPage') {
+      const landingRoute = this.router.resolve(`/${this.store.getters.getLandingPage}`)
+      const landingTab = session.tabs.find(tab => tab.route.path === landingRoute.path)
+      session = landingTab
+        ? activateCapacitorTab(session, landingTab.id)
+        : addCapacitorTab(session, createCapacitorTab(landingRoute))
+    }
     for (const tab of session.tabs) {
       if (tab.id === session.activeTabId || startupBehavior === 'loadAllTabs') {
         session = loadCapacitorTab(session, tab.id)

@@ -400,6 +400,7 @@ Settings:
       Load previously loaded tabs: Įkelti anksčiau įkeltus skirtukus
       Load last active tab: Įkelti paskutinį aktyvų skirtuką
       Start with an empty session: Pradėti tuščią seansą
+      Load landing page, keep other tabs unloaded: Įkelti pradinį puslapį, kitus skirtukus palikti neįkeltus
     Use AI Translation Completions: Trūkstamus vertimus užpildyti DI sugeneruotais vertimais
     Reduced Motion:
       Reduced Motion: Mažiau animacijos

@@ -363,6 +363,7 @@ function runApp() {
     'loadAllTabs',
     'restoreTabLoadState',
     'loadLastActiveTab',
+    'loadLandingPage',
     'emptySession'
   ])
   const closeConfirmedWindowIds = new Set()
@@ -2445,7 +2446,8 @@ function runApp() {
       firstWindow = await createWindow({
         sessionData: savedSessions[0],
         loadInactiveTabsOnRestore: startupBehavior === 'loadAllTabs',
-        restoreTabLoadStateOnRestore: startupBehavior === 'restoreTabLoadState'
+        restoreTabLoadStateOnRestore: startupBehavior === 'restoreTabLoadState',
+        loadLandingPageOnRestore: startupBehavior === 'loadLandingPage'
       })
       for (let i = 1; i < savedSessions.length; i++) {
         await createWindow({
@@ -2453,7 +2455,8 @@ function runApp() {
           showWindowNow: true,
           sessionData: savedSessions[i],
           loadInactiveTabsOnRestore: startupBehavior === 'loadAllTabs',
-          restoreTabLoadStateOnRestore: startupBehavior === 'restoreTabLoadState'
+          restoreTabLoadStateOnRestore: startupBehavior === 'restoreTabLoadState',
+          loadLandingPageOnRestore: startupBehavior === 'loadLandingPage'
         })
       }
     }
@@ -2628,7 +2631,8 @@ function runApp() {
       searchQueryText = null,
       sessionData = null,
       loadInactiveTabsOnRestore = false,
-      restoreTabLoadStateOnRestore = false
+      restoreTabLoadStateOnRestore = false,
+      loadLandingPageOnRestore = false
     } = { }) {
     // Syncing new window background to theme choice.
     const windowBackground = await baseHandlers.settings._findOne('baseTheme').then(async (setting) => {
@@ -2919,7 +2923,8 @@ function runApp() {
       if (!windowStartupUrl) {
         sessionRestored = await tabManager.restoreFromData(sessionData, {
           loadInactiveTabs: loadInactiveTabsOnRestore,
-          restoreTabLoadState: restoreTabLoadStateOnRestore
+          restoreTabLoadState: restoreTabLoadStateOnRestore,
+          loadLandingPage: loadLandingPageOnRestore
         })
       }
 

@@ -305,3 +305,40 @@ test('closing the window cancels pending background mounts', async t => {
   assert.equal(manager.tabs.get('tab-0').mountDeferred, true)
   assert.equal(manager._pendingTabMountWaiters.size, 0)
 })
+
+for (const existingLanding of [false, true]) {
+  test(`landing-page startup ${existingLanding ? 'reuses an existing tab' : 'adds a tab'} and unloads every other tab`, async t => {
+    const manager = createManager(t)
+    t.mock.method(TabManager, 'getStoredLandingRoute', async () => '/subscriptions')
+    const saved = session(3)
+    saved.tabs[0].title = ''
+    if (existingLanding) {
+      saved.tabs[1].url = 'app://bundle/index.html#/subscriptions'
+      saved.tabs[1].isUnloaded = true
+      saved.tabs[1].isPinned = true
+    }
+    await manager.restoreFromData(saved, { loadLandingPage: true })
+    const tabs = [...manager.tabs.values()]
+    assert.equal(tabs.length, existingLanding ? 3 : 4)
+    const active = manager.tabs.get(manager.activeTabId)
+    assert.equal(TabManager.getRouteFromUrl(active.url).path, '/subscriptions')
+    assert.equal(active.loadState, 'mounting')
+    if (existingLanding) {
+      assert.equal(active.id, 'tab-1')
+      assert.equal(active.isPinned, true)
+    }
+    assert.ok(tabs.filter(tab => tab !== active).every(tab => tab.loadState === 'unloaded'))
+    presentActive(manager)
+    assert.equal(manager._startupMountQueue.size, 0)
+    assert.deepEqual(saved.tabs.map(tab => tab.id), ['tab-0', 'tab-1', 'tab-2'])
+  })
+}
+
+test('landing-page startup selects only the first matching tab', async t => {
+  const manager = createManager(t)
+  t.mock.method(TabManager, 'getStoredLandingRoute', async () => '/history')
+  await manager.restoreFromData(session(3), { loadLandingPage: true })
+  assert.equal(manager.activeTabId, 'tab-0')
+  assert.equal(manager.tabs.size, 3)
+  assert.deepEqual([...manager.tabs.values()].map(tab => tab.loadState), ['mounting', 'unloaded', 'unloaded'])
+})

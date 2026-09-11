@@ -282,6 +282,7 @@ Settings:
       Load previously loaded tabs: Charger les onglets précédemment chargés
       Load last active tab: Charger le dernier onglet actif
       Start with an empty session: Démarrer avec une session vide
+      Load landing page, keep other tabs unloaded: Charger la page d’accueil et garder les autres onglets non chargés
     Use AI Translation Completions: Compléter les traductions manquantes par celles générées par l’IA
     Reduced Motion:
       Reduced Motion: Réduction des animations

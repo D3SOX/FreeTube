@@ -286,6 +286,7 @@ Settings:
       Load previously loaded tabs: تحميل علامات التبويب المحملة مسبقًا
       Load last active tab: تحميل آخر علامة تبويب نشطة
       Start with an empty session: ابدأ بجلسة فارغة
+      Load landing page, keep other tabs unloaded: تحميل الصفحة المقصودة وإبقاء علامات التبويب الأخرى دون تحميل
     Use AI Translation Completions: أكمل الترجمات المفقودة بأخرى مولّدة بالذكاء الاصطناعي
     Reduced Motion:
       Reduced Motion: تقليل الحركة

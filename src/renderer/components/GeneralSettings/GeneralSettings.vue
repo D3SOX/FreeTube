@@ -624,20 +624,21 @@ function updateTabCloseFocus(value) {
   store.dispatch('updateTabCloseFocus', value)
 }
 
-const STARTUP_BEHAVIOR_VALUES = ['loadAllTabs', 'restoreTabLoadState', 'loadLastActiveTab', 'emptySession']
+const STARTUP_BEHAVIOR_VALUES = ['loadAllTabs', 'restoreTabLoadState', 'loadLastActiveTab', 'loadLandingPage', 'emptySession']
 
 const startupBehaviorNames = computed(() => [
   t('Settings.General Settings.Startup Behavior.Load all tabs'),
   t('Settings.General Settings.Startup Behavior.Load previously loaded tabs'),
   t('Settings.General Settings.Startup Behavior.Load last active tab'),
+  t('Settings.General Settings.Startup Behavior.Load landing page, keep other tabs unloaded'),
   t('Settings.General Settings.Startup Behavior.Start with an empty session')
 ])
 
-/** @type {import('vue').ComputedRef<'loadAllTabs' | 'restoreTabLoadState' | 'loadLastActiveTab' | 'emptySession'>} */
+/** @type {import('vue').ComputedRef<'loadAllTabs' | 'restoreTabLoadState' | 'loadLastActiveTab' | 'loadLandingPage' | 'emptySession'>} */
 const startupBehavior = computed(() => store.getters.getStartupBehavior)
 
 /**
- * @param {'loadAllTabs' | 'restoreTabLoadState' | 'loadLastActiveTab' | 'emptySession'} value
+ * @param {'loadAllTabs' | 'restoreTabLoadState' | 'loadLastActiveTab' | 'loadLandingPage' | 'emptySession'} value
  */
 function updateStartupBehavior(value) {
   store.dispatch('updateStartupBehavior', value)

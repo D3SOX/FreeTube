@@ -286,6 +286,7 @@ Settings:
       Load previously loaded tabs: Əvvəllər yüklənmiş vərəqləri yüklə
       Load last active tab: Son aktiv vərəqi yüklə
       Start with an empty session: Boş sessiya ilə başla
+      Load landing page, keep other tabs unloaded: Başlanğıc səhifəsini yüklə, digər vərəqləri yüklənməmiş saxla
     Date Format: Tarix formatı
     Time Format: Vaxt formatı
     Language Default: Dilin ilkin formatı

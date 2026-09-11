@@ -282,6 +282,7 @@ Settings:
       Load previously loaded tabs: Daha önce yüklenen sekmeleri yükle
       Load last active tab: Son etkin sekmeyi yükle
       Start with an empty session: Boş bir oturumla başla
+      Load landing page, keep other tabs unloaded: Başlangıç sayfasını yükle, diğer sekmeleri yüklenmemiş tut
     Use AI Translation Completions: Eksik çevirileri yapay zekâ tarafından oluşturulan çevirilerle tamamla
     Reduced Motion:
       Reduced Motion: Azaltılmış Hareket

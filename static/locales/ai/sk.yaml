@@ -282,6 +282,7 @@ Settings:
       Load previously loaded tabs: Načítať predtým načítané karty
       Load last active tab: Načítať naposledy aktívnu kartu
       Start with an empty session: Začať s prázdnou reláciou
+      Load landing page, keep other tabs unloaded: Načítať úvodnú stránku, ostatné karty ponechať nenačítané
     Use AI Translation Completions: Doplniť chýbajúce preklady prekladmi vytvorenými umelou inteligenciou
     Reduced Motion:
       Reduced Motion: Obmedzenie pohybu

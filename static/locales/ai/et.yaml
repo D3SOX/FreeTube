@@ -282,6 +282,7 @@ Settings:
       Load previously loaded tabs: Laadi varem laaditud vahekaardid
       Load last active tab: Laadi viimati aktiivne vahekaart
       Start with an empty session: Alusta tühja seansiga
+      Load landing page, keep other tabs unloaded: Laadi avaleht, jäta teised vahekaardid laadimata
     Use AI Translation Completions: Täida puuduvad tõlked tehisaru loodud tõlgetega
     Reduced Motion:
       Reduced Motion: Vähendatud liikumine

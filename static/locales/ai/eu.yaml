@@ -284,6 +284,7 @@ Settings:
       Load previously loaded tabs: Kargatu aurretik kargatutako fitxak
       Load last active tab: Kargatu aktibo egon den azken fitxa
       Start with an empty session: Hasi saio huts batekin
+      Load landing page, keep other tabs unloaded: Kargatu hasierako orria eta mantendu beste fitxak kargatu gabe
     Use AI Translation Completions: Bete falta diren itzulpenak adimen artifizialak sortutakoekin
     Reduced Motion:
       Reduced Motion: Mugimendu murriztua
