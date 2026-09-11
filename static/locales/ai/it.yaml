@@ -1066,8 +1066,6 @@ Channel:
   Search Result Types: Tipi di risultati della ricerca
   All Results: Tutti
 Video:
-  Move Queue Item Up: "Sposta {title} in alto"
-  Move Queue Item Down: "Sposta {title} in basso"
   Includes paid promotion: Include una promozione a pagamento
   Age Restricted Badge: Limiti di età
   Queue: Coda
@@ -1455,7 +1453,6 @@ Comments:
   Translating comment, please wait: Traduzione del commento, attendi
   Comment translation failed: Traduzione del commento non riuscita
 Description:
-  Title: Descrizione
   Copy Description: Copia descrizione
   Description Copied: Descrizione copiata negli appunti
   Video Category: 'Categoria del video:'

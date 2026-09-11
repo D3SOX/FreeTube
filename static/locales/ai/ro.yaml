@@ -1090,8 +1090,6 @@ Channel:
   All Results: Toate
   View All: Vezi tot
 Video:
-  Move Queue Item Up: "Mută {title} în sus"
-  Move Queue Item Down: "Mută {title} în jos"
   Includes paid promotion: Include promovare plătită
   Age Restricted Badge: Restricționat în funcție de vârstă
   Queue: Coadă
@@ -1494,7 +1492,6 @@ Comments:
   Translating comment, please wait: Se traduce comentariul, așteptați
   Comment translation failed: Traducerea comentariului a eșuat
 Description:
-  Title: Descriere
   Copy Description: Copiază descrierea
   Description Copied: Descriere copiată în clipboard
   Video Category: 'Categoria videoclipului:'

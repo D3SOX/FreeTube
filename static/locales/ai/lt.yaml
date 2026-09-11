@@ -1382,8 +1382,6 @@ Channel:
     Hide Answers: Slėpti atsakymus
     Video hidden by OpenTubeX: Vaizdo įrašą paslėpė OpenTubeX
 Video:
-  Move Queue Item Up: "Perkelti {title} aukštyn"
-  Move Queue Item Down: "Perkelti {title} žemyn"
   Includes paid promotion: Yra mokamos reklamos
   Age Restricted Badge: Ribojama pagal amžių
   Queue: Eilė
@@ -1858,7 +1856,6 @@ Comments:
   Translating comment, please wait: Komentaras verčiamas, palaukite
   Comment translation failed: Nepavyko išversti komentaro
 Description:
-  Title: Aprašymas
   Expand Description: ...daugiau
   Collapse Description: Rodyti mažiau
   Copy Description: Kopijuoti aprašą

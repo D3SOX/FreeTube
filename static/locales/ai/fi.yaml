@@ -1096,8 +1096,6 @@ Channel:
   All Results: Kaikki
   View All: Näytä kaikki
 Video:
-  Move Queue Item Up: "Siirrä {title} ylöspäin"
-  Move Queue Item Down: "Siirrä {title} alaspäin"
   Includes paid promotion: Sisältää maksettua mainontaa
   Age Restricted Badge: Ikärajoitettu
   Queue: Jono
@@ -1492,7 +1490,6 @@ Comments:
   Translating comment, please wait: Kommenttia käännetään, odota
   Comment translation failed: Kommentin kääntäminen epäonnistui
 Description:
-  Title: Kuvaus
   Copy Description: Kopioi kuvaus
   Description Copied: Kuvaus kopioitiin leikepöydälle
   Video Category: 'Videon luokka:'

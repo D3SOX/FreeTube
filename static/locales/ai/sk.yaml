@@ -1066,8 +1066,6 @@ Channel:
   Search Result Types: Typy výsledkov hľadania
   All Results: Všetko
 Video:
-  Move Queue Item Up: "Posunúť sekciu {title} nahor"
-  Move Queue Item Down: "Posunúť sekciu {title} nadol"
   Includes paid promotion: Obsahuje platenú propagáciu
   Age Restricted Badge: Vekovo obmedzené
   Queue: Poradie prehrávania
@@ -1455,7 +1453,6 @@ Comments:
   Translating comment, please wait: Komentár sa prekladá, čakajte
   Comment translation failed: Preklad komentára zlyhal
 Description:
-  Title: Popis
   Copy Description: Kopírovať opis
   Description Copied: Opis bol skopírovaný do schránky
   Video Category: 'Kategória videa:'

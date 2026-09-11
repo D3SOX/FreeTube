@@ -1049,8 +1049,6 @@ Channel:
   Search Result Types: Search result types
   All Results: All
 Video:
-  Move Queue Item Up: "Move {title} up"
-  Move Queue Item Down: "Move {title} down"
   Includes paid promotion: Includes paid promotion
   Age Restricted Badge: Age restricted
   Queue: Queue
@@ -1435,7 +1433,6 @@ Comments:
   Translating comment, please wait: Translating comment, please wait
   Comment translation failed: Comment translation failed
 Description:
-  Title: Description
   Copy Description: Copy Description
   Description Copied: Description copied to clipboard
   Video Category: 'Video Category:'

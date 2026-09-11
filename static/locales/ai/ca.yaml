@@ -1467,8 +1467,6 @@ Channel:
     Hide Answers: Oculta les respostes
     Video hidden by OpenTubeX: Vídeo ocult per l'OpenTubeX
 Video:
-  Move Queue Item Up: "Mou {title} amunt"
-  Move Queue Item Down: "Mou {title} avall"
   Includes paid promotion: Inclou promoció de pagament
   Age Restricted Badge: Restricció d'edat
   Queue: Cua
@@ -1975,7 +1973,6 @@ Comments:
   Comment translation failed: Ha fallat la traducció del comentari
 Up Next: A continuació
 Description:
-  Title: Descripció
   Expand Description: ...més
   Collapse Description: Mostra'n menys
   Copy Description: Copia la descripció

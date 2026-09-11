@@ -1073,8 +1073,6 @@ Channel:
   Search Result Types: Видове резултати от търсенето
   All Results: Всички
 Video:
-  Move Queue Item Up: "Преместване на {title} нагоре"
-  Move Queue Item Down: "Преместване на {title} надолу"
   Includes paid promotion: Съдържа платена реклама
   Age Restricted Badge: Възрастово ограничение
   Queue: Опашка
@@ -1468,7 +1466,6 @@ Comments:
   Translating comment, please wait: Коментарът се превежда. Моля, изчакайте…
   Comment translation failed: Преводът на коментара е неуспешен
 Description:
-  Title: Описание
   Copy Description: Копиране на описанието
   Description Copied: Описанието е копирано в системния буфер
   Video Category: 'Категория на видеоклипа:'

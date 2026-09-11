@@ -1071,8 +1071,6 @@ Channel:
   Search Result Types: 搜尋結果類型
   All Results: 全部
 Video:
-  Move Queue Item Up: "將{title}上移"
-  Move Queue Item Down: "將{title}下移"
   Includes paid promotion: 包含付費宣傳內容
   Age Restricted Badge: 有年齡限制
   Queue: 佇列
@@ -1466,7 +1464,6 @@ Comments:
   Translating comment, please wait: 正在翻譯留言，請稍候
   Comment translation failed: 留言翻譯失敗
 Description:
-  Title: 說明
   Copy Description: 複製說明
   Description Copied: 已將說明複製到剪貼簿
   Video Category: '影片類別：'

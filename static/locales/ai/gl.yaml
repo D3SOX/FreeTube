@@ -1091,8 +1091,6 @@ Channel:
   All Results: Todos
   View All: Ver todo
 Video:
-  Move Queue Item Up: "Mover {title} cara arriba"
-  Move Queue Item Down: "Mover {title} cara abaixo"
   Includes paid promotion: Inclúe promoción pagada
   Age Restricted Badge: Restrinxido por idade
   Queue: Cola
@@ -1496,7 +1494,6 @@ Comments:
   Translating comment, please wait: Traducindo o comentario; agarda
   Comment translation failed: Produciuse un erro ao traducir o comentario
 Description:
-  Title: Descrición
   Copy Description: Copiar a descrición
   Description Copied: Copiouse a descrición no portapapeis
   Video Category: 'Categoría do vídeo:'

@@ -1089,8 +1089,6 @@ Channel:
   All Results: Allt
   View All: Skoða allt
 Video:
-  Move Queue Item Up: "Færa {title} upp"
-  Move Queue Item Down: "Færa {title} niður"
   Includes paid promotion: Inniheldur greidda kynningu
   Age Restricted Badge: Aldurstakmark
   Queue: Biðröð
@@ -1493,7 +1491,6 @@ Comments:
   Translating comment, please wait: Þýði athugasemd, bíddu aðeins
   Comment translation failed: Ekki tókst að þýða athugasemd
 Description:
-  Title: Lýsing
   Copy Description: Afrita lýsingu
   Description Copied: Lýsing afrituð á klippispjaldið
   Video Category: 'Flokkur myndbands:'

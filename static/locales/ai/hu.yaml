@@ -1066,8 +1066,6 @@ Channel:
   Search Result Types: Keresési találatok típusai
   All Results: Összes
 Video:
-  Move Queue Item Up: "{title} feljebb mozgatása"
-  Move Queue Item Down: "{title} lejjebb mozgatása"
   Includes paid promotion: Fizetett promóciót tartalmaz
   Age Restricted Badge: Korhatáros
   Queue: Lejátszási sor
@@ -1455,7 +1453,6 @@ Comments:
   Translating comment, please wait: Hozzászólás fordítása, kis türelmet
   Comment translation failed: Nem sikerült lefordítani a hozzászólást
 Description:
-  Title: Leírás
   Copy Description: Leírás másolása
   Description Copied: A leírás a vágólapra másolva
   Video Category: 'Videókategória:'

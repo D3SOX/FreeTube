@@ -1069,8 +1069,6 @@ Channel:
   Search Result Types: Axtarış nəticələrinin növləri
   All Results: Hamısı
 Video:
-  Move Queue Item Up: "{title} bölməsini yuxarı köçür"
-  Move Queue Item Down: "{title} bölməsini aşağı köçür"
   Includes paid promotion: Ödənişli tanıtım daxildir
   Age Restricted Badge: Yaş məhdudiyyətli
   Queue: Növbə
@@ -1468,7 +1466,6 @@ Comments:
   Translating comment, please wait: Şərh tərcümə edilir, zəhmət olmasa gözləyin
   Comment translation failed: Şərhin tərcüməsi alınmadı
 Description:
-  Title: Təsvir
   Copy Description: Açıqlamanı köçür
   Description Copied: Açıqlama buferə köçürüldü
   Video Category: 'Video kateqoriyası:'

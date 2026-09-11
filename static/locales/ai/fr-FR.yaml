@@ -1065,8 +1065,6 @@ Channel:
   Search Result Types: Types de résultats de recherche
   All Results: Tous
 Video:
-  Move Queue Item Up: "Déplacer {title} vers le haut"
-  Move Queue Item Down: "Déplacer {title} vers le bas"
   Includes paid promotion: Contient une promotion rémunérée
   Age Restricted Badge: Soumise à une limite d’âge
   Queue: File d’attente
@@ -1453,7 +1451,6 @@ Comments:
   Translating comment, please wait: Traduction du commentaire en cours, veuillez patienter
   Comment translation failed: Échec de la traduction du commentaire
 Description:
-  Title: Description
   Copy Description: Copier la description
   Description Copied: Description copiée dans le presse-papiers
   Video Category: 'Catégorie de la vidéo :'

@@ -1066,8 +1066,6 @@ Channel:
   Search Result Types: 検索結果の種類
   All Results: すべて
 Video:
-  Move Queue Item Up: "{title}を上へ移動"
-  Move Queue Item Down: "{title}を下へ移動"
   Includes paid promotion: 有料プロモーションを含みます
   Age Restricted Badge: 年齢制限あり
   Queue: キュー
@@ -1455,7 +1453,6 @@ Comments:
   Translating comment, please wait: コメントを翻訳中です。しばらくお待ちください
   Comment translation failed: コメントの翻訳に失敗しました
 Description:
-  Title: 説明
   Copy Description: 説明をコピー
   Description Copied: 説明をクリップボードにコピーしました
   Video Category: '動画カテゴリー:'

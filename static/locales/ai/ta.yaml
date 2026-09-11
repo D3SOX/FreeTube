@@ -1095,8 +1095,6 @@ Channel:
   All Results: அனைத்தும்
   View All: அனைத்தையும் பார்
 Video:
-  Move Queue Item Up: "{title} ஐ மேலே நகர்த்து"
-  Move Queue Item Down: "{title} ஐ கீழே நகர்த்து"
   Includes paid promotion: கட்டண விளம்பரம் உள்ளது
   Age Restricted Badge: வயது வரம்புள்ளது
   Queue: வரிசை
@@ -1497,7 +1495,6 @@ Comments:
   Translating comment, please wait: கருத்து மொழிபெயர்க்கப்படுகிறது, காத்திருக்கவும்
   Comment translation failed: கருத்து மொழிபெயர்ப்பு தோல்வியடைந்தது
 Description:
-  Title: விளக்கம்
   Copy Description: விளக்கத்தை நகலெடு
   Description Copied: விளக்கம் இடைநிலைப் பலகைக்கு நகலெடுக்கப்பட்டது
   Video Category: 'காணொளி வகை:'
