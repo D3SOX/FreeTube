@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises'
 import path from 'node:path'
 
-import { test, expect, expectScrollAtRenderedEnd, goToSettingsSection, latestSettings } from '../../helpers/app.mjs'
+import { test, expect, expectScrollAtRenderedEnd, goToSettingsSection, latestSettings, setWindowSize } from '../../helpers/app.mjs'
 import { DEFAULT_QUICK_SETTINGS } from '../../../src/renderer/helpers/quickSettings.js'
 import { DEFAULT_CUSTOM_THEME } from '../../../src/customTheme.js'
 
@@ -308,6 +308,57 @@ test.describe('quick settings menu', () => {
     await expect(page.getByRole('dialog', { name: 'Command palette' })).toBeVisible()
   })
 
+  test('hands focus from the phone sheet to the command palette', async ({ app, page }) => {
+    await setWindowSize(app, page, { width: 480, height: 800 })
+    await page.locator('.profileTrigger').click()
+    const sheet = page.locator('.mobileSheet[open]')
+    await sheet.getByRole('button', { name: 'Open command palette' }).click()
+    const palette = page.getByRole('dialog', { name: 'Command palette' })
+    await expect(palette).toBeVisible()
+    await expect(palette.locator('input')).toBeFocused()
+  })
+
+  test('cancels a pending phone command palette when another action runs', async ({ app, page }) => {
+    await setWindowSize(app, page, { width: 480, height: 800 })
+    await page.locator('.profileTrigger').click()
+    await page.locator('.mobileSheet[open]').evaluate(sheet => {
+      sheet.querySelector('.commandPaletteShortcut').click()
+      sheet.querySelector('.allSettingsShortcut').click()
+    })
+    await expect(page.locator('.settingsWindow')).toBeVisible()
+    await expect(page.getByRole('dialog', { name: 'Command palette' })).toHaveCount(0)
+  })
+
+  test('clears the open state when leaving the phone layout', async ({ app, page }) => {
+    await setWindowSize(app, page, { width: 480, height: 800 })
+    const trigger = page.locator('.profileTrigger')
+    await trigger.click()
+    await expect(trigger).toHaveAttribute('aria-expanded', 'true')
+    await setWindowSize(app, page, { width: 1000, height: 700 })
+    await expect(trigger).toHaveAttribute('aria-expanded', 'false')
+    await trigger.click()
+    await expect(page.getByRole('dialog', { name: 'Quick settings' })).toBeVisible()
+  })
+
+  test('keeps responsive select focus and open state synchronized', async ({ app, page }) => {
+    await setWindowSize(app, page, { width: 480, height: 800 })
+    const appearance = await goToSettingsSection(page, 'appearance')
+    const select = appearance.getByRole('combobox', { name: 'Base Theme' })
+    await select.click()
+    const listbox = page.locator(`#${await select.getAttribute('aria-controls')}`)
+    const options = listbox.getByRole('option')
+    await options.first().focus()
+    await options.first().press('ArrowDown')
+    await expect(select).toHaveAttribute('aria-activedescendant', await options.nth(1).getAttribute('id'))
+
+    await setWindowSize(app, page, { width: 1000, height: 700 })
+    await expect(select).toHaveAttribute('aria-expanded', 'false')
+    await select.click()
+    for (const option of await listbox.getByRole('option').all()) {
+      await expect(option).toHaveAttribute('tabindex', '-1')
+    }
+  })
+
   test('fits a maximized 1080p window and spaces both sliders consistently', async ({ app, page }) => {
     await app.electronApp.evaluate(({ BrowserWindow }) => {
       BrowserWindow.getAllWindows()[0]?.setBounds({ x: 0, y: 0, width: 1920, height: 1080 })
@@ -510,7 +561,7 @@ test.describe('quick settings menu', () => {
     await menu.locator('.profileSummary').click()
 
     await expect(menu.locator('.quickSettingsScroll').locator('.profilePanelHeader')).toHaveCount(0)
-    await menu.getByRole('button', { name: 'Back' }).click()
+    await page.locator('.mobileSheetHeader').getByRole('button', { name: 'Back' }).click()
     await expect(menu.locator('.profileHeaderRow')).toBeVisible()
     await expect(mainScroll).toHaveJSProperty('scrollTop', 0)
   })

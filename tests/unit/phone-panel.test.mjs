@@ -13,9 +13,9 @@ for (const change of ['close', 'unmount']) {
     let restoreCalls = 0
     let finishUpdate
     const updated = new Promise(resolve => { finishUpdate = resolve })
-    new Function('watch', 'props', 'scroller', 'nextTick', 'restoreOverlayScrollTop', 'clamp', 'readingPosition', watcherSource)(
+    new Function('watch', 'props', 'scroller', 'nextTick', 'restoreOverlayScrollTop', 'clamp', 'readingPosition', 'panelRendered', watcherSource)(
       (_source, callback) => { watcher = callback }, props, scroller, () => updated,
-      element => { element.scrollTop = 100; restoreCalls++ }, () => {}, 100
+      element => { element.scrollTop = 100; restoreCalls++ }, () => {}, 100, { value: false }
     )
     const restoring = watcher(true)
     if (change === 'unmount') scroller.value = null

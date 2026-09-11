@@ -1,6 +1,7 @@
 <template>
   <Teleport :to="teleportTarget">
     <div
+      ref="prompt"
       class="prompt"
       :class="{ lockScroll }"
       tabindex="-1"
@@ -151,6 +152,7 @@ const teleportTarget = document.fullscreenElement ?? '.app'
 
 const promptCard = useTemplateRef('promptCard')
 const promptContentScroller = useTemplateRef('promptContentScroller')
+const prompt = useTemplateRef('prompt')
 
 let promptButtons = []
 let lastActiveElement = null
@@ -252,7 +254,8 @@ function focusItem(index) {
  */
 function handleEscape(event) {
   if (event.target instanceof Element && event.target.closest('dialog[open]')) return
-  if (event.key === 'Escape' && !props.inert && !event.defaultPrevented) {
+  const isTopmostPrompt = [...document.querySelectorAll('.prompt:not([inert])')].at(-1) === prompt.value
+  if (event.key === 'Escape' && !props.inert && !event.defaultPrevented && isTopmostPrompt) {
     event.preventDefault()
     hide()
   }

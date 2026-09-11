@@ -849,6 +849,8 @@
           v-if="phonePanelsEnabled && !isLoading && !hideVideoDescription"
           :description="videoDescription"
           :description-html="videoDescriptionHtml"
+          :tags="videoTags"
+          :games="videoGames"
           preview-only
           class="watchVideo phoneDescriptionPreview"
           @expand="openPhonePanel('description')"
@@ -930,7 +932,7 @@
         :enabled="phonePanelsEnabled"
         :open="mobilePanel === 'chapters'"
         fill
-        :title="$t('Chapters.Chapters')"
+        :title="videoChaptersKind === 'keyMoments' ? $t('Chapters.Key Moments') : $t('Chapters.Chapters')"
         @close="closeSidebarChapters"
       >
         <transition
@@ -1006,19 +1008,19 @@
         :to="fullscreenTranscriptTarget || 'body'"
         :disabled="!fullscreenTranscriptOpen"
       >
-        <transition
-          name="sidebar-panel"
-          @before-leave="handleSidebarPanelBeforeLeave"
-          @after-leave="handleSidebarPanelAfterLeave"
-          @leave-cancelled="handleSidebarPanelAfterLeave"
+        <FtPhonePanel
+          :enabled="phonePanelsEnabled"
+          :open="mobilePanel === 'transcript'"
+          custom-header
+          :title="$t('Video.Transcript.Title')"
+          fill
+          @close="closeTranscript"
         >
-          <FtPhonePanel
-            :enabled="phonePanelsEnabled"
-            :open="mobilePanel === 'transcript'"
-            custom-header
-            :title="$t('Video.Transcript.Title')"
-            fill
-            @close="mobilePanel = null"
+          <transition
+            name="sidebar-panel"
+            @before-leave="handleSidebarPanelBeforeLeave"
+            @after-leave="handleSidebarPanelAfterLeave"
+            @leave-cancelled="handleSidebarPanelAfterLeave"
           >
             <watch-video-transcript
               v-if="showTranscript && transcriptAvailable && !isLoading && !isLive && !isUpcoming && (!customShortsPlayerActive || fullscreenTranscriptOpen)"
@@ -1031,26 +1033,26 @@
               @close="closeTranscript"
               @timestamp-event="playTranscriptSegment"
             />
-          </FtPhonePanel>
-        </transition>
+          </transition>
+        </FtPhonePanel>
       </Teleport>
       <Teleport
         :to="fullscreenLiveChatTarget || 'body'"
         :disabled="!fullscreenLiveChatOpen"
       >
-        <transition
-          name="sidebar-panel"
-          @before-leave="handleSidebarPanelBeforeLeave"
-          @after-leave="handleSidebarPanelAfterLeave"
-          @leave-cancelled="handleSidebarPanelAfterLeave"
+        <FtPhonePanel
+          :enabled="phonePanelsEnabled"
+          :open="mobilePanel === 'chat'"
+          custom-header
+          :title="liveChatIsReplay ? $t('Video.Live Chat Replay') : $t('Video.Live Chat')"
+          fill
+          @close="closeLiveChat"
         >
-          <FtPhonePanel
-            :enabled="phonePanelsEnabled"
-            :open="mobilePanel === 'chat'"
-            custom-header
-            :title="$t('Video.Live Chat')"
-            fill
-            @close="mobilePanel = null"
+          <transition
+            name="sidebar-panel"
+            @before-leave="handleSidebarPanelBeforeLeave"
+            @after-leave="handleSidebarPanelAfterLeave"
+            @leave-cancelled="handleSidebarPanelAfterLeave"
           >
             <watch-video-live-chat
               v-if="!isLoading && showLiveChat"
@@ -1063,8 +1065,8 @@
               :class="{ theatrePlaylist: useTheatreMode }"
               @close="closeLiveChat"
             />
-          </FtPhonePanel>
-        </transition>
+          </transition>
+        </FtPhonePanel>
       </Teleport>
       <FtPhonePanel
         :enabled="phonePanelsEnabled"

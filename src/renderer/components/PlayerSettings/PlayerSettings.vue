@@ -144,6 +144,7 @@
           @change="updateLoopShorts"
         />
         <FtToggleSwitch
+          v-if="!IS_CAPACITOR"
           :label="t('Settings.Player Settings.Automatically Open Chapters')"
           :compact="true"
           :default-value="autoOpenChapters"

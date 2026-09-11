@@ -11,10 +11,15 @@ export function useScrollClamp(scroller, content) {
       if (scroller.value && content.value) clampOverlayScrollTop(scroller.value, content.value)
     })
   }
-  watch([scroller, content], async () => {
+  watch([scroller, content], async (_value, _oldValue, onCleanup) => {
+    let cancelled = false
+    onCleanup(() => {
+      cancelled = true
+      observer?.disconnect()
+    })
     observer?.disconnect()
     await nextTick()
-    if (!scroller.value || !content.value) return
+    if (cancelled || !scroller.value || !content.value) return
     observer = new ResizeObserver(clamp)
     observer.observe(scroller.value)
     observer.observe(content.value)

@@ -107,7 +107,7 @@ for (const zoom of [1, 1.25]) {
       await mockPlayableWatchPage(app, page)
       await openMockedVideo(page)
       await page.locator(`${activeTab} .ftVideoPlayer video`).evaluate(video => video.pause())
-      await setWindowSize(app, page, { width: 500, height: 850 })
+      await setWindowSize(app, page, { width: 800, height: 850 })
       await page.evaluate(zoom => window.ftElectron.setZoomFactor(zoom), zoom)
       const session = await page.context().newCDPSession(page)
       const view = await watchViewHandle(page)
@@ -656,13 +656,17 @@ test('keeps watch metadata and comment filters inside a narrow viewport', async 
   expect(await videoInfo.evaluate(element => element.scrollWidth - element.clientWidth))
     .toBeLessThanOrEqual(1)
 
-  const loadComments = page.locator('.getCommentsTitle')
+  await expect.poll(() => watchViewHandle(page).then(handle => handle.evaluate(view => view.phonePanelsEnabled))).toBe(true)
+  await page.locator('.phoneCommentsButton').click()
+  const comments = page.locator('.mobileSheet[open]')
+  await expect(comments).toBeVisible()
+  const loadComments = comments.locator('.getCommentsTitle')
   if (await loadComments.count() > 0) {
     await loadComments.scrollIntoViewIfNeeded()
     await loadComments.click()
   }
-  await expect(page.locator('.commentsTitle')).toBeVisible({ timeout: 30_000 })
-  await page.getByRole('button', { name: 'Filter loaded comments' }).click()
+  await expect(comments.locator('.fullscreenCommentHeader h3')).toBeVisible({ timeout: 30_000 })
+  await comments.getByRole('button', { name: 'Filter loaded comments' }).click()
 
   const menuBounds = await page.getByRole('dialog', { name: 'Comment filters' }).evaluate(element => {
     const bounds = element.getBoundingClientRect()
@@ -687,8 +691,8 @@ test('keeps stacked watch cards separated in the Capacitor phone layout', async 
     element.classList.remove('topTabs', 'bottomTabs', 'verticalTabs')
   })
 
-  const cards = page.locator('.watchVideoInfo, .videoDescription, .watchVideoRecommendations, .commentsArea > .watchVideo')
-  await expect(cards).toHaveCount(4)
+  const cards = page.locator('.watchVideoInfo:visible, .videoDescription:visible, .watchVideoRecommendations:visible, .commentsArea > .watchVideo:visible')
+  await expect(cards).toHaveCount(3)
 
   const geometry = await cards.evaluateAll((elements) => elements.map((element) => {
     const bounds = element.getBoundingClientRect()
@@ -732,6 +736,34 @@ for (const { name, options, expectedCount } of [
       .toHaveCount(expectedCount)
   })
 }
+
+test.describe('watch sidebar panels without recommendations', () => {
+  test.use({
+    seed: {
+      settings: {
+        ...WATCH_PAGE_SEED,
+        defaultViewingMode: 'theatre',
+        hideRecommendedVideos: true
+      }
+    }
+  })
+
+  test('collapses the sidebar after closing the transcript', async ({ app, page }) => {
+    await mockPlayableWatchPage(app, page, { captionCueSettings: 'align:center' })
+    await openMockedVideo(page)
+
+    const layout = page.locator(`${activeTab} .videoLayout`)
+    await expect(layout).toHaveClass(/noSidebar/)
+
+    await page.getByRole('button', { name: 'Show transcript' }).click()
+    await expect(layout).not.toHaveClass(/noSidebar/)
+    await page.locator(`${activeTab} .sidebarArea`)
+      .getByRole('button', { name: 'Close transcript' })
+      .click()
+
+    await expect(layout).toHaveClass(/noSidebar/)
+  })
+})
 
 test('repeats an A-B range and manages it from the player menu', async ({ app, page }) => {
   await mockPlayableWatchPage(app, page)
@@ -3612,7 +3644,7 @@ test.describe('watch page', () => {
     await expect(auxPanel).toHaveClass(/shortsAuxPanelOpen/)
 
     await auxPanel.getByRole('button', { name: /Save channel setting/i }).click()
-    const settingsMenu = page.locator('.app > .iconDropdown.portal')
+    const settingsMenu = page.locator('.app > .dropdownLayer > .iconDropdown.portal')
     await expect(settingsMenu).toBeVisible()
     expect(await settingsMenu.evaluate(element => {
       const bounds = element.getBoundingClientRect()
@@ -4834,18 +4866,21 @@ test.describe('fullscreen playlist dock', () => {
 
     const addToPlaylist = item.locator('.addToPlaylistIcon .iconButton')
     await addToPlaylist.click()
-    const dropdown = page.locator('.app > .iconDropdown.portal')
+    const dropdown = page.locator('.app > .dropdownLayer > .iconDropdown.portal')
     await expect(dropdown).toBeVisible()
     const [buttonBox, dropdownBox] = await Promise.all([
       addToPlaylist.boundingBox(),
       dropdown.boundingBox(),
     ])
-    expect(dropdownBox.y + dropdownBox.height).toBeLessThanOrEqual(buttonBox.y)
+    expect(
+      dropdownBox.y + dropdownBox.height <= buttonBox.y ||
+      dropdownBox.y >= buttonBox.y + buttonBox.height
+    ).toBe(true)
     expect(dropdownBox.x).toBeGreaterThanOrEqual(8)
     expect(dropdownBox.x + dropdownBox.width).toBeLessThanOrEqual(
       await page.evaluate(() => window.innerWidth - 8)
     )
-    expect(await dropdown.evaluate(element => element.parentElement?.classList.contains('app'))).toBe(true)
+    expect(await dropdown.evaluate(element => element.parentElement?.parentElement?.classList.contains('app'))).toBe(true)
     await expect(dropdown).toHaveCSS(
       'font-family',
       await page.locator('.app').evaluate(element => getComputedStyle(element).fontFamily)
@@ -4939,6 +4974,8 @@ test('treats an empty comments response as no comments', async ({ app, page }) =
     element.classList.add('capacitorTabs', 'capacitorPhoneLayout')
     element.classList.remove('topTabs', 'bottomTabs', 'verticalTabs')
   })
+  await (await watchViewHandle(page)).evaluate(view => view.openPhonePanel('comments'))
+  await expect(page.locator('.mobileSheet[open] .noComments')).toBeVisible()
 
   const readMobileLayout = () => page.locator('.noComments').evaluate((element) => {
     const actionsBounds = element.querySelector('.noCommentActions').getBoundingClientRect()

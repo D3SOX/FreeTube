@@ -2,6 +2,10 @@
   text-align: center;
 }
 
+.playlistPromptHeading {
+  text-align: center;
+}
+
 .searchInputsRow {
   display: grid;
 

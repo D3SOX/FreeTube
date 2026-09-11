@@ -54,6 +54,7 @@ export function setupPhoneOptionsMenu(menu, controls, t) {
       previousFocus = document.activeElement
       dialog.append(menu)
       dialog.show()
+      close.focus({ preventScroll: true })
     } else if (!open && dialog.open) {
       dialog.close()
       restoreHeader()

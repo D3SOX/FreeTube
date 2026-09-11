@@ -91,7 +91,7 @@
   padding: 0;
 }
 
-.phonePanelHeaderContent :deep(button:not([role='checkbox'], .commentSortOption)),
+.phonePanelHeaderContent :deep(:is(button, a):not([role='checkbox'], .commentSortOption)),
 .phonePanelHeaderContent :deep(.commentTitleAction) {
   display: inline-flex;
   align-items: center;
@@ -108,6 +108,10 @@
 
 .phonePanelHeaderContent :deep(.transcriptHeaderActions) {
   gap: 0;
+}
+
+.phonePanelHeaderContent :deep(.transcriptLanguageMenu) {
+  inset-inline-end: 0;
 }
 
 .phonePanelContent :deep(.chaptersWrapper) {

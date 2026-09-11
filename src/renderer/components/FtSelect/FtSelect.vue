@@ -117,7 +117,7 @@
         :enabled="phoneLayout"
         :open="dropdownShown"
         :title="placeholder"
-        @closed="dropdownRendered = false"
+        @closed="dropdownShown = false; dropdownRendered = false"
         @close="closeDropdown"
       >
         <input
@@ -142,6 +142,8 @@
           @pointerdown="handleDropdownPointerDown"
           @keydown="handlePickerKeydown"
         >
+          <!-- Desktop uses aria-activedescendant; phone sheets move focus between rows. -->
+          <!-- eslint-disable-next-line vuejs-accessibility/interactive-supports-focus -->
           <li
             v-for="{ name, index } in filteredOptions"
             :id="`${id}-option-${index}`"
@@ -154,7 +156,7 @@
               hasOptionVisuals
             }"
             role="option"
-            tabindex="0"
+            :tabindex="phoneLayout ? 0 : -1"
             :aria-selected="selectValues[index] === value"
             :dir="isLocaleSelector ? 'auto' : null"
             :lang="isLocaleSelector && selectValues[index] !== 'system' && selectValues[index] !== '' ? selectValues[index] : null"
@@ -629,6 +631,7 @@ function handlePickerKeydown(event) {
     : event.key === 'End'
       ? rows.length - 1
       : Math.max(0, Math.min(rows.length - 1, current + (event.key === 'ArrowDown' ? 1 : -1)))
+  activeIndex.value = filteredOptions.value[next]?.index ?? activeIndex.value
   rows[next]?.focus()
 }
 

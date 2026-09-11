@@ -13,7 +13,7 @@
       @cancel.prevent="dismiss"
       @keydown.esc.prevent.stop="dismiss"
       @pointerdown.stop
-      @click.stop
+      @click="enabled && $event.stopPropagation()"
       @dblclick.stop
       @touchstart.stop
       @touchend.stop
@@ -147,6 +147,10 @@ watch([dialog, () => props.enabled, () => props.open, docked, fullscreenElement]
   if (element.open && (docked.value !== previous[3] || fullscreenElement.value !== previous[4])) {
     element.close()
     release()
+    if (!enabled || !open) {
+      emit('closed')
+      return
+    }
   }
   if (enabled && open && closing) {
     closing = false

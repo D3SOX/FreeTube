@@ -7,7 +7,10 @@
     @click="hide"
   >
     <template #label="{ labelId }">
-      <h2 :id="labelId">
+      <h2
+        :id="labelId"
+        class="playlistPromptHeading"
+      >
         {{ title }}
       </h2>
       <p class="selected-count">

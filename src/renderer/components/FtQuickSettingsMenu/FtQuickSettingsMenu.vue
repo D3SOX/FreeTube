@@ -32,7 +32,7 @@
         :open="menuOpen"
         :title="profilePanelOpen ? t('Profile.Profile Select') : t('Settings.Quick Settings.Quick Settings')"
         :back="profilePanelOpen"
-        @closed="menuRendered = false; handleMenuAfterLeave()"
+        @closed="handleSheetClosed"
         @back="closeProfilePanel"
         @close="closeMenu"
       >
@@ -482,6 +482,7 @@ const profilePanelOpen = ref(false)
 let mouseDownOnTrigger = false
 let pointerDownInsideMenu = false
 let pendingSettingUpdateCount = 0
+let openCommandPaletteAfterClose = false
 const triggerRef = useTemplateRef('triggerRef')
 const menuRef = useTemplateRef('menuRef')
 const mainScrollRef = useTemplateRef('mainScrollRef')
@@ -632,6 +633,7 @@ const defaultQuality = computed(() => {
 function toggleMenu() {
   menuOpen.value = !menuOpen.value
   if (menuOpen.value) {
+    openCommandPaletteAfterClose = false
     profilePanelOpen.value = false
     nextTick(() => {
       menuRef.value?.$el?.focus()
@@ -646,6 +648,16 @@ function handleMenuAfterLeave() {
   if (!menuOpen.value) {
     profilePanelOpen.value = false
     stopObservingMainContent()
+  }
+}
+
+function handleSheetClosed() {
+  menuRendered.value = false
+  menuOpen.value = false
+  handleMenuAfterLeave()
+  if (openCommandPaletteAfterClose) {
+    openCommandPaletteAfterClose = false
+    window.dispatchEvent(new CustomEvent(OPEN_COMMAND_PALETTE_EVENT))
   }
 }
 
@@ -799,8 +811,14 @@ function handleMenuFocusOut(event) {
 }
 
 function closeMenu() {
+  openCommandPaletteAfterClose = false
   menuOpen.value = false
   triggerRef.value?.focus()
+}
+
+function closeMenuForAction() {
+  openCommandPaletteAfterClose = false
+  menuOpen.value = false
 }
 
 function translateProfileName(profile) {
@@ -809,11 +827,11 @@ function translateProfileName(profile) {
 
 function setActiveProfile(profile) {
   switchActiveProfile(store, profile, t)
-  menuOpen.value = false
+  closeMenuForAction()
 }
 
 function openProfileSettings() {
-  menuOpen.value = false
+  closeMenuForAction()
   store.dispatch('showSettingsWindow', 'profile')
 }
 
@@ -879,27 +897,32 @@ function handleHideRecommendedVideos(value) {
 }
 
 function openSettings() {
-  menuOpen.value = false
+  closeMenuForAction()
   store.dispatch('toggleSettingsWindow')
 }
 
 function openDownloads() {
-  menuOpen.value = false
+  closeMenuForAction()
   store.dispatch('showSettingsWindow', 'downloads')
 }
 
 function openKeyboardShortcuts() {
-  menuOpen.value = false
+  closeMenuForAction()
   store.dispatch('showKeyboardShortcutPrompt')
 }
 
 function openCommandPalette() {
+  if (phoneLayout.value) {
+    openCommandPaletteAfterClose = true
+    menuOpen.value = false
+    return
+  }
   menuOpen.value = false
   window.dispatchEvent(new CustomEvent(OPEN_COMMAND_PALETTE_EVENT))
 }
 
 function openAbout() {
-  menuOpen.value = false
+  closeMenuForAction()
   store.dispatch('showSettingsWindow', 'about')
 }
 
