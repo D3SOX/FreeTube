@@ -507,6 +507,7 @@ Settings:
       Volume: 音量
       Hint: 在影片任一側上下滑動。
       Unavailable: 無法調整播放控制項。
+    Use Document Picture-in-Picture: "使用文件子母畫面（實驗性）"
     yt-dlp Streaming: "yt-dlp 串流"
     Continue Playback When Screen Is Locked: '螢幕鎖定時繼續播放'
     Music Visualizer: 音樂視覺化工具
@@ -1492,6 +1493,7 @@ Tooltips:
   Proxy Settings:
     IP Block Recovery Script Path: 偵測到 IP 封鎖時要執行的指令碼檔案路徑。OpenTubeX 會等候指令碼執行完畢，再重新載入影片。若已啟用備援功能，則僅在備援也失敗時執行。
   Player Settings:
+    Use Document Picture-in-Picture: "在子母畫面視窗中顯示應用程式的播放器控制項和字幕。關閉此選項後將改用系統的影片子母畫面視窗。"
     Continue Playback When Screen Is Locked: '在背景繼續播放音訊並提供 Android 媒體控制項。關閉此選項後，應用程式不再顯示時將暫停播放。'
     Enable Caption Translations: 啟用後，若影片未提供符合偏好字幕語言的原始字幕軌，字幕按鈕與 C 快捷鍵會優先選用自動翻譯的字幕軌。
     Use Quick Playback Speed Bar: 在播放器右側的控制項中顯示快速播放速度列。若已啟用手動儲存各頻道播放速度，速度列也會顯示用來儲存目前頻道播放速度的按鈕。

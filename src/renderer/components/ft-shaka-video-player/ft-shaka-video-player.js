@@ -748,6 +748,9 @@ export default defineComponent({
     const showVideoTitleWhenPaused = computed(() => store.getters.getShowVideoTitleWhenPaused)
     const showFullscreenActionsWhenPaused = computed(() => store.getters.getShowFullscreenActionsWhenPaused)
     const pausedInterfaceHideDelay = computed(() => store.getters.getPausedInterfaceHideDelay)
+    const documentPictureInPictureEnabled = computed(() => {
+      return store.getters.getDocumentPictureInPictureEnabled
+    })
     const playerControlsShown = computed(() => (
       shakaControlsShown.value &&
       (
@@ -4392,7 +4395,10 @@ export default defineComponent({
         // Only set it to label if we added the captions ourselves,
         // some live streams come with subtitles in the DASH manifest, but without labels
         textTrackLabelFormat: props.captions.length > 0 ? TrackLabelFormat.LABEL : TrackLabelFormat.LANGUAGE,
-        displayInVrMode: useVrMode.value
+        displayInVrMode: useVrMode.value,
+        documentPictureInPicture: {
+          enabled: documentPictureInPictureEnabled.value
+        }
       }
 
       /** @type {string[]} */
@@ -4613,12 +4619,6 @@ export default defineComponent({
 
           // we have our own ones (shaka-player's ones are quite limited)
           enableKeyboardPlaybackControls: false,
-
-          // TODO: enable this when electron gets document PiP support
-          // https://github.com/electron/electron/issues/39633
-          documentPictureInPicture: {
-            enabled: false
-          }
         }
 
         if (document.pictureInPictureEnabled) {
@@ -4650,7 +4650,9 @@ export default defineComponent({
 
       syncPlayPauseControlIcons()
       syncMuteControlIcons(video.value.muted || video.value.volume === 0)
-      syncPipToggleState(document.pictureInPictureElement === video.value)
+      syncPipToggleState(
+        document.pictureInPictureElement === video.value || isPlayerInDocumentPictureInPicture()
+      )
     }
 
     function closeChaptersOverlay() {
@@ -6055,13 +6057,19 @@ export default defineComponent({
       })
     }
 
+    function isPlayerInDocumentPictureInPicture() {
+      const documentPipDocument = window.documentPictureInPicture?.window?.document
+      return documentPipDocument != null && container.value?.ownerDocument === documentPipDocument
+    }
+
     function handlePlay() {
       if (!temporaryPlaybackRateActive) setShowUiOnPaused(true)
       playerPaused.value = false
       clearPausedInterfaceReveal()
       shortsPaused.value = false
       playbackEnded.value = false
-      const isCurrentPictureInPictureVideo = document.pictureInPictureElement === video.value
+      const isCurrentPictureInPictureVideo = document.pictureInPictureElement === video.value ||
+        isPlayerInDocumentPictureInPicture()
       if (
         !isActiveTab.value &&
         !isCurrentPictureInPictureVideo &&
@@ -6495,6 +6503,7 @@ export default defineComponent({
     /** Height of the video element in CSS pixels, used to scale the captions with the player. */
     const videoElementLayoutHeight = ref(0)
     const pictureInPictureActive = ref(false)
+    const documentPictureInPictureActive = ref(false)
 
     const captionPlayerVariables = computed(() => {
       return getCaptionPlayerVariables(videoElementLayoutHeight.value)
@@ -6668,15 +6677,42 @@ export default defineComponent({
 
     /** @type {PictureInPictureWindow | null} */
     let pipWindow = null
+    let pipWindowUsesInnerSize = false
+    let documentPipPageHideHandler = null
+    let documentPipPageHideWindow = null
+    let documentPipEnterTimeout = null
     const pipWindowWidth = ref(null)
     const pipWindowHeight = ref(null)
 
+    /** @param {Window | null} [expectedWindow] */
+    function removeDocumentPipPageHideHandler(expectedWindow = null) {
+      if (
+        !documentPipPageHideHandler ||
+        !documentPipPageHideWindow ||
+        (expectedWindow && documentPipPageHideWindow !== expectedWindow)
+      ) {
+        return
+      }
+
+      documentPipPageHideWindow.removeEventListener('pagehide', documentPipPageHideHandler)
+      documentPipPageHideHandler = null
+      documentPipPageHideWindow = null
+    }
+
     /**
-     * @param {PictureInPictureEvent} event
+     * @param {PictureInPictureWindow | Window} nextPipWindow
+     * @param {boolean} [usesInnerSize]
      */
-    function handleEnterPictureInPicture(event) {
+    function activatePictureInPicture(nextPipWindow, usesInnerSize = false) {
+      if (pipWindow && pipWindow !== nextPipWindow) {
+        pipWindow.removeEventListener('resize', handlePictureInPictureResize)
+        removeDocumentPipPageHideHandler(pipWindow)
+      }
+
       pictureInPictureActive.value = true
-      pipWindow = event.pictureInPictureWindow
+      documentPictureInPictureActive.value = usesInnerSize
+      pipWindow = nextPipWindow
+      pipWindowUsesInnerSize = usesInnerSize
       tabMediaCoordinator.setPictureInPicture(mediaTabId, true)
       handlePictureInPictureResize()
       pipWindow.addEventListener('resize', handlePictureInPictureResize)
@@ -6689,15 +6725,65 @@ export default defineComponent({
       syncPipToggleState(true)
     }
 
-    function handleLeavePictureInPicture() {
+    /**
+     * @param {PictureInPictureEvent} event
+     */
+    function handleEnterPictureInPicture(event) {
+      activatePictureInPicture(event.pictureInPictureWindow)
+    }
+
+    /**
+     * @param {DocumentPictureInPictureEvent} event
+     */
+    function handleEnterDocumentPictureInPicture(event) {
+      const documentPipWindow = event.window
+      const documentPipDocument = documentPipWindow.document
+      for (const attribute of document.documentElement.attributes) {
+        documentPipDocument.documentElement.setAttribute(attribute.name, attribute.value)
+      }
+      for (const attribute of document.body.attributes) {
+        documentPipDocument.body.setAttribute(attribute.name, attribute.value)
+      }
+      if (documentPipEnterTimeout !== null) {
+        clearTimeout(documentPipEnterTimeout)
+      }
+      removeDocumentPipPageHideHandler()
+      documentPipPageHideHandler = () => {
+        if (documentPipEnterTimeout !== null) {
+          clearTimeout(documentPipEnterTimeout)
+          documentPipEnterTimeout = null
+        }
+        documentPipPageHideHandler = null
+        documentPipPageHideWindow = null
+        deactivatePictureInPicture(documentPipWindow)
+      }
+      documentPipPageHideWindow = documentPipWindow
+      documentPipWindow.addEventListener('pagehide', documentPipPageHideHandler, { once: true })
+      documentPipEnterTimeout = setTimeout(() => {
+        documentPipEnterTimeout = null
+        if (container.value?.ownerDocument !== documentPipWindow.document) return
+
+        activatePictureInPicture(documentPipWindow, true)
+      })
+    }
+
+    /**
+     * @param {PictureInPictureWindow | Window | null} expectedPipWindow
+     */
+    function deactivatePictureInPicture(expectedPipWindow) {
+      if (pipWindow !== expectedPipWindow) return
+
       pictureInPictureActive.value = false
+      documentPictureInPictureActive.value = false
       tabMediaCoordinator.setPictureInPicture(mediaTabId, false)
 
       if (pipWindow) {
         pipWindow.removeEventListener('resize', handlePictureInPictureResize)
+        removeDocumentPipPageHideHandler(pipWindow)
       }
 
       pipWindow = null
+      pipWindowUsesInnerSize = false
       pipWindowWidth.value = null
       pipWindowHeight.value = null
 
@@ -6707,11 +6793,33 @@ export default defineComponent({
       updateScrollMiniPlayer()
     }
 
-    function handlePictureInPictureResize() {
-      const devicePixelRatio = window.devicePixelRatio > 1 ? window.devicePixelRatio : 1
+    /**
+     * @param {PictureInPictureEvent} event
+     */
+    function handleLeavePictureInPicture(event) {
+      deactivatePictureInPicture(event.pictureInPictureWindow)
+    }
 
-      pipWindowWidth.value = pipWindow.width * devicePixelRatio
-      pipWindowHeight.value = pipWindow.height * devicePixelRatio
+    function handlePictureInPictureResize() {
+      if (!pipWindow) return
+
+      const pipDevicePixelRatio = pipWindowUsesInnerSize ? pipWindow.devicePixelRatio : window.devicePixelRatio
+      const devicePixelRatio = pipDevicePixelRatio > 1 ? pipDevicePixelRatio : 1
+      const width = pipWindowUsesInnerSize ? pipWindow.innerWidth : pipWindow.width
+      const height = pipWindowUsesInnerSize ? pipWindow.innerHeight : pipWindow.height
+
+      pipWindowWidth.value = width * devicePixelRatio
+      pipWindowHeight.value = height * devicePixelRatio
+    }
+
+    function closeDocumentPictureInPicture() {
+      const documentPipWindow = window.documentPictureInPicture?.window
+      if (
+        documentPictureInPictureActive.value &&
+        documentPipWindow?.document === container.value?.ownerDocument
+      ) {
+        documentPipWindow.close()
+      }
     }
 
     function clearDisplayedCaptions() {
@@ -10320,7 +10428,7 @@ export default defineComponent({
 
       voiceOverTranslation.attach(videoElement)
 
-      await initializeActiveTab()
+      initializeActiveTab()
 
       const localPlayer = process.env.IS_CAPACITOR
         ? createAndroidPlayer(videoElement, container.value, () => ({
@@ -10490,6 +10598,7 @@ export default defineComponent({
       // Use event delegation on document with capture phase to catch events before shaka-no-propagation stops them from bubbling
       document.addEventListener('click', handlePlaybackRateMenuClick, true)
       document.addEventListener('click', handleQualityMenuClick, true)
+      window.documentPictureInPicture?.addEventListener('enter', handleEnterDocumentPictureInPicture)
 
       // Set up IPC listener for exit fullscreen when tab becomes inactive (Electron only)
       // Only set up after UI is fully initialized
@@ -11058,10 +11167,17 @@ export default defineComponent({
       document.removeEventListener('fullscreenchange', fullscreenChangeHandler)
       document.removeEventListener('click', handlePlaybackRateMenuClick, true)
       document.removeEventListener('click', handleQualityMenuClick, true)
+      window.documentPictureInPicture?.removeEventListener('enter', handleEnterDocumentPictureInPicture)
       window.removeEventListener('blur', handleTemporaryPlaybackRateFocusLoss)
       player?.removeEventListener('textchanged', syncShortsCaptionsEnabled)
 
       cancelTemporaryPlaybackRateHolds()
+
+      if (documentPipEnterTimeout !== null) {
+        clearTimeout(documentPipEnterTimeout)
+        documentPipEnterTimeout = null
+      }
+      removeDocumentPipPageHideHandler()
 
       // Clean up IPC listener for exit fullscreen
       if (exitFullscreenCleanup) {
@@ -11587,6 +11703,8 @@ export default defineComponent({
       syncMediaSessionPosition,
       handleEnterPictureInPicture,
       handleLeavePictureInPicture,
+      closeDocumentPictureInPicture,
+      documentPictureInPictureActive,
 
       videoZoomStyle,
       videoZoomPossible,

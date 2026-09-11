@@ -666,6 +666,7 @@ Settings:
       Volume: 음량
       Hint: 동영상의 양쪽 가장자리에서 위아래로 스와이프하세요.
       Unavailable: 재생 컨트롤을 조정할 수 없습니다.
+    Use Document Picture-in-Picture: "문서 화면 속 화면 사용(실험적)"
     yt-dlp Streaming: "yt-dlp 스트리밍"
     Continue Playback When Screen Is Locked: '화면이 잠겨 있을 때도 재생 계속'
     Music Visualizer: 음악 시각화
@@ -1850,6 +1851,7 @@ Tooltips:
   Proxy Settings:
     IP Block Recovery Script Path: IP 차단이 감지될 때 실행할 스크립트 파일 경로입니다. OpenTubeX는 실행이 끝날 때까지 기다린 후 동영상을 다시 불러옵니다. 대체 사용이 활성화된 경우 대체 방식도 실패했을 때만 실행합니다.
   Player Settings:
+    Use Document Picture-in-Picture: "앱의 플레이어 컨트롤과 자막을 화면 속 화면에 표시합니다. 시스템의 동영상 화면 속 화면 창을 사용하려면 이 옵션을 끄세요."
     Continue Playback When Screen Is Locked: '백그라운드에서 오디오를 계속 재생하고 Android 미디어 컨트롤을 제공합니다. 앱이 더 이상 보이지 않을 때 일시중지하려면 이 옵션을 끄세요.'
     Enable Caption Translations: 활성화하면 동영상에 선호 자막 언어와 일치하는 원본 트랙이 없을 때 자막 버튼과 C 단축키가 자동 번역된 트랙을 우선 사용합니다.
     Use Quick Playback Speed Bar: 오른쪽 플레이어 컨트롤에 빠른 재생 속도 표시줄을 표시합니다. 채널별 재생 속도 수동 저장이 활성화된 경우 현재 채널의 속도를 저장하는 버튼도 표시됩니다.

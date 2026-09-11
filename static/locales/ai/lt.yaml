@@ -691,6 +691,7 @@ Settings:
       Volume: Garsumas
       Hint: Braukite aukštyn arba žemyn vaizdo įrašo šone.
       Unavailable: Nepavyko sureguliuoti atkūrimo valdiklių.
+    Use Document Picture-in-Picture: "Naudoti dokumento vaizdą vaizde (eksperimentinė)"
     yt-dlp Streaming: "yt-dlp srautinis perdavimas"
     Continue Playback When Screen Is Locked: 'Tęsti atkūrimą, kai ekranas užrakintas'
     Music Visualizer: Muzikos vizualizacija
@@ -1887,6 +1888,7 @@ Tooltips:
   Proxy Settings:
     IP Block Recovery Script Path: Scenarijaus failo, paleidžiamo aptikus IP blokavimą, kelias. OpenTubeX laukia, kol jis bus baigtas, tada iš naujo įkelia vaizdo įrašą. Jei įjungtas atsarginis būdas, scenarijus paleidžiamas tik tada, kai nepavyksta ir atsarginis būdas.
   Player Settings:
+    Use Document Picture-in-Picture: "Programos leistuvo valdiklius ir subtitrus rodo vaizdo vaizde lange. Išjunkite, jei norite naudoti sistemos vaizdo įrašo vaizdo vaizde langą."
     Continue Playback When Screen Is Locked: 'Toliau leidžia garsą fone ir pateikia „Android“ medijos valdiklius. Išjunkite, kad atkūrimas būtų pristabdytas, kai programa nebematoma.'
     Enable Caption Translations: Įjungus subtitrų mygtukas ir spartusis klavišas C teikia pirmenybę automatiškai išverstam takeliui pageidaujama subtitrų kalba, jei vaizdo įraše nėra atitinkamo originalaus takelio.
     Use Quick Playback Speed Bar: Dešinėje leistuvo valdiklių pusėje rodo sparčiojo atkūrimo greičio juostą. Jei įjungtas rankinis atkūrimo greičio išsaugojimas kiekvienam kanalui, juostoje taip pat yra mygtukas dabartinio kanalo greičiui išsaugoti.

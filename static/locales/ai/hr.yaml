@@ -509,6 +509,7 @@ Settings:
       Volume: Glasnoća
       Hint: Povucite gore ili dolje uz rub videozapisa.
       Unavailable: Nije moguće prilagoditi kontrole reprodukcije.
+    Use Document Picture-in-Picture: "Koristi sliku u slici dokumenta (eksperimentalno)"
     yt-dlp Streaming: "yt-dlp strujanje"
     Continue Playback When Screen Is Locked: 'Nastavi reprodukciju kada je zaslon zaključan'
     Music Visualizer: Vizualizator glazbe
@@ -1498,6 +1499,7 @@ Tooltips:
   Proxy Settings:
     IP Block Recovery Script Path: Putanja datoteke skripte koja se pokreće kada se otkrije blokada IP adrese. OpenTubeX čeka da završi, a zatim ponovno učitava videozapis. Ako je pričuvna metoda omogućena, skripta se pokreće samo ako ni pričuvna metoda ne uspije.
   Player Settings:
+    Use Document Picture-in-Picture: "Prikazuje kontrole reproduktora i titlove aplikacije u načinu slike u slici. Isključite za korištenje sistemskog prozora slike u slici za video."
     Continue Playback When Screen Is Locked: 'Nastavlja reprodukciju zvuka u pozadini i pruža Android kontrole medija. Isključite ovo za pauziranje kada aplikacija više nije vidljiva.'
     Enable Caption Translations: Kada je omogućeno, gumb za titlove i prečac C daju prednost automatski prevedenom zapisu na željenom jeziku titlova ako videozapis nema odgovarajući izvorni zapis.
     Use Quick Playback Speed Bar: Prikazuje traku za brzu promjenu brzine reprodukcije među kontrolama reproduktora s desne strane. Ako je omogućeno ručno spremanje brzine reprodukcije po kanalu, traka sadrži i gumb za spremanje brzine za trenutačni kanal.

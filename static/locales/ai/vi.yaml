@@ -511,6 +511,7 @@ Settings:
       Volume: Âm lượng
       Hint: Vuốt lên hoặc xuống ở một bên video.
       Unavailable: Không thể điều chỉnh các điều khiển phát lại.
+    Use Document Picture-in-Picture: "Dùng Hình trong hình cho tài liệu (thử nghiệm)"
     yt-dlp Streaming: "Phát trực tuyến bằng yt-dlp"
     Continue Playback When Screen Is Locked: 'Tiếp tục phát khi màn hình bị khóa'
     Music Visualizer: Trình trực quan hóa nhạc
@@ -1510,6 +1511,7 @@ Tooltips:
   Proxy Settings:
     IP Block Recovery Script Path: Đường dẫn tệp tập lệnh sẽ chạy khi phát hiện bị chặn IP. OpenTubeX chờ tập lệnh chạy xong rồi tải lại video. Nếu bật phương án dự phòng, tập lệnh chỉ chạy khi phương án đó cũng thất bại.
   Player Settings:
+    Use Document Picture-in-Picture: "Hiển thị các nút điều khiển trình phát và phụ đề của ứng dụng trong chế độ Hình trong hình. Tắt tùy chọn này để dùng cửa sổ Hình trong hình dành cho video của hệ thống."
     Continue Playback When Screen Is Locked: 'Tiếp tục phát âm thanh trong nền và cung cấp các nút điều khiển phương tiện của Android. Tắt tùy chọn này để tạm dừng khi ứng dụng không còn hiển thị.'
     Enable Caption Translations: Khi bật, nút phụ đề và phím tắt C sẽ ưu tiên bản phụ đề tự động dịch sang ngôn ngữ phụ đề ưu tiên nếu video không có bản gốc phù hợp.
     Use Quick Playback Speed Bar: Hiện thanh tốc độ phát nhanh trong phần điều khiển bên phải của trình phát. Nếu bật lưu tốc độ phát thủ công theo kênh, thanh này cũng có nút lưu tốc độ cho kênh hiện tại.

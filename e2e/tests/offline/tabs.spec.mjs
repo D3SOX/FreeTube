@@ -1666,6 +1666,112 @@ test.describe('tab bar', () => {
     await expect.poll(() => page.evaluate(() => document.pictureInPictureElement === null)).toBe(true)
   })
 
+  test('exits Document PiP when its source tab is closed', async ({ app, page }) => {
+    test.skip(!process.env.ELECTRON_OVERRIDE_DIST_PATH, 'requires the patched Electron runtime')
+
+    // Playwright's Electron driver omits this binding on the first document.
+    // Ordinary app launches expose it immediately; a test-only reload does too.
+    await page.reload()
+    await expect(page.locator('.topNav')).toBeVisible()
+    const sourceTab = page.locator('.tabContent[aria-hidden="false"]')
+    await sourceTab.evaluate((root) => {
+      const player = document.createElement('div')
+      player.className = 'ftVideoPlayer documentPipTestPlayer'
+      player.dataset.tabId = root.dataset.tabId
+      player.textContent = 'Document PiP player'
+
+      const button = document.createElement('button')
+      button.className = 'documentPipTestButton'
+      button.textContent = 'Enter Document PiP'
+      button.addEventListener('click', async () => {
+        try {
+          const pipWindow = await window.documentPictureInPicture.requestWindow({ width: 320, height: 180 })
+          pipWindow.document.body.append(player)
+          button.dataset.documentPipState = 'opened'
+        } catch (error) {
+          button.dataset.documentPipState = `${error.name}: ${error.message}`
+        }
+      }, { once: true })
+
+      root.append(player, button)
+    })
+
+    const pipPagePromise = app.electronApp.waitForEvent('window')
+    const pipButton = sourceTab.locator('.documentPipTestButton')
+    await pipButton.click()
+    await expect(pipButton).toHaveAttribute('data-document-pip-state', 'opened', { timeout: 5_000 })
+    const pipPage = await pipPagePromise
+    await expect(pipPage.locator('.documentPipTestPlayer')).toHaveText('Document PiP player')
+
+    await page.locator(sel.newTabButton).click()
+    await expect(page.locator(sel.tabs)).toHaveCount(2)
+
+    const pipClosed = pipPage.waitForEvent('close')
+    await page.locator(sel.tabs).first().locator('.closeButton').click()
+    await pipClosed
+    await expect(page.locator(sel.tabs)).toHaveCount(1)
+    await expect.poll(() => page.evaluate(() => window.documentPictureInPicture?.window == null)).toBe(true)
+  })
+
+  test('moves Document PiP between logical tabs', async ({ app, page }) => {
+    test.skip(!process.env.ELECTRON_OVERRIDE_DIST_PATH, 'requires the patched Electron runtime')
+
+    // Playwright's Electron driver omits this binding on the first document.
+    // Ordinary app launches expose it immediately; a test-only reload does too.
+    await page.reload()
+    await expect(page.locator('.topNav')).toBeVisible()
+
+    const addDocumentPipPlayer = async (tab) => tab.evaluate((root) => {
+      const player = document.createElement('div')
+      player.className = 'ftVideoPlayer documentPipTestPlayer'
+      player.dataset.tabId = root.dataset.tabId
+      player.textContent = `Document PiP player ${root.dataset.tabId}`
+
+      const video = document.createElement('video')
+      video.className = 'player'
+      video.ui = {
+        getControls: () => ({
+          togglePiP: async () => {
+            const currentPipWindow = window.documentPictureInPicture.window
+            if (currentPipWindow) {
+              currentPipWindow.close()
+              return
+            }
+
+            const pipWindow = await window.documentPictureInPicture.requestWindow({ width: 320, height: 180 })
+            pipWindow.document.body.append(player)
+            pipWindow.addEventListener('pagehide', () => root.append(player), { once: true })
+          }
+        })
+      }
+
+      player.append(video)
+      root.append(player)
+    })
+
+    const firstTab = page.locator('.tabContent[aria-hidden="false"]')
+    const firstTabId = await firstTab.getAttribute('data-tab-id')
+    await addDocumentPipPlayer(firstTab)
+
+    const firstPipPagePromise = app.electronApp.waitForEvent('window')
+    await page.evaluate((tabId) => window.ftElectron.requestPiP(tabId), firstTabId)
+    const firstPipPage = await firstPipPagePromise
+    await expect(firstPipPage.locator('.documentPipTestPlayer')).toContainText(firstTabId)
+
+    await page.locator(sel.newTabButton).click()
+    const secondTab = page.locator('.tabContent[aria-hidden="false"]')
+    const secondTabId = await secondTab.getAttribute('data-tab-id')
+    await addDocumentPipPlayer(secondTab)
+
+    const firstPipClosed = firstPipPage.waitForEvent('close')
+    const secondPipPagePromise = app.electronApp.waitForEvent('window')
+    await page.evaluate((tabId) => window.ftElectron.requestPiP(tabId), secondTabId)
+    const secondPipPage = await secondPipPagePromise
+    await firstPipClosed
+
+    await expect(secondPipPage.locator('.documentPipTestPlayer')).toContainText(secondTabId)
+  })
+
   // Regression: closing the presented tab activates its replacement before the
   // old subtree is disposed. Auto-PiP must not interpret that transition as an
   // ordinary tab switch and open PiP for the tab being closed (#364).

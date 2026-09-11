@@ -1948,6 +1948,163 @@ test.describe('scroll mini player', () => {
     })
   })
 
+  test('moves the player into Document PiP and restores it when closed', async ({ app, page }) => {
+    test.skip(!process.env.ELECTRON_OVERRIDE_DIST_PATH, 'requires the patched Electron runtime')
+
+    // Playwright's Electron driver omits this binding on the first document.
+    // Ordinary app launches expose it immediately; a test-only reload does too.
+    await page.reload()
+    await expect(page.locator('.topNav')).toBeVisible()
+    await openDemoVideo({ app, page })
+    const player = page.locator('.ftVideoPlayer')
+    await player.evaluate(element => {
+      let captionContainer = element.querySelector('.shaka-text-container')
+      if (!captionContainer) {
+        captionContainer = document.createElement('div')
+        captionContainer.className = 'shaka-text-container'
+        element.append(captionContainer)
+      }
+      const caption = document.createElement('span')
+      caption.className = 'documentPipTestCaption'
+      caption.textContent = 'Document PiP caption'
+      captionContainer.append(caption)
+    })
+
+    const pipPagePromise = app.electronApp.waitForEvent('window')
+    await player.hover()
+    await player.locator('.shaka-controls-button-panel .shaka-pip-button').click()
+    const pipPage = await pipPagePromise
+
+    await expect(pipPage.locator('.ftVideoPlayer')).toBeVisible()
+    await expect(pipPage.locator('.documentPipTestCaption')).toHaveText('Document PiP caption')
+
+    const pipPlayer = pipPage.locator('.ftVideoPlayer')
+    await pipPlayer.locator('video').evaluate(video => video.pause())
+    await pipPlayer.hover()
+    await expect(pipPlayer).toHaveClass(/documentPictureInPicture/)
+    const invalidPipControls = pipPlayer.locator('.shaka-fullscreen-button, .full-window-button')
+    await expect.poll(() => invalidPipControls.count()).toBeGreaterThan(0)
+    await expect.poll(() => invalidPipControls.evaluateAll(controls => {
+      return controls.every(control => getComputedStyle(control).display === 'none')
+    })).toBe(true)
+    const closePipButton = pipPlayer.locator('.documentPipCloseButton')
+    await expect(closePipButton).toBeVisible()
+    await expect(closePipButton).toHaveAccessibleName('Close')
+
+    const pipLayout = await pipPage.evaluate(() => ({
+      verticalScrollbarWidth: window.innerWidth - document.documentElement.clientWidth,
+      horizontalScrollbarHeight: window.innerHeight - document.documentElement.clientHeight,
+      horizontalScrollRange: Math.max(
+        document.documentElement.scrollWidth,
+        document.body.scrollWidth
+      ) - window.innerWidth,
+      verticalScrollRange: Math.max(
+        document.documentElement.scrollHeight,
+        document.body.scrollHeight
+      ) - window.innerHeight
+    }))
+    expect(pipLayout.horizontalScrollRange).toBeLessThanOrEqual(1)
+    expect(pipLayout.verticalScrollRange).toBeLessThanOrEqual(1)
+    expect(pipLayout.verticalScrollbarWidth).toBeLessThanOrEqual(1)
+    expect(pipLayout.horizontalScrollbarHeight).toBeLessThanOrEqual(1)
+
+    const seekBar = pipPlayer.locator('.shaka-seek-bar-container')
+    await expect(seekBar).toBeVisible()
+    await expect(seekBar).toHaveCSS('opacity', '1')
+    await expect(seekBar).not.toHaveCSS('background-image', 'none')
+    const seekBarBounds = await seekBar.boundingBox()
+    const pipViewportHeight = await pipPage.evaluate(() => window.innerHeight)
+    expect(seekBarBounds.height).toBeGreaterThan(0)
+    expect(seekBarBounds.y + seekBarBounds.height).toBeLessThanOrEqual(pipViewportHeight + 1)
+
+    const pipWindowState = await app.electronApp.evaluate(({ BrowserWindow }) => {
+      const pipWindow = BrowserWindow.getAllWindows().find(window => window.isAlwaysOnTop())
+      return pipWindow && {
+        fullscreenable: pipWindow.isFullScreenable(),
+        maximizable: pipWindow.isMaximizable(),
+        minimizable: pipWindow.isMinimizable()
+      }
+    })
+    expect(pipWindowState?.fullscreenable).toBe(false)
+    if (process.platform !== 'linux') {
+      expect(pipWindowState?.maximizable).toBe(false)
+      expect(pipWindowState?.minimizable).toBe(false)
+    }
+
+    const pipClosed = pipPage.waitForEvent('close')
+    await closePipButton.click()
+    await pipClosed
+
+    await expect(player).toBeVisible()
+    await expect(player.locator('.documentPipTestCaption')).toHaveText('Document PiP caption')
+    await expect.poll(() => page.evaluate(() => window.documentPictureInPicture?.window == null)).toBe(true)
+  })
+
+  test('uses native video PiP when Document PiP is disabled', async ({ app, page }) => {
+    test.skip(!process.env.ELECTRON_OVERRIDE_DIST_PATH, 'requires the patched Electron runtime')
+
+    await page.reload()
+    await expect(page.locator('.topNav')).toBeVisible()
+    await page.locator('.profileTrigger').click()
+    await page.getByRole('dialog', { name: 'Quick settings' })
+      .getByRole('button', { name: 'All settings' }).click()
+    const settings = page.getByRole('dialog', { name: 'Settings', exact: true })
+    await settings.locator('.settingsMenu [data-section="playback"]').click()
+    const documentPipSetting = settings.getByRole('checkbox', {
+      name: /^Use Document Picture-in-Picture \(experimental\)/
+    })
+    await expect(documentPipSetting).toBeChecked()
+    await settings.getByText('Use Document Picture-in-Picture (experimental)', {
+      exact: true
+    }).click()
+    await expect(documentPipSetting).not.toBeChecked()
+    await settings.getByRole('button', { name: 'Close', exact: true }).click()
+
+    await openDemoVideo({ app, page })
+    const player = page.locator('.ftVideoPlayer')
+    const video = player.locator('video')
+
+    await player.hover()
+    await player.locator('.shaka-controls-button-panel .shaka-pip-button').click()
+
+    await expect.poll(() => video.evaluate(element => {
+      return document.pictureInPictureElement === element
+    })).toBe(true)
+    await expect.poll(() => page.evaluate(() => {
+      return window.documentPictureInPicture?.window == null
+    })).toBe(true)
+
+    await page.evaluate(() => document.exitPictureInPicture())
+  })
+
+  test('ignores Document PiP activation when pagehide precedes it', async ({ app, page }) => {
+    test.skip(!process.env.ELECTRON_OVERRIDE_DIST_PATH, 'requires the patched Electron runtime')
+
+    await page.reload()
+    await expect(page.locator('.topNav')).toBeVisible()
+    await openDemoVideo({ app, page })
+    await page.evaluate(() => {
+      window.documentPictureInPicture.addEventListener('enter', event => {
+        queueMicrotask(() => event.window.dispatchEvent(new Event('pagehide')))
+      }, { once: true })
+    })
+    const player = page.locator('.ftVideoPlayer')
+    const pipButton = player.locator('.shaka-controls-button-panel .shaka-pip-button')
+
+    await player.hover()
+    const pipButtonElement = await pipButton.elementHandle()
+    expect(pipButtonElement).not.toBeNull()
+    await pipButton.click()
+    await page.waitForTimeout(100)
+
+    expect(await pipButtonElement.getAttribute('aria-pressed')).not.toBe('true')
+    await pipButtonElement.dispose()
+
+    await app.electronApp.evaluate(({ BrowserWindow }) => {
+      BrowserWindow.getAllWindows().find(window => window.isAlwaysOnTop())?.close()
+    })
+  })
+
   test('scales the captions down with the scroll mini player', async ({ app, page, attachScreenshot }) => {
     const video = await openDemoVideo({ app, page })
     await video.evaluate(element => element.pause())

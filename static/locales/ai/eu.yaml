@@ -509,6 +509,7 @@ Settings:
       Volume: Bolumena
       Hint: Irristatu gora edo behera bideoaren albo batean.
       Unavailable: Ezin izan dira erreprodukzio-kontrolak doitu.
+    Use Document Picture-in-Picture: "Erabili dokumentuaren irudiz irudi modua (esperimentala)"
     yt-dlp Streaming: "yt-dlp transmisioa"
     Continue Playback When Screen Is Locked: 'Jarraitu erreproduzitzen pantaila blokeatuta dagoenean'
     Music Visualizer: Musika-bistaratzailea
@@ -1503,6 +1504,7 @@ Tooltips:
   Proxy Settings:
     IP Block Recovery Script Path: IP blokeoa hautematean exekutatuko den script-fitxategiaren bide-izena. OpenTubeX aplikazioak amaitu arte itxaroten du eta gero bideoa berriro kargatzen du. Ordezko motorra gaituta badago, hark ere huts egiten duenean soilik exekutatzen da.
   Player Settings:
+    Use Document Picture-in-Picture: "Aplikazioaren erreproduzigailu-kontrolak eta azpitituluak erakusten ditu irudiz irudi moduan. Desaktibatu sistemaren bideo-irudiz irudi leihoa erabiltzeko."
     Continue Playback When Screen Is Locked: 'Audioa atzeko planoan erreproduzitzen mantentzen du eta Android multimedia-kontrolak eskaintzen ditu. Desaktibatu aplikazioa ikusgai ez dagoenean erreprodukzioa pausatzeko.'
     Enable Caption Translations: Gaituta dagoenean, azpitituluen botoiak eta C lasterbideak hobetsitako azpititulu-hizkuntzara automatikoki itzulitako pista aukeratzen dute, bideoak hizkuntza horretako jatorrizko pistarik ez badu.
     Use Quick Playback Speed Bar: Erreprodukzio-abiaduraren barra azkar bat erakusten du eskuineko erreproduzigailu-kontroletan. Kanal bakoitzaren erreprodukzio-abiadura eskuz gordetzea gaituta badago, barrak uneko kanalerako abiadura gordetzeko botoia ere izango du.

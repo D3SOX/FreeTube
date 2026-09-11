@@ -992,6 +992,7 @@ Settings:
     Skip by Scrolling Over Video Player: Skip by Scrolling Over Video Player
     Multiply Seek Interval by Playback Rate: Multiply Seek Interval by Playback Rate
     Display Play Button In Video Player: Display Play Button In Video Player
+    Use Document Picture-in-Picture: Use Document Picture-in-Picture (experimental)
     Enter Fullscreen on Display Rotate: Enter Fullscreen on Display Rotate
     Rotate Wide Videos to Landscape in Fullscreen: Rotate wide videos to landscape in fullscreen
     Swipe Up or Down to Enter or Exit Fullscreen: Swipe up or down to enter or exit fullscreen
@@ -2543,6 +2544,7 @@ Tooltips:
   Proxy Settings:
     IP Block Recovery Script Path: Script file path to run when an IP block is detected. OpenTubeX waits for it to finish, then reloads the video. If fallback is enabled, it runs only when fallback also fails.
   Player Settings:
+    Use Document Picture-in-Picture: Shows the app's player controls and captions in Picture-in-Picture. Turn this off to use the system video Picture-in-Picture window instead.
     Enable Caption Translations: When enabled, the captions button and C shortcut prefer an automatically translated track in the preferred caption language when the video does not provide a matching original track.
     Proxy Videos Through Invidious: Will connect to Invidious to serve videos instead
       of making a direct connection to YouTube.

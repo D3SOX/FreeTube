@@ -507,6 +507,7 @@ Settings:
       Volume: Ses düzeyi
       Hint: Videonun bir yanında yukarı veya aşağı kaydırın.
       Unavailable: Oynatma kontrolleri ayarlanamadı.
+    Use Document Picture-in-Picture: "Belge İçinde Resim modunu kullan (deneysel)"
     yt-dlp Streaming: "yt-dlp Akışı"
     Continue Playback When Screen Is Locked: 'Ekran kilitliyken oynatmaya devam et'
     Music Visualizer: Müzik görselleştirici
@@ -1481,6 +1482,7 @@ Tooltips:
   Proxy Settings:
     IP Block Recovery Script Path: IP engeli algılandığında çalıştırılacak betik dosyasının yolu. OpenTubeX betiğin tamamlanmasını bekler ve videoyu yeniden yükler. Yedek arka uç etkinse yalnızca yedek arka uç da başarısız olduğunda çalışır.
   Player Settings:
+    Use Document Picture-in-Picture: "Uygulamanın oynatıcı kontrollerini ve altyazılarını İçinde Resim modunda gösterir. Bunun yerine sistemin video İçinde Resim penceresini kullanmak için bu seçeneği kapatın."
     Continue Playback When Screen Is Locked: 'Sesi arka planda çalmaya devam eder ve Android medya kontrolleri sağlar. Uygulama artık görünür olmadığında duraklatmak için bunu kapatın.'
     Enable Caption Translations: Etkinleştirildiğinde ve videoda eşleşen özgün bir parça olmadığında alt yazı düğmesi ile C kısayolu, tercih edilen alt yazı diline otomatik çevrilmiş parçayı seçer.
     Use Quick Playback Speed Bar: Sağdaki oynatıcı denetimlerinde hızlı oynatma hızı çubuğunu gösterir. Kanal başına oynatma hızını elle kaydetme etkinse çubukta geçerli kanalın hızını kaydetme düğmesi de bulunur.

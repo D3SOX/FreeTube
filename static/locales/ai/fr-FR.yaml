@@ -507,6 +507,7 @@ Settings:
       Volume: Volume
       Hint: Balayez vers le haut ou le bas sur un côté de la vidéo.
       Unavailable: Impossible de régler les commandes de lecture.
+    Use Document Picture-in-Picture: "Utiliser l'image dans l'image de document (expérimental)"
     yt-dlp Streaming: "Streaming yt-dlp"
     Continue Playback When Screen Is Locked: 'Continuer la lecture lorsque l’écran est verrouillé'
     Music Visualizer: Visualiseur de musique
@@ -1479,6 +1480,7 @@ Tooltips:
   Proxy Settings:
     IP Block Recovery Script Path: Chemin du script à exécuter lorsqu’un blocage d’IP est détecté. OpenTubeX attend la fin de son exécution, puis recharge la vidéo. Si le recours à une autre source est activé, le script ne s’exécute que si cette solution échoue également.
   Player Settings:
+    Use Document Picture-in-Picture: "Affiche les commandes du lecteur et les sous-titres de l'application dans la fenêtre d'image dans l'image. Désactivez cette option pour utiliser à la place la fenêtre vidéo d'image dans l'image du système."
     Continue Playback When Screen Is Locked: 'Maintient la lecture audio en arrière-plan et fournit les commandes multimédias d’Android. Désactivez cette option pour mettre en pause lorsque l’application n’est plus visible.'
     Enable Caption Translations: Lorsque cette option est activée et que la vidéo ne propose aucune piste d’origine correspondante, le bouton des sous-titres et le raccourci C privilégient une piste traduite automatiquement dans la langue préférée des sous-titres.
     Use Quick Playback Speed Bar: Affiche une barre de vitesse de lecture rapide dans les commandes situées à droite du lecteur. Si l’enregistrement manuel de la vitesse de lecture par chaîne est activé, la barre comprend aussi un bouton permettant d’enregistrer la vitesse de la chaîne actuelle.

@@ -159,6 +159,15 @@
           @change="updateDisplayVideoPlayButton"
         />
         <FtToggleSwitch
+          v-if="!IS_CAPACITOR"
+          :label="t('Settings.Player Settings.Use Document Picture-in-Picture')"
+          :compact="true"
+          :default-value="documentPictureInPictureEnabled"
+          setting-key="documentPictureInPictureEnabled"
+          :tooltip="t('Tooltips.Player Settings.Use Document Picture-in-Picture')"
+          @change="updateDocumentPictureInPictureEnabled"
+        />
+        <FtToggleSwitch
           :label="t('Settings.Player Settings.Enter Fullscreen on Display Rotate')"
           :compact="true"
           :default-value="enterFullscreenOnDisplayRotate"
@@ -992,6 +1001,15 @@ const androidAutoPictureInPicture = computed(() => store.getters.getAndroidAutoP
 
 function updateAndroidAutoPictureInPicture(value) {
   store.dispatch('updateAndroidAutoPictureInPicture', value)
+}
+
+const documentPictureInPictureEnabled = computed(() => {
+  return store.getters.getDocumentPictureInPictureEnabled
+})
+
+/** @param {boolean} value */
+function updateDocumentPictureInPictureEnabled(value) {
+  store.dispatch('updateDocumentPictureInPictureEnabled', value)
 }
 
 /** @type {import('vue').ComputedRef<boolean>} */

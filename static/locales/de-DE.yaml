@@ -815,6 +815,7 @@ Settings:
       8k: 8k
     Next Video Interval: Countdown für Automatische Wiedergabe
     Display Play Button In Video Player: Wiedergabetaste im Video-Player anzeigen
+    Use Document Picture-in-Picture: Dokument-Bild-im-Bild verwenden (experimentell)
     Scroll Volume Over Video Player: Lautstärke durch Scrollen ändern
     Fast-Forward / Rewind Interval: Intervall für Vor-/Zurückspulen
     Scroll Playback Rate Over Video Player: Abspielgeschwindigkeit durch Scrollen ändern
@@ -2285,6 +2286,7 @@ Tooltips:
     Auto Refresh Interval: "Wie oft OpenTubeX automatisch deine Abos aktualisiert während die Anwendung geöffnet ist. Unter Android wird der Feed bei einem Intervall ungleich null auch aktualisiert, während die App geschlossen ist."
     Refresh Subscriptions While App Is Closed: Erlaubt Android, Abo-Feeds in den ausgewählten Intervallen zu aktualisieren, während OpenTubeX geschlossen ist. Deaktiviere diese Option, damit automatische Aktualisierungen nur bei geöffneter App stattfinden.
   Player Settings:
+    Use Document Picture-in-Picture: Zeigt die Player-Steuerung und Untertitel der App im Bild-im-Bild-Fenster. Deaktiviere dies, um stattdessen das Bild-im-Bild-Fenster des Systems für Videos zu verwenden.
     Enable Caption Translations: Wenn aktiviert, bevorzugen die Untertitel-Schaltfläche und das Tastenkürzel C eine automatisch übersetzte Spur in der bevorzugten Untertitelsprache, wenn das Video keine passende Originalspur bereitstellt.
     Default Video Format: Lege die Formate fest, die bei der Wiedergabe eines Videos verwendet werden. DASH-Formate können höhere Auflösungen wiedergeben. Altformate sind auf maximal 360p beschränkt, verbrauchen aber weniger Bandbreite. Audioformate sind reine Audiostreams.
     Proxy Videos Through Invidious: Stellt eine Verbindung mit Invidious her, um Videos bereitzustellen, anstatt eine direkte Verbindung mit YouTube herzustellen.

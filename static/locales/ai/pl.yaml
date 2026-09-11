@@ -230,6 +230,7 @@ Settings:
       Volume: Głośność
       Hint: Przesuń w górę lub w dół z boku filmu.
       Unavailable: Nie udało się dostosować sterowania odtwarzaniem.
+    Use Document Picture-in-Picture: "Używaj dokumentowego obrazu w obrazie (eksperymentalne)"
     yt-dlp Streaming: "Strumieniowanie yt-dlp"
     Continue Playback When Screen Is Locked: 'Kontynuuj odtwarzanie przy zablokowanym ekranie'
     Music Visualizer: Wizualizator muzyki
@@ -754,6 +755,7 @@ Tooltips:
       Wbudowany mechanizm nie obsługuje przewijania transmisji na żywo ani premier.
     Show Thumbnail Previews: Pokazuje animowany podgląd po najechaniu na miniaturę filmu.
   Player Settings:
+    Use Document Picture-in-Picture: "Wyświetla elementy sterowania odtwarzaczem i napisy aplikacji w trybie obrazu w obrazie. Wyłącz, aby zamiast tego używać systemowego okna obrazu w obrazie dla wideo."
     Continue Playback When Screen Is Locked: 'Utrzymuje odtwarzanie dźwięku w tle i udostępnia elementy sterowania multimediami Androida. Wyłącz, aby wstrzymywać odtwarzanie, gdy aplikacja nie jest już widoczna.'
     Use YouTube-style Shorts: Wyświetla Shorts w pionowej siatce na stronach subskrypcji i kanałów oraz używa odtwarzacza Shorts w stylu YouTube.
     Loop Shorts: Po włączeniu Shorts są automatycznie odtwarzane od początku. Po wyłączeniu zatrzymują się na końcu i wyświetlają przycisk ponownego odtwarzania.

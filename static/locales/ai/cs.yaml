@@ -507,6 +507,7 @@ Settings:
       Volume: Hlasitost
       Hint: Přejeďte nahoru nebo dolů po straně videa.
       Unavailable: Nepodařilo se upravit ovládání přehrávání.
+    Use Document Picture-in-Picture: "Používat obraz v obraze dokumentu (experimentální)"
     yt-dlp Streaming: "Streamování přes yt-dlp"
     Continue Playback When Screen Is Locked: 'Pokračovat v přehrávání při zamčené obrazovce'
     Music Visualizer: Hudební vizualizér
@@ -1481,6 +1482,7 @@ Tooltips:
   Proxy Settings:
     IP Block Recovery Script Path: Cesta k souboru skriptu, který se spustí při zjištění blokování IP adresy. OpenTubeX počká na jeho dokončení a poté znovu načte video. Pokud je povolen záložní poskytovatel, skript se spustí až po jeho selhání.
   Player Settings:
+    Use Document Picture-in-Picture: "Zobrazí ovládací prvky přehrávače a titulky aplikace v režimu obraz v obraze. Vypnutím se místo něj použije systémové okno obrazu v obraze pro video."
     Continue Playback When Screen Is Locked: 'Ponechá zvuk přehrávaný na pozadí a zpřístupní ovládání médií systému Android. Vypnutím se přehrávání pozastaví, jakmile aplikace přestane být viditelná.'
     Enable Caption Translations: Pokud video neposkytuje odpovídající původní stopu, tlačítko titulků a klávesová zkratka C při zapnutí upřednostní automaticky přeloženou stopu v preferovaném jazyce titulků.
     Use Quick Playback Speed Bar: Zobrazí na pravé straně ovládacích prvků přehrávače panel rychlé volby rychlosti. Pokud je zapnuté ruční ukládání rychlosti přehrávání pro jednotlivé kanály, panel obsahuje také tlačítko pro uložení rychlosti aktuálního kanálu.

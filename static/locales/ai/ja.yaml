@@ -507,6 +507,7 @@ Settings:
       Volume: 音量
       Hint: 動画の左右どちらかで上下にスワイプします。
       Unavailable: 再生コントロールを調整できませんでした。
+    Use Document Picture-in-Picture: "ドキュメント ピクチャー イン ピクチャーを使用（試験的）"
     yt-dlp Streaming: "yt-dlp ストリーミング"
     Continue Playback When Screen Is Locked: '画面ロック中も再生を続ける'
     Music Visualizer: 音楽ビジュアライザー
@@ -1481,6 +1482,7 @@ Tooltips:
   Proxy Settings:
     IP Block Recovery Script Path: IPブロックを検出したときに実行するスクリプトファイルのパスです。OpenTubeXは処理の完了を待ってから動画を再読み込みします。フォールバックが有効な場合は、フォールバックにも失敗したときだけ実行します。
   Player Settings:
+    Use Document Picture-in-Picture: "アプリのプレーヤー操作と字幕をピクチャー イン ピクチャーに表示します。システムの動画用ピクチャー イン ピクチャー ウィンドウを使用する場合は無効にしてください。"
     Continue Playback When Screen Is Locked: 'バックグラウンドで音声の再生を続け、Android のメディアコントロールを提供します。アプリが表示されなくなったときに一時停止するには無効にしてください。'
     Enable Caption Translations: 有効にすると、指定した字幕言語の原文トラックが動画にない場合、字幕ボタンとCキーのショートカットで自動翻訳トラックを優先します。
     Use Quick Playback Speed Bar: プレーヤー右側の操作欄にクイック再生速度バーを表示します。チャンネルごとの再生速度を手動保存する設定が有効な場合は、現在のチャンネルに速度を保存するボタンも表示されます。

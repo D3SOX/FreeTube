@@ -633,6 +633,7 @@ Settings:
       Volume: Lydstyrke
       Hint: Sveip opp eller ned på ei av sidene av videoen.
       Unavailable: Klarte ikkje å justera avspelingskontrollane.
+    Use Document Picture-in-Picture: "Bruk dokument-bilete-i-bilete (eksperimentell)"
     yt-dlp Streaming: "yt-dlp-strauming"
     Continue Playback When Screen Is Locked: 'Hald fram med avspeling når skjermen er låst'
     Music Visualizer: Musikkvisualisering
@@ -1822,6 +1823,7 @@ Tooltips:
   Proxy Settings:
     IP Block Recovery Script Path: Filstien til skriptet som skal køyrast når ei IP-sperre vert oppdaga. OpenTubeX ventar til det er ferdig og lastar deretter inn videoen på nytt. Dersom reserveløysinga er slått på, køyrer skriptet berre når ho òg slår feil.
   Player Settings:
+    Use Document Picture-in-Picture: "Viser spelarkontrollane og undertekstane til appen i bilete-i-bilete. Slå av dette for å bruke systemvindauget for video i bilete-i-bilete i staden."
     Continue Playback When Screen Is Locked: 'Held fram med lydavspeling i bakgrunnen og viser Android-mediekontrollar. Slå av dette for å setje på pause når appen ikkje lenger er synleg.'
     Enable Caption Translations: Når dette er slått på, føretrekkjer teksteknappen og C-hurtigtasten eit automatisk omsett spor på det føretrekte tekstespråket dersom videoen ikkje har eit samsvarande originalspor.
     Use Quick Playback Speed Bar: Viser ei snøgglinje for avspelingsfart til høgre i spelarkontrollane. Dersom manuell lagring av avspelingsfart for kvar kanal er slått på, har linja òg ein knapp for å lagre farten for den gjeldande kanalen.

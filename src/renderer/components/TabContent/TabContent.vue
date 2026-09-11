@@ -116,8 +116,24 @@ let lifecycleRevision = 0
 let disposalNotified = false
 let pictureInPictureExitRequested = false
 
+function closeDocumentPictureInPictureWindow(pipWindow) {
+  return new Promise(resolve => {
+    const finish = () => {
+      clearTimeout(timeoutId)
+      pipWindow.removeEventListener('pagehide', finish)
+      resolve()
+    }
+    const timeoutId = window.setTimeout(finish, 1000)
+    pipWindow.addEventListener('pagehide', finish, { once: true })
+    pipWindow.close()
+  })
+}
+
 async function disposeMountedContent() {
   const pictureInPictureElement = document.pictureInPictureElement
+  const documentPipWindow = window.documentPictureInPicture?.window
+  const documentPipPlayer = documentPipWindow?.document.querySelector('.ftVideoPlayer[data-tab-id]')
+  const ownsDocumentPictureInPicture = documentPipPlayer?.dataset.tabId === props.tab.id
   let exitPictureInPicture = Promise.resolve()
   if (
     !pictureInPictureExitRequested &&
@@ -134,6 +150,16 @@ async function disposeMountedContent() {
     } catch (error) {
       pictureInPictureExitRequested = false
       console.error(`Failed to exit Picture-in-Picture for logical tab ${props.tab.id}:`, error)
+    }
+  } else if (!pictureInPictureExitRequested && documentPipWindow && ownsDocumentPictureInPicture) {
+    pictureInPictureExitRequested = true
+    try {
+      exitPictureInPicture = closeDocumentPictureInPictureWindow(documentPipWindow).finally(() => {
+        pictureInPictureExitRequested = false
+      })
+    } catch (error) {
+      pictureInPictureExitRequested = false
+      console.error(`Failed to exit Document Picture-in-Picture for logical tab ${props.tab.id}:`, error)
     }
   }
 

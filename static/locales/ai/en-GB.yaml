@@ -494,6 +494,7 @@ Settings:
       Volume: Volume
       Hint: Swipe up or down on either side of the video.
       Unavailable: Could not adjust playback controls.
+    Use Document Picture-in-Picture: "Use Document Picture-in-Picture (experimental)"
     yt-dlp Streaming: "yt-dlp Streaming"
     Continue Playback When Screen Is Locked: 'Continue playback when the screen is locked'
     Music Visualizer: Music visualiser
@@ -1461,6 +1462,7 @@ Tooltips:
   Proxy Settings:
     IP Block Recovery Script Path: Script file path to run when an IP block is detected. OpenTubeX waits for it to finish, then reloads the video. If fallback is enabled, it runs only when fallback also fails.
   Player Settings:
+    Use Document Picture-in-Picture: "Shows the app's player controls and captions in Picture-in-Picture. Turn this off to use the system video Picture-in-Picture window instead."
     Continue Playback When Screen Is Locked: 'Keeps audio playing in the background and provides Android media controls. Turn this off to pause when the app is no longer visible.'
     Enable Caption Translations: When enabled, the captions button and C shortcut prefer an automatically translated track in the preferred caption language when the video does not provide a matching original track.
     Use Quick Playback Speed Bar: Shows a quick playback speed bar in the player controls on the right side. If manual per-channel playback speed saving is enabled, the bar also includes the button to save the speed for the current channel.
