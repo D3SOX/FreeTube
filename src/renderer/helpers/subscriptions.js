@@ -311,7 +311,8 @@ function notifySubscriptionChannelRefreshed(tab) {
 /** Keep confirmed channel failures visible even when another channel keeps retrying. */
 function createSubscriptionErrorSummary(t) {
   const errors = shallowReactive(new Map())
-  const controller = new AbortController()
+  /** @type {import('./utils').ToastControl | null} */
+  let toastControl = null
   let shown = false
   return {
     add(channel, messages) {
@@ -324,7 +325,7 @@ function createSubscriptionErrorSummary(t) {
       })
       if (shown || subscriptionRefreshErrors.value === errors) return
       shown = true
-      showToast({
+      toastControl = showToast({
         message: () => {
           const names = [...errors.values()].slice(0, 3).map(channel => channel.name).join(', ')
           const channels = errors.size > 3
@@ -333,7 +334,6 @@ function createSubscriptionErrorSummary(t) {
           return t('Subscriptions.Refresh Errors', { channels })
         },
         time: Infinity,
-        abortSignal: controller.signal,
         action: () => {
           shown = false
           subscriptionRefreshErrors.value = errors
@@ -343,7 +343,7 @@ function createSubscriptionErrorSummary(t) {
     },
     finish() {
       // Keep the final details available briefly after completion or cancellation.
-      if (shown) setTimeout(() => controller.abort(), 10000)
+      if (shown) toastControl?.startTimeout(10000)
     }
   }
 }

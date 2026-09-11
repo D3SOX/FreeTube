@@ -91,7 +91,14 @@ function createRefresh({ online = true, feed = 'Shorts', error = new TypeError('
     getChannelPlaylistId: id => id,
     showApiErrorToast: (...args) => toasts.push(args),
     copyToClipboard: text => copied.push(text),
-    showToast: (...args) => toasts.push(args),
+    showToast: (...args) => {
+      toasts.push(args)
+      return {
+        startTimeout(time) {
+          args[0].time = time
+        }
+      }
+    },
     localApiFetch: fetchLocal,
     fetch: webCors ? async () => { throw new TypeError('Failed to fetch') } : fetchChannel,
     invidiousFetch: fetchInvidious,
@@ -529,6 +536,7 @@ test('one compact refresh notification retains every failed channel and distinct
   await app.refresh({ t: translateSummary })
   assert.equal(app.toasts.length, 1)
   const toast = app.toasts[0][0]
+  assert.equal(toast.time, 10000, 'completion must start the visible timeout indicator')
   assert.equal(toast.message(), 'Channels that could not be refreshed: UC0, UC1, UC2 and 17 more. Click to view details.')
   assert.ok(toast.message().length < 100)
   toast.action()
@@ -588,7 +596,7 @@ test('confirmed HTTP failures stay accessible while another channel retries and 
     app.cancelSubscriptionRefresh()
     await refresh
     assert.equal(app.toasts.length, 1)
-    assert.equal(app.toasts[0][0].abortSignal.aborted, false, 'cancellation must retain the confirmed failures')
+    assert.equal(app.toasts[0][0].time, Infinity, 'opening the details must prevent a stale timeout update')
   } finally {
     app.cancelSubscriptionRefresh()
     await refresh

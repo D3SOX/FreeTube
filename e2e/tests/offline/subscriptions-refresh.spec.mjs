@@ -191,6 +191,33 @@ test.describe('invalid per-channel daily video limit', () => {
   })
 })
 
+test.describe('failed subscription refresh summary', () => {
+  test.use({
+    seed: {
+      settings: {
+        ...commonSettings,
+        backendFallback: false,
+        showToastTimeoutIndicator: true
+      },
+      profiles: [profileWith(1)],
+      subscriptionCache: [cachedChannel(0)]
+    }
+  })
+
+  test('starts the timeout indicator when the refresh finishes', async ({ page }) => {
+    await page.route(/^https?:\/\//, route => route.fulfill({ status: 500, body: 'Failed' }))
+    await goTo(page, 'subscriptions')
+
+    await page.getByRole('button', { name: /Refresh Videos/ }).click()
+
+    const summary = page.locator('.toast', { hasText: 'Channels that could not be refreshed' })
+    const indicator = summary.locator('..').locator('.timeout-indicator .embeddedProgressPath')
+    await expect(summary).toBeVisible()
+    await expect(indicator).toBeVisible()
+    await expect(indicator).toHaveCSS('animation-duration', '9.7s')
+  })
+})
+
 test.describe('incremental subscription feed refresh', () => {
   test.use({
     seed: {

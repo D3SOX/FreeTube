@@ -430,9 +430,10 @@ function stopProgressToastPointerTracking() {
 }
 
 /**
- * @param {CustomEvent<{ message: string | (({elapsedMs: number, remainingMs: number}) => string), time: number | null, action: Function | null, abortSignal: AbortSignal | null, image: string | null, icon: [string, string] | null, buttons: { label: string, action?: Function, primary?: boolean, icon?: [string, string] }[], buttonAction: 'open-sync-settings' | null, verticalButtons: boolean, dismissible: boolean, dismissOnAction?: boolean }>} event
+ * @param {CustomEvent<{ message: string | (({elapsedMs: number, remainingMs: number}) => string), time: number | null, action: Function | null, abortSignal: AbortSignal | null, image: string | null, icon: [string, string] | null, buttons: { label: string, action?: Function, primary?: boolean, icon?: [string, string] }[], buttonAction: 'open-sync-settings' | null, verticalButtons: boolean, dismissible: boolean, dismissOnAction?: boolean, control: import('../../helpers/utils').ToastControl | null }>} event
  */
-function open({ detail: { message, time, action, abortSignal, image, icon, buttons, buttonAction, verticalButtons, dismissible, dismissOnAction } }) {
+function open(event) {
+  let { message, time, action, abortSignal, image, icon, buttons, buttonAction, verticalButtons, dismissible, dismissOnAction } = event.detail
   if (buttonAction === 'open-sync-settings') {
     buttons = [{
       label: t('Settings.Sync Settings.Sync Settings'),
@@ -479,6 +480,23 @@ function open({ detail: { message, time, action, abortSignal, image, icon, butto
     onAutoClose: forgetToast
   })
   toastId = id
+  event.detail.control = {
+    startTimeout(nextTime) {
+      if (!Number.isFinite(nextTime) || !liveToasts.includes(id)) return
+
+      time = nextTime
+      state.duration = nextTime
+      sonner.custom(toastItem, {
+        id,
+        duration: nextTime,
+        dismissible: state.dismissible,
+        position: SONNER_POSITION,
+        componentProps: { toast: state },
+        onDismiss: forgetToast,
+        onAutoClose: forgetToast
+      })
+    }
+  }
 
   if (typeof message === 'function') {
     let elapsed = 0

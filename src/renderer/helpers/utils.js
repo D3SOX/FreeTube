@@ -281,11 +281,17 @@ const ERROR_TOAST_ICON = ['fas', 'circle-exclamation']
  */
 
 /**
+ * @typedef {object} ToastControl
+ * @property {(time: number) => void} startTimeout starts a finite timeout for an indefinite toast
+ */
+
+/**
  * @param {string | (({elapsedMs: number, remainingMs: number}) => string) | ToastOptions} message
  *   the message to display, or an options object for more control (e.g. to show an image or icon)
  * @param {number} time
  * @param {Function} action
  * @param {AbortSignal} abortSignal
+ * @returns {ToastControl | null | undefined}
  */
 export function showToast(message, time = null, action = null, abortSignal = null) {
   let image = null
@@ -308,21 +314,23 @@ export function showToast(message, time = null, action = null, abortSignal = nul
     return
   }
 
-  ToastEventBus.dispatchEvent(new CustomEvent('toast-open', {
-    detail: {
-      message,
-      time,
-      action,
-      abortSignal,
-      image,
-      icon,
-      buttons,
-      buttonAction,
-      verticalButtons,
-      dismissible,
-      dismissOnAction,
-    }
-  }))
+  const detail = {
+    message,
+    time,
+    action,
+    abortSignal,
+    image,
+    icon,
+    buttons,
+    buttonAction,
+    verticalButtons,
+    dismissible,
+    dismissOnAction,
+    /** @type {ToastControl | null} */
+    control: null,
+  }
+  ToastEventBus.dispatchEvent(new CustomEvent('toast-open', { detail }))
+  return detail.control
 }
 
 /**
