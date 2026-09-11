@@ -1,6 +1,6 @@
 import { readFile } from 'node:fs/promises'
 import path from 'node:path'
-import { test, expect, goToSettingsSection, latestSettings } from '../../helpers/app.mjs'
+import { test, expect, goTo, goToSettingsSection, latestSettings } from '../../helpers/app.mjs'
 import { createInternetProbe, INTERNET_CHECK_URL } from '../../../src/renderer/helpers/internetConnectivity.js'
 
 test.use({ seed: { settings: { fetchSubscriptionsAutomatically: false } } })
@@ -30,6 +30,43 @@ test('internet probe works with browser web security enabled', async ({ app }) =
 })
 
 for (const scale of [1, 1.25]) {
+  test(`connection banner follows navbar coverage at UI scale ${scale}`, async ({ page }) => {
+    await page.setViewportSize({ width: 480, height: 800 })
+    await page.evaluate(scale => window.ftElectron.setZoomFactor(scale), scale)
+    await page.emulateMedia({ reducedMotion: 'reduce' })
+    await page.evaluate(() => {
+      Object.defineProperty(navigator, 'onLine', { configurable: true, value: false })
+      window.dispatchEvent(new Event('offline'))
+    })
+    const banner = page.locator('.connection-status-holder')
+    await expect(banner).toBeVisible()
+    const bottomGap = () => banner.evaluate(element => window.innerHeight - element.getBoundingClientRect().bottom)
+    await expect.poll(bottomGap).toBeCloseTo(60, 0)
+    await goTo(page, 'settings')
+    await expect(page.locator('.settingsWindow')).toHaveClass(/maximized/)
+    await expect.poll(bottomGap).toBeCloseTo(0, 0)
+    await page.locator('.app').evaluate(element => element.classList.add('capacitorPhoneLayout'))
+    await page.evaluate(() => document.documentElement.style.setProperty('--safe-area-inset-bottom', '24px'))
+    await expect.poll(bottomGap).toBeCloseTo(24, 0)
+    await page.locator('.settingsWindowHeader').getByRole('button', { name: 'Close', exact: true }).click()
+    await expect(page.locator('.settingsWindow')).toBeHidden()
+    await expect.poll(bottomGap).toBeCloseTo(84, 0)
+
+    // The mobile sheet component is developed separately; exercise its DOM contract.
+    await page.evaluate(() => {
+      const sheet = document.createElement('dialog')
+      sheet.className = 'mobileSheet'
+      document.body.append(sheet)
+    })
+    const sheet = page.locator('dialog.mobileSheet')
+    await expect.poll(bottomGap).toBeCloseTo(84, 0)
+    await sheet.evaluate(element => element.show())
+    await expect.poll(bottomGap).toBeCloseTo(24, 0)
+    await sheet.evaluate(element => element.close())
+    await expect.poll(bottomGap).toBeCloseTo(84, 0)
+    await sheet.evaluate(element => element.remove())
+  })
+
   test(`connection banner pauses requests and confirms recovery at UI scale ${scale}`, async ({ page }) => {
     await page.setViewportSize({ width: 480, height: 800 })
     await page.locator('.app').evaluate(element => element.classList.add('capacitorPhoneLayout'))

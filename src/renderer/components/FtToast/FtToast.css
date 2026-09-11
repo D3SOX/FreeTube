@@ -733,7 +733,9 @@ body:has(.app.capacitorPhoneLayout) {
   }
 }
 
-body:has(.app) :fullscreen .connection-status-holder {
+body:has(.app) :fullscreen .connection-status-holder,
+body:has(.mobileSheet[open]) .connection-status-holder,
+body:has(.app .settingsWindow.maximized) .connection-status-holder {
   inset-block-end: var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0));
 }
 
