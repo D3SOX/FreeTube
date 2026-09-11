@@ -172,7 +172,7 @@ let queueAnnouncementSequence = 0
 
 onMounted(() => {
   const container = queueItems.value?.$el ?? queueItems.value
-  queueObserver = new MutationObserver(() => {
+  const scheduleClamp = () => {
     queueClampFrame ??= requestAnimationFrame(() => {
       queueClampFrame = null
       clampOverlayScrollTop(
@@ -180,9 +180,10 @@ onMounted(() => {
         container.querySelector(':scope > .queueItem:last-of-type')
       )
     })
-  })
+  }
+  queueObserver = new MutationObserver(scheduleClamp)
   queueObserver.observe(container, { childList: true })
-  queueResizeObserver = new ResizeObserver(() => clampOverlayScrollTop(container, container.querySelector(':scope > .queueItem:last-of-type')))
+  queueResizeObserver = new ResizeObserver(scheduleClamp)
   queueResizeObserver.observe(container)
 })
 

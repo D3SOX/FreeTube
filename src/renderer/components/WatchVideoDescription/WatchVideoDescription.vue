@@ -18,7 +18,7 @@
       @click="copyDescription"
     />
     <span
-      v-if="showControls && !isExpanded && !alwaysExpanded"
+      v-if="previewOnly || (showControls && !isExpanded && !alwaysExpanded)"
       ref="expandDescriptionControl"
       :class="{
         descriptionStatus: true,
@@ -42,10 +42,7 @@
         ref="descriptionContainer"
         class="description"
         :input-html="processedShownDescription"
-        :role="previewOnly ? 'button' : null"
-        :tabindex="previewOnly ? 0 : null"
         :link-tab-index="linkTabIndex"
-        @keydown.enter.space="previewOnly && ( $event.preventDefault(), expandDescription() )"
         @timestamp-event="onTimestamp"
         @click="expandDescriptionWithClick"
       />

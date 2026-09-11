@@ -55,7 +55,7 @@
           ref="menuRef"
           class="quickSettingsMenu"
           :class="{ phoneQuickSettings: phoneLayout }"
-          role="dialog"
+          :role="phoneLayout ? null : 'dialog'"
           :aria-label="t('Settings.Quick Settings.Quick Settings')"
           tabindex="-1"
           @focusout="handleMenuFocusOut"

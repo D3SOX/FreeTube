@@ -61,7 +61,9 @@ watch(() => props.open, async (open) => {
     readingPosition = scroller.value?.scrollTop ?? 0
   } else {
     await nextTick()
-    restoreOverlayScrollTop(scroller.value, readingPosition)
+    const element = scroller.value
+    if (!props.open || !element) return
+    restoreOverlayScrollTop(element, readingPosition)
     clamp()
   }
 }, { flush: 'pre' })

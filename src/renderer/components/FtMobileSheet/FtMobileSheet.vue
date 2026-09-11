@@ -8,7 +8,8 @@
       class="mobileSheet"
       :class="{ dockedSheet: docked, mobileSheetEnabled: enabled }"
       :style="sheetStyle"
-      :aria-label="title"
+      :role="enabled ? null : 'presentation'"
+      :aria-label="enabled ? title : null"
       @cancel.prevent="dismiss"
       @keydown.esc.prevent.stop="dismiss"
       @pointerdown.stop
@@ -58,7 +59,7 @@
 
 <script setup>
 import { FtIcon } from '@opentubex/icons'
-import { computed, inject, nextTick, onBeforeUnmount, ref, useTemplateRef, watch } from 'vue'
+import { computed, inject, nextTick, onBeforeUnmount, onUpdated, ref, shallowRef, useTemplateRef, watch } from 'vue'
 import { applyAnimationSpeed } from '../../helpers/animationSpeed'
 import { lockBodyScroll, unlockBodyScroll } from '../FtPrompt/scrollLock'
 
@@ -80,9 +81,30 @@ const expandPanel = inject('expandPhonePanel', null)
 const expanded = ref(false)
 const dragOffset = ref(0)
 const visibleTop = computed(() => Math.max(0, (expanded.value ? 0 : sheetTop.value) + Math.min(0, dragOffset.value)))
+const fullscreenElement = shallowRef(document.fullscreenElement)
+const playerCoversWindow = ref(false)
 const docked = computed(() => props.enabled && props.belowPlayer && getPlayer !== null &&
-  !document.fullscreenElement && !getPlayer()?.matches('[data-native-player-screen], .fullWindow'))
-const teleportTarget = computed(() => document.fullscreenElement ?? '.app')
+  !fullscreenElement.value && !playerCoversWindow.value)
+const teleportTarget = computed(() => fullscreenElement.value ?? '.app')
+let observedPlayer = null
+let presentationObserver = null
+function updatePresentation() {
+  fullscreenElement.value = document.fullscreenElement
+  const player = getPlayer?.() ?? null
+  if (player !== observedPlayer) {
+    presentationObserver?.disconnect()
+    observedPlayer = player
+    if (player) {
+      presentationObserver = new MutationObserver(updatePresentation)
+      presentationObserver.observe(player, { attributes: true, attributeFilter: ['class', 'data-native-player-screen'] })
+    }
+  }
+  playerCoversWindow.value = player?.matches('[data-native-player-screen], .fullWindow') ?? false
+}
+// Options API $refs are not reactive; refresh the observed player when opening.
+watch([dialog, () => props.open], updatePresentation, { flush: 'post' })
+onUpdated(updatePresentation)
+document.addEventListener('fullscreenchange', updatePresentation)
 const sheetTop = ref(0)
 const sheetStyle = computed(() => docked.value
   ? {
@@ -115,8 +137,12 @@ function measurePlayer() {
   sheetTop.value = Math.max(0, bounds.bottom)
 }
 
-watch([dialog, () => props.enabled, () => props.open], async ([element, enabled, open]) => {
+watch([dialog, () => props.enabled, () => props.open, docked, fullscreenElement], async ([element, enabled, open], previous) => {
   if (!element) return
+  if (element.open && (docked.value !== previous[3] || fullscreenElement.value !== previous[4])) {
+    element.close()
+    release()
+  }
   if (enabled && open && closing) {
     closing = false
     animation?.cancel()
@@ -248,6 +274,8 @@ function release() {
   if (!anotherPanelOpen && previousFocus?.isConnected) previousFocus.focus({ preventScroll: true })
 }
 onBeforeUnmount(() => {
+  document.removeEventListener('fullscreenchange', updatePresentation)
+  presentationObserver?.disconnect()
   dialog.value?.close()
   release()
 })

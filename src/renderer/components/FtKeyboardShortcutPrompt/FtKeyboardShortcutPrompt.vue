@@ -578,6 +578,7 @@ function findShortcutConflicts(binding, shortcut, ignoreDefaultBindings = false)
 
 function getAllKeyboardShortcutBindings(dictionary, dictionaryPath = []) {
   return Object.entries(dictionary).flatMap(([code, value]) => {
+    if (process.env.IS_CAPACITOR && code === 'FULLWINDOW') return []
     const path = [...dictionaryPath, code]
     if (typeof value === 'string') {
       return [{

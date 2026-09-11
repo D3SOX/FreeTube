@@ -206,6 +206,7 @@ export function createCommandPaletteRegistry(context) {
   addPlaylistCommands(commands, { t, groups, store, navigate })
   addDownloadCommands(commands, { t, groups, store, isElectron })
   addPlaybackCommands(commands, {
+    isCapacitor,
     t,
     groups,
     routePath,

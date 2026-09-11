@@ -134,8 +134,11 @@ export function setupPhoneOptionsMenu(menu, controls, t) {
   for (const type of ['click', 'dblclick', 'pointerdown', 'pointerup', 'touchstart', 'touchend']) {
     dialog.addEventListener(type, event => event.stopPropagation())
   }
-  const observer = new MutationObserver(schedule)
-  observer.observe(menu, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'], characterData: true })
+  const observer = new MutationObserver(records => {
+    if (records.some(record => !record.target.closest?.('.os-scrollbar') &&
+      (record.type !== 'attributes' || record.oldValue !== record.target.getAttribute('class')))) schedule()
+  })
+  observer.observe(menu, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'], attributeOldValue: true, characterData: true })
   const resize = new ResizeObserver(schedule)
   resize.observe(menu)
   resize.observe(parent.closest('.ftVideoPlayer') ?? parent)
