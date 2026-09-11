@@ -2692,6 +2692,8 @@ function runApp() {
       }
     }
 
+    const hideStartupSplash = (await baseHandlers.settings._findOne('hideStartupSplash'))?.value === true
+
     const newWindow = new BrowserWindow({
       // The initial HTML paints a splash before the shared renderer boots.
       show: false,
@@ -2706,7 +2708,8 @@ function runApp() {
         backgroundThrottling: false,
         additionalArguments: [
           `--startup-background=${windowBackground}`,
-          `--startup-dark=${nativeTheme.shouldUseDarkColors}`
+          `--startup-dark=${nativeTheme.shouldUseDarkColors}`,
+          `--hide-startup-splash=${hideStartupSplash}`
         ],
         preload: process.env.NODE_ENV === 'development'
           ? path.resolve(__dirname, '../../dist/preload.js')

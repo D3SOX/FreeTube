@@ -827,6 +827,7 @@ Settings:
     Posts Auto Refresh Interval: Interval de reîmprospătare automată a postărilor
     Refresh Subscriptions While App Is Closed: "Reîmprospătează abonamentele când aplicația este închisă"
   Distraction Free Settings:
+    Hide Startup Splash: Ascunde ecranul de pornire
     Hide Repeat Stats: Ascunde statisticile de repetare
     Sections:
       Visible While Paused: Vizibile în pauză în fereastră completă / pe ecran complet

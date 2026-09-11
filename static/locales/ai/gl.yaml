@@ -831,6 +831,7 @@ Settings:
     Posts Auto Refresh Interval: Intervalo de actualización automática das publicacións
     Refresh Subscriptions While App Is Closed: "Actualizar as subscricións coa aplicación pechada"
   Distraction Free Settings:
+    Hide Startup Splash: Agochar a pantalla de inicio
     Hide Repeat Stats: Agochar as estatísticas de repetición
     Sections:
       Visible While Paused: Visibles durante a pausa en xanela completa ou pantalla completa

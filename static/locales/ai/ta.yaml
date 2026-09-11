@@ -835,6 +835,7 @@ Settings:
     Posts Auto Refresh Interval: இடுகைத் தானியக்கப் புதுப்பிப்பு இடைவெளி
     Refresh Subscriptions While App Is Closed: "செயலி மூடியிருக்கும்போது சந்தாக்களைப் புதுப்பி"
   Distraction Free Settings:
+    Hide Startup Splash: தொடக்கத் திரையை மறை
     Hide Repeat Stats: மீளியக்கப் புள்ளிவிவரங்களை மறை
     Sections:
       Visible While Paused: முழுச் சாளரம் / முழுத்திரையில் இடைநிறுத்தியிருக்கும்போது தெரிபவை

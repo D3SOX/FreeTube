@@ -823,6 +823,7 @@ Settings:
     Posts Auto Refresh Interval: Gönderilerin Otomatik Yenileme Aralığı
     Refresh Subscriptions While App Is Closed: "Uygulama Kapalıyken Abonelikleri Yenile"
   Distraction Free Settings:
+    Hide Startup Splash: Başlangıç Ekranını Gizle
     Hide Repeat Stats: Tekrar istatistiklerini gizle
     Sections:
       Visible While Paused: Tam Pencere / Tam Ekranda Duraklatıldığında Görünür

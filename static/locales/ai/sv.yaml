@@ -825,6 +825,7 @@ Settings:
     Posts Auto Refresh Interval: Intervall för automatisk uppdatering av inlägg
     Refresh Subscriptions While App Is Closed: "Uppdatera prenumerationer medan appen är stängd"
   Distraction Free Settings:
+    Hide Startup Splash: Dölj startskärm
     Hide Repeat Stats: Dölj upprepningsstatistik
     Sections:
       Visible While Paused: Synligt under paus i helfönster eller helskärm

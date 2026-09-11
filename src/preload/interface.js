@@ -48,7 +48,8 @@ export default {
   startupSplashReady: () => ipcRenderer.send(IpcChannels.STARTUP_SPLASH_READY),
   startupAppearance: {
     background: process.argv.find(argument => argument.startsWith('--startup-background='))?.slice('--startup-background='.length),
-    dark: process.argv.includes('--startup-dark=true')
+    dark: process.argv.includes('--startup-dark=true'),
+    hideSplash: process.argv.includes('--hide-startup-splash=true')
   },
   isFlatpak: process.env.FLATPAK_ID !== undefined,
   runtimeVersions: Object.freeze({

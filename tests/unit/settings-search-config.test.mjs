@@ -354,3 +354,16 @@ test('voice-over settings are searchable on Android and Electron, but not the we
     assert.equal(entries.some(({ label }) => label === locale.Settings['Player Settings']['Voice-over Translation'].Enable), usingElectron || isCapacitor)
   }
 })
+
+test('startup splash setting is searchable only on Electron', () => {
+  for (const [usingElectron, isCapacitor] of [[true, false], [false, true], [false, false]]) {
+    const entries = createSettingsSearchIndex({
+      sections: [{ type: 'focus', title: 'Focus', description: '' }],
+      tm: path => getAtPath(locale, path),
+      store: { getters: { getChannelsHiddenParsed: [], getForbiddenTitlesParsed: [] } },
+      usingElectron,
+      isCapacitor,
+    }).get('focus')
+    assert.equal(entries.some(({ label }) => label === 'Hide Startup Splash'), usingElectron)
+  }
+})

@@ -1109,6 +1109,7 @@ Settings:
     Import search history formats: 'Unterstützte Formate: OpenTubeX / FreeTube (.db), YouTube Takeout (.json)'
     Setting object has insufficient data, skipping item: Das Objekt enthält unzureichende Daten, Element wird übersprungen
   Distraction Free Settings:
+    Hide Startup Splash: Startbildschirm ausblenden
     Hide Repeat Stats: Wiederholungsstatistik ausblenden
     Hide Live Chat: Live-Chat ausblenden
     Hide Popular Videos: Beliebte Videos ausblenden

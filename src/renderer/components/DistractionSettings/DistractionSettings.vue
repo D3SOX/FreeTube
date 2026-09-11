@@ -10,6 +10,14 @@
     <div class="switchColumnGrid">
       <div class="switchColumn">
         <FtToggleSwitch
+          v-if="isElectron"
+          :label="t('Settings.Distraction Free Settings.Hide Startup Splash')"
+          :compact="true"
+          :default-value="hideStartupSplash"
+          setting-key="hideStartupSplash"
+          @change="updateHideStartupSplash"
+        />
+        <FtToggleSwitch
           :label="t('Settings.Distraction Free Settings.Hide Video Views')"
           :compact="true"
           :default-value="hideVideoViews"
@@ -395,8 +403,16 @@ import { showToast } from '../../helpers/utils'
 import { checkYoutubeChannelId, findChannelTagInfo } from '../../helpers/channels'
 
 const { t } = useI18n()
+const isElectron = process.env.IS_ELECTRON
 
 const channelHiderDisabled = ref(false)
+
+const hideStartupSplash = computed(() => store.getters.getHideStartupSplash)
+
+/** @param {boolean} value */
+function updateHideStartupSplash(value) {
+  store.dispatch('updateHideStartupSplash', value)
+}
 
 /** @type {import('vue').ComputedRef<'local' | 'invidious'>} */
 const backendPreference = computed(() => store.getters.getBackendPreference)

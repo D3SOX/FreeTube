@@ -373,6 +373,7 @@ Settings:
     Show Scheduled Live Streams / Premieres First: Najpierw pokazuj zaplanowane transmisje na żywo i premiery
     Refresh Subscriptions While App Is Closed: "Odświeżaj subskrypcje, gdy aplikacja jest zamknięta"
   Distraction Free Settings:
+    Hide Startup Splash: Ukryj ekran startowy
     Hide Repeat Stats: Ukryj statystyki powtarzania
     Sections:
       Visible While Paused: Widoczne po wstrzymaniu w trybie pełnego okna lub pełnego ekranu

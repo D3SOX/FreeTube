@@ -823,6 +823,7 @@ Settings:
     Posts Auto Refresh Interval: Bejegyzések automatikus frissítésének időköze
     Refresh Subscriptions While App Is Closed: "Feliratkozások frissítése bezárt alkalmazásnál"
   Distraction Free Settings:
+    Hide Startup Splash: Indítóképernyő elrejtése
     Hide Repeat Stats: Ismétlési statisztikák elrejtése
     Sections:
       Visible While Paused: Szüneteltetéskor látható teljes ablakos vagy teljes képernyős módban

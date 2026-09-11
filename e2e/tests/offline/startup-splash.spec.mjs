@@ -1,5 +1,6 @@
 import { readFile, readdir } from 'node:fs/promises'
-import { test, expect } from '../../helpers/app.mjs'
+import { test, expect, goToSettingsSection, latestSettings } from '../../helpers/app.mjs'
+import path from 'node:path'
 
 for (const [theme, background, zoom] of [
   ['dark', 'rgb(15, 15, 15)', 1.25],
@@ -218,5 +219,59 @@ test.describe('slow initial route', () => {
         await page.unrouteAll({ behavior: 'wait' })
       }
     })
+  }
+})
+
+test('distraction-free switch disables the early splash in new windows and can restore it', async ({ page, app }, testInfo) => {
+  const settings = await goToSettingsSection(page, 'focus')
+  const toggle = settings.getByRole('checkbox', { name: /^Hide Startup Splash/ })
+  await expect(toggle).not.toBeChecked()
+
+  for (const hidden of [true, false]) {
+    await settings.locator('label.switch-label').filter({ hasText: 'Hide Startup Splash' }).click()
+    await expect(toggle).toBeChecked({ checked: hidden })
+    await expect.poll(async () => latestSettings(
+      await readFile(path.join(app.userDataDir, 'settings.db'), 'utf8')
+    ).hideStartupSplash).toBe(hidden)
+    if (hidden) {
+      for (const colorScheme of ['dark', 'light']) {
+        await page.emulateMedia({ colorScheme })
+        await expect(page.locator('body')).toHaveClass(new RegExp(`\\b${colorScheme}\\b`))
+        await testInfo.attach(`hide-startup-splash-setting-${colorScheme}`, {
+          body: await settings.locator('.switchColumnGrid').first().screenshot(), contentType: 'image/png'
+        })
+      }
+    }
+
+    let releaseRenderer
+    const gate = new Promise(resolve => { releaseRenderer = resolve })
+    const context = app.electronApp.context()
+    await context.route('**/renderer.js', async route => {
+      await gate
+      await route.continue()
+    })
+    try {
+      const created = app.electronApp.waitForEvent('window')
+      await page.evaluate(() => window.ftElectron.openInNewWindow('/history'))
+      const nextPage = await created
+      const browserWindow = await app.electronApp.browserWindow(nextPage)
+      await expect.poll(() => browserWindow.evaluate(window => window.isVisible())).toBe(true)
+      await expect(nextPage.locator('.topNav')).toHaveCount(0)
+      if (hidden) {
+        await expect(nextPage.locator('#startup-splash')).toHaveCount(0)
+        await expect(nextPage.locator('#app')).not.toHaveAttribute('inert')
+      } else {
+        await expect(nextPage.locator('#startup-splash')).toBeVisible()
+        await expect(nextPage.locator('#app')).toHaveAttribute('inert', '')
+      }
+      releaseRenderer()
+      await expect(nextPage.locator('.topNav')).toBeVisible()
+      await expect(nextPage.locator('#startup-splash')).toHaveCount(0)
+      await expect(nextPage.locator('#app')).not.toHaveAttribute('inert')
+      await browserWindow.evaluate(window => window.destroy())
+    } finally {
+      releaseRenderer()
+      await context.unrouteAll({ behavior: 'wait' })
+    }
   }
 })

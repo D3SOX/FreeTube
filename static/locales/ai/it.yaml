@@ -823,6 +823,7 @@ Settings:
     Posts Auto Refresh Interval: Intervallo di aggiornamento automatico dei post
     Refresh Subscriptions While App Is Closed: "Aggiorna le iscrizioni quando l'app è chiusa"
   Distraction Free Settings:
+    Hide Startup Splash: Nascondi la schermata di avvio
     Hide Repeat Stats: Nascondi statistiche di ripetizione
     Sections:
       Visible While Paused: Visibile durante la pausa in finestra intera o a schermo intero

@@ -823,6 +823,7 @@ Settings:
     Posts Auto Refresh Interval: Interval automatického obnovenia príspevkov
     Refresh Subscriptions While App Is Closed: "Obnovovať odbery, keď je aplikácia zatvorená"
   Distraction Free Settings:
+    Hide Startup Splash: Skryť úvodnú obrazovku
     Hide Repeat Stats: Skryť štatistiky opakovania
     Sections:
       Visible While Paused: Viditeľné počas pozastavenia v režime celého okna alebo celej obrazovky

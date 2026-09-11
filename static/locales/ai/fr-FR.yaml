@@ -823,6 +823,7 @@ Settings:
     Posts Auto Refresh Interval: Intervalle d’actualisation automatique des publications
     Refresh Subscriptions While App Is Closed: "Actualiser les abonnements quand l'application est fermée"
   Distraction Free Settings:
+    Hide Startup Splash: Masquer l’écran de démarrage
     Hide Repeat Stats: Masquer les statistiques de répétition
     Sections:
       Visible While Paused: Visible pendant la pause en mode pleine fenêtre ou plein écran

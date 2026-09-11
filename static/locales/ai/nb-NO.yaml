@@ -823,6 +823,7 @@ Settings:
     Posts Auto Refresh Interval: Intervall for automatisk oppdatering av innlegg
     Refresh Subscriptions While App Is Closed: "Oppdater abonnementer mens appen er lukket"
   Distraction Free Settings:
+    Hide Startup Splash: Skjul oppstartsskjerm
     Hide Repeat Stats: Skjul gjentakelsesstatistikk
     Sections:
       Visible While Paused: Synlig ved pause i fullt vindu / fullskjerm
