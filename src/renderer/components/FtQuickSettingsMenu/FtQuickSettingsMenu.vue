@@ -32,7 +32,7 @@
         :open="menuOpen"
         :title="profilePanelOpen ? t('Profile.Profile Select') : t('Settings.Quick Settings.Quick Settings')"
         :back="profilePanelOpen"
-        @closed="menuRendered = false; handleMenuAfterLeave()"
+        @closed="handleSheetClosed"
         @back="closeProfilePanel"
         @close="closeMenu"
       >
@@ -482,6 +482,7 @@ const profilePanelOpen = ref(false)
 let mouseDownOnTrigger = false
 let pointerDownInsideMenu = false
 let pendingSettingUpdateCount = 0
+let openCommandPaletteAfterClose = false
 const triggerRef = useTemplateRef('triggerRef')
 const menuRef = useTemplateRef('menuRef')
 const mainScrollRef = useTemplateRef('mainScrollRef')
@@ -649,6 +650,16 @@ function handleMenuAfterLeave() {
   }
 }
 
+function handleSheetClosed() {
+  menuRendered.value = false
+  menuOpen.value = false
+  handleMenuAfterLeave()
+  if (openCommandPaletteAfterClose) {
+    openCommandPaletteAfterClose = false
+    window.dispatchEvent(new CustomEvent(OPEN_COMMAND_PALETTE_EVENT))
+  }
+}
+
 function clampMainContentScroll() {
   const scrollViewport = mainScrollRef.value
   const content = mainContentRef.value
@@ -799,6 +810,7 @@ function handleMenuFocusOut(event) {
 }
 
 function closeMenu() {
+  openCommandPaletteAfterClose = false
   menuOpen.value = false
   triggerRef.value?.focus()
 }
@@ -894,6 +906,11 @@ function openKeyboardShortcuts() {
 }
 
 function openCommandPalette() {
+  if (phoneLayout.value) {
+    openCommandPaletteAfterClose = true
+    menuOpen.value = false
+    return
+  }
   menuOpen.value = false
   window.dispatchEvent(new CustomEvent(OPEN_COMMAND_PALETTE_EVENT))
 }

@@ -19,6 +19,40 @@ test('Escape closes a foreground prompt above a docked phone panel', async ({ ap
   await expect(page.locator('.dockedSheet[open]')).toBeVisible()
 })
 
+test('Escape closes only the latest of multiple prompts', async ({ page }) => {
+  await page.evaluate(async () => {
+    const store = document.querySelector('#app').__vue_app__.config.globalProperties.$store
+    await store.dispatch('showSearchFilters')
+    await store.dispatch('showCreatePlaylistPrompt', { title: '', description: '', sourcePlaylistId: null })
+  })
+  const searchFilters = page.locator('.searchFiltersCard')
+  const createPlaylist = page.locator('.playlistNameInput')
+  await expect(searchFilters).toBeVisible()
+  await expect(createPlaylist).toBeVisible()
+  await page.keyboard.press('Escape')
+  await expect(createPlaylist).toHaveCount(0)
+  await expect(searchFilters).toBeVisible()
+})
+
+test('playlist prompts preserve their desktop sizing and heading alignment', async ({ page }) => {
+  await page.evaluate(() => document.querySelector('#app').__vue_app__.config.globalProperties.$store.dispatch(
+    'showCreatePlaylistPrompt', { title: '', description: '', sourcePlaylistId: null }
+  ))
+  const nameInput = page.locator('.playlistNameInput')
+  await expect(nameInput).toBeVisible()
+  expect((await nameInput.boundingBox()).width).toBeGreaterThan(500)
+  await page.keyboard.press('Escape')
+
+  await page.evaluate(() => document.querySelector('#app').__vue_app__.config.globalProperties.$store.dispatch(
+    'showAddToPlaylistPromptForManyVideos', {
+      videos: [{ videoId: 'test', title: 'Test', lengthSeconds: 10 }]
+    }
+  ))
+  const heading = page.locator('.playlistPromptHeading')
+  await expect(heading).toBeVisible()
+  await expect(heading).toHaveCSS('text-align', 'center')
+})
+
 test('docked phone panel animations respect the configured animation speed', async ({ app, page }) => {
   await mockPlayableWatchPage(app, page)
   await openMockedVideo(page)
@@ -84,11 +118,150 @@ test('description preview exposes links and a separate expansion control', async
   await expect(page.locator('.mobileSheet[open]')).toContainText('Description')
 })
 
+test('description metadata remains reachable without description text', async ({ app, page }) => {
+  await mockPlayableWatchPage(app, page)
+  await openMockedVideo(page)
+  await setWindowSize(app, page, { width: 480, height: 800 })
+  const watch = await watchViewHandle(page)
+  await watch.evaluate(async vm => {
+    vm.videoDescription = ''
+    vm.videoDescriptionHtml = ''
+    vm.videoTags = ['metadata-tag']
+    await vm.$nextTick()
+  })
+
+  await page.locator('.phoneDescriptionPreview')
+    .getByRole('button', { name: '...more', exact: true })
+    .click()
+  await expect(page.locator('.mobileSheet[open]')).toContainText('metadata-tag')
+})
+
+test('phone comments keep their inset and hide unavailable visibility actions', async ({ app, page }) => {
+  await mockPlayableWatchPage(app, page)
+  await openMockedVideo(page)
+  await setWindowSize(app, page, { width: 480, height: 800 })
+  const button = page.locator('.phoneCommentsButton')
+  const bounds = await button.boundingBox()
+  expect(bounds.x).toBeGreaterThan(0)
+  expect(bounds.x + bounds.width).toBeLessThan(await page.evaluate(() => innerWidth))
+
+  const watch = await watchViewHandle(page)
+  await watch.evaluate(vm => {
+    vm.commentsDisabled = true
+    vm.openPhonePanel('comments')
+  })
+  const sheet = page.locator('.mobileSheet[open]')
+  await expect(sheet).toBeVisible()
+  await expect(sheet.getByRole('button', { name: /View Comments/ })).toHaveCount(0)
+})
+
+test('phone panel content remains rendered through its close animation', async ({ app, page }) => {
+  await mockPlayableWatchPage(app, page)
+  await openMockedVideo(page)
+  await setWindowSize(app, page, { width: 480, height: 800 })
+  const watch = await watchViewHandle(page)
+  await watch.evaluate(vm => vm.openPhonePanel('description'))
+  const sheet = page.locator('.mobileSheet[open]')
+  await sheet.getByRole('button', { name: 'Close', exact: true }).click()
+  await expect(page.locator('.phonePanelHost:not(.hiddenPanel)')).toHaveCount(1)
+  await expect(sheet).toHaveCount(0)
+  await expect(page.locator('.phonePanelHost:not(.hiddenPanel)')).toHaveCount(0)
+})
+
+test('phone transcript language menu stays inside the viewport', async ({ app, page }) => {
+  await mockPlayableWatchPage(app, page, { captionTranslations: true })
+  await openMockedVideo(page)
+  await setWindowSize(app, page, { width: 480, height: 800 })
+  const watch = await watchViewHandle(page)
+  await watch.evaluate(vm => {
+    vm.captions = [...vm.captions, { ...vm.captions[0], label: 'Second language' }]
+    vm.openPhonePanel('transcript')
+  })
+  const sheet = page.locator('.mobileSheet[open]')
+  await sheet.getByRole('button', { name: 'Language' }).click()
+  const bounds = await sheet.locator('.transcriptLanguageMenu').boundingBox()
+  expect(bounds.x).toBeGreaterThanOrEqual(0)
+  expect(bounds.x + bounds.width).toBeLessThanOrEqual(await page.evaluate(() => innerWidth))
+})
+
+test('fullscreen dropdowns close when native player presentation ends', async ({ app, page }) => {
+  await mockPlayableWatchPage(app, page)
+  await openMockedVideo(page)
+  await setWindowSize(app, page, { width: 480, height: 800 })
+  const button = page.getByRole('button', { name: 'Share Video' }).first()
+  const presentation = button.locator('xpath=ancestor::*[contains(@class, "videoLayout")]')
+  await presentation.evaluate(el => el.setAttribute('data-native-player-screen', ''))
+  await button.click()
+  const layer = page.locator('.fullscreenDropdownLayer')
+  await expect(layer).toBeVisible()
+  await expect(layer).toHaveCSS('z-index', '100')
+  await presentation.evaluate(el => el.removeAttribute('data-native-player-screen'))
+  await expect(layer).toHaveCount(0)
+})
+
+test('Settings consumes Escape after closing', async ({ page }) => {
+  await page.evaluate(() => document.querySelector('#app').__vue_app__.config.globalProperties.$store.dispatch('toggleSettingsWindow'))
+  const settings = page.locator('.settingsWindow')
+  await expect(settings).toBeVisible()
+  expect(await settings.evaluate(el => !el.dispatchEvent(new KeyboardEvent('keydown', {
+    key: 'Escape', bubbles: true, cancelable: true
+  })))).toBe(true)
+  await expect(settings).toHaveCount(0)
+})
+
+for (const [panel, flag] of [
+  ['chapters', 'showSidebarChapters'],
+  ['transcript', 'showTranscript'],
+  ['chat', 'liveChatOpen']
+]) {
+  test(`closing the phone ${panel} panel clears its desktop state`, async ({ app, page }) => {
+    await mockPlayableWatchPage(app, page, { captionTranslations: true })
+    await openMockedVideo(page)
+    await setWindowSize(app, page, { width: 480, height: 800 })
+    const watch = await watchViewHandle(page)
+    await watch.evaluate((vm, panel) => vm.openPhonePanel(panel), panel)
+    const sheet = page.locator('.mobileSheet[open]')
+    await expect(sheet).toBeVisible()
+    await sheet.getByRole('button', { name: 'Close', exact: true }).click()
+    await expect(sheet).toHaveCount(0)
+    expect(await watch.evaluate((vm, flag) => ({
+      flag: vm[flag],
+      mobilePanel: vm.mobilePanel
+    }), flag)).toEqual({ flag: false, mobilePanel: null })
+  })
+}
+
+test('a new watch load closes the current phone panel', async ({ app, page }) => {
+  await mockPlayableWatchPage(app, page)
+  await openMockedVideo(page)
+  const watch = await watchViewHandle(page)
+  expect(await watch.evaluate(vm => {
+    vm.mobilePanel = 'description'
+    vm.resetVideoState()
+    return vm.mobilePanel
+  })).toBeNull()
+})
+
+test('phone key-moment panels use the matching title', async ({ app, page }) => {
+  await mockPlayableWatchPage(app, page)
+  await openMockedVideo(page)
+  await setWindowSize(app, page, { width: 480, height: 800 })
+  const watch = await watchViewHandle(page)
+  await watch.evaluate(async vm => {
+    vm.videoChaptersKind = 'keyMoments'
+    vm.videoChapters = [{ title: 'Moment', timestamp: '0:00', startSeconds: 0 }]
+    vm.openPhonePanel('chapters')
+    await vm.$nextTick()
+  })
+  await expect(page.locator('.mobileSheet[open]')).toHaveAttribute('aria-label', 'Key Moments')
+})
+
 test('player options stop updating their scrollbars when idle', async ({ app, page }) => {
   await mockPlayableWatchPage(app, page)
   await openMockedVideo(page)
   await setWindowSize(app, page, { width: 480, height: 800 })
   await page.locator('.shaka-overflow-menu-button').click({ force: true })
+  await expect(page.locator('.phonePlayerOptionsClose')).toBeFocused()
   const menu = page.locator('.phonePlayerOptions[open] .shaka-overflow-menu')
   await expect(menu).toBeVisible()
   await page.waitForTimeout(400)

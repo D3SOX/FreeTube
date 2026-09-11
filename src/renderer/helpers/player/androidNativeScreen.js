@@ -236,6 +236,7 @@ export function createAndroidNativeScreen({ element, container, getController, g
     }
     const appChrome = open ? [] : appChromeElements
     const globalMenus = globalMenuElements
+      .filter(menu => menu.checkVisibility?.({ checkOpacity: true, checkVisibilityCSS: true }) !== false)
     // Hidden notices retain their layout box during native scrolling/gestures.
     // Clipping that box would punch through the raised video into the page.
     const menuElements = [...playerMenus, ...countdowns, ...globalMenus, ...appChrome]

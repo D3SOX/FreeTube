@@ -253,6 +253,19 @@ for (const fullscreen of [false, true]) {
   })
 }
 
+test('hidden mounted dialogs do not keep Android native overlays active', async () => {
+  const dialog = {
+    matches: () => false,
+    checkVisibility: () => false,
+    getAnimations: () => [],
+    getBoundingClientRect: () => ({ x: 0, y: 200, width: 640, height: 500 })
+  }
+  const f = await fixture({ dialogs: [dialog] })
+  assert.equal(f.layouts.at(-1).overlayActive, false)
+  assert.equal(f.layouts.at(-1).menus.length, 0)
+  f.screen.destroy()
+})
+
 test('side panels and menus retain transport controls inside the video column', async () => {
   const f = await fixture()
   f.change({ panelOpen: true })

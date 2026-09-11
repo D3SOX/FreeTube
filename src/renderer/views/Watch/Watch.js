@@ -685,7 +685,7 @@ export default defineComponent({
         : mode
     },
     autoOpenChapters: function () {
-      return this.$store.getters.getAutoOpenChapters
+      return !process.env.IS_CAPACITOR && this.$store.getters.getAutoOpenChapters
     },
     preferredCaptionLocale: function () {
       return this.$store.getters.getPreferredCaptionLocale || this.currentLocale
@@ -1585,7 +1585,6 @@ export default defineComponent({
     },
     closeLiveChat() {
       this.mobilePanel = null
-      if (this.phonePanelsEnabled) return
       this.liveChatOpen = false
       this.closeFullscreenLiveChat()
     },
@@ -1762,7 +1761,6 @@ export default defineComponent({
     },
     closeTranscript() {
       this.mobilePanel = null
-      if (this.phonePanelsEnabled) return
       if (this.showTranscript) {
         this.sidebarPanelLeaving = true
       }
@@ -2021,6 +2019,8 @@ export default defineComponent({
       preserveShortsPanels = false,
     } = {}) {
       const previousVideoTitle = this.videoTitle
+
+      this.mobilePanel = null
 
       // A preserved title belongs to the previous successful request. Keep it
       // visible during a reload, but require the current request to resolve its

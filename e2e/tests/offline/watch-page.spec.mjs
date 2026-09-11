@@ -733,6 +733,34 @@ for (const { name, options, expectedCount } of [
   })
 }
 
+test.describe('watch sidebar panels without recommendations', () => {
+  test.use({
+    seed: {
+      settings: {
+        ...WATCH_PAGE_SEED,
+        defaultViewingMode: 'theatre',
+        hideRecommendedVideos: true
+      }
+    }
+  })
+
+  test('collapses the sidebar after closing the transcript', async ({ app, page }) => {
+    await mockPlayableWatchPage(app, page, { captionCueSettings: 'align:center' })
+    await openMockedVideo(page)
+
+    const layout = page.locator(`${activeTab} .videoLayout`)
+    await expect(layout).toHaveClass(/noSidebar/)
+
+    await page.getByRole('button', { name: 'Show transcript' }).click()
+    await expect(layout).not.toHaveClass(/noSidebar/)
+    await page.locator(`${activeTab} .sidebarArea`)
+      .getByRole('button', { name: 'Close transcript' })
+      .click()
+
+    await expect(layout).toHaveClass(/noSidebar/)
+  })
+})
+
 test('repeats an A-B range and manages it from the player menu', async ({ app, page }) => {
   await mockPlayableWatchPage(app, page)
   const video = await openMockedVideo(page)

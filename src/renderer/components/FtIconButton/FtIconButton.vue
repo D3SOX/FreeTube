@@ -311,6 +311,7 @@ const useModal = computed(() => props.dropdownModalOnMobile && modalLayout.value
 let blockLeftClick = false
 let longPressTimer = null
 let dropdownViewportUpdateFrame = null
+let fullscreenTargetObserver = null
 
 const dropdown = useTemplateRef('dropdown')
 const dropdownContent = useTemplateRef('dropdownContent')
@@ -329,10 +330,35 @@ watch(dropdownShown, (shown) => {
     window.addEventListener('scroll', scheduleDropdownViewportUpdate, { capture: true, passive: true })
   } else {
     removeDropdownViewportListeners()
+    fullscreenDropdownTarget.value = null
   }
 })
 
-onBeforeUnmount(removeDropdownViewportListeners)
+function syncFullscreenDropdownTarget() {
+  const target = fullscreenDropdownTarget.value
+  if (target && !target.matches(':fullscreen, [data-native-player-screen], .fullWindow')) {
+    dropdownShown.value = false
+  }
+}
+
+watch(fullscreenDropdownTarget, (target) => {
+  fullscreenTargetObserver?.disconnect()
+  fullscreenTargetObserver = null
+  document.removeEventListener('fullscreenchange', syncFullscreenDropdownTarget)
+  if (!target) return
+  fullscreenTargetObserver = new MutationObserver(syncFullscreenDropdownTarget)
+  fullscreenTargetObserver.observe(target, {
+    attributes: true,
+    attributeFilter: ['class', 'data-native-player-screen']
+  })
+  document.addEventListener('fullscreenchange', syncFullscreenDropdownTarget)
+})
+
+onBeforeUnmount(() => {
+  removeDropdownViewportListeners()
+  fullscreenTargetObserver?.disconnect()
+  document.removeEventListener('fullscreenchange', syncFullscreenDropdownTarget)
+})
 
 /**
  * @param {PointerEvent | null} e

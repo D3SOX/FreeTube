@@ -1317,6 +1317,7 @@ function restoreSettingsWindow() {
 
 function handleSettingsEscape(event) {
   if (event.target.closest('[aria-expanded="true"], [data-settings-escape-scope]')) return
+  event.preventDefault()
   event.stopPropagation()
   closeSettings()
 }

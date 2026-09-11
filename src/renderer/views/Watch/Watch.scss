@@ -1634,12 +1634,12 @@
   display: contents;
 }
 
-.phoneCommentsButton {
+.videoLayout .phoneCommentsButton {
   display: flex;
   align-items: center;
   gap: 12px;
   box-sizing: border-box;
-  inline-size: 100%;
+  inline-size: calc(100% - 32px);
   min-block-size: var(--phone-touch-target, 48px);
   margin-block: 12px;
   margin-inline: 16px;

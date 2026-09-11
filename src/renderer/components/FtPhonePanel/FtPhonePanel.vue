@@ -1,7 +1,7 @@
 <template>
   <div
     class="phonePanelHost"
-    :class="{ hiddenPanel: enabled && !open }"
+    :class="{ hiddenPanel: enabled && !panelRendered }"
   >
     <FtMobileSheet
       :enabled="enabled"
@@ -9,6 +9,7 @@
       :title="title"
       below-player
       @close="emit('close')"
+      @closed="handleClosed"
     >
       <template
         v-if="customHeader"
@@ -37,7 +38,7 @@
 </template>
 
 <script setup>
-import { computed, nextTick, provide, useTemplateRef, watch } from 'vue'
+import { computed, nextTick, provide, ref, useTemplateRef, watch } from 'vue'
 import FtMobileSheet from '../FtMobileSheet/FtMobileSheet.vue'
 import { useScrollClamp } from '../../composables/useScrollClamp'
 import { restoreOverlayScrollTop } from '../../helpers/overlayScrollbars'
@@ -50,6 +51,7 @@ const props = defineProps({
   title: { type: String, required: true }
 })
 const emit = defineEmits(['close'])
+const panelRendered = ref(props.open)
 const panelHeader = useTemplateRef('panelHeader')
 provide('phonePanelHeader', computed(() => props.enabled ? panelHeader.value : null))
 const scroller = useTemplateRef('scroller')
@@ -57,6 +59,7 @@ const content = useTemplateRef('content')
 const clamp = useScrollClamp(scroller, content)
 let readingPosition = 0
 watch(() => props.open, async (open) => {
+  if (open) panelRendered.value = true
   if (!open) {
     readingPosition = scroller.value?.scrollTop ?? 0
   } else {
@@ -67,6 +70,10 @@ watch(() => props.open, async (open) => {
     clamp()
   }
 }, { flush: 'pre' })
+
+function handleClosed() {
+  if (!props.open) panelRendered.value = false
+}
 </script>
 
 <style scoped src="./FtPhonePanel.css" />

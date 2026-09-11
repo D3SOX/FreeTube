@@ -58,6 +58,7 @@
             <FtIcon :icon="['fas', 'sync']" />
           </button>
           <button
+            v-if="!phonePanelHeader || !commentsDisabled"
             type="button"
             class="fullscreenCommentAction"
             :aria-label="phonePanelHeader && !showComments ? $t('Comments.Click to View Comments') : $t('Comments.Hide Comments')"
