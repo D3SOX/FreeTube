@@ -1066,8 +1066,8 @@ Channel:
   Search Result Types: Arama sonucu türleri
   All Results: Tümü
 Video:
-  Move Queue Item Up: "{title} bölümünü yukarı taşı"
-  Move Queue Item Down: "{title} bölümünü aşağı taşı"
+  Move Queue Item Up: "{title} videosunu yukarı taşı"
+  Move Queue Item Down: "{title} videosunu aşağı taşı"
   Includes paid promotion: Ücretli tanıtım içeriyor
   Age Restricted Badge: Yaş kısıtlamalı
   Queue: Kuyruk

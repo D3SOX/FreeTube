@@ -549,8 +549,8 @@ Channel:
   Search Result Types: Typy wyników wyszukiwania
   All Results: Wszystkie
 Video:
-  Move Queue Item Up: "Przenieś sekcję {title} w górę"
-  Move Queue Item Down: "Przenieś sekcję {title} w dół"
+  Move Queue Item Up: "Przenieś film {title} w górę"
+  Move Queue Item Down: "Przenieś film {title} w dół"
   Includes paid promotion: Zawiera płatną promocję
   Age Restricted Badge: Ograniczenie wiekowe
   Reorder Queue Item: Zmień położenie {title}

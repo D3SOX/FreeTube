@@ -162,28 +162,32 @@ test('keeps landscape player options within the player in list and grid modes', 
   }).toBe(true)
 })
 
-test('restores the inline video before opening a panel from the mini player', async ({ app, page }) => {
-  await mockPlayableWatchPage(app, page, { captionTranslations: true })
-  await openMockedVideo(page)
-  await setWindowSize(app, page, { width: 1000, height: 480 })
-  await page.evaluate(async () => {
-    await document.querySelector('#app').__vue_app__.config.globalProperties.$store.dispatch('updateScrollMiniPlayerEnabled', true)
-    window.scrollTo(0, document.body.scrollHeight)
+for (const landscape of [false, true]) {
+  test(`restores the inline video before opening a panel from the mini player in ${landscape ? 'landscape' : 'portrait'}`, async ({ app, page }) => {
+    await mockPlayableWatchPage(app, page, { captionTranslations: true })
+    await openMockedVideo(page)
+    await setWindowSize(app, page, landscape ? { width: 1000, height: 480 } : { width: 480, height: 800 })
+    await page.evaluate(async () => {
+      await document.querySelector('#app').__vue_app__.config.globalProperties.$store.dispatch('updateScrollMiniPlayerEnabled', true)
+      window.scrollTo(0, document.body.scrollHeight)
+    })
+    await expect(page.locator('.ftVideoPlayer')).toHaveClass(/scrollMiniPlayer/)
+    await page.locator('.videoOptions').getByRole('button', { name: /transcript/i }).click()
+    const sheet = page.locator('.mobileSheet[open]')
+    await expect(sheet).toBeVisible()
+    await expect(page.locator('.ftVideoPlayer')).not.toHaveClass(/scrollMiniPlayer/)
+    // Android can restore an old page offset after returning the native player.
+    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight))
+    await expect.poll(async () => {
+      const player = await page.locator('.ftVideoPlayer').boundingBox()
+      const panel = await sheet.boundingBox()
+      const toolbar = await page.locator('.topNav').boundingBox()
+      return player.y >= toolbar.y + toolbar.height - 1 && (landscape
+        ? panel.y < 5 && panel.height >= 475
+        : panel.y >= player.y + player.height - 1)
+    }).toBe(true)
   })
-  await expect(page.locator('.ftVideoPlayer')).toHaveClass(/scrollMiniPlayer/)
-  await page.locator('.videoOptions').getByRole('button', { name: /transcript/i }).click()
-  const sheet = page.locator('.mobileSheet[open]')
-  await expect(sheet).toBeVisible()
-  await expect(page.locator('.ftVideoPlayer')).not.toHaveClass(/scrollMiniPlayer/)
-  // Android can restore an old page offset after returning the native player.
-  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight))
-  await expect.poll(async () => {
-    const player = await page.locator('.ftVideoPlayer').boundingBox()
-    const panel = await sheet.boundingBox()
-    const toolbar = await page.locator('.topNav').boundingBox()
-    return player.y >= toolbar.y + toolbar.height - 1 && panel.y >= player.y + player.height - 1
-  }).toBe(true)
-})
+}
 
 test('phone options keep the page scrollable and omit the extra header', async ({ app, page }) => {
   await mockPlayableWatchPage(app, page)

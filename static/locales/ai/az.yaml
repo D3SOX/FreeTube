@@ -1069,8 +1069,8 @@ Channel:
   Search Result Types: Axtarış nəticələrinin növləri
   All Results: Hamısı
 Video:
-  Move Queue Item Up: "{title} bölməsini yuxarı köçür"
-  Move Queue Item Down: "{title} bölməsini aşağı köçür"
+  Move Queue Item Up: "{title} videosunu yuxarı köçür"
+  Move Queue Item Down: "{title} videosunu aşağı köçür"
   Includes paid promotion: Ödənişli tanıtım daxildir
   Age Restricted Badge: Yaş məhdudiyyətli
   Queue: Növbə
