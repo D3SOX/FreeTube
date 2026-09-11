@@ -1434,6 +1434,8 @@ Channel:
     Hide Answers: Skrij odgovore
     Video hidden by OpenTubeX: OpenTubeX je skril videoposnetek
 Video:
+  Move Queue Item Up: "Premakni {title} navzgor"
+  Move Queue Item Down: "Premakni {title} navzdol"
   Includes paid promotion: Vključuje plačano promocijo
   Age Restricted Badge: Starostno omejeno
   Queue: Čakalna vrsta
@@ -1935,6 +1937,7 @@ Comments:
   Translating comment, please wait: Prevajanje komentarja. Počakajte …
   Comment translation failed: Prevajanje komentarja ni uspelo
 Description:
+  Title: Opis
   Expand Description: … več
   Collapse Description: Prikaži manj
   Copy Description: Kopiraj opis

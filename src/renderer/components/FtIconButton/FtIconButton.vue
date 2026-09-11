@@ -49,9 +49,11 @@
     <template
       v-if="dropdownShown"
     >
+      <slot v-if="ownsPhoneSheet" />
       <FtPrompt
-        v-if="useModal"
+        v-else-if="useModal"
         :autosize="true"
+        :card-class="dropdownClass"
         :label="title"
         @click="dropdownShown = false"
       >
@@ -97,85 +99,99 @@
       </FtPrompt>
       <Teleport
         v-else
-        to=".app"
-        :disabled="!dropdownPortal"
+        :to="fullscreenDropdownTarget ?? '.app'"
+        :disabled="!portaledDropdown"
       >
         <div
-          ref="dropdown"
-          v-overlay-scrollbars="!$slots['dropdown-header']"
-          tabindex="-1"
-          class="iconDropdown"
-          :class="{
-            kebabMenu: isKebabMenu,
-            left: dropdownPositionX === 'left',
-            right: dropdownPositionX === 'right',
-            center: dropdownPositionX === 'center',
-            bottom: dropdownPositionY === 'bottom',
-            top: dropdownPositionY === 'top',
-            portal: dropdownPortal,
-            hasFixedHeader: !!$slots['dropdown-header'],
-            [dropdownClass]: dropdownClass !== ''
-          }"
-          @focusout="handleDropdownFocusOut"
+          class="dropdownLayer"
+          :class="{ fullscreenDropdownLayer: fullscreenDropdownTarget }"
+          :role="fullscreenDropdownTarget ? 'dialog' : null"
+          :aria-label="fullscreenDropdownTarget ? title : null"
           @keydown.esc.stop="handleDropdownEscape"
+          @pointerdown.self.prevent
+          @pointerdown.stop
+          @touchstart.stop
+          @touchend.stop
+          @dblclick.stop
+          @click.stop="($event.target === $event.currentTarget) && handleDropdownEscape()"
         >
           <div
-            v-if="$slots['dropdown-header']"
-            class="iconDropdownHeader"
+            ref="dropdown"
+            v-overlay-scrollbars="!$slots['dropdown-header']"
+            tabindex="-1"
+            class="iconDropdown"
+            :class="{
+              kebabMenu: isKebabMenu,
+              left: dropdownPositionX === 'left',
+              right: dropdownPositionX === 'right',
+              center: dropdownPositionX === 'center',
+              bottom: dropdownPositionY === 'bottom',
+              top: dropdownPositionY === 'top',
+              portal: portaledDropdown,
+              hasFixedHeader: !!$slots['dropdown-header'],
+              [dropdownClass]: dropdownClass !== ''
+            }"
+            @focusout="handleDropdownFocusOut"
+            @keydown.esc.stop="handleDropdownEscape"
           >
-            <slot name="dropdown-header" />
-          </div>
-          <div
-            v-if="$slots['dropdown-header']"
-            ref="dropdownContent"
-            v-overlay-scrollbars
-            class="iconDropdownContent"
-          >
-            <div ref="dropdownContentInner">
-              <slot />
-            </div>
-          </div>
-          <slot v-else>
-            <ul
-              v-if="dropdownOptions.length > 0"
-              ref="dropdownContentInner"
-              class="list"
-              role="listbox"
+            <div
+              v-if="$slots['dropdown-header']"
+              class="iconDropdownHeader"
             >
-              <li
-                v-for="(option, index) in dropdownOptions"
-                :id="id + index"
-                :key="index"
-                :role="option.type === 'divider' ? 'separator' : 'option'"
-                :aria-selected="option.active"
-                :aria-disabled="option.disabled"
-                :tabindex="option.type === 'divider' || option.disabled ? '-1' : '0'"
-                :class="{
-                  listItemDivider: option.type === 'divider',
-                  listItem: option.type !== 'divider',
-                  hasIcon: option.icon,
-                  active: option.active,
-                  disabled: option.disabled
-                }"
-                @click="handleDropdownClick(option)"
-                @keydown.enter="handleDropdownClick(option)"
-                @keydown.space="handleDropdownClick(option)"
+              <slot name="dropdown-header" />
+            </div>
+            <div
+              v-if="$slots['dropdown-header']"
+              ref="dropdownContent"
+              v-overlay-scrollbars
+              class="iconDropdownContent"
+            >
+              <div ref="dropdownContentInner">
+                <slot />
+              </div>
+            </div>
+            <slot v-else>
+              <ul
+                v-if="dropdownOptions.length > 0"
+                ref="dropdownContentInner"
+                class="list"
+                role="listbox"
               >
-                <div
-                  v-if="option.icon || option.active"
-                  class="optionIconColumn"
+                <li
+                  v-for="(option, index) in dropdownOptions"
+                  :id="id + index"
+                  :key="index"
+                  :role="option.type === 'divider' ? 'separator' : 'option'"
+                  :aria-selected="option.active"
+                  :aria-disabled="option.disabled"
+                  :tabindex="option.type === 'divider' || option.disabled ? '-1' : '0'"
+                  :class="{
+                    listItemDivider: option.type === 'divider',
+                    listItem: option.type !== 'divider',
+                    hasIcon: option.icon,
+                    active: option.active,
+                    disabled: option.disabled
+                  }"
+                  @click="handleDropdownClick(option)"
+                  @keydown.enter="handleDropdownClick(option)"
+                  @keydown.space="handleDropdownClick(option)"
                 >
-                  <FtIcon
-                    :icon="option.active ? ['fas', 'check'] : option.icon"
-                  />
-                </div>
-                <span
-                  v-if="option.type !== 'divider'"
-                  :class="{ wrapLabel: option.wrapLabel }"
-                >{{ option.label }}</span>
-              </li>
-            </ul>
-          </slot>
+                  <div
+                    v-if="option.icon || option.active"
+                    class="optionIconColumn"
+                  >
+                    <FtIcon
+                      :icon="option.active ? ['fas', 'check'] : option.icon"
+                    />
+                  </div>
+                  <span
+                    v-if="option.type !== 'divider'"
+                    :class="{ wrapLabel: option.wrapLabel }"
+                  >{{ option.label }}</span>
+                </li>
+              </ul>
+            </slot>
+          </div>
         </div>
       </Teleport>
     </template>
@@ -184,12 +200,14 @@
 
 <script setup>
 import { FtIcon, FtIconLayers } from '@opentubex/icons'
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, useId, useTemplateRef, watch } from 'vue'
+import { provide, computed, nextTick, onBeforeUnmount, ref, useId, useTemplateRef, watch } from 'vue'
 
 import FtPrompt from '../FtPrompt/FtPrompt.vue'
+import { usePhoneLayout } from '../../composables/usePhoneLayout'
 import { clampOverlayScrollTop } from '../../helpers/overlayScrollbars'
 
 const props = defineProps({
+  mobileSheet: { type: Boolean, default: false },
   title: {
     type: String,
     required: true,
@@ -283,22 +301,16 @@ const isKebabMenu = computed(() => (
 ))
 
 const dropdownShown = ref(false)
-const useModal = ref(false)
+const phoneLayout = usePhoneLayout()
+const ownsPhoneSheet = computed(() => props.mobileSheet && phoneLayout.value)
+const fullscreenDropdownTarget = ref(null)
+const portaledDropdown = computed(() => props.dropdownPortal || fullscreenDropdownTarget.value !== null)
+const modalLayout = usePhoneLayout('(max-width: 900px), (max-height: 600px)')
+const useModal = computed(() => props.dropdownModalOnMobile && modalLayout.value && !fullscreenDropdownTarget.value)
 
 let blockLeftClick = false
 let longPressTimer = null
 let dropdownViewportUpdateFrame = null
-
-if (props.dropdownModalOnMobile) {
-  onMounted(() => {
-    useModal.value = window.innerWidth <= 900
-    window.addEventListener('resize', handleResize)
-  })
-
-  onBeforeUnmount(() => {
-    window.removeEventListener('resize', handleResize)
-  })
-}
 
 const dropdown = useTemplateRef('dropdown')
 const dropdownContent = useTemplateRef('dropdownContent')
@@ -312,7 +324,7 @@ watch(dropdownContentInner, (content, _, onCleanup) => {
 })
 
 watch(dropdownShown, (shown) => {
-  if (shown && !useModal.value) {
+  if (shown && !useModal.value && !ownsPhoneSheet.value) {
     window.addEventListener('resize', scheduleDropdownViewportUpdate)
     window.addEventListener('scroll', scheduleDropdownViewportUpdate, { capture: true, passive: true })
   } else {
@@ -343,8 +355,13 @@ function handleIconClick(e, isRightOrLongClick = false) {
 
   if ((!props.openOnRightOrLongClick || (props.openOnRightOrLongClick && isRightOrLongClick)) &&
     (props.forceDropdown || props.dropdownOptions.length > 0)) {
+    if (!dropdownShown.value) {
+      fullscreenDropdownTarget.value = props.dropdownModalOnMobile
+        ? ftIconButton.value?.closest(':fullscreen, [data-native-player-screen], .fullWindow') ?? null
+        : null
+    }
     dropdownShown.value = !dropdownShown.value
-    if (dropdownShown.value && !useModal.value) {
+    if (dropdownShown.value && !useModal.value && !ownsPhoneSheet.value) {
       // wait until the dropdown is visible
       // then focus it so we can hide it automatically when it loses focus
       nextTick(() => {
@@ -389,7 +406,7 @@ function handleIconPointerDown(event) {
  */
 function getTopChromeBottom() {
   // In fullscreen the chrome is not on screen, even though it keeps its layout.
-  if (document.fullscreenElement != null) {
+  if (document.fullscreenElement != null || fullscreenDropdownTarget.value) {
     return 0
   }
 
@@ -412,14 +429,18 @@ function keepDropdownInViewport() {
   }
 
   const viewportMargin = 8
-  const minTop = Math.max(viewportMargin, getTopChromeBottom() + 4)
+  const fullscreenStyle = fullscreenDropdownTarget.value ? getComputedStyle(fullscreenDropdownTarget.value) : null
+  const safeTop = Math.max(parseFloat(fullscreenStyle?.getPropertyValue('--safe-area-inset-top')) || 0,
+    parseFloat(fullscreenStyle?.getPropertyValue('--app-safe-area-inset-top')) || 0)
+  const bottomMargin = viewportMargin + (parseFloat(fullscreenStyle?.getPropertyValue('--safe-area-inset-bottom')) || 0)
+  const minTop = Math.max(viewportMargin + safeTop, getTopChromeBottom() + 4)
   dropdown.value.style.removeProperty('transform')
   dropdown.value.style.removeProperty('max-block-size')
   dropdown.value.style.removeProperty('overflow-y')
 
   // A menu that is too tall for the space below the chrome has to scroll,
   // otherwise clamping it would just push it past the viewport bottom instead.
-  const availableHeight = window.innerHeight - minTop - viewportMargin
+  const availableHeight = window.innerHeight - minTop - bottomMargin
   if (dropdown.value.getBoundingClientRect().height > availableHeight) {
     dropdown.value.style.maxBlockSize = `${availableHeight}px`
     dropdown.value.style.overflowY = dropdownContent.value ? 'hidden' : 'auto'
@@ -429,7 +450,7 @@ function keepDropdownInViewport() {
     clampOverlayScrollTop(dropdownContent.value ?? dropdown.value, dropdownContentInner.value)
   }
 
-  if (props.dropdownPortal) {
+  if (portaledDropdown.value) {
     const button = ftIconButton.value?.querySelector('.iconButton')
     if (button == null) {
       return
@@ -446,11 +467,13 @@ function keepDropdownInViewport() {
       left = buttonRect.left + (buttonRect.width - dropdownRect.width) / 2
     }
 
-    const top = props.dropdownPositionY === 'top'
-      ? buttonRect.top - dropdownRect.height - 4
-      : buttonRect.bottom + 4
+    const top = fullscreenDropdownTarget.value
+      ? window.innerHeight - bottomMargin - dropdownRect.height
+      : props.dropdownPositionY === 'top'
+        ? buttonRect.top - dropdownRect.height - 4
+        : buttonRect.bottom + 4
     const maxLeft = window.innerWidth - viewportMargin - dropdownRect.width
-    const maxTop = window.innerHeight - viewportMargin - dropdownRect.height
+    const maxTop = window.innerHeight - bottomMargin - dropdownRect.height
 
     dropdown.value.style.inset = 'auto'
     dropdown.value.style.left = `${Math.max(viewportMargin, Math.min(left, maxLeft))}px`
@@ -506,10 +529,12 @@ function handleDropdownFocusOut(event) {
     )
   )
 
-  if (!useModal.value && dropdownShown.value && !focusStaysInControl) {
+  if (!useModal.value && !ownsPhoneSheet.value && dropdownShown.value && !focusStaysInControl) {
     dropdownShown.value = false
   }
 }
+
+provide('closeIconDropdown', handleDropdownEscape)
 
 function handleDropdownEscape() {
   dropdownShown.value = false
@@ -528,10 +553,6 @@ function handleDropdownClick(option, event) {
   emit('click', option.value)
 
   dropdownShown.value = false
-}
-
-function handleResize() {
-  useModal.value = window.innerWidth <= 900
 }
 
 defineExpose({

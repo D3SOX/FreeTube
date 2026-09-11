@@ -26,365 +26,398 @@
       name="quick-settings-menu"
       @after-leave="handleMenuAfterLeave"
     >
-      <FtCard
-        v-if="menuOpen"
-        :id="id"
-        ref="menuRef"
-        class="quickSettingsMenu"
-        role="dialog"
-        :aria-label="t('Settings.Quick Settings.Quick Settings')"
-        tabindex="-1"
-        @focusout="handleMenuFocusOut"
-        @keydown.esc.stop="closeMenu"
+      <FtMobileSheet
+        v-if="menuRendered"
+        :enabled="phoneLayout"
+        :open="menuOpen"
+        :title="profilePanelOpen ? t('Profile.Profile Select') : t('Settings.Quick Settings.Quick Settings')"
+        :back="profilePanelOpen"
+        @closed="menuRendered = false; handleMenuAfterLeave()"
+        @back="closeProfilePanel"
+        @close="closeMenu"
       >
-        <template v-if="profilePanelOpen">
-          <header class="profilePanelHeader">
-            <button
-              type="button"
-              :aria-label="t('Back')"
-              :title="t('Back')"
-              @click="closeProfilePanel"
-            >
-              <FtIcon :icon="['fas', 'arrow-left']" />
-            </button>
-            <h2>{{ t('Profile.Profile Select') }}</h2>
-            <button
-              type="button"
-              :aria-label="t('Profile.Profile Settings')"
-              :title="t('Profile.Profile Settings')"
-              @click="openProfileSettings"
-            >
-              <FtIcon :icon="['fas', 'sliders-h']" />
-            </button>
-          </header>
+        <template #actions>
           <div
-            ref="profileScrollRef"
-            v-overlay-scrollbars
-            class="quickSettingsScroll"
+            ref="quickHeaderActions"
+            class="phoneQuickHeaderActions"
+          />
+          <button
+            v-if="profilePanelOpen"
+            type="button"
+            :aria-label="t('Profile.Profile Settings')"
+            @click="openProfileSettings"
           >
-            <div
-              class="profileList"
-              role="listbox"
-              :aria-label="t('Profile.Profile Select')"
+            <FtIcon :icon="['fas', 'sliders-h']" />
+          </button>
+        </template>
+        <FtCard
+          :id="id"
+          ref="menuRef"
+          class="quickSettingsMenu"
+          :class="{ phoneQuickSettings: phoneLayout }"
+          :role="phoneLayout ? null : 'dialog'"
+          :aria-label="t('Settings.Quick Settings.Quick Settings')"
+          tabindex="-1"
+          @focusout="handleMenuFocusOut"
+          @keydown.esc.prevent.stop="profilePanelOpen ? closeProfilePanel() : closeMenu()"
+        >
+          <template v-if="profilePanelOpen">
+            <header
+              v-if="!phoneLayout"
+              class="profilePanelHeader"
             >
               <button
-                v-for="profile in profileList"
-                :key="profile._id"
                 type="button"
-                class="profileOption"
-                role="option"
-                :aria-selected="profile._id === activeProfile._id"
-                @click="setActiveProfile(profile)"
+                :aria-label="t('Back')"
+                :title="t('Back')"
+                @click="closeProfilePanel"
               >
-                <FtProfileIcon
-                  class="profileAvatar"
-                  :profile="profile"
-                  :fallback="profileInitials[profile._id]"
-                />
-                <span dir="auto">{{ translateProfileName(profile) }}</span>
-                <FtIcon
-                  v-if="profile._id === activeProfile._id"
-                  class="activeProfileIcon"
-                  :icon="['fas', 'check']"
-                />
+                <FtIcon :icon="['fas', 'arrow-left']" />
               </button>
-            </div>
-          </div>
-        </template>
-
-        <template v-else>
-          <div
-            class="profileHeaderRow"
-          >
-            <button
-              type="button"
-              class="profileSummary"
-              @click="openProfilePanel"
-            >
-              <FtProfileIcon
-                class="profileAvatar"
-                :profile="activeProfile"
-                :fallback="activeProfileInitial"
-              />
-              <span class="profileSummaryText">
-                <strong dir="auto">{{ translateProfileName(activeProfile) }}</strong>
-                <small>{{ t('Settings.Quick Settings.Profile Selector Hint') }}</small>
-              </span>
-              <FtIcon :icon="['fas', 'angle-right']" />
-            </button>
-            <button
-              type="button"
-              class="quickSettingsShortcut commandPaletteShortcut"
-              :aria-label="t('CommandPalette.Open')"
-              :title="t('CommandPalette.Open')"
-              @click="openCommandPalette"
-            >
-              <FtIcon :icon="['fas', 'terminal']" />
-            </button>
-            <button
-              v-if="showDownloadsShortcut"
-              type="button"
-              class="quickSettingsShortcut downloadsShortcut"
-              :aria-label="t('Settings.Download Settings.Download Settings')"
-              :title="t('Settings.Download Settings.Download Settings')"
-              @click="openDownloads"
-            >
-              <FtIcon :icon="['fas', 'download']" />
-            </button>
-            <button
-              v-if="showSettingsShortcut"
-              type="button"
-              class="quickSettingsShortcut allSettingsShortcut"
-              :aria-label="t('Settings.Quick Settings.All Settings')"
-              :title="t('Settings.Quick Settings.All Settings')"
-              @click="openSettings"
-            >
-              <FtIcon :icon="['fas', 'cog']" />
-            </button>
-          </div>
-
-          <div
-            ref="mainScrollRef"
-            v-overlay-scrollbars
-            class="quickSettingsScroll"
-          >
-            <div
-              ref="mainContentRef"
-              class="quickSettingsContent"
-            >
-              <section
-                v-for="(section, sectionIndex) in orderedQuickSettingSections"
-                :key="`${section.id}-${sectionIndex}`"
-                class="menuSection"
+              <h2>{{ t('Profile.Profile Select') }}</h2>
+              <button
+                type="button"
+                :aria-label="t('Profile.Profile Settings')"
+                :title="t('Profile.Profile Settings')"
+                @click="openProfileSettings"
               >
-                <h3>
-                  <FtIcon
-                    class="menuSectionIcon"
-                    :icon="section.icon"
-                    aria-hidden="true"
-                  />
-                  <span>{{ section.label }}</span>
-                </h3>
-                <div
-                  v-for="setting in section.settings"
-                  :key="setting.id"
-                  class="quickSettingControl"
-                  :class="{ pairedQuickSetting: isPairedQuickSetting(section.settings, setting.id) }"
-                  :data-setting-id="setting.id"
-                >
-                  <FtSelect
-                    v-if="setting.id === 'baseTheme'"
-                    class="quickSelect"
-                    :placeholder="t('Settings.Theme Settings.Base Theme.Base Theme')"
-                    :value="baseTheme"
-                    setting-key="baseTheme"
-                    :select-names="baseThemeNames"
-                    :select-values="baseThemeValues"
-                    :disabled="customThemeEditorOpen"
-                    :icon="['fas', 'palette']"
-                    @change="updateSetting('BaseTheme', $event)"
-                  />
-                  <FtSelect
-                    v-else-if="setting.id === 'systemLightTheme' || setting.id === 'systemDarkTheme'"
-                    class="quickSelect"
-                    :placeholder="setting.label"
-                    :value="store.state.settings[setting.id]"
-                    :setting-key="setting.id"
-                    :select-names="systemThemeOptions[setting.id].map(({ name }) => name)"
-                    :select-values="systemThemeOptions[setting.id].map(({ value }) => value)"
-                    :disabled="customThemeEditorOpen"
-                    :icon="setting.icon"
-                    @change="updateBasicQuickSetting(setting.id, $event)"
-                  />
-                  <FtSelect
-                    v-else-if="setting.id === 'mainColor'"
-                    class="quickSelect"
-                    :placeholder="t('Settings.Theme Settings.Main Color Theme.Main Color Theme')"
-                    :value="mainColor"
-                    setting-key="mainColor"
-                    :select-names="colorNames"
-                    :select-values="COLOR_VALUES"
-                    :option-colors="COLOR_SWATCHES"
-                    :icon="['fas', 'palette']"
-                    icon-color="var(--primary-color)"
-                    @change="updateSetting('MainColor', $event)"
-                  />
-                  <div
-                    v-else-if="setting.id === 'uiScale'"
-                    class="sliderGroup"
-                  >
-                    <FtSlider
-                      :label="t('Settings.Theme Settings.UI Scale')"
-                      :default-value="uiScale"
-                      :min-value="IS_CAPACITOR ? CAPACITOR_UI_SCALE_MIN : 50"
-                      :max-value="IS_CAPACITOR ? CAPACITOR_UI_SCALE_MAX : 300"
-                      :step="5"
-                      value-extension="%"
-                      @change="updateUiScale"
-                    />
-                  </div>
-                  <div
-                    v-else-if="setting.id === 'thumbnailSize'"
-                    class="sliderGroup"
-                  >
-                    <FtSlider
-                      class="thumbnailSizeSlider"
-                      :label="t('Settings.Theme Settings.Thumbnail Size')"
-                      :default-value="thumbnailSize"
-                      setting-key="thumbnailSize"
-                      :min-value="MIN_THUMBNAIL_SIZE"
-                      :max-value="maxThumbnailSize"
-                      :step="THUMBNAIL_SIZE_STEP"
-                      value-extension="%"
-                      @input="previewThumbnailSize"
-                      @change="updateThumbnailSize"
-                    />
-                  </div>
-                  <FtSelect
-                    v-else-if="setting.id === 'defaultQuality'"
-                    class="quickSelect"
-                    :placeholder="t('Settings.Player Settings.Default Quality.Default Quality')"
-                    :value="defaultQuality"
-                    setting-key="defaultQuality"
-                    :select-names="qualityNames"
-                    :select-values="qualityValues"
-                    :icon="['fas', 'photo-film']"
-                    @change="updateSetting('DefaultQuality', $event)"
-                  />
-                  <FtToggleSwitch
-                    v-else-if="setting.id === 'playNextVideo'"
-                    :label="t('Settings.Player Settings.Play Next Video')"
-                    :default-value="playNextVideo"
-                    :disabled="hideRecommendedVideos"
-                    setting-key="playNextVideo"
-                    compact
-                    @change="updateSetting('PlayNextVideo', $event)"
-                  />
-                  <FtSlider
-                    v-else-if="setting.id === 'defaultPlayback'"
-                    :label="t('Settings.Player Settings.Default Playback Rate')"
-                    :default-value="store.getters.getDefaultPlayback"
-                    setting-key="defaultPlayback"
-                    :min-value="store.getters.getVideoPlaybackRateInterval"
-                    :max-value="store.getters.getMaxVideoPlaybackRate"
-                    :step="store.getters.getVideoPlaybackRateInterval"
-                    value-extension="x"
-                    @change="updateSetting('DefaultPlayback', $event)"
-                  />
-                  <FtToggleSwitch
-                    v-else-if="setting.id === 'enableSubtitlesByDefault'"
-                    :label="t('Settings.Player Settings.Turn on Subtitles by Default')"
-                    :default-value="enableSubtitlesByDefault"
-                    setting-key="enableSubtitlesByDefault"
-                    compact
-                    @change="updateSetting('EnableSubtitlesByDefault', $event)"
-                  />
-                  <FtSelect
-                    v-else-if="setting.id === 'listType'"
-                    class="quickSelect"
-                    :placeholder="t('Settings.General Settings.Video View Type.Video View Type')"
-                    :value="listType"
-                    setting-key="listType"
-                    :select-names="viewTypeNames"
-                    :select-values="VIEW_TYPE_VALUES"
-                    :icon="listType === 'grid' ? ['fas', 'grip'] : ['fas', 'list']"
-                    @change="updateSetting('ListType', $event)"
-                  />
-                  <FtSelect
-                    v-else-if="setting.id === 'playlistViewType'"
-                    class="quickSelect"
-                    :placeholder="t('Settings.General Settings.Playlist View Type.Playlist View Type')"
-                    :value="playlistViewType"
-                    setting-key="playlistViewType"
-                    :select-names="viewTypeNames"
-                    :select-values="VIEW_TYPE_VALUES"
-                    :icon="playlistViewType === 'grid' ? ['fas', 'grip'] : ['fas', 'list']"
-                    @change="updateSetting('PlaylistViewType', $event)"
-                  />
-                  <FtToggleSwitch
-                    v-else-if="setting.id === 'hideRecommendedVideos'"
-                    :label="t('Settings.Distraction Free Settings.Hide Recommended Videos')"
-                    :default-value="hideRecommendedVideos"
-                    setting-key="hideRecommendedVideos"
-                    compact
-                    @change="handleHideRecommendedVideos"
-                  />
-                  <FtToggleSwitch
-                    v-else-if="setting.id === 'hideComments'"
-                    :label="t('Settings.Distraction Free Settings.Hide Comments')"
-                    :default-value="hideComments"
-                    setting-key="hideComments"
-                    compact
-                    @change="updateSetting('HideComments', $event)"
-                  />
-                  <FtSelect
-                    v-else-if="setting.id === 'currentLocale'"
-                    class="quickSelect"
-                    :placeholder="t('Settings.General Settings.Locale Preference')"
-                    :value="currentLocale"
-                    setting-key="currentLocale"
-                    :select-names="localeNames"
-                    :select-values="LOCALE_VALUES"
-                    :icon="['fas', 'language']"
-                    is-locale-selector
-                    @change="updateSetting('CurrentLocale', $event)"
-                  />
-                  <FtSelect
-                    v-else-if="setting.id === 'region'"
-                    class="quickSelect"
-                    :placeholder="t('Settings.General Settings.Region for Trending')"
-                    :value="region"
-                    setting-key="region"
-                    :select-names="regionNames"
-                    :select-values="regionValues"
-                    :icon="['fas', 'globe']"
-                    @change="updateSetting('Region', $event)"
-                  />
-                  <FtToggleSwitch
-                    v-else-if="setting.id === 'useProxy'"
-                    :label="t('Settings.Proxy Settings.Enable Tor / Proxy')"
-                    :default-value="useProxy"
-                    setting-key="useProxy"
-                    compact
-                    @change="updateProxy"
-                  />
-                  <FtQuickSettingControl
-                    v-else
-                    :definition="setting"
-                    @update="updateBasicQuickSetting"
-                  />
-                </div>
-              </section>
-
-              <div class="menuLinks">
+                <FtIcon :icon="['fas', 'sliders-h']" />
+              </button>
+            </header>
+            <div
+              ref="profileScrollRef"
+              v-overlay-scrollbars
+              class="quickSettingsScroll"
+            >
+              <div
+                class="profileList"
+                role="listbox"
+                :aria-label="t('Profile.Profile Select')"
+              >
                 <button
-                  v-if="USING_ELECTRON"
+                  v-for="profile in profileList"
+                  :key="profile._id"
                   type="button"
-                  @click="openKeyboardShortcuts"
+                  class="profileOption"
+                  role="option"
+                  :aria-selected="profile._id === activeProfile._id"
+                  @click="setActiveProfile(profile)"
                 >
-                  <FtIcon :icon="['fas', 'keyboard']" />
-                  <span>{{ t('KeyboardShortcutPrompt.Keyboard Shortcuts') }}</span>
-                  <FtIcon
-                    class="linkArrow"
-                    :icon="['fas', 'angle-right']"
+                  <FtProfileIcon
+                    class="profileAvatar"
+                    :profile="profile"
+                    :fallback="profileInitials[profile._id]"
                   />
-                </button>
-                <button
-                  type="button"
-                  @click="openAbout"
-                >
-                  <FtIcon :icon="['fas', 'info-circle']" />
-                  <span>{{ t('About.About') }}</span>
+                  <span dir="auto">{{ translateProfileName(profile) }}</span>
                   <FtIcon
-                    class="linkArrow"
-                    :icon="['fas', 'angle-right']"
+                    v-if="profile._id === activeProfile._id"
+                    class="activeProfileIcon"
+                    :icon="['fas', 'check']"
                   />
                 </button>
               </div>
             </div>
-          </div>
-        </template>
-      </FtCard>
+          </template>
+
+          <template v-else>
+            <div
+              class="profileHeaderRow"
+            >
+              <button
+                type="button"
+                class="profileSummary"
+                @click="openProfilePanel"
+              >
+                <FtProfileIcon
+                  class="profileAvatar"
+                  :profile="activeProfile"
+                  :fallback="activeProfileInitial"
+                />
+                <span class="profileSummaryText">
+                  <strong dir="auto">{{ translateProfileName(activeProfile) }}</strong>
+                  <small>{{ t('Settings.Quick Settings.Profile Selector Hint') }}</small>
+                </span>
+                <FtIcon :icon="['fas', 'angle-right']" />
+              </button>
+              <Teleport
+                :to="quickHeaderActions || 'body'"
+                :disabled="!phoneLayout || !quickHeaderActions"
+              >
+                <button
+                  type="button"
+                  class="quickSettingsShortcut commandPaletteShortcut"
+                  :aria-label="t('CommandPalette.Open')"
+                  :title="t('CommandPalette.Open')"
+                  @click="openCommandPalette"
+                >
+                  <FtIcon :icon="['fas', 'terminal']" />
+                </button>
+                <button
+                  v-if="showDownloadsShortcut"
+                  type="button"
+                  class="quickSettingsShortcut downloadsShortcut"
+                  :aria-label="t('Settings.Download Settings.Download Settings')"
+                  :title="t('Settings.Download Settings.Download Settings')"
+                  @click="openDownloads"
+                >
+                  <FtIcon :icon="['fas', 'download']" />
+                </button>
+                <button
+                  v-if="showSettingsShortcut"
+                  type="button"
+                  class="quickSettingsShortcut allSettingsShortcut"
+                  :aria-label="t('Settings.Quick Settings.All Settings')"
+                  :title="t('Settings.Quick Settings.All Settings')"
+                  @click="openSettings"
+                >
+                  <FtIcon :icon="['fas', 'cog']" />
+                </button>
+              </Teleport>
+            </div>
+
+            <div
+              ref="mainScrollRef"
+              v-overlay-scrollbars
+              class="quickSettingsScroll"
+            >
+              <div
+                ref="mainContentRef"
+                class="quickSettingsContent"
+              >
+                <section
+                  v-for="(section, sectionIndex) in orderedQuickSettingSections"
+                  :key="`${section.id}-${sectionIndex}`"
+                  class="menuSection"
+                >
+                  <h3>
+                    <FtIcon
+                      class="menuSectionIcon"
+                      :icon="section.icon"
+                      aria-hidden="true"
+                    />
+                    <span>{{ section.label }}</span>
+                  </h3>
+                  <div
+                    v-for="setting in section.settings"
+                    :key="setting.id"
+                    class="quickSettingControl"
+                    :class="{ pairedQuickSetting: isPairedQuickSetting(section.settings, setting.id) }"
+                    :data-setting-id="setting.id"
+                  >
+                    <FtSelect
+                      v-if="setting.id === 'baseTheme'"
+                      class="quickSelect"
+                      :placeholder="t('Settings.Theme Settings.Base Theme.Base Theme')"
+                      :value="baseTheme"
+                      setting-key="baseTheme"
+                      :select-names="baseThemeNames"
+                      :select-values="baseThemeValues"
+                      :disabled="customThemeEditorOpen"
+                      :icon="['fas', 'palette']"
+                      @change="updateSetting('BaseTheme', $event)"
+                    />
+                    <FtSelect
+                      v-else-if="setting.id === 'systemLightTheme' || setting.id === 'systemDarkTheme'"
+                      class="quickSelect"
+                      :placeholder="setting.label"
+                      :value="store.state.settings[setting.id]"
+                      :setting-key="setting.id"
+                      :select-names="systemThemeOptions[setting.id].map(({ name }) => name)"
+                      :select-values="systemThemeOptions[setting.id].map(({ value }) => value)"
+                      :disabled="customThemeEditorOpen"
+                      :icon="setting.icon"
+                      @change="updateBasicQuickSetting(setting.id, $event)"
+                    />
+                    <FtSelect
+                      v-else-if="setting.id === 'mainColor'"
+                      class="quickSelect"
+                      :placeholder="t('Settings.Theme Settings.Main Color Theme.Main Color Theme')"
+                      :value="mainColor"
+                      setting-key="mainColor"
+                      :select-names="colorNames"
+                      :select-values="COLOR_VALUES"
+                      :option-colors="COLOR_SWATCHES"
+                      :icon="['fas', 'palette']"
+                      icon-color="var(--primary-color)"
+                      @change="updateSetting('MainColor', $event)"
+                    />
+                    <div
+                      v-else-if="setting.id === 'uiScale'"
+                      class="sliderGroup"
+                    >
+                      <FtSlider
+                        :label="t('Settings.Theme Settings.UI Scale')"
+                        :default-value="uiScale"
+                        :min-value="IS_CAPACITOR ? CAPACITOR_UI_SCALE_MIN : 50"
+                        :max-value="IS_CAPACITOR ? CAPACITOR_UI_SCALE_MAX : 300"
+                        :step="5"
+                        value-extension="%"
+                        @change="updateUiScale"
+                      />
+                    </div>
+                    <div
+                      v-else-if="setting.id === 'thumbnailSize'"
+                      class="sliderGroup"
+                    >
+                      <FtSlider
+                        class="thumbnailSizeSlider"
+                        :label="t('Settings.Theme Settings.Thumbnail Size')"
+                        :default-value="thumbnailSize"
+                        setting-key="thumbnailSize"
+                        :min-value="MIN_THUMBNAIL_SIZE"
+                        :max-value="maxThumbnailSize"
+                        :step="THUMBNAIL_SIZE_STEP"
+                        value-extension="%"
+                        @input="previewThumbnailSize"
+                        @change="updateThumbnailSize"
+                      />
+                    </div>
+                    <FtSelect
+                      v-else-if="setting.id === 'defaultQuality'"
+                      class="quickSelect"
+                      :placeholder="t('Settings.Player Settings.Default Quality.Default Quality')"
+                      :value="defaultQuality"
+                      setting-key="defaultQuality"
+                      :select-names="qualityNames"
+                      :select-values="qualityValues"
+                      :icon="['fas', 'photo-film']"
+                      @change="updateSetting('DefaultQuality', $event)"
+                    />
+                    <FtToggleSwitch
+                      v-else-if="setting.id === 'playNextVideo'"
+                      :label="t('Settings.Player Settings.Play Next Video')"
+                      :default-value="playNextVideo"
+                      :disabled="hideRecommendedVideos"
+                      setting-key="playNextVideo"
+                      compact
+                      @change="updateSetting('PlayNextVideo', $event)"
+                    />
+                    <FtSlider
+                      v-else-if="setting.id === 'defaultPlayback'"
+                      :label="t('Settings.Player Settings.Default Playback Rate')"
+                      :default-value="store.getters.getDefaultPlayback"
+                      setting-key="defaultPlayback"
+                      :min-value="store.getters.getVideoPlaybackRateInterval"
+                      :max-value="store.getters.getMaxVideoPlaybackRate"
+                      :step="store.getters.getVideoPlaybackRateInterval"
+                      value-extension="x"
+                      @change="updateSetting('DefaultPlayback', $event)"
+                    />
+                    <FtToggleSwitch
+                      v-else-if="setting.id === 'enableSubtitlesByDefault'"
+                      :label="t('Settings.Player Settings.Turn on Subtitles by Default')"
+                      :default-value="enableSubtitlesByDefault"
+                      setting-key="enableSubtitlesByDefault"
+                      compact
+                      @change="updateSetting('EnableSubtitlesByDefault', $event)"
+                    />
+                    <FtSelect
+                      v-else-if="setting.id === 'listType'"
+                      class="quickSelect"
+                      :placeholder="t('Settings.General Settings.Video View Type.Video View Type')"
+                      :value="listType"
+                      setting-key="listType"
+                      :select-names="viewTypeNames"
+                      :select-values="VIEW_TYPE_VALUES"
+                      :icon="listType === 'grid' ? ['fas', 'grip'] : ['fas', 'list']"
+                      @change="updateSetting('ListType', $event)"
+                    />
+                    <FtSelect
+                      v-else-if="setting.id === 'playlistViewType'"
+                      class="quickSelect"
+                      :placeholder="t('Settings.General Settings.Playlist View Type.Playlist View Type')"
+                      :value="playlistViewType"
+                      setting-key="playlistViewType"
+                      :select-names="viewTypeNames"
+                      :select-values="VIEW_TYPE_VALUES"
+                      :icon="playlistViewType === 'grid' ? ['fas', 'grip'] : ['fas', 'list']"
+                      @change="updateSetting('PlaylistViewType', $event)"
+                    />
+                    <FtToggleSwitch
+                      v-else-if="setting.id === 'hideRecommendedVideos'"
+                      :label="t('Settings.Distraction Free Settings.Hide Recommended Videos')"
+                      :default-value="hideRecommendedVideos"
+                      setting-key="hideRecommendedVideos"
+                      compact
+                      @change="handleHideRecommendedVideos"
+                    />
+                    <FtToggleSwitch
+                      v-else-if="setting.id === 'hideComments'"
+                      :label="t('Settings.Distraction Free Settings.Hide Comments')"
+                      :default-value="hideComments"
+                      setting-key="hideComments"
+                      compact
+                      @change="updateSetting('HideComments', $event)"
+                    />
+                    <FtSelect
+                      v-else-if="setting.id === 'currentLocale'"
+                      class="quickSelect"
+                      :placeholder="t('Settings.General Settings.Locale Preference')"
+                      :value="currentLocale"
+                      setting-key="currentLocale"
+                      :select-names="localeNames"
+                      :select-values="LOCALE_VALUES"
+                      :icon="['fas', 'language']"
+                      is-locale-selector
+                      @change="updateSetting('CurrentLocale', $event)"
+                    />
+                    <FtSelect
+                      v-else-if="setting.id === 'region'"
+                      class="quickSelect"
+                      :placeholder="t('Settings.General Settings.Region for Trending')"
+                      :value="region"
+                      setting-key="region"
+                      :select-names="regionNames"
+                      :select-values="regionValues"
+                      :icon="['fas', 'globe']"
+                      @change="updateSetting('Region', $event)"
+                    />
+                    <FtToggleSwitch
+                      v-else-if="setting.id === 'useProxy'"
+                      :label="t('Settings.Proxy Settings.Enable Tor / Proxy')"
+                      :default-value="useProxy"
+                      setting-key="useProxy"
+                      compact
+                      @change="updateProxy"
+                    />
+                    <FtQuickSettingControl
+                      v-else
+                      :definition="setting"
+                      @update="updateBasicQuickSetting"
+                    />
+                  </div>
+                </section>
+
+                <div class="menuLinks">
+                  <button
+                    v-if="USING_ELECTRON"
+                    type="button"
+                    @click="openKeyboardShortcuts"
+                  >
+                    <FtIcon :icon="['fas', 'keyboard']" />
+                    <span>{{ t('KeyboardShortcutPrompt.Keyboard Shortcuts') }}</span>
+                    <FtIcon
+                      class="linkArrow"
+                      :icon="['fas', 'angle-right']"
+                    />
+                  </button>
+                  <button
+                    type="button"
+                    @click="openAbout"
+                  >
+                    <FtIcon :icon="['fas', 'info-circle']" />
+                    <span>{{ t('About.About') }}</span>
+                    <FtIcon
+                      class="linkArrow"
+                      :icon="['fas', 'angle-right']"
+                    />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </template>
+        </FtCard>
+      </FtMobileSheet>
     </Transition>
   </div>
 </template>
@@ -397,6 +430,8 @@ import { useI18n } from 'vue-i18n'
 
 import FtCard from '../ft-card/ft-card.vue'
 import FtSelect from '../FtSelect/FtSelect.vue'
+import FtMobileSheet from '../FtMobileSheet/FtMobileSheet.vue'
+import { usePhoneLayout } from '../../composables/usePhoneLayout'
 import FtSlider from '../FtSlider/FtSlider.vue'
 import FtToggleSwitch from '../FtToggleSwitch/FtToggleSwitch.vue'
 import FtProfileIcon from '../FtProfileIcon/FtProfileIcon.vue'
@@ -428,14 +463,21 @@ import { customThemeValue } from '../../../customTheme'
 import { getThemeClassification, hasFixedThemeColors } from '../../../appearanceSettings'
 import { BUILTIN_BASE_THEME_VALUES } from '../../../constants'
 
+const quickHeaderActions = useTemplateRef('quickHeaderActions')
 const { locale, t } = useI18n()
 const id = useId()
+const phoneLayout = usePhoneLayout()
 const IS_CAPACITOR = !!process.env.IS_CAPACITOR
 const USING_ELECTRON = process.env.IS_ELECTRON
 const systemColorScheme = window.matchMedia('(prefers-color-scheme: dark)')
 const systemUsesDarkTheme = ref(systemColorScheme.matches)
 
 const menuOpen = ref(false)
+const menuRendered = ref(false)
+watch(menuOpen, open => {
+  if (open) menuRendered.value = true
+  else if (!phoneLayout.value) menuRendered.value = false
+})
 const profilePanelOpen = ref(false)
 let mouseDownOnTrigger = false
 let pointerDownInsideMenu = false
@@ -716,6 +758,7 @@ function updateBasicQuickSetting(settingId, value) {
 }
 
 function handleMenuFocusOut(event) {
+  if (phoneLayout.value) return
   if (event.relatedTarget === null) {
     const controlChangedDuringClick = pointerDownInsideMenu || pendingSettingUpdateCount > 0
     const focusTarget = event.target

@@ -39,7 +39,7 @@
 
 /* Hide off-player branches immediately, including buttons whose inherited
    visibility transitions. Retain page dimensions and body-level menu portals. */
-.nativePlaybackScreen :has([data-native-player-screen]):not(body) > :not([data-native-player-screen], :has([data-native-player-screen])) {
+.nativePlaybackScreen :has([data-native-player-screen]):not(body) > :not([data-native-player-screen], :has([data-native-player-screen]), .prompt) {
   opacity: 0 !important;
   transition: none !important;
 }
@@ -154,4 +154,10 @@
   .shaka-controls-button-panel:not(.ft-controls-compact-chapters) > .ft-chapters-button
 ) .shaka-overflow-menu .ft-chapters-button {
   display: none;
+}
+
+/* Prompts stay outside the Watch branch, which becomes inert while they open. */
+.nativePlaybackScreen .app > .prompt {
+  visibility: visible;
+  z-index: 2147483647;
 }

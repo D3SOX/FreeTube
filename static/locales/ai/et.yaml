@@ -1066,6 +1066,8 @@ Channel:
   Search Result Types: Otsingutulemuste tüübid
   All Results: Kõik
 Video:
+  Move Queue Item Up: "Liiguta {title} üles"
+  Move Queue Item Down: "Liiguta {title} alla"
   Includes paid promotion: Sisaldab tasulist reklaami
   Age Restricted Badge: Vanusepiiranguga
   Queue: Esitusjärjekord
@@ -1455,6 +1457,7 @@ Comments:
   Translating comment, please wait: Kommentaari tõlkimine, palun oota
   Comment translation failed: Kommentaari tõlge nurjus
 Description:
+  Title: Kirjeldus
   Copy Description: Kopeeri kirjeldus
   Description Copied: Kirjeldus kopeeriti lõikelauale
   Video Category: 'Video kategooria:'

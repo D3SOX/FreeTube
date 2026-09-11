@@ -71,6 +71,7 @@
 }
 
 .queueDragHandle {
+  touch-action: none;
   display: grid;
   place-items: center;
   inline-size: 30px;
@@ -149,5 +150,56 @@
       background-color: var(--side-nav-hover-color);
       color: var(--primary-text-color);
     }
+  }
+}
+
+.queueItem.dropBefore {
+  box-shadow: inset 0 3px var(--accent-color);
+}
+
+.queueItem.dropAfter {
+  box-shadow: inset 0 -3px var(--accent-color);
+}
+
+.queueActions button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+@media (width <= 600px), (pointer: coarse) {
+  .queueItem {
+    grid-template-columns: var(--phone-touch-target, 48px) minmax(0, 1fr);
+  }
+
+  .queueActions {
+    flex-direction: row;
+    grid-column: 2;
+    justify-content: flex-end;
+  }
+
+  .queueDragHandle,
+  .queueActions button {
+    inline-size: var(--phone-touch-target, 48px);
+    block-size: var(--phone-touch-target, 48px);
+  }
+
+  .queueVideo {
+    grid-template-columns: 64px minmax(0, 1fr);
+  }
+
+  .queueThumbnail {
+    inline-size: 64px;
+  }
+
+  .queueVideoTitle {
+    display: -webkit-box;
+    white-space: normal;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+  }
+
+  .clearQueue {
+    min-block-size: var(--phone-touch-target, 48px);
   }
 }

@@ -357,3 +357,45 @@
     transition: none;
   }
 }
+
+.pickerSearch {
+  flex: 0 0 auto;
+  box-sizing: border-box;
+  min-block-size: var(--phone-touch-target, 48px);
+  margin: 12px;
+  padding: 12px;
+  border: 1px solid var(--divider-color);
+  background: var(--search-bar-color);
+  color: var(--primary-text-color);
+  font: inherit;
+}
+
+.selectDropdown.phonePicker {
+  position: relative;
+  inset: auto;
+  flex: 1;
+  min-block-size: 0;
+  max-block-size: none;
+  inline-size: auto;
+  margin: 0;
+  padding: 8px;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.phonePicker .selectOption {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-sizing: border-box;
+  min-block-size: var(--phone-touch-target, 48px);
+  padding: 12px;
+  white-space: normal;
+}
+
+.phonePicker .optionName {
+  flex: 1;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}

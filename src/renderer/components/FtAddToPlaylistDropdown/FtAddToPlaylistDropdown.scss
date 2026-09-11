@@ -86,3 +86,52 @@
   gap: 8px;
   justify-content: flex-start;
 }
+
+.playlistSearch {
+  box-sizing: border-box;
+  min-block-size: var(--phone-touch-target, 48px);
+  margin: 8px;
+  padding: 10px;
+  min-inline-size: 0;
+  border: 1px solid var(--divider-color);
+  background: var(--search-bar-color);
+  color: inherit;
+  font: inherit;
+}
+
+.playlistListContent {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.phonePlaylistPicker {
+  flex: 1;
+  min-block-size: 0;
+
+  .dropdownHeader {
+    display: none;
+  }
+
+  .playlistList {
+    flex: 1;
+    min-block-size: 0;
+    max-block-size: none;
+  }
+
+  .playlistRow {
+    min-block-size: var(--phone-touch-target, 48px);
+    box-sizing: border-box;
+  }
+
+  .playlistName {
+    max-inline-size: none;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .createRow {
+    flex: 0 0 auto;
+    padding: 16px;
+  }
+}

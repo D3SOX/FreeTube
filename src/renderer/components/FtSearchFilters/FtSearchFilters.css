@@ -23,7 +23,8 @@
   align-items: baseline;
   justify-content: center;
   gap: 0.5rem;
-  block-size: inherit;
+  flex: 0 0 auto;
+  block-size: auto;
 }
 
 .clearFilterButton {
@@ -62,5 +63,37 @@
 
   .radioFlexBox {
     flex-flow: column;
+  }
+}
+
+.activeFilters {
+  font-size: 0.85rem;
+  overflow-wrap: anywhere;
+}
+
+@media (width <= 600px), (height <= 600px) {
+  .titleContainer {
+    flex-wrap: wrap;
+  }
+
+  .activeFilters {
+    flex: 1 0 100%;
+    order: 1;
+    margin-block: 4px;
+    margin-inline: 0;
+  }
+
+  .clearFilterButton {
+    min-inline-size: var(--phone-touch-target, 48px);
+    min-block-size: var(--phone-touch-target, 48px);
+  }
+
+  .searchRadio :deep(input[type='radio'] + label),
+  .searchRadio :deep(input[type='checkbox'] + label) {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    min-block-size: var(--phone-touch-target, 48px);
+    inline-size: 100%;
   }
 }

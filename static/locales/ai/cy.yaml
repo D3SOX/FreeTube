@@ -1073,6 +1073,8 @@ Channel:
   Search Result Types: Mathau o ganlyniadau chwilio
   All Results: Pob un
 Video:
+  Move Queue Item Up: "Symud {title} i fyny"
+  Move Queue Item Down: "Symud {title} i lawr"
   Includes paid promotion: Yn cynnwys hyrwyddiad taledig
   Age Restricted Badge: Cyfyngiad oedran
   Queue: Ciw
@@ -1475,6 +1477,7 @@ Comments:
   Translating comment, please wait: Wrthi'n cyfieithu'r sylw; arhoswch
   Comment translation failed: Methodd cyfieithu'r sylw
 Description:
+  Title: Disgrifiad
   Copy Description: Copïo'r disgrifiad
   Description Copied: Wedi copïo'r disgrifiad i'r clipfwrdd
   Video Category: 'Categori fideo:'

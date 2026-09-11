@@ -1,6 +1,7 @@
 <template>
   <FtPrompt
     autosize
+    fixed-layout
     :label="title"
     @click="hideCreatePlaylistPrompt"
   >
@@ -27,21 +28,23 @@
         {{ $t('User Playlists.CreatePlaylistPrompt.Toast["There is already a playlist with this name. Please pick a different name."]') }}
       </p>
     </FtFlexBox>
-    <FtFlexBox>
-      <FtButton
-        :label="$t('User Playlists.CreatePlaylistPrompt.Create')"
-        :icon="['fas', 'playlist-add']"
-        :disabled="playlistPersistenceDisabled"
-        @click="createNewPlaylist"
-      />
-      <FtButton
-        :label="$t('User Playlists.Cancel')"
-        :icon="['fas', 'xmark']"
-        :text-color="null"
-        :background-color="null"
-        @click="hideCreatePlaylistPrompt"
-      />
-    </FtFlexBox>
+    <template #footer>
+      <FtFlexBox>
+        <FtButton
+          :label="$t('User Playlists.CreatePlaylistPrompt.Create')"
+          :icon="['fas', 'playlist-add']"
+          :disabled="playlistPersistenceDisabled"
+          @click="createNewPlaylist"
+        />
+        <FtButton
+          :label="$t('User Playlists.Cancel')"
+          :icon="['fas', 'xmark']"
+          :text-color="null"
+          :background-color="null"
+          @click="hideCreatePlaylistPrompt"
+        />
+      </FtFlexBox>
+    </template>
   </FtPrompt>
 </template>
 

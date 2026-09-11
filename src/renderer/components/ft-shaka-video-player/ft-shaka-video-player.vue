@@ -540,6 +540,7 @@
           :icon="isInAnyPlaylist ? ['fac', 'playlist-check'] : ['fac', 'playlist-add']"
           :use-shadow="false"
           force-dropdown
+          mobile-sheet
           dropdown-position-x="left"
           dropdown-position-y="top"
         >

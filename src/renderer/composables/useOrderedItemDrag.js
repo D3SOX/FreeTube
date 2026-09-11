@@ -83,7 +83,7 @@ export function useOrderedItemDrag({ items, rowSelector, itemIdAttribute, update
     pointerId = event.pointerId
     pointerHandle = event.currentTarget
     pointerList = pointerHandle.closest(rowSelector)?.parentElement
-    pointerScroller = pointerList?.parentElement
+    pointerScroller = pointerList
     while (pointerScroller && !/auto|scroll/.test(getComputedStyle(pointerScroller).overflowY)) {
       pointerScroller = pointerScroller.parentElement
     }

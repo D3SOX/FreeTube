@@ -549,6 +549,8 @@ Channel:
   Search Result Types: Typy wyników wyszukiwania
   All Results: Wszystkie
 Video:
+  Move Queue Item Up: "Przenieś film {title} w górę"
+  Move Queue Item Down: "Przenieś film {title} w dół"
   Includes paid promotion: Zawiera płatną promocję
   Age Restricted Badge: Ograniczenie wiekowe
   Reorder Queue Item: Zmień położenie {title}
@@ -740,6 +742,7 @@ Comments:
   Translating comment, please wait: Tłumaczenie komentarza, zaczekaj
   Comment translation failed: Nie udało się przetłumaczyć komentarza
 Description:
+  Title: Opis
   Copy Description: Kopiuj opis
   Description Copied: Opis skopiowano do schowka
   Video Tags: Tagi filmu

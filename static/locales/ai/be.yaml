@@ -1124,6 +1124,8 @@ Channel:
   All Results: Усе
   View All: Паказаць усе
 Video:
+  Move Queue Item Up: "Перамясціць {title} вышэй"
+  Move Queue Item Down: "Перамясціць {title} ніжэй"
   Includes paid promotion: Ёсць платная рэклама
   Age Restricted Badge: Узроставыя абмежаванні
   Queue: Чарга
@@ -1535,6 +1537,7 @@ Comments:
   Translating comment, please wait: Пераклад каментарыя, пачакайце
   Comment translation failed: Не ўдалося перакласці каментарый
 Description:
+  Title: Апісанне
   Copy Description: Скапіяваць апісанне
   Description Copied: Апісанне скапіяванае ў буфер абмену
   Video Category: 'Катэгорыя відэа:'

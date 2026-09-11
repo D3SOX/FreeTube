@@ -248,3 +248,53 @@
     grid-template-columns: 1fr;
   }
 }
+
+.advancedDownloadOptions summary {
+  cursor: pointer;
+  min-block-size: var(--phone-touch-target, 48px);
+  box-sizing: border-box;
+  padding-block: 12px;
+}
+
+@media (width <= 600px), (height <= 600px) {
+  :deep(.downloadPromptCard) {
+    block-size: 100%;
+    min-block-size: 0;
+  }
+
+  .downloadPromptContent {
+    flex: 1;
+    min-block-size: 0;
+    max-block-size: none;
+  }
+
+  .downloadOptions {
+    flex: 1;
+    max-block-size: none;
+  }
+
+  .downloadVideoTitle {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
+  }
+
+  .downloadFolderRow {
+    flex-wrap: wrap;
+  }
+
+  .chooseFolderButton {
+    min-block-size: var(--phone-touch-target, 48px);
+  }
+
+  .optionGrid,
+  .toggleGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+:global(.promptCard.downloadPromptCard.activeDownloadCard) {
+  block-size: auto;
+}

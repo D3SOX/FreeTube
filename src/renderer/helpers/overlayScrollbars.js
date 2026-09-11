@@ -29,6 +29,7 @@ const instances = new Map()
 /** @type {WeakMap<import('overlayscrollbars').OverlayScrollbars, () => void>} */
 const removeScrollSpeedHandlers = new WeakMap()
 const SCROLL_BOUNDARY_TOLERANCE = 1
+const suspendSheetScrollbars = new WeakMap()
 
 function scrollbarOptions(initialization) {
   const options = {
@@ -72,9 +73,52 @@ function create(initialization) {
     optimizeBodyScrollbarDrag(instance)
   } else if (initialization.elements?.viewport instanceof HTMLElement) {
     reconcileScrollbarOnResize(initialization.elements.viewport, instance)
+    synchronizeSheetScrollbarPosition(initialization.elements.viewport, instance)
   }
 
   return instance
+}
+
+/** Keep a panel's scrollbar track fixed during compositor-driven touch scrolling. */
+function synchronizeSheetScrollbarPosition(element, instance) {
+  if (!window.ScrollTimeline || !element.closest('.mobileSheetEnabled')) return
+  const timeline = new window.ScrollTimeline({ source: element, axis: 'y' })
+  const { scrollbarVertical, scrollbarHorizontal } = instance.elements()
+  let animations = []
+  let previousRange = -1
+  let suspended = false
+  const update = () => {
+    if (suspended) return
+    const { overflowAmount } = instance.state()
+    // The library still handles two-axis scrollers and older WebViews.
+    if (overflowAmount.x > 1) {
+      animations.forEach(animation => animation.cancel())
+      animations = []
+      previousRange = -1
+      return
+    }
+    if (overflowAmount.y === previousRange) return
+    previousRange = overflowAmount.y
+    const frames = { transform: ['translateY(0px)', `translateY(${previousRange}px)`] }
+    if (animations.length) animations.forEach(animation => animation.effect.setKeyframes(frames))
+    else animations = [scrollbarVertical, scrollbarHorizontal].map(({ scrollbar }) => scrollbar.animate(frames, { timeline }))
+  }
+  suspendSheetScrollbars.set(instance, () => {
+    suspended = true
+    animations.forEach(animation => animation.cancel())
+    animations = []
+    return () => {
+      suspended = false
+      previousRange = -1
+      update()
+    }
+  })
+  update()
+  instance.on('updated', update)
+  instance.on('destroyed', () => {
+    suspendSheetScrollbars.delete(instance)
+    animations.forEach(animation => animation.cancel())
+  })
 }
 
 /**
@@ -424,22 +468,29 @@ export function clampOverlayScrollTop(element, contentElement = null) {
   }
 
   const instance = OverlayScrollbars(element)
-  const scrollOffsetElement = instance?.elements().scrollOffsetElement ?? element
-  instance?.update(true)
-  const maximumScrollTop = getMaximumOverlayScrollTop(scrollOffsetElement, contentElement)
-  if (isScrollTopOutOfBounds(scrollOffsetElement, maximumScrollTop)) {
-    if (instance) {
-      // Chromium can preserve the old overflow range when content shrinks
-      // beneath a non-zero offset. Remeasure from the true origin so both the
-      // viewport and OverlayScrollbars discard that stale range, then restore
-      // the clamped position within the newly measured range.
-      scrollOffsetElement.scrollTop = 0
-      instance.update(true)
-      scrollOffsetElement.scrollTop = Math.min(maximumScrollTop, instance.state().overflowAmount.y)
-      instance.update(true)
-    } else {
-      scrollOffsetElement.scrollTop = maximumScrollTop
+  // A compositor animation can retain the old track offset during this DOM update.
+  // Remove that overflow contribution before measuring the shortened content.
+  const resumeScrollbars = suspendSheetScrollbars.get(instance)?.()
+  try {
+    const scrollOffsetElement = instance?.elements().scrollOffsetElement ?? element
+    instance?.update(true)
+    const maximumScrollTop = getMaximumOverlayScrollTop(scrollOffsetElement, contentElement)
+    if (isScrollTopOutOfBounds(scrollOffsetElement, maximumScrollTop)) {
+      if (instance) {
+        // Chromium can preserve the old overflow range when content shrinks
+        // beneath a non-zero offset. Remeasure from the true origin so both the
+        // viewport and OverlayScrollbars discard that stale range, then restore
+        // the clamped position within the newly measured range.
+        scrollOffsetElement.scrollTop = 0
+        instance.update(true)
+        scrollOffsetElement.scrollTop = Math.min(maximumScrollTop, instance.state().overflowAmount.y)
+        instance.update(true)
+      } else {
+        scrollOffsetElement.scrollTop = maximumScrollTop
+      }
     }
+  } finally {
+    resumeScrollbars?.()
   }
 }
 

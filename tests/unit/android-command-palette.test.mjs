@@ -30,6 +30,7 @@ for (const isCapacitor of [true, false]) {
       openSettingsSection: section => { openedSection = section },
       openSettingsSearchResult: (section, match) => { openedSearch = { section, match } },
     })
+    assert.equal(commands.some(command => command.id === 'playback.fullwindow'), !isCapacitor)
     const downloads = commands.find(command => command.id === 'settings.download')
     assert.equal(downloads.disabledReason === '', isCapacitor)
     const results = commands.filter(command => command.id.startsWith('settings.search.download.'))
@@ -41,5 +42,17 @@ for (const isCapacitor of [true, false]) {
       assert.equal(openedSearch.section, 'download')
       assert.ok(openedSearch.match.label)
     }
+  })
+}
+
+const shortcutPrompt = await readFile(new URL('../../src/renderer/components/FtKeyboardShortcutPrompt/FtKeyboardShortcutPrompt.vue', import.meta.url), 'utf8')
+const bindingCollector = shortcutPrompt.slice(shortcutPrompt.indexOf('function getAllKeyboardShortcutBindings('), shortcutPrompt.indexOf('function getShortcutActionLabel('))
+for (const isCapacitor of [true, false]) {
+  test(`Full Window shortcut conflicts respect Android availability: ${isCapacitor}`, () => {
+    const collect = new Function('process', 'isKeyboardShortcutEditable', 'getNestedValue', 'DefaultKeyboardShortcuts', `${bindingCollector}\nreturn getAllKeyboardShortcutBindings`)(
+      { env: { IS_CAPACITOR: isCapacitor } }, () => true, () => '', {}
+    )
+    const bindings = collect({ VIDEO_PLAYER: { GENERAL: { FULLWINDOW: 's', FULLSCREEN: 'f' } } })
+    assert.deepEqual(bindings.map(binding => binding.code), isCapacitor ? ['FULLSCREEN'] : ['FULLWINDOW', 'FULLSCREEN'])
   })
 }

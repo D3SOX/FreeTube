@@ -588,6 +588,7 @@ import { translateWindowTitle } from './helpers/strings'
 import { formatTabTitle } from './tabs/tabTitle'
 import { normalizeScrollbarThumbWidth } from './constants/scrollbar'
 import { getAppFontFamily } from './helpers/appFont'
+import { setupPhoneViewport } from './helpers/phoneViewport'
 import { createCapacitorUiScale } from './helpers/capacitorUiScale'
 import { usesCapacitorTabletLayout } from './helpers/capacitorLayout'
 import { getTabAccentColor } from './constants/tabColors'
@@ -2701,7 +2702,11 @@ function clearSubscriptionTabAutoRefreshTimer(tab) {
 /** @type {import('vue').ComputedRef<string>} */
 const baseTheme = computed(() => store.getters.getBaseTheme)
 const capacitorUiScale = isCapacitor ? createCapacitorUiScale(window, document) : null
-watch(() => store.getters.getUiScale, value => capacitorUiScale?.setScale(value), { immediate: true })
+watch(() => store.getters.getUiScale, value => {
+  capacitorUiScale?.setScale(value)
+  document.documentElement.style.setProperty('--phone-touch-target', `${Math.max(48, 4800 / value)}px`)
+}, { immediate: true })
+onBeforeUnmount(setupPhoneViewport(window, document, isCapacitor))
 onBeforeUnmount(() => capacitorUiScale?.dispose())
 
 const appFont = computed(() => store.getters.getAppFont)
@@ -3030,7 +3035,12 @@ async function handleAndroidBack() {
   }
 
   const hadOpenLayer = hasVisibleGamepadLayer() || isSideNavOpen.value
-  const target = document.activeElement instanceof HTMLElement ? document.activeElement : document
+  const modalDialog = [...document.querySelectorAll('dialog:modal')].at(-1)
+  const settingsWindow = settingsWindowOpen.value ? document.querySelector('.settingsWindow') : null
+  const openDialog = [...document.querySelectorAll('dialog[open]')].at(-1)
+  const focused = document.activeElement instanceof HTMLElement ? document.activeElement : document
+  const focusedPrompt = focused instanceof HTMLElement && focused.closest('.prompt') ? focused : null
+  const target = modalDialog ?? focusedPrompt ?? (settingsWindow?.contains(focused) ? focused : settingsWindow) ?? openDialog ?? focused
   const escapeEvent = new KeyboardEvent('keydown', {
     key: 'Escape',
     code: 'Escape',

@@ -336,3 +336,15 @@
     }
   }
 }
+
+.dropdownLayer {
+  display: contents;
+}
+
+.fullscreenDropdownLayer {
+  display: block;
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  pointer-events: auto;
+}

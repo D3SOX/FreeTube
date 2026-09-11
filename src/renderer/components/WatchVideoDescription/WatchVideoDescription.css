@@ -14,6 +14,11 @@
   padding-inline: 16px;
 }
 
+.videoDescription.alwaysExpanded .descriptionScroll {
+  max-block-size: none;
+  overflow: visible;
+}
+
 .videoDescription:not(.short, .alwaysExpanded) .descriptionScroll {
   --description-fade-size: 16px;
   --description-scrollbar-reserve: 14px;

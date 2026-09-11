@@ -126,6 +126,7 @@
           :padding="playlistIconPadding"
           :size="playlistIconSize"
           force-dropdown
+          mobile-sheet
           dropdown-position-x="left"
           :dropdown-portal="appearance === 'watchPlaylistItem'"
           :dropdown-position-y="appearance === 'watchPlaylistItem' ? 'top' : 'bottom'"

@@ -35,3 +35,7 @@ h2 {
     inline-size: 90%;
   }
 }
+
+.profileSettingsContent {
+  display: flow-root;
+}

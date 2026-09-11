@@ -802,3 +802,52 @@
 .commentThreadLineToggle:enabled:is(:hover, :focus-visible) ~ .commentReplies {
   --comment-parent-thread-line-color: currentcolor;
 }
+
+.phoneCommentCard {
+  padding-inline: 0;
+  display: flex;
+  flex-direction: column;
+  min-block-size: 0;
+  overflow: hidden;
+}
+
+.phoneCommentCard .commentsContentWrapper {
+  flex: 1;
+  min-block-size: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-inline: 16px;
+  box-sizing: border-box;
+}
+
+.phoneCommentHeader {
+  flex: 1;
+  block-size: auto;
+  padding: 0;
+  flex-wrap: wrap;
+  background: transparent;
+  color: var(--primary-text-color);
+  border: 0;
+}
+
+.phoneCommentHeader .fullscreenCommentAction {
+  color: inherit;
+}
+
+.phoneCommentHeader .fullscreenCommentActions {
+  gap: 0;
+}
+
+.phoneCommentHeader .commentFilterMenuAnchor {
+  position: static;
+}
+
+.phoneCommentHeader :is(.fullscreenSortMenu, .commentFilterMenu) {
+  inline-size: max-content;
+  max-inline-size: calc(100vw - 40px);
+  inset-inline-end: 0;
+}
+
+.phoneCommentCard .commentAutoLoadSpace {
+  min-block-size: 64px;
+}

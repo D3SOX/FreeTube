@@ -1089,6 +1089,8 @@ Channel:
   All Results: Tất cả
   View All: Xem tất cả
 Video:
+  Move Queue Item Up: "Di chuyển {title} lên"
+  Move Queue Item Down: "Di chuyển {title} xuống"
   Includes paid promotion: Có quảng cáo trả phí
   Age Restricted Badge: Giới hạn độ tuổi
   Queue: Hàng đợi
@@ -1482,6 +1484,7 @@ Comments:
   Translating comment, please wait: Đang dịch bình luận, vui lòng chờ
   Comment translation failed: Không thể dịch bình luận
 Description:
+  Title: Mô tả
   Copy Description: Sao chép mô tả
   Description Copied: Đã sao chép mô tả vào bảng nhớ tạm
   Video Category: 'Danh mục video:'

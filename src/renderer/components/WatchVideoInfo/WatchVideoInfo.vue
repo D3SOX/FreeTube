@@ -180,6 +180,7 @@
             :icon="isInAnyPlaylist ? ['fac', 'playlist-check'] : ['fac', 'playlist-add']"
             theme="base"
             force-dropdown
+            mobile-sheet
           >
             <FtAddToPlaylistDropdown :video-data="addToPlaylistVideoData" />
           </FtIconButton>
@@ -275,6 +276,7 @@
             :get-timestamp="getTimestamp"
             :playlist-id="playlistId"
           />
+          <slot name="phone-actions" />
         </span>
       </div>
     </div>

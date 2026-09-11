@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="profileSettingsContent">
     <FtCard class="card">
       <h2>{{ $t("Profile.Profile Manager") }}</h2>
       <FtFlexBox

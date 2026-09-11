@@ -2,6 +2,7 @@
   <FtPrompt
     :label="t('Change Format.Change Media Formats')"
     :autosize="true"
+    card-class="content-width"
     @click="emit('close')"
   >
     <div class="formatPrompt">

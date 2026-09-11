@@ -768,7 +768,7 @@ for (const uiScale of [100, 95]) {
       await submenu.getByRole('button', { name: 'Off', exact: true }).click()
       await expect(submenu).toBeHidden()
       await expect(menu).toBeVisible()
-      await player.getByRole('button', { name: 'More settings' }).click()
+      await player.locator('.phonePlayerOptions[open]').press('Escape')
       await expect(menu).toBeHidden()
       await centerButton.click()
       await expect.poll(() => video.evaluate(element => element.paused)).toBe(false)

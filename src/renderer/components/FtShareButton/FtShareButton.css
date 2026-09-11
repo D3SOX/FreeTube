@@ -4,6 +4,7 @@
   grid-template-rows: auto auto;
   padding: 12px;
   inline-size: max-content;
+  margin-inline: auto;
 }
 
 .header {

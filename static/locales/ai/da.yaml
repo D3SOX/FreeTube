@@ -1120,6 +1120,8 @@ Channel:
   All Results: Alle
   View All: Vis alle
 Video:
+  Move Queue Item Up: "Flyt {title} op"
+  Move Queue Item Down: "Flyt {title} ned"
   Includes paid promotion: Indeholder betalt promovering
   Age Restricted Badge: Aldersbegrænset
   Queue: Kø
@@ -1524,6 +1526,7 @@ Comments:
   Translating comment, please wait: Oversætter kommentaren. Vent venligst
   Comment translation failed: Kommentaren kunne ikke oversættes
 Description:
+  Title: Beskrivelse
   Copy Description: Kopiér beskrivelse
   Description Copied: Beskrivelsen er kopieret til udklipsholderen
   Video Category: 'Videokategori:'

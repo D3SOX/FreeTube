@@ -1096,6 +1096,8 @@ Channel:
   All Results: Όλα
   View All: Προβολή όλων
 Video:
+  Move Queue Item Up: "Μετακίνηση του {title} επάνω"
+  Move Queue Item Down: "Μετακίνηση του {title} κάτω"
   Includes paid promotion: Περιλαμβάνει πληρωμένη προώθηση
   Age Restricted Badge: Περιορισμός ηλικίας
   Queue: Ουρά αναπαραγωγής
@@ -1490,6 +1492,7 @@ Comments:
   Translating comment, please wait: Το σχόλιο μεταφράζεται, περιμένετε
   Comment translation failed: Η μετάφραση του σχολίου απέτυχε
 Description:
+  Title: Περιγραφή
   Copy Description: Αντιγραφή περιγραφής
   Description Copied: Η περιγραφή αντιγράφηκε στο πρόχειρο
   Video Category: 'Κατηγορία βίντεο:'

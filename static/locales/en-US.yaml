@@ -1890,6 +1890,8 @@ Channel:
     Hide Answers: Hide Answers
     Video hidden by OpenTubeX: Video hidden by OpenTubeX
 Video:
+  Move Queue Item Up: "Move {title} up"
+  Move Queue Item Down: "Move {title} down"
   Includes paid promotion: Includes paid promotion
   Age Restricted Badge: Age restricted
   Queue: Queue
@@ -2492,6 +2494,7 @@ Comments:
 
 Up Next: Up Next
 Description:
+  Title: Description
   Expand Description: ...more
   Collapse Description: Show less
   Copy Description: Copy Description

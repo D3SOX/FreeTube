@@ -8,6 +8,7 @@
     :icon="['fas', 'share-alt']"
     :dropdown-modal-on-mobile="true"
     dropdown-position-x="left"
+    dropdown-class="content-width"
     :dropdown-position-y="dropdownPositionY"
     :force-dropdown="true"
   >

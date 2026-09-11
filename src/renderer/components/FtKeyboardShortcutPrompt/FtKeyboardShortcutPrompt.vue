@@ -369,7 +369,7 @@ const localizedShortcutNameToShortcutsMappings = computed(() => {
     [t('KeyboardShortcutPrompt.Captions'), ['CAPTIONS']],
     [t('KeyboardShortcutPrompt.Theatre Mode'), ['THEATRE_MODE']],
     [t('KeyboardShortcutPrompt.Fullscreen'), ['FULLSCREEN']],
-    [t('KeyboardShortcutPrompt.Full Window'), ['FULLWINDOW']],
+    ...(!process.env.IS_CAPACITOR ? [[t('KeyboardShortcutPrompt.Full Window'), ['FULLWINDOW']]] : []),
     [t('KeyboardShortcutPrompt.Picture in Picture'), ['PICTURE_IN_PICTURE']],
     [t('KeyboardShortcutPrompt.Mute'), ['MUTE']],
     [t('KeyboardShortcutPrompt.Volume Up'), ['VOLUME_UP']],
@@ -578,6 +578,7 @@ function findShortcutConflicts(binding, shortcut, ignoreDefaultBindings = false)
 
 function getAllKeyboardShortcutBindings(dictionary, dictionaryPath = []) {
   return Object.entries(dictionary).flatMap(([code, value]) => {
+    if (process.env.IS_CAPACITOR && code === 'FULLWINDOW') return []
     const path = [...dictionaryPath, code]
     if (typeof value === 'string') {
       return [{

@@ -2,7 +2,9 @@
   <FtPrompt
     :label="downloadLabel"
     :autosize="true"
-    card-class="downloadPromptCard"
+    fixed-layout
+    :content-scrollable="false"
+    :card-class="activeDownload === null ? 'downloadPromptCard' : 'downloadPromptCard activeDownloadCard'"
     :inert="showSaveTemplatePrompt"
     @click="close"
   >
@@ -19,8 +21,6 @@
           {{ title }}
         </h2>
       </header>
-    </template>
-    <div class="downloadPromptContent">
       <section
         v-if="activeDownload === null"
         class="optionSection templateSection fixedTemplateSection"
@@ -52,166 +52,178 @@
           @click="deleteTemplate"
         />
       </section>
+    </template>
+    <div class="downloadPromptContent">
       <div
         v-if="activeDownload === null"
+        ref="optionsScroller"
         v-overlay-scrollbars
         class="downloadOptions"
       >
-        <section class="optionSection optionGrid">
-          <FtSelect
-            :placeholder="t('Downloads.Media Type')"
-            :value="options.mode"
-            :select-names="[t('Downloads.Video'), t('Downloads.Audio'), t('Search Listing.Label.Subtitles')]"
-            :select-values="['video', 'audio', 'subtitles']"
-            @change="setOption('mode', $event)"
-          />
-          <FtSelect
-            :placeholder="t('Downloads.Maximum Resolution')"
-            :value="options.quality"
-            :disabled="options.mode !== 'video'"
-            :select-names="[t('Downloads.Best Available'), '2160p', '1440p', '1080p', '720p', '480p', '360p']"
-            :select-values="['', '2160', '1440', '1080', '720', '480', '360']"
-            @change="setOption('quality', $event)"
-          />
-          <FtSelect
-            :placeholder="t('Downloads.Container')"
-            :value="options.videoFormat"
-            :disabled="options.mode !== 'video'"
-            :select-names="[t('Downloads.Automatic'), 'MP4', 'MKV', 'WebM']"
-            :select-values="['', 'mp4', 'mkv', 'webm']"
-            @change="setOption('videoFormat', $event)"
-          />
-          <FtSelect
-            :placeholder="formatLabel"
-            :value="selectedCodec"
-            :select-names="codecNames"
-            :select-values="codecValues"
-            @change="setSelectedCodec"
-          />
-        </section>
+        <div ref="optionsContent">
+          <section class="optionSection optionGrid">
+            <FtSelect
+              :placeholder="t('Downloads.Media Type')"
+              :value="options.mode"
+              :select-names="[t('Downloads.Video'), t('Downloads.Audio'), t('Search Listing.Label.Subtitles')]"
+              :select-values="['video', 'audio', 'subtitles']"
+              @change="setOption('mode', $event)"
+            />
+            <FtSelect
+              :placeholder="t('Downloads.Maximum Resolution')"
+              :value="options.quality"
+              :disabled="options.mode !== 'video'"
+              :select-names="[t('Downloads.Best Available'), '2160p', '1440p', '1080p', '720p', '480p', '360p']"
+              :select-values="['', '2160', '1440', '1080', '720', '480', '360']"
+              @change="setOption('quality', $event)"
+            />
+            <FtSelect
+              :placeholder="t('Downloads.Container')"
+              :value="options.videoFormat"
+              :disabled="options.mode !== 'video'"
+              :select-names="[t('Downloads.Automatic'), 'MP4', 'MKV', 'WebM']"
+              :select-values="['', 'mp4', 'mkv', 'webm']"
+              @change="setOption('videoFormat', $event)"
+            />
+            <FtSelect
+              :placeholder="formatLabel"
+              :value="selectedCodec"
+              :select-names="codecNames"
+              :select-values="codecValues"
+              @change="setSelectedCodec"
+            />
+          </section>
 
-        <section class="optionSection">
-          <FtInput
-            class="fullWidth"
-            :placeholder="t('Downloads.File Name Template')"
-            :tooltip="fileNameTemplateHelp"
-            :show-action-button="false"
-            :show-label="true"
-            :value="options.filenameTemplate"
-            @input="setOption('filenameTemplate', $event)"
-          />
-        </section>
-
-        <section class="optionSection">
-          <h3>{{ t('Downloads.Time Range and Chapters') }}</h3>
-          <div class="optionGrid segmentGrid">
-            <FtInput
-              :placeholder="t('Downloads.Start Time')"
-              :disabled="subtitlesOnly"
-              :show-action-button="false"
-              :show-label="true"
-              :value="options.startTime"
-              @input="setOption('startTime', $event)"
-            />
-            <FtInput
-              :placeholder="t('Downloads.End Time')"
-              :disabled="subtitlesOnly"
-              :show-action-button="false"
-              :show-label="true"
-              :value="options.endTime"
-              @input="setOption('endTime', $event)"
-            />
-          </div>
-          <div class="toggleGrid">
-            <FtToggleSwitch
-              compact
-              :label="t('Downloads.Split by Chapters')"
-              :default-value="!subtitlesOnly && options.splitChapters"
-              :disabled="subtitlesOnly"
-              @change="setOption('splitChapters', $event)"
-            />
-          </div>
-        </section>
-
-        <section class="optionSection">
-          <h3>{{ t('Settings.SponsorBlock Settings.SponsorBlock Settings') }}</h3>
-          <div class="toggleGrid">
-            <FtToggleSwitch
-              compact
-              :label="t('Downloads.Remove Segments')"
-              :default-value="!subtitlesOnly && options.removeSponsorblock"
-              :disabled="subtitlesOnly"
-              @change="setOption('removeSponsorblock', $event)"
-            />
-          </div>
-          <div
-            :class="{ disabledOptions: !sponsorBlockCategoriesEnabled }"
-            :inert="!sponsorBlockCategoriesEnabled"
-            :aria-disabled="!sponsorBlockCategoriesEnabled"
+          <details
+            :open="!phoneLayout"
+            class="advancedDownloadOptions"
           >
-            <FtCheckboxList
-              v-model="sponsorBlockCategories"
-              class="sponsorCategories"
-              :labels="sponsorBlockCategoryLabels"
-              :values="SPONSORBLOCK_CATEGORIES"
-            />
-          </div>
-        </section>
+            <summary>{{ t('Settings.Categories.Advanced') }}</summary>
 
-        <section class="optionSection">
-          <h3>{{ t('Downloads.Subtitles and Metadata') }}</h3>
-          <div class="toggleGrid">
-            <FtToggleSwitch
-              compact
-              :label="t('Downloads.Embed Cover Art')"
-              :default-value="!subtitlesOnly && options.embedThumbnail"
-              :disabled="subtitlesOnly"
-              @change="setOption('embedThumbnail', $event)"
-            />
-            <FtToggleSwitch
-              compact
-              :label="t('Downloads.Embed Metadata')"
-              :default-value="!subtitlesOnly && options.embedMetadata"
-              :disabled="subtitlesOnly"
-              @change="setOption('embedMetadata', $event)"
-            />
-            <FtToggleSwitch
-              compact
-              :label="t('Downloads.Include Subtitles')"
-              :default-value="subtitlesOnly || options.includeSubtitles"
-              :disabled="subtitlesOnly"
-              @change="setOption('includeSubtitles', $event)"
-            />
-            <FtToggleSwitch
-              compact
-              :label="t('Downloads.Embed Subtitles')"
-              :default-value="!subtitlesOnly && options.embedSubtitles"
-              :disabled="subtitlesOnly || !options.includeSubtitles"
-              @change="setOption('embedSubtitles', $event)"
-            />
-          </div>
-          <FtInput
-            class="fullWidth subtitleLanguages"
-            :placeholder="t('Downloads.Subtitle Languages')"
-            :tooltip="t('Downloads.Subtitle Languages Help')"
-            :disabled="!subtitlesOnly && !options.includeSubtitles"
-            :show-action-button="false"
-            :show-label="true"
-            :value="options.subtitleLanguages"
-            @input="setOption('subtitleLanguages', $event)"
-          />
-        </section>
+            <section class="optionSection">
+              <FtInput
+                class="fullWidth"
+                :placeholder="t('Downloads.File Name Template')"
+                :tooltip="fileNameTemplateHelp"
+                :show-action-button="false"
+                :show-label="true"
+                :value="options.filenameTemplate"
+                @input="setOption('filenameTemplate', $event)"
+              />
+            </section>
 
-        <section class="optionSection">
-          <FtInput
-            class="fullWidth"
-            :placeholder="t('Downloads.Additional yt-dlp Arguments')"
-            :show-action-button="false"
-            :show-label="true"
-            :value="options.customArgs"
-            @input="setOption('customArgs', $event)"
-          />
-        </section>
+            <section class="optionSection">
+              <h3>{{ t('Downloads.Time Range and Chapters') }}</h3>
+              <div class="optionGrid segmentGrid">
+                <FtInput
+                  :placeholder="t('Downloads.Start Time')"
+                  :disabled="subtitlesOnly"
+                  :show-action-button="false"
+                  :show-label="true"
+                  :value="options.startTime"
+                  @input="setOption('startTime', $event)"
+                />
+                <FtInput
+                  :placeholder="t('Downloads.End Time')"
+                  :disabled="subtitlesOnly"
+                  :show-action-button="false"
+                  :show-label="true"
+                  :value="options.endTime"
+                  @input="setOption('endTime', $event)"
+                />
+              </div>
+              <div class="toggleGrid">
+                <FtToggleSwitch
+                  compact
+                  :label="t('Downloads.Split by Chapters')"
+                  :default-value="!subtitlesOnly && options.splitChapters"
+                  :disabled="subtitlesOnly"
+                  @change="setOption('splitChapters', $event)"
+                />
+              </div>
+            </section>
+
+            <section class="optionSection">
+              <h3>{{ t('Settings.SponsorBlock Settings.SponsorBlock Settings') }}</h3>
+              <div class="toggleGrid">
+                <FtToggleSwitch
+                  compact
+                  :label="t('Downloads.Remove Segments')"
+                  :default-value="!subtitlesOnly && options.removeSponsorblock"
+                  :disabled="subtitlesOnly"
+                  @change="setOption('removeSponsorblock', $event)"
+                />
+              </div>
+              <div
+                :class="{ disabledOptions: !sponsorBlockCategoriesEnabled }"
+                :inert="!sponsorBlockCategoriesEnabled"
+                :aria-disabled="!sponsorBlockCategoriesEnabled"
+              >
+                <FtCheckboxList
+                  v-model="sponsorBlockCategories"
+                  class="sponsorCategories"
+                  :labels="sponsorBlockCategoryLabels"
+                  :values="SPONSORBLOCK_CATEGORIES"
+                />
+              </div>
+            </section>
+
+            <section class="optionSection">
+              <h3>{{ t('Downloads.Subtitles and Metadata') }}</h3>
+              <div class="toggleGrid">
+                <FtToggleSwitch
+                  compact
+                  :label="t('Downloads.Embed Cover Art')"
+                  :default-value="!subtitlesOnly && options.embedThumbnail"
+                  :disabled="subtitlesOnly"
+                  @change="setOption('embedThumbnail', $event)"
+                />
+                <FtToggleSwitch
+                  compact
+                  :label="t('Downloads.Embed Metadata')"
+                  :default-value="!subtitlesOnly && options.embedMetadata"
+                  :disabled="subtitlesOnly"
+                  @change="setOption('embedMetadata', $event)"
+                />
+                <FtToggleSwitch
+                  compact
+                  :label="t('Downloads.Include Subtitles')"
+                  :default-value="subtitlesOnly || options.includeSubtitles"
+                  :disabled="subtitlesOnly"
+                  @change="setOption('includeSubtitles', $event)"
+                />
+                <FtToggleSwitch
+                  compact
+                  :label="t('Downloads.Embed Subtitles')"
+                  :default-value="!subtitlesOnly && options.embedSubtitles"
+                  :disabled="subtitlesOnly || !options.includeSubtitles"
+                  @change="setOption('embedSubtitles', $event)"
+                />
+              </div>
+              <FtInput
+                class="fullWidth subtitleLanguages"
+                :placeholder="t('Downloads.Subtitle Languages')"
+                :tooltip="t('Downloads.Subtitle Languages Help')"
+                :disabled="!subtitlesOnly && !options.includeSubtitles"
+                :show-action-button="false"
+                :show-label="true"
+                :value="options.subtitleLanguages"
+                @input="setOption('subtitleLanguages', $event)"
+              />
+            </section>
+
+            <section class="optionSection">
+              <FtInput
+                class="fullWidth"
+                :placeholder="t('Downloads.Additional yt-dlp Arguments')"
+                :show-action-button="false"
+                :show-label="true"
+                :value="options.customArgs"
+                @input="setOption('customArgs', $event)"
+              />
+            </section>
+          </details>
+        </div>
       </div>
 
       <div
@@ -251,7 +263,8 @@
         </p>
         <DownloadFailureHint v-if="activeDownload.status === 'failed'" />
       </div>
-
+    </div>
+    <template #footer>
       <footer
         class="downloadFooter"
         :class="{ activeDownloadFooter: activeDownload !== null }"
@@ -299,7 +312,7 @@
           />
         </FtFlexBox>
       </footer>
-    </div>
+    </template>
   </FtPrompt>
   <FtPrompt
     v-if="showSaveTemplatePrompt"
@@ -342,6 +355,8 @@ import { FtIcon } from '@opentubex/icons'
 import { computed, nextTick, reactive, ref, useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 
+import { usePhoneLayout } from '../../composables/usePhoneLayout'
+import { useScrollClamp } from '../../composables/useScrollClamp'
 import DownloadFailureHint from '../DownloadFailureHint/DownloadFailureHint.vue'
 import FtButton from '../FtButton/FtButton.vue'
 import FtCheckboxList from '../FtCheckboxList/FtCheckboxList.vue'
@@ -367,6 +382,10 @@ const props = defineProps({
 })
 const emit = defineEmits(['close'])
 const { t, locale } = useI18n()
+const phoneLayout = usePhoneLayout()
+const optionsScroller = useTemplateRef('optionsScroller')
+const optionsContent = useTemplateRef('optionsContent')
+useScrollClamp(optionsScroller, optionsContent)
 const downloadLabel = computed(() => props.isPlaylist
   ? t('Downloads.Download Playlist')
   : t('Downloads.Download Video'))

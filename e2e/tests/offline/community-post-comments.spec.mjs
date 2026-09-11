@@ -3,6 +3,8 @@ import { test, expect } from '../../helpers/app.mjs'
 test.use({ seed: { settings: { backendPreference: 'invidious', hideComments: true } } })
 
 test('Hide Comments controls post comments without hiding the post', async ({ page }) => {
+  const pageErrors = []
+  page.on('pageerror', error => pageErrors.push(error.message))
   let commentRequests = 0
   await page.route('**/api/v1/post/**', async route => {
     const isComments = new URL(route.request().url()).pathname.endsWith('/comments')
@@ -36,6 +38,7 @@ test('Hide Comments controls post comments without hiding the post', async ({ pa
     await store.dispatch('updateHideComments', false)
   })
   await expect.poll(() => commentRequests).toBeGreaterThan(0)
+  expect(pageErrors).toEqual([])
   await expect(page.locator('.noComments')).toBeVisible()
 
   await page.evaluate(async () => {

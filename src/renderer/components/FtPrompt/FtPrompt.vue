@@ -5,8 +5,11 @@
       :class="{ lockScroll }"
       tabindex="-1"
       :inert="inert"
-      @pointerdown.self.stop
-      @click.self.stop="hide"
+      @pointerdown.stop
+      @touchstart.stop
+      @touchend.stop
+      @dblclick.stop
+      @click.stop="($event.target === $event.currentTarget) && hide()"
       @keydown.enter.self="hide"
       @keydown.left.right.capture="handleArrowKeys"
     >
@@ -35,10 +38,12 @@
         <template v-if="fixedLayout">
           <div
             ref="promptContentScroller"
-            v-overlay-scrollbars
-            class="promptContentScroller"
+            v-overlay-scrollbars="contentScrollable"
+            :class="contentScrollable ? 'promptContentScroller' : 'promptManagedContent'"
           >
-            <slot />
+            <div class="promptContent">
+              <slot />
+            </div>
           </div>
           <div class="promptFixedFooter">
             <slot name="footer" />
@@ -132,6 +137,7 @@ const props = defineProps({
     type: Boolean,
     default: true
   },
+  contentScrollable: { type: Boolean, default: true },
   fixedLayout: {
     type: Boolean,
     default: false
@@ -245,7 +251,8 @@ function focusItem(index) {
  * @param {KeyboardEvent} event
  */
 function handleEscape(event) {
-  if (event.key === 'Escape' && !props.inert) {
+  if (event.target instanceof Element && event.target.closest('dialog[open]')) return
+  if (event.key === 'Escape' && !props.inert && !event.defaultPrevented) {
     event.preventDefault()
     hide()
   }

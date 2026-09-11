@@ -1116,6 +1116,8 @@ Channel:
   All Results: Све
   View All: Прикажи све
 Video:
+  Move Queue Item Up: "Помери {title} нагоре"
+  Move Queue Item Down: "Помери {title} надоле"
   Includes paid promotion: Садржи плаћену промоцију
   Age Restricted Badge: Ограничено према узрасту
   Queue: Ред за репродукцију
@@ -1518,6 +1520,7 @@ Comments:
   Translating comment, please wait: Коментар се преводи, сачекајте
   Comment translation failed: Превођење коментара није успело
 Description:
+  Title: Опис
   Copy Description: Копирај опис
   Description Copied: Опис је копиран у привремену меморију
   Video Category: 'Категорија видео-снимка:'

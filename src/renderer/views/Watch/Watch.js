@@ -1,3 +1,5 @@
+import FtPhonePanel from '../../components/FtPhonePanel/FtPhonePanel.vue'
+import { usePhoneLayout } from '../../composables/usePhoneLayout'
 import { connectionEvents, initializeNetworkRecovery, getConnectionState } from '../../helpers/networkRecovery'
 import { ytDlp } from '../../helpers/ytDlp'
 import { supportsYtDlp } from '../../helpers/ytDlpCapabilities'
@@ -159,6 +161,7 @@ export default defineComponent({
   name: 'Watch',
   components: {
     FtRetryImage,
+    FtPhonePanel,
     'ft-shaka-video-player': FtShakaVideoPlayer,
     'watch-video-info': WatchVideoInfo,
     'watch-video-description': WatchVideoDescription,
@@ -179,6 +182,28 @@ export default defineComponent({
     FtButton,
     'ft-loader': FtLoader,
   },
+  provide() {
+    return {
+      phonePanelPlayer: () => this.$refs.player?.$refs.container,
+      expandPhonePanel: () => {
+        const player = this.$refs.player
+        if (!player || player.isPaused()) return null
+        const videoId = this.videoId
+        player.pause()
+        return () => {
+          if (this.$refs.player === player && this.videoId === videoId && this.isTabPresented) {
+            player.play()?.catch(() => {})
+          }
+        }
+      },
+      preparePhonePanel: async () => {
+        if (this.$refs.player?.scrollMiniPlayerActive) {
+          this.$refs.player.restoreInlinePlayer()
+          await this.$nextTick()
+        }
+      }
+    }
+  },
   setup: function () {
     const { t, locale } = useI18n()
     const tabRoute = useRoute()
@@ -191,6 +216,7 @@ export default defineComponent({
 
     return {
       t,
+      phoneLayout: usePhoneLayout(),
       currentLocale: locale,
       tabId,
       isTabPresented,
@@ -205,6 +231,7 @@ export default defineComponent({
   },
   data: function () {
     return {
+      mobilePanel: null,
       startNextVideoInFullscreen: false,
       startNextVideoInFullwindow: false,
       startNextVideoInPip: false,
@@ -478,6 +505,10 @@ export default defineComponent({
     }
   },
   computed: {
+    phonePanelsEnabled() {
+      return this.phoneLayout && !this.customShortsPlayerActive && !this.fullscreenMetadataOpen &&
+        !this.fullscreenCommentsOpen && !this.fullscreenTranscriptOpen && !this.fullscreenLiveChatOpen
+    },
     musicPlayerArtist: function () {
       return this.musicMediaType === MUSIC_MEDIA_TYPE.AUDIO_TRACK
         ? getMusicTrackArtist(this.channelName)
@@ -649,7 +680,7 @@ export default defineComponent({
     },
     defaultViewingMode: function () {
       const mode = this.$store.getters.getDefaultViewingMode
-      return process.env.IS_CAPACITOR && ['external_player', 'fullscreen', 'fullscreen_always_on', 'pip'].includes(mode)
+      return process.env.IS_CAPACITOR && ['external_player', 'fullscreen', 'fullscreen_always_on', 'fullwindow', 'fullwindow_always_on', 'pip'].includes(mode)
         ? 'default'
         : mode
     },
@@ -1162,6 +1193,8 @@ export default defineComponent({
       handler() {
         if (this.isCurrentlyPresented()) {
           this.hasBeenPresented = true
+        } else {
+          this.mobilePanel = null
         }
       }
     },
@@ -1296,6 +1329,12 @@ export default defineComponent({
     }
   },
   methods: {
+    openPhonePanel(panel) {
+      this.mobilePanel = panel
+      if (panel === 'chapters') this.showSidebarChapters = true
+      if (panel === 'transcript') this.showTranscript = true
+      if (panel === 'chat') this.liveChatOpen = true
+    },
     handleDownloadConnectionChange({ detail }) {
       if (detail !== 'offline' || !this.isLoading || this.localFilePlayback) return
       if (this.finishDownloadedPlaybackWithoutMetadata()) {
@@ -1545,10 +1584,16 @@ export default defineComponent({
       this.$refs.player?.closeFullscreenLiveChat()
     },
     closeLiveChat() {
+      this.mobilePanel = null
+      if (this.phonePanelsEnabled) return
       this.liveChatOpen = false
       this.closeFullscreenLiveChat()
     },
     toggleLiveChat() {
+      if (this.phonePanelsEnabled) {
+        this.openPhonePanel('chat')
+        return
+      }
       if (this.liveChatOpen) {
         this.closeLiveChat()
       } else {
@@ -1556,6 +1601,7 @@ export default defineComponent({
       }
     },
     closeFullscreenComments() {
+      this.mobilePanel = null
       if (this.fullscreenCommentsOpen) {
         this.$refs.player?.closeFullscreenComments()
         return
@@ -1620,6 +1666,9 @@ export default defineComponent({
       })
     },
     handleChaptersOverlayChange(open) {
+      if (this.phonePanelsEnabled) {
+        this.mobilePanel = open ? 'chapters' : (this.mobilePanel === 'chapters' ? null : this.mobilePanel)
+      }
       const shouldUseDefaultTheatreMode = open && !this.theatrePossible &&
         this.defaultViewingMode === 'theatre'
 
@@ -1684,6 +1733,10 @@ export default defineComponent({
       this.$refs.player?.toggleSponsorBlockInfo()
     },
     toggleTranscript() {
+      if (this.phonePanelsEnabled) {
+        this.openPhonePanel('transcript')
+        return
+      }
       if (!this.transcriptAvailable) {
         return
       }
@@ -1708,6 +1761,8 @@ export default defineComponent({
       }
     },
     closeTranscript() {
+      this.mobilePanel = null
+      if (this.phonePanelsEnabled) return
       if (this.showTranscript) {
         this.sidebarPanelLeaving = true
       }
@@ -1778,6 +1833,7 @@ export default defineComponent({
       this.$refs.player?.skipSponsorBlockInfoSegment(uuid)
     },
     closeSidebarChapters() {
+      this.mobilePanel = null
       if (this.showSidebarChapters) {
         this.sidebarPanelLeaving = true
       }
