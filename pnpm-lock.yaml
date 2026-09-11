@@ -148,6 +148,12 @@ importers:
       youtubei.js:
         specifier: ^18.0.0
         version: 18.0.0(patch_hash=5939f9d50ce37ef8075961245288956568c781818db04171892485bdf96278e9)
+      quickjs-emscripten-core:
+        specifier: ^0.32.0
+        version: 0.32.0
+      "@jitl/quickjs-wasmfile-release-sync":
+        specifier: ^0.32.0
+        version: 0.32.0
     devDependencies:
       '@babel/core':
         specifier: ^8.0.1
@@ -5751,6 +5757,15 @@ packages:
 
   youtubei.js@18.0.0:
     resolution: {integrity: sha512-7Tztl5QzNL4nIhiAxa4P/0C8cDDsUe0j4iaUeNiaA+ZfSe/l+HkHxXyoWlQXNW7IPi2n6AW23ysVMJLDh+AwWQ==}
+  "@jitl/quickjs-ffi-types@0.32.0":
+    resolution:
+      integrity: sha512-v9T+GQpmk43VDJ7d72sf0Nexhk+ArvtUihW27dy7lqAl0zBObFKtSBBIm5RBjwIhE8VwsPPm9PNuvPvNqLWUEg==
+  "@jitl/quickjs-wasmfile-release-sync@0.32.0":
+    resolution:
+      integrity: sha512-BKNDI/TPBfGlLNGYpLrhcDGXmIk4xHm4MRAisOBnOzpXVn9HZWsfmMAc9WMBrAHjvvds6HOikKeaOBKdPdpVrg==
+  quickjs-emscripten-core@0.32.0:
+    resolution:
+      integrity: sha512-QFnPfjFey8EqknSrSxe1hZrf1/8z7/6s1QzGOmKo6++02r7QRRX7ZoyNaZh7JuVjWsVW87KnQrbZqnHkOAzUyg==
 
 snapshots:
 
@@ -11573,3 +11588,10 @@ snapshots:
       '@bufbuild/protobuf': 2.12.1
       fflate: 0.8.3
       meriyah: 7.3.1
+  "@jitl/quickjs-ffi-types@0.32.0": {}
+  "@jitl/quickjs-wasmfile-release-sync@0.32.0":
+    dependencies:
+      "@jitl/quickjs-ffi-types": 0.32.0
+  quickjs-emscripten-core@0.32.0:
+    dependencies:
+      "@jitl/quickjs-ffi-types": 0.32.0
