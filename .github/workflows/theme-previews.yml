@@ -24,7 +24,7 @@ jobs:
     timeout-minutes: 20
     permissions:
       contents: read
-      discussions: read
+      discussions: write
     env:
       THEME_PREVIEW_DIR: .tmp/theme-preview
       DISCUSSION_NUMBER: ${{ github.event.discussion.number || inputs.discussion }}
@@ -47,6 +47,19 @@ jobs:
 
     - run: pnpm run ci
 
+    - name: Enforce theme description and link limits
+      id: moderation
+      env:
+        # Editing another author's discussion requires the user token.
+        GH_TOKEN: ${{ secrets.PUSH_TOKEN }}
+      run: node _scripts/themePreview.mjs moderate "$THEME_PREVIEW_DIR"
+
+    - name: Notify the author as github-actions[bot]
+      if: steps.moderation.outputs.changed == 'true'
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: gh api graphql --input "$THEME_PREVIEW_DIR/moderation-comment.json"
+
     - name: Check whether previews are needed
       id: request
       env:
@@ -56,6 +69,15 @@ jobs:
     - name: Install Electron
       if: steps.request.outputs.enabled == 'true'
       run: pnpm exec install-electron
+
+    - name: Install live screenshot playback dependencies
+      if: steps.request.outputs.enabled == 'true'
+      run: |
+        sudo apt-get update
+        sudo apt-get install --yes --no-install-recommends ffmpeg
+        pipx install 'yt-dlp[default]'
+        mkdir -p "$HOME/.config/yt-dlp"
+        printf '%s\n' '--js-runtimes node' > "$HOME/.config/yt-dlp/config"
 
     - name: Pack the capture app
       if: steps.request.outputs.enabled == 'true'

@@ -651,6 +651,7 @@ Settings:
     Light Theme: Helles Design
     Dark Theme: Dunkles Design
     Custom Theme:
+      Share Restrictions Prompt: "Beschreibungen dürfen bis zu 500 Zeichen einschließlich Markdown enthalten. Nur auf GitHub gehostete Links und Bilder sind erlaubt, auch direkte Uploads hier. Der Bot entfernt externe Links und Bilder, kürzt zu lange Beschreibungen und erklärt Änderungen in einem Kommentar."
       Import from Clipboard: "Aus Zwischenablage importieren"
       Invalid Clipboard Theme: "Die Zwischenablage enthält kein gültiges Theme. Kopiere den Theme-JSON-Code und versuche es erneut."
       Create Custom Theme: Benutzerdefiniertes Design erstellen
@@ -661,11 +662,8 @@ Settings:
       Import Theme: Design importieren
       Export Theme: Design exportieren
       Share Theme: Design teilen
-      Share Description Heading: Beschreibung
       Share Description Prompt: Beschreibe das Design und was andere vor der Verwendung wissen sollten.
-      Share Screenshots Heading: Screenshots
       Share Screenshots Prompt: "Ziehe einen oder mehrere Screenshots hierher. Lass diesen Abschnitt leer, damit der Bot drei Vorschaubilder mit Beispielinhalten und ohne deine persönlichen Daten hinzufügt."
-      Share Code Summary: Design-JSON
       Delete Theme: Design löschen
       Delete Theme Confirmation: „{name}“ löschen? Dies kann nicht rückgängig gemacht werden.
       Save and Apply: Speichern und anwenden

@@ -532,6 +532,7 @@ Settings:
     Light Theme: Šviesi tema
     Dark Theme: Tamsi tema
     Custom Theme:
+      Share Restrictions Prompt: "Aprašymuose gali būti iki 500 simbolių, įskaitant Markdown. Leidžiamos tik GitHub talpinamos nuorodos ir vaizdai, įskaitant tiesiogiai čia įkeltus failus. Botas pašalina išorines nuorodas ir vaizdus, sutrumpina ilgus aprašymus ir palieka komentarą, paaiškinantį pakeitimus."
       Import from Clipboard: "Importuoti iš iškarpinės"
       Invalid Clipboard Theme: "Iškarpinėje nėra tinkamos temos. Nukopijuokite temos JSON ir bandykite dar kartą."
       Create Custom Theme: Kurti pasirinktinę temą
@@ -542,11 +543,8 @@ Settings:
       Import Theme: Importuoti temą
       Export Theme: Eksportuoti temą
       Share Theme: Bendrinti temą
-      Share Description Heading: Aprašas
       Share Description Prompt: Aprašykite temą ir ką reikėtų žinoti prieš ją naudojant.
-      Share Screenshots Heading: Ekrano kopijos
       Share Screenshots Prompt: "Nuvilkite čia vieną ar daugiau ekrano kopijų. Palikite šį skyrių tuščią, kad robotas pridėtų tris peržiūras su pavyzdiniu turiniu, be jūsų asmens duomenų."
-      Share Code Summary: Temos JSON
       Delete Theme: Ištrinti temą
       Delete Theme Confirmation: Ištrinti „{name}“? Šio veiksmo anuliuoti negalima.
       Save and Apply: Išsaugoti ir pritaikyti

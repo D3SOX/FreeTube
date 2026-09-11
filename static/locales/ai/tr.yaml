@@ -411,6 +411,7 @@ Settings:
     Light Theme: Açık tema
     Dark Theme: Koyu tema
     Custom Theme:
+      Share Restrictions Prompt: "Açıklamalar Markdown dahil en fazla 500 karakter içerebilir. Buraya doğrudan yüklenenler dahil, yalnızca GitHub üzerinde barındırılan bağlantılara ve görsellere izin verilir. Bot harici bağlantıları ve görselleri kaldırır, uzun açıklamaları kısaltır ve değişiklikleri açıklayan bir yorum bırakır."
       Import from Clipboard: "Panodan içe aktar"
       Invalid Clipboard Theme: "Pano geçerli bir tema içermiyor. Temanın JSON kodunu kopyalayıp tekrar deneyin."
       Create Custom Theme: Özel tema oluştur
@@ -421,11 +422,8 @@ Settings:
       Import Theme: Temayı içe aktar
       Export Theme: Temayı dışa aktar
       Share Theme: Temayı paylaş
-      Share Description Heading: Açıklama
       Share Description Prompt: Temayı ve kullanmadan önce bilinmesi gerekenleri açıklayın.
-      Share Screenshots Heading: Ekran görüntüleri
       Share Screenshots Prompt: "Bir veya daha fazla ekran görüntüsünü buraya sürükleyip bırakın. Botun kişisel verilerinizi kullanmadan örnek içerikle üç önizleme eklemesi için bu bölümü boş bırakın."
-      Share Code Summary: Tema JSON'u
       Delete Theme: Temayı sil
       Delete Theme Confirmation: '“{name}” silinsin mi? Bu işlem geri alınamaz.'
       Save and Apply: Kaydet ve uygula

@@ -411,6 +411,7 @@ Settings:
     Light Theme: Hele teema
     Dark Theme: Tume teema
     Custom Theme:
+      Share Restrictions Prompt: "Kirjeldus võib sisaldada kuni 500 märki, sealhulgas Markdowni. Lubatud on ainult GitHubis majutatud lingid ja pildid, sealhulgas otse siia üles laaditud failid. Bot eemaldab välised lingid ja pildid, lühendab pikki kirjeldusi ning jätab muudatusi selgitava kommentaari."
       Import from Clipboard: "Impordi lõikelaualt"
       Invalid Clipboard Theme: "Lõikelaual pole kehtivat teemat. Kopeeri teema JSON ja proovi uuesti."
       Create Custom Theme: Loo kohandatud teema
@@ -421,11 +422,8 @@ Settings:
       Import Theme: Impordi teema
       Export Theme: Ekspordi teema
       Share Theme: Jaga teemat
-      Share Description Heading: Kirjeldus
       Share Description Prompt: Kirjelda teemat ja lisa kõik, mida peaks enne selle kasutamist teadma.
-      Share Screenshots Heading: Kuvatõmmised
       Share Screenshots Prompt: "Lohista siia vähemalt üks kuvatõmmis. Jäta see jaotis tühjaks, et bot lisaks kolm eelvaadet näidissisuga, ilma sinu isikuandmeteta."
-      Share Code Summary: Teema JSON
       Delete Theme: Kustuta teema
       Delete Theme Confirmation: Kas kustutada „{name}”? Seda ei saa tagasi võtta.
       Save and Apply: Salvesta ja rakenda

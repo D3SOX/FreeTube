@@ -411,6 +411,7 @@ Settings:
     Light Theme: Světlý motiv
     Dark Theme: Tmavý motiv
     Custom Theme:
+      Share Restrictions Prompt: "Popisy mohou obsahovat nejvýše 500 znaků včetně Markdownu. Povoleny jsou pouze odkazy a obrázky hostované na GitHubu, včetně souborů nahraných přímo sem. Bot odstraňuje externí odkazy a obrázky, zkracuje dlouhé popisy a zanechává komentář vysvětlující změny."
       Import from Clipboard: "Importovat ze schránky"
       Invalid Clipboard Theme: "Schránka neobsahuje platný motiv. Zkopírujte JSON motivu a zkuste to znovu."
       Create Custom Theme: Vytvořit vlastní motiv
@@ -421,11 +422,8 @@ Settings:
       Import Theme: Importovat motiv
       Export Theme: Exportovat motiv
       Share Theme: Sdílet motiv
-      Share Description Heading: Popis
       Share Description Prompt: Popište motiv a uveďte vše, co by měli ostatní před jeho použitím vědět.
-      Share Screenshots Heading: Snímky obrazovky
       Share Screenshots Prompt: "Přetáhněte sem jeden nebo více snímků obrazovky. Nechte tuto sekci prázdnou a bot přidá tři náhledy s ukázkovým obsahem bez vašich osobních údajů."
-      Share Code Summary: JSON motivu
       Delete Theme: Smazat motiv
       Delete Theme Confirmation: Smazat „{name}“? Tuto akci nelze vrátit zpět.
       Save and Apply: Uložit a použít

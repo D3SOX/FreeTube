@@ -413,6 +413,7 @@ Settings:
     Light Theme: Gai argia
     Dark Theme: Gai iluna
     Custom Theme:
+      Share Restrictions Prompt: "Deskribapenek gehienez 500 karaktere izan ditzakete, Markdown barne. GitHuben ostatatutako estekak eta irudiak soilik onartzen dira, hemen zuzenean igotakoak barne. Botak kanpoko estekak eta irudiak kentzen ditu, deskribapen luzeak laburtzen ditu eta aldaketak azaltzen dituen iruzkina uzten du."
       Import from Clipboard: "Inportatu arbeletik"
       Invalid Clipboard Theme: "Arbelak ez du baliozko gairik. Kopiatu gaiaren JSONa eta saiatu berriro."
       Create Custom Theme: Sortu gai pertsonalizatua
@@ -423,11 +424,8 @@ Settings:
       Import Theme: Inportatu gaia
       Export Theme: Esportatu gaia
       Share Theme: Partekatu gaia
-      Share Description Heading: Deskribapena
       Share Description Prompt: Deskribatu gaia eta erabiltzen hasi aurretik jakin beharrekoak.
-      Share Screenshots Heading: Pantaila-argazkiak
       Share Screenshots Prompt: "Arrastatu eta jaregin pantaila-argazki bat edo gehiago hemen. Utzi atal hau hutsik botak adibidezko edukia duten hiru aurrebista gehitzeko, zure datu pertsonalik gabe."
-      Share Code Summary: Gaiaren JSONa
       Delete Theme: Ezabatu gaia
       Delete Theme Confirmation: “{name}” ezabatu? Ekintza hau ezin da desegin.
       Save and Apply: Gorde eta aplikatu

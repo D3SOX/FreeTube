@@ -415,6 +415,7 @@ Settings:
     Light Theme: Ljóst þema
     Dark Theme: Dökkt þema
     Custom Theme:
+      Share Restrictions Prompt: "Lýsingar mega innihalda allt að 500 stafi, að Markdown meðtöldu. Aðeins tenglar og myndir sem eru hýst á GitHub eru leyfð, þar á meðal skrár sem er hlaðið beint upp hér. Botninn fjarlægir ytri tengla og myndir, styttir langar lýsingar og skilur eftir athugasemd sem útskýrir breytingarnar."
       Import from Clipboard: "Flytja inn af klippispjaldi"
       Invalid Clipboard Theme: "Klippispjaldið inniheldur ekki gilt þema. Afritaðu JSON þemans og reyndu aftur."
       Create Custom Theme: Búa til sérsniðið þema
@@ -425,11 +426,8 @@ Settings:
       Import Theme: Flytja inn þema
       Export Theme: Flytja út þema
       Share Theme: Deila þema
-      Share Description Heading: Lýsing
       Share Description Prompt: Lýstu þemanu og því sem fólk þarf að vita áður en það notar það.
-      Share Screenshots Heading: Skjámyndir
       Share Screenshots Prompt: "Dragðu eina eða fleiri skjámyndir hingað og slepptu þeim. Skildu þennan hluta eftir auðan svo botninn bæti við þremur forsýningum með sýniefni, án persónuupplýsinga þinna."
-      Share Code Summary: JSON-gögn þema
       Delete Theme: Eyða þema
       Delete Theme Confirmation: Eyða „{name}“? Ekki er hægt að afturkalla þetta.
       Save and Apply: Vista og nota

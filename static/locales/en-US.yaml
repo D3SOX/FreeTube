@@ -733,6 +733,7 @@ Settings:
     Light Theme: Light theme
     Dark Theme: Dark theme
     Custom Theme:
+      Share Restrictions Prompt: "Descriptions may contain up to 500 characters, including Markdown. Only GitHub-hosted links and images are allowed, including direct uploads here. The bot removes external links and images, shortens long descriptions, and leaves a comment explaining any changes."
       Import from Clipboard: "Import from clipboard"
       Invalid Clipboard Theme: "Clipboard does not contain a valid theme. Copy the theme JSON and try again."
       Create Custom Theme: Create custom theme
@@ -743,11 +744,8 @@ Settings:
       Import Theme: Import theme
       Export Theme: Export theme
       Share Theme: Share theme
-      Share Description Heading: Description
       Share Description Prompt: Describe the theme and anything people should know before using it.
-      Share Screenshots Heading: Screenshots
       Share Screenshots Prompt: "Drag and drop one or more screenshots here. Leave this section empty for the bot to add three previews using sample content, without your personal data."
-      Share Code Summary: Theme JSON
       Delete Theme: Delete theme
       Delete Theme Confirmation: Delete “{name}”? This cannot be undone.
       Save and Apply: Save and apply

@@ -415,6 +415,7 @@ Settings:
     Light Theme: سمة فاتحة
     Dark Theme: سمة داكنة
     Custom Theme:
+      Share Restrictions Prompt: "يمكن أن تحتوي الأوصاف على 500 حرف كحد أقصى، بما في ذلك Markdown. يُسمح فقط بالروابط والصور المستضافة على GitHub، بما في ذلك الملفات المرفوعة مباشرة هنا. يزيل الروبوت الروابط والصور الخارجية، ويختصر الأوصاف الطويلة، ويترك تعليقًا يوضح أي تغييرات."
       Import from Clipboard: "استيراد من الحافظة"
       Invalid Clipboard Theme: "لا تحتوي الحافظة على سمة صالحة. انسخ JSON السمة وحاول مجددًا."
       Create Custom Theme: إنشاء موضوع مخصص
@@ -425,11 +426,8 @@ Settings:
       Import Theme: استيراد الموضوع
       Export Theme: تصدير السمة
       Share Theme: مشاركة الموضوع
-      Share Description Heading: وصف
       Share Description Prompt: قم بوصف الموضوع وأي شيء يجب أن يعرفه الأشخاص قبل استخدامه.
-      Share Screenshots Heading: لقطات الشاشة
       Share Screenshots Prompt: "قم بسحب وإسقاط لقطة شاشة واحدة أو أكثر هنا. اترك هذا القسم فارغًا ليضيف البوت ثلاث معاينات باستخدام محتوى تجريبي، دون بياناتك الشخصية."
-      Share Code Summary: رمز JSON للسمة
       Delete Theme: حذف الموضوع
       Delete Theme Confirmation: هل تريد حذف "{name}"؟ لا يمكن التراجع عن هذا.
       Save and Apply: حفظ وتطبيق

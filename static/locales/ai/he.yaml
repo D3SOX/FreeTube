@@ -415,6 +415,7 @@ Settings:
     Light Theme: ערכת נושא בהירה
     Dark Theme: ערכת נושא כהה
     Custom Theme:
+      Share Restrictions Prompt: "תיאורים יכולים להכיל עד 500 תווים, כולל Markdown. מותר להשתמש רק בקישורים ובתמונות המאוחסנים ב-GitHub, כולל העלאות ישירות כאן. הבוט מסיר קישורים ותמונות חיצוניים, מקצר תיאורים ארוכים ומשאיר תגובה שמסבירה את השינויים."
       Import from Clipboard: "ייבוא מהלוח"
       Invalid Clipboard Theme: "הלוח אינו מכיל ערכת נושא תקינה. יש להעתיק את ה־JSON של ערכת הנושא ולנסות שוב."
       Create Custom Theme: יצירת ערכת נושא מותאמת אישית
@@ -425,11 +426,8 @@ Settings:
       Import Theme: ייבוא ערכת נושא
       Export Theme: ייצוא ערכת נושא
       Share Theme: שיתוף ערכת נושא
-      Share Description Heading: תיאור
       Share Description Prompt: תארו את ערכת הנושא וכל מה שכדאי לדעת לפני השימוש בה.
-      Share Screenshots Heading: צילומי מסך
       Share Screenshots Prompt: "גררו לכאן צילום מסך אחד או יותר. השאירו את החלק הזה ריק כדי שהבוט יוסיף שלוש תצוגות מקדימות עם תוכן לדוגמה, ללא הנתונים האישיים שלכם."
-      Share Code Summary: JSON של ערכת הנושא
       Delete Theme: מחיקת ערכת נושא
       Delete Theme Confirmation: למחוק את “{name}”? לא ניתן לבטל פעולה זו.
       Save and Apply: שמירה והחלה

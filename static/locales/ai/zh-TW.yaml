@@ -411,6 +411,7 @@ Settings:
     Light Theme: 淺色主題
     Dark Theme: 深色主題
     Custom Theme:
+      Share Restrictions Prompt: "描述最多可包含500個字元，包括Markdown標記。僅允許使用託管在GitHub上的連結和圖片，也可以直接在此上傳。機器人會移除外部連結和圖片、縮短過長的描述，並發表留言說明變更。"
       Import from Clipboard: "從剪貼簿匯入"
       Invalid Clipboard Theme: "剪貼簿中沒有有效的佈景主題。請複製佈景主題 JSON 後再試一次。"
       Create Custom Theme: 建立自訂主題
@@ -421,11 +422,8 @@ Settings:
       Import Theme: 匯入主題
       Export Theme: 匯出主題
       Share Theme: 分享主題
-      Share Description Heading: 說明
       Share Description Prompt: 請說明此主題，以及使用前應注意的事項。
-      Share Screenshots Heading: 螢幕截圖
       Share Screenshots Prompt: "將一張或多張螢幕截圖拖放到這裡。 將此部分留空，機器人會使用範例內容新增三張預覽圖，不會使用你的個人資料。"
-      Share Code Summary: 主題 JSON
       Delete Theme: 刪除主題
       Delete Theme Confirmation: 要刪除「{name}」嗎？此動作無法復原。
       Save and Apply: 儲存並套用

@@ -415,6 +415,7 @@ Settings:
     Light Theme: Tema terang
     Dark Theme: Tema gelap
     Custom Theme:
+      Share Restrictions Prompt: "Deskripsi boleh berisi hingga 500 karakter, termasuk Markdown. Hanya tautan dan gambar yang dihosting di GitHub yang diizinkan, termasuk unggahan langsung di sini. Bot menghapus tautan dan gambar eksternal, mempersingkat deskripsi panjang, dan meninggalkan komentar yang menjelaskan perubahan."
       Import from Clipboard: "Impor dari papan klip"
       Invalid Clipboard Theme: "Papan klip tidak berisi tema yang valid. Salin JSON tema dan coba lagi."
       Create Custom Theme: Buat tema khusus
@@ -425,11 +426,8 @@ Settings:
       Import Theme: Impor tema
       Export Theme: Ekspor tema
       Share Theme: Bagikan tema
-      Share Description Heading: Deskripsi
       Share Description Prompt: Jelaskan tema dan hal yang perlu diketahui sebelum menggunakannya.
-      Share Screenshots Heading: Tangkapan layar
       Share Screenshots Prompt: "Seret dan lepas satu atau beberapa tangkapan layar di sini. Biarkan bagian ini kosong agar bot menambahkan tiga pratinjau dengan konten contoh, tanpa data pribadi Anda."
-      Share Code Summary: JSON tema
       Delete Theme: Hapus tema
       Delete Theme Confirmation: Hapus “{name}”? Tindakan ini tidak dapat dibatalkan.
       Save and Apply: Simpan dan terapkan

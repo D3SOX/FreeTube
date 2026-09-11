@@ -414,6 +414,7 @@ Settings:
     Light Theme: زمینهٔ روشن
     Dark Theme: زمینهٔ تیره
     Custom Theme:
+      Share Restrictions Prompt: "توضیحات می‌توانند حداکثر 500 نویسه، با احتساب Markdown، داشته باشند. فقط پیوندها و تصاویر میزبانی‌شده در GitHub مجاز هستند، از جمله بارگذاری مستقیم در اینجا. ربات پیوندها و تصاویر خارجی را حذف می‌کند، توضیحات طولانی را کوتاه می‌کند و تغییرات را در یک نظر توضیح می‌دهد."
       Import from Clipboard: "درون‌ریزی از کلیپ‌بورد"
       Invalid Clipboard Theme: "کلیپ‌بورد حاوی زمینهٔ معتبری نیست. JSON زمینه را کپی کنید و دوباره تلاش کنید."
       Create Custom Theme: ساخت زمینهٔ سفارشی
@@ -424,11 +425,8 @@ Settings:
       Import Theme: درون‌ریزی زمینه
       Export Theme: برون‌ریزی زمینه
       Share Theme: هم‌رسانی زمینه
-      Share Description Heading: توضیحات
       Share Description Prompt: زمینه و هر نکته‌ای را که باید پیش از استفاده از آن دانست، شرح دهید.
-      Share Screenshots Heading: نماگرفت‌ها
       Share Screenshots Prompt: "یک یا چند نماگرفت را اینجا بکشید و رها کنید. این بخش را خالی بگذارید تا ربات سه پیش‌نمایش با محتوای نمونه و بدون اطلاعات شخصی شما اضافه کند."
-      Share Code Summary: JSON زمینه
       Delete Theme: حذف زمینه
       Delete Theme Confirmation: زمینهٔ “{name}” حذف شود؟ این کار برگشت‌پذیر نیست.
       Save and Apply: ذخیره و اعمال

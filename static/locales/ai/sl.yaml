@@ -541,6 +541,7 @@ Settings:
     Light Theme: Svetla tema
     Dark Theme: Temna tema
     Custom Theme:
+      Share Restrictions Prompt: "Opisi lahko vsebujejo do 500 znakov, vključno z Markdownom. Dovoljene so le povezave in slike, gostovane na GitHubu, vključno z datotekami, naloženimi neposredno sem. Bot odstrani zunanje povezave in slike, skrajša dolge opise ter pusti komentar z razlago sprememb."
       Import from Clipboard: "Uvozi iz odložišča"
       Invalid Clipboard Theme: "Odložišče ne vsebuje veljavne teme. Kopirajte JSON teme in poskusite znova."
       Create Custom Theme: Ustvari temo po meri
@@ -551,11 +552,8 @@ Settings:
       Import Theme: Uvozi temo
       Export Theme: Izvozi temo
       Share Theme: Deli temo
-      Share Description Heading: Opis
       Share Description Prompt: Opišite temo in navedite vse, kar morajo uporabniki vedeti pred uporabo.
-      Share Screenshots Heading: Posnetki zaslona
       Share Screenshots Prompt: "Sem povlecite enega ali več posnetkov zaslona. Pustite ta razdelek prazen, da bo bot dodal tri predoglede z vzorčno vsebino, brez vaših osebnih podatkov."
-      Share Code Summary: JSON teme
       Delete Theme: Izbriši temo
       Delete Theme Confirmation: Izbrisati »{name}«? Tega ni mogoče razveljaviti.
       Save and Apply: Shrani in uporabi

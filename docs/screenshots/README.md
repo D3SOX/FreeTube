@@ -39,8 +39,9 @@ that attempt and a failure screenshot are kept in `e2e/results/screenshots/`.
 Review the images before committing them. Video lists and metadata can change
 between runs.
 
-The capture sequence, channel, video, timestamp, and dimensions live in
-`e2e/screenshots/capture.spec.mjs`. If you already packed the current source,
+The capture sequence lives in `e2e/screenshots/capture.spec.mjs`. The channel,
+video, timestamp, and dimensions live in `e2e/helpers/screenshots.mjs`, shared
+with the automatic theme discussion previews. If you already packed the current source,
 run `node _scripts/screenshots.mjs` to repeat the capture without repacking.
 The regular E2E suites do not update these files.
 

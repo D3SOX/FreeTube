@@ -413,6 +413,7 @@ Settings:
     Light Theme: Thema olau
     Dark Theme: Thema dywyll
     Custom Theme:
+      Share Restrictions Prompt: "Gall disgrifiadau gynnwys hyd at 500 nod, gan gynnwys Markdown. Dim ond dolenni a delweddau a gynhelir ar GitHub a ganiateir, gan gynnwys uwchlwythiadau uniongyrchol yma. Mae’r bot yn dileu dolenni a delweddau allanol, yn byrhau disgrifiadau hir, ac yn gadael sylw yn esbonio unrhyw newidiadau."
       Import from Clipboard: "Mewnforio o’r clipfwrdd"
       Invalid Clipboard Theme: "Nid yw’r clipfwrdd yn cynnwys thema ddilys. Copïwch JSON y thema a rhowch gynnig arall arni."
       Create Custom Theme: Creu thema bersonol
@@ -423,11 +424,8 @@ Settings:
       Import Theme: Mewnforio thema
       Export Theme: Allforio thema
       Share Theme: Rhannu thema
-      Share Description Heading: Disgrifiad
       Share Description Prompt: Disgrifiwch y thema ac unrhyw beth y dylai pobl ei wybod cyn ei defnyddio.
-      Share Screenshots Heading: Lluniau sgrin
       Share Screenshots Prompt: "Llusgwch a gollwng un neu ragor o luniau sgrin yma. Gadewch yr adran hon yn wag i'r bot ychwanegu tri rhagolwg gan ddefnyddio cynnwys enghreifftiol, heb eich data personol."
-      Share Code Summary: JSON y thema
       Delete Theme: Dileu thema
       Delete Theme Confirmation: 'Dileu "{name}"? Nid oes modd dadwneud hyn.'
       Save and Apply: Cadw a gosod

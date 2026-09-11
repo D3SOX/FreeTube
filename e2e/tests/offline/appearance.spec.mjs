@@ -731,6 +731,7 @@ test.describe('custom theme editor', () => {
 
     const body = discussionUrl.searchParams.get('body')
     expect(body).toContain('## Description')
+    expect(body).toContain('Descriptions may contain up to 500 characters, including Markdown. Only GitHub-hosted links and images are allowed, including direct uploads here. The bot removes external links and images, shortens long descriptions, and leaves a comment explaining any changes.')
     expect(body).toContain('## Screenshots')
     expect(body).toContain('Leave this section empty for the bot to add three previews using sample content, without your personal data.')
     expect(body).toContain('<!-- theme-screenshots:start -->')
@@ -744,6 +745,21 @@ test.describe('custom theme editor', () => {
       name: 'Aurora & Night',
       basedOn: 'dark'
     })
+
+    await page.evaluate(async () => {
+      const store = document.querySelector('#app').__vue_app__.config.globalProperties.$store
+      await store.dispatch('updateCurrentLocale', 'de-DE')
+    })
+    await page.getByRole('button', { name: 'Design teilen', exact: true }).click()
+    await expect.poll(() => app.electronApp.evaluate(() => globalThis.openedThemeDiscussionUrl)).not.toBe(openedUrl)
+    const germanUrl = new URL(await app.electronApp.evaluate(() => globalThis.openedThemeDiscussionUrl))
+    const germanBody = germanUrl.searchParams.get('body')
+    expect(germanBody).toContain('## Description')
+    expect(germanBody).toContain('## Screenshots')
+    expect(germanBody).toContain('<summary>Theme JSON</summary>')
+    expect(germanBody).toContain('<!-- Beschreibe das Design')
+    expect(germanBody).toContain('<!-- Beschreibungen dürfen bis zu 500 Zeichen einschließlich Markdown enthalten.')
+    expect(germanBody).toContain('<!-- Ziehe einen oder mehrere Screenshots hierher.')
   })
 
   test('copies built-in themes, previews efficiently, persists, and survives closing settings', async ({ app, page }) => {

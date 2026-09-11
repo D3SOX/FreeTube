@@ -551,6 +551,7 @@ Settings:
     Light Theme: Tema clar
     Dark Theme: Tema fosc
     Custom Theme:
+      Share Restrictions Prompt: "Les descripcions poden contenir fins a 500 caràcters, inclòs el Markdown. Només es permeten enllaços i imatges allotjats a GitHub, incloses les càrregues directes aquí. El bot elimina els enllaços i les imatges externs, escurça les descripcions llargues i deixa un comentari explicant els canvis."
       Import from Clipboard: "Importa del porta-retalls"
       Invalid Clipboard Theme: "El porta-retalls no conté cap tema vàlid. Copieu el JSON del tema i torneu-ho a provar."
       Create Custom Theme: Crea un tema personalitzat
@@ -561,11 +562,8 @@ Settings:
       Import Theme: Importa un tema
       Export Theme: Exporta el tema
       Share Theme: Comparteix el tema
-      Share Description Heading: Descripció
       Share Description Prompt: Descriviu el tema i tot allò que calgui saber abans d'utilitzar-lo.
-      Share Screenshots Heading: Captures de pantalla
       Share Screenshots Prompt: "Arrossegueu i deixeu anar aquí una o més captures de pantalla. Deixeu aquesta secció buida perquè el bot hi afegeixi tres previsualitzacions amb contingut de mostra, sense les vostres dades personals."
-      Share Code Summary: JSON del tema
       Delete Theme: Suprimeix el tema
       Delete Theme Confirmation: Voleu suprimir «{name}»? Aquesta acció no es pot desfer.
       Save and Apply: Desa i aplica

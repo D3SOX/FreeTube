@@ -619,18 +619,19 @@ async function shareTheme() {
     )
     const codeFence = '`'.repeat(longestBacktickRun + 1)
     const body = [
-      `## ${t('Settings.Theme Settings.Custom Theme.Share Description Heading')}`,
+      '## Description',
       '',
       `<!-- ${t('Settings.Theme Settings.Custom Theme.Share Description Prompt')} -->`,
+      `<!-- ${t('Settings.Theme Settings.Custom Theme.Share Restrictions Prompt')} -->`,
       '',
-      `## ${t('Settings.Theme Settings.Custom Theme.Share Screenshots Heading')}`,
+      '## Screenshots',
       '',
       '<!-- theme-screenshots:start -->',
       `<!-- ${t('Settings.Theme Settings.Custom Theme.Share Screenshots Prompt')} -->`,
       '<!-- theme-screenshots:end -->',
       '',
       '<details>',
-      `<summary>${t('Settings.Theme Settings.Custom Theme.Share Code Summary')}</summary>`,
+      '<summary>Theme JSON</summary>',
       '',
       `${codeFence}json`,
       themeJson,

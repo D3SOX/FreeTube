@@ -413,6 +413,7 @@ Settings:
     Light Theme: Ljust tema
     Dark Theme: Mörkt tema
     Custom Theme:
+      Share Restrictions Prompt: "Beskrivningar får innehålla högst 500 tecken, inklusive Markdown. Endast länkar och bilder som finns på GitHub tillåts, även direkta uppladdningar här. Boten tar bort externa länkar och bilder, kortar ned långa beskrivningar och lämnar en kommentar som förklarar ändringarna."
       Import from Clipboard: "Importera från urklipp"
       Invalid Clipboard Theme: "Urklipp innehåller inget giltigt tema. Kopiera temats JSON och försök igen."
       Create Custom Theme: Skapa eget tema
@@ -423,11 +424,8 @@ Settings:
       Import Theme: Importera tema
       Export Theme: Exportera tema
       Share Theme: Dela tema
-      Share Description Heading: Beskrivning
       Share Description Prompt: Beskriv temat och vad användare bör känna till innan de använder det.
-      Share Screenshots Heading: Skärmbilder
       Share Screenshots Prompt: "Dra och släpp en eller flera skärmbilder här. Lämna det här avsnittet tomt så lägger boten till tre förhandsvisningar med exempelinnehåll, utan dina personuppgifter."
-      Share Code Summary: Tema-JSON
       Delete Theme: Ta bort tema
       Delete Theme Confirmation: Ta bort "{name}"? Det går inte att ångra.
       Save and Apply: Spara och tillämpa

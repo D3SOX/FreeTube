@@ -411,6 +411,7 @@ Settings:
     Light Theme: Thème clair
     Dark Theme: Thème sombre
     Custom Theme:
+      Share Restrictions Prompt: "Les descriptions peuvent contenir jusqu’à 500 caractères, Markdown compris. Seuls les liens et images hébergés sur GitHub sont autorisés, y compris les fichiers envoyés directement ici. Le bot supprime les liens et images externes, raccourcit les descriptions trop longues et laisse un commentaire expliquant les modifications."
       Import from Clipboard: "Importer depuis le presse-papiers"
       Invalid Clipboard Theme: "Le presse-papiers ne contient pas de thème valide. Copiez le JSON du thème et réessayez."
       Create Custom Theme: Créer un thème personnalisé
@@ -421,11 +422,8 @@ Settings:
       Import Theme: Importer un thème
       Export Theme: Exporter le thème
       Share Theme: Partager le thème
-      Share Description Heading: Description
       Share Description Prompt: Décrivez le thème et tout ce qu’il faut savoir avant de l’utiliser.
-      Share Screenshots Heading: Captures d’écran
       Share Screenshots Prompt: "Glissez-déposez une ou plusieurs captures d’écran ici. Laissez cette section vide pour que le bot ajoute trois aperçus avec du contenu d’exemple, sans vos données personnelles."
-      Share Code Summary: JSON du thème
       Delete Theme: Supprimer le thème
       Delete Theme Confirmation: Supprimer « {name} » ? Cette action est irréversible.
       Save and Apply: Enregistrer et appliquer

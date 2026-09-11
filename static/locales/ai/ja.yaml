@@ -411,6 +411,7 @@ Settings:
     Light Theme: ライトテーマ
     Dark Theme: ダークテーマ
     Custom Theme:
+      Share Restrictions Prompt: "説明はMarkdownを含めて500文字以内にしてください。リンクと画像はGitHubでホストされているもののみ使用でき、ここへの直接アップロードも可能です。ボットは外部リンクと画像を削除し、長すぎる説明を短縮して、変更内容をコメントで通知します。"
       Import from Clipboard: "クリップボードからインポート"
       Invalid Clipboard Theme: "クリップボードに有効なテーマがありません。テーマのJSONをコピーして、もう一度お試しください。"
       Create Custom Theme: カスタムテーマを作成
@@ -421,11 +422,8 @@ Settings:
       Import Theme: テーマをインポート
       Export Theme: テーマをエクスポート
       Share Theme: テーマを共有
-      Share Description Heading: 説明
       Share Description Prompt: テーマの説明と、使用前に知っておくべきことを入力してください。
-      Share Screenshots Heading: スクリーンショット
       Share Screenshots Prompt: "1枚以上のスクリーンショットをここにドラッグ＆ドロップしてください。 このセクションを空欄にすると、ボットが個人データを使わず、サンプルコンテンツで3枚のプレビューを追加します。"
-      Share Code Summary: テーマJSON
       Delete Theme: テーマを削除
       Delete Theme Confirmation: 「{name}」を削除しますか？この操作は元に戻せません。
       Save and Apply: 保存して適用

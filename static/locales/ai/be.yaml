@@ -414,6 +414,7 @@ Settings:
     Light Theme: Светлая тэма
     Dark Theme: Цёмная тэма
     Custom Theme:
+      Share Restrictions Prompt: "Апісанні могуць змяшчаць да 500 сімвалаў, уключаючы Markdown. Дазволены толькі спасылкі і выявы, размешчаныя на GitHub, у тым ліку загружаныя непасрэдна тут. Бот выдаляе знешнія спасылкі і выявы, скарачае доўгія апісанні і тлумачыць змены ў каментарыі."
       Import from Clipboard: "Імпартаваць з буфера абмену"
       Invalid Clipboard Theme: "Буфер абмену не змяшчае сапраўднай тэмы. Скапіруйце JSON тэмы і паўтарыце спробу."
       Create Custom Theme: Стварыць карыстальніцкую тэму
@@ -424,11 +425,8 @@ Settings:
       Import Theme: Імпартаваць тэму
       Export Theme: Экспартаваць тэму
       Share Theme: Падзяліцца тэмай
-      Share Description Heading: Апісанне
       Share Description Prompt: Апішыце тэму і ўсё, што варта ведаць перад яе выкарыстаннем.
-      Share Screenshots Heading: Здымкі экрана
       Share Screenshots Prompt: "Перацягніце сюды адзін або некалькі здымкаў экрана. Пакіньце гэты раздзел пустым, каб бот дадаў тры выявы папярэдняга прагляду з прыкладам змесціва без вашых асабістых даных."
-      Share Code Summary: JSON тэмы
       Delete Theme: Выдаліць тэму
       Delete Theme Confirmation: Выдаліць «{name}»? Гэта дзеянне нельга скасаваць.
       Save and Apply: Захаваць і ўжыць
