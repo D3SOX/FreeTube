@@ -48,8 +48,11 @@ export function createAndroidNativeScreen({ element, container, getController, g
     endGesture()
     const sequence = ++transitionSequence
     const { from, to, duration } = event.detail
-    transitioning = true
     container.toggleAttribute('data-native-player-transition', true)
+    // Flush the hidden overlays' exclusions before native animation freezes
+    // layout updates and raises the video above the WebView.
+    syncLayout()
+    transitioning = true
     // The native animator owns the moving video. Keep the WebView at the
     // destination, ready for the handoff once its final clip has been drawn.
     syncInlineBackground(false)
@@ -233,7 +236,10 @@ export function createAndroidNativeScreen({ element, container, getController, g
     }
     const appChrome = open ? [] : appChromeElements
     const globalMenus = open ? [] : globalMenuElements.filter(menu => !container.contains(menu))
+    // Hidden notices retain their layout box during native scrolling/gestures.
+    // Clipping that box would punch through the raised video into the page.
     const menuElements = [...playerMenus, ...countdowns, ...globalMenus, ...appChrome]
+      .filter(menu => menu.checkVisibility?.({ checkOpacity: true, checkVisibilityCSS: true }) !== false)
     const pageScroll = followsPageScroll()
     const nativeY = y => pageScroll ? Math.round((y + window.scrollY) * 1000) / 1000 : y
     const menus = menuElements.map(menu => {
