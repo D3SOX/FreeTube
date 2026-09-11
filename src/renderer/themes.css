@@ -7,7 +7,7 @@ body {
   background-image: var(--bg-image);
   background-attachment: fixed;
 
-  --app-font-family: 'Roboto', system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  --app-font-family: 'Geist Variable', system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   --ui-roundness: 1;
 
   /* Optional decorative layers, separate from colors used by contrast checks

@@ -2488,7 +2488,7 @@ test.describe('settings', () => {
     expect(tooltipBounds.y).toBeGreaterThanOrEqual(7)
     expect(tooltipBounds.x + tooltipBounds.width).toBeLessThanOrEqual(viewport.width - 7)
     expect(tooltipBounds.y + tooltipBounds.height).toBeLessThanOrEqual(viewport.height - 7)
-    expect(fontFamily).toContain('Roboto')
+    expect(fontFamily).toContain('Geist')
   })
 
   test('keeps an open help tooltip aligned and visible in fullscreen', async ({ page }) => {
@@ -2589,7 +2589,7 @@ test.describe('settings', () => {
       }
     })
 
-    expect(appearance.fontFamily).toContain('Roboto')
+    expect(appearance.fontFamily).toContain('Geist')
     expect(appearance.cursor).toBe('default')
     expect(appearance.menuTop).toBeGreaterThanOrEqual(appearance.chromeBottom)
 

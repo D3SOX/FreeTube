@@ -513,18 +513,20 @@ let systemFontsPromise = null
 const appFont = computed(() => normalizeAppFont(store.getters.getAppFont))
 const fontValues = computed(() => [
   DEFAULT_APP_FONT,
+  'Roboto',
   SYSTEM_APP_FONT,
   ...[...new Set([
     ...IS_CAPACITOR ? [] : [appFont.value],
     ...systemFonts.value
   ])]
-    .filter(font => font !== DEFAULT_APP_FONT && font !== SYSTEM_APP_FONT)
+    .filter(font => font !== DEFAULT_APP_FONT && font !== 'Roboto' && font !== SYSTEM_APP_FONT)
     .toSorted(new Intl.Collator([locale.value, 'en'], { sensitivity: 'base' }).compare)
 ])
 const fontNames = computed(() => [
-  DEFAULT_APP_FONT,
+  'Geist',
+  'Roboto',
   t('Settings.Theme Settings.Font.System Default'),
-  ...fontValues.value.slice(2)
+  ...fontValues.value.slice(3)
 ])
 
 function updateAppFont(value) {

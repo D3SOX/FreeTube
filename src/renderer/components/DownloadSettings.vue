@@ -181,6 +181,18 @@ async function chooseDownloadFolder() {
   margin-block-start: 16px;
 }
 
+.downloadQueueInputs :deep(.ft-input-component) {
+  margin-block-start: 30px;
+}
+
+.downloadQueueInputs :deep(.selectLabel) {
+  position: absolute;
+  inset-block-start: -20px;
+  inset-inline-start: 0;
+  font-size: 14px;
+  line-height: 1;
+}
+
 .downloadQueueInputs :deep(.select.containsTooltip) {
   margin-inline-end: 0;
 }

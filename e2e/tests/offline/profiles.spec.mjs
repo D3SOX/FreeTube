@@ -378,6 +378,23 @@ test.describe('profile manager', () => {
       buffer: Buffer.from('<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="currentColor"/></svg>')
     })
     await expect(page.getByRole('heading', { name: 'Crop Image' })).toBeVisible()
+    const zoom = page.locator('.cropZoom').getByRole('slider')
+    const zoomLabel = page.locator('.cropZoom .label')
+    await zoomLabel.evaluate(element => Promise.all(
+      element.closest('.promptCard').getAnimations().map(animation => animation.finished)
+    ))
+    for (const scale of [1, 0.95]) {
+      await page.evaluate(value => window.ftElectron.setZoomFactor(value), scale)
+      await zoom.fill('1')
+      const initialWidth = (await zoomLabel.boundingBox()).width
+      for (const value of ['1.01', '2.5', '4', '1']) {
+        await zoom.fill(value)
+        await expect.poll(async () => (await zoomLabel.boundingBox()).width)
+          .toBeCloseTo(initialWidth, 0)
+        await expect(zoomLabel).toContainText(Number(value).toFixed(2))
+      }
+    }
+    await page.evaluate(() => window.ftElectron.setZoomFactor(1))
     await page.getByRole('button', { name: 'Apply Crop' }).click()
 
     const preview = page.locator('.profilePreviewIcon')

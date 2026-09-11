@@ -723,7 +723,10 @@ onBeforeUnmount(() => {
 
 .darkThemeControl {
   flex: 0 0 auto;
-  padding-block-start: 31px;
+  display: flex;
+  align-items: center;
+  block-size: 45px;
+  padding-block-start: 30px;
 }
 
 .themeNameField input {

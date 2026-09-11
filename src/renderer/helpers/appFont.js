@@ -1,4 +1,4 @@
-export const DEFAULT_APP_FONT = 'Roboto'
+export const DEFAULT_APP_FONT = 'Geist Variable'
 export const SYSTEM_APP_FONT = 'system'
 
 const APP_FONT_FALLBACKS = "system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'"

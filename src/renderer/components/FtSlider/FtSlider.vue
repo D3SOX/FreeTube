@@ -4,9 +4,22 @@
     :for="id"
   >
     <span class="labelRow">
-      <span class="label">
-        {{ $t('Display Label', {label: label, value: displayLabel}) }}
-      </span>
+      <I18nT
+        keypath="Display Label"
+        tag="span"
+        class="label"
+        scope="global"
+      >
+        <template #label>{{ label }}</template>
+        <template #value>
+          <span class="value">
+            <span
+              class="valueNumber"
+              :style="{ minInlineSize: `${valueWidth}ch` }"
+            >{{ displayValue }}</span>{{ valueExtension }}
+          </span>
+        </template>
+      </I18nT>
       <FtPerformanceImpact :setting-key="settingKey" />
       <FtTooltip
         v-if="tooltip !== ''"
@@ -36,6 +49,7 @@
 
 <script setup>
 import { computed, ref, useId, watch } from 'vue'
+import { Translation as I18nT } from 'vue-i18n'
 
 import FtTooltip from '../FtTooltip/FtTooltip.vue'
 import FtPerformanceImpact from '../FtPerformanceImpact/FtPerformanceImpact.vue'
@@ -86,9 +100,6 @@ const props = defineProps({
 
 const emit = defineEmits(['change', 'input', 'reset'])
 
-// U+2007, as wide as a digit
-const FIGURE_SPACE = '\u2007'
-
 const id = useId()
 const currentValue = ref(props.defaultValue)
 
@@ -99,28 +110,18 @@ watch(() => props.defaultValue, (value) => {
   }
 }, { flush: 'post' })
 
-/**
- * @param {number} value
- */
-function formatValue(value) {
-  return props.valueExtension === null
-    ? `${value}`
-    : `${value}${props.valueExtension}`
-}
+const valuePrecision = computed(() => {
+  const [coefficient, exponent = '0'] = String(props.step).split('e')
+  return Math.max(0, (coefficient.split('.')[1]?.length ?? 0) - Number(exponent))
+})
 
-/** The widest value the slider can show, in characters. */
+const displayValue = computed(() => currentValue.value.toFixed(valuePrecision.value))
+
+// Reserve digit width without relying on a font's figure-space glyph.
 const valueWidth = computed(() => Math.max(
-  formatValue(props.minValue).length,
-  formatValue(props.maxValue).length
+  props.minValue.toFixed(valuePrecision.value).length,
+  props.maxValue.toFixed(valuePrecision.value).length
 ))
-
-/*
- * Padding shorter values out to that width keeps the label the same size all
- * the way along the slider, so dragging it can't make the label wrap and
- * unwrap. Figure spaces are as wide as a digit and, unlike ordinary spaces,
- * are neither collapsed nor a place to break the line.
- */
-const displayLabel = computed(() => formatValue(currentValue.value).padEnd(valueWidth.value, FIGURE_SPACE))
 
 function change() {
   emit('change', currentValue.value)

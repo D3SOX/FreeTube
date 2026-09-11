@@ -20,10 +20,17 @@
   align-items: center;
 }
 
-/* Same reason as the padding in the component: equal-width digits keep the
-   label from changing size as the value does. */
+/* Equal-width digits keep the value stable as the slider moves. */
 .label {
   font-variant-numeric: tabular-nums;
+}
+
+.value {
+  white-space: nowrap;
+}
+
+.valueNumber {
+  display: inline-block;
 }
 
 .input {
