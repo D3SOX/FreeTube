@@ -64,3 +64,10 @@ test('deciphers archived YouTube player data identically to the previous evaluat
     Platform.shim.eval = previousEval
   }
 })
+
+test('recovers after memory exhaustion with objects retained on the global object', async () => {
+  await assert.rejects(evaluatePlayerCode('globalThis.a = []; while (true) a.push(new Array(10000).fill(123))', {
+    memoryLimitBytes: 2 * 1024 * 1024
+  }), /out of memory/)
+  assert.equal(await evaluatePlayerCode('return 42'), 42)
+})

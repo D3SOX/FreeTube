@@ -48,6 +48,8 @@ export function invidiousFetch(url, signal) {
   if (authorization) {
     return fetch(url, {
       signal,
+      // Electron's response-header hook runs too late to control the HTTP cache.
+      cache: 'no-store',
       headers: {
         Authorization: authorization
       }

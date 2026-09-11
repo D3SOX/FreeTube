@@ -28,7 +28,10 @@ test('interprets player code without host access and keeps the UI responsive', a
         loop.then(() => false),
         new Promise(resolve => setTimeout(() => resolve(true), 50))
       ])
-      return { values, responsive, error: await loop, recovered: await evaluate('return 42') }
+      const error = await loop
+      const memoryError = await evaluate('globalThis.a = []; while (true) a.push(new Array(10000).fill(123))')
+        .then(() => 'unexpected success', error => error.message)
+      return { values, responsive, error, memoryError, recovered: await evaluate('return 42') }
     } finally {
       worker.terminate()
     }
@@ -41,6 +44,7 @@ test('interprets player code without host access and keeps the UI responsive', a
   ])
   expect(result.responsive).toBe(true)
   expect(result.error).toContain('interrupted')
+  expect(result.memoryError).toContain('out of memory')
   expect(result.recovered).toBe(42)
   await expect(page.locator('#sigFrame')).toHaveCount(0)
 })

@@ -8,6 +8,7 @@ const pixel = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQ
 const server = createServer()
 let origin
 let otherOrigin
+let accountRequests = 0
 
 test.use({
   launchArgs: ['--host-resolver-rules=MAP *.otx-test.invalid 127.0.0.1', '--no-proxy-server']
@@ -48,6 +49,7 @@ test.beforeAll(async () => {
       'Cache-Control': 'public, max-age=3600',
       'X-Response-Fixture': 'visible'
     }).end(JSON.stringify({
+      ...(request.url === '/account' ? { requestNumber: ++accountRequests } : {}),
       method: request.method,
       body: Buffer.concat(chunks).toString(),
       authorization: request.headers.authorization,
@@ -175,6 +177,31 @@ test('preserves images when the in-memory cache replaces the disk cache', async 
     return context.getImageData(0, 0, 1, 1).data.length
   }, `${origin}/image`)
   expect(pixels).toBe(4)
+})
+
+test('does not reuse cached responses across Invidious credentials', async ({ app, page }) => {
+  const responses = []
+  for (const token of ['first-test-account', 'first-test-account', 'second-test-account', null]) {
+    // Deliver the real IPC event synchronously so the next fetch sees the new account.
+    await app.electronApp.evaluate(({ ipcMain, BrowserWindow }, { token, origin }) => {
+      const sender = BrowserWindow.getAllWindows()[0].webContents
+      ipcMain.emit('set-invidious-authorization', { sender, senderFrame: sender.mainFrame }, token, origin)
+    }, { token, origin })
+    responses.push(await page.evaluate(async ({ url, token }) => {
+      // Match invidiousFetch: credentials and cache mode must reach Chromium before lookup.
+      const response = await fetch(url, {
+        headers: token ? { Authorization: token } : {},
+        cache: token ? 'no-store' : 'default'
+      })
+      return { body: await response.json(), cache: response.headers.get('cache-control') }
+    }, { url: `${origin}/account`, token }))
+  }
+  expect(responses.map(response => response.body.authorization ?? null)).toEqual([
+    'first-test-account', 'first-test-account', 'second-test-account', null
+  ])
+  expect(responses.slice(0, 3).map(response => response.cache)).toEqual(['no-store', 'no-store', 'no-store'])
+  expect(responses.map(response => response.body.requestNumber)).toEqual([1, 2, 3, 4])
+  expect(responses[3].cache).toBe('public, max-age=3600')
 })
 
 test.describe('session proxy', () => {

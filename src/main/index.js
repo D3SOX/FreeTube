@@ -2119,7 +2119,7 @@ function runApp() {
     const rendererCors = new RendererCors()
     session.defaultSession.webRequest.onBeforeSendHeaders(onBeforeSendHeadersRequestFilter, (details, callback) => {
       // Capture the app's original Origin before the YouTube header adjustments.
-      rendererCors.rememberRequest(details)
+      const originalOrigin = new Headers(details.requestHeaders).get('Origin')
       let { requestHeaders } = details
       const { url, webContents } = details
       const urlObj = new URL(url)
@@ -2179,6 +2179,7 @@ function runApp() {
         }
       }
 
+      rendererCors.rememberRequest({ ...details, requestHeaders }, originalOrigin)
       // eslint-disable-next-line n/no-callback-literal
       callback({ requestHeaders })
     })

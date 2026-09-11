@@ -109,3 +109,19 @@ test('retains cookie removal performed by the privacy hook', () => {
   delete details.responseHeaders['Set-Cookie']
   assert.equal(policy.allowResponse(details).responseHeaders['set-cookie'], undefined)
 })
+
+test('disables caching for final authorization headers while preserving the original origin', () => {
+  for (const name of ['Authorization', 'authorization']) {
+    const { policy, details } = fixture()
+    details.responseHeaders['Cache-Control'] = ['public, max-age=3600']
+    details.requestHeaders = { Origin: 'https://www.youtube.com', [name]: 'test-account' }
+    policy.rememberRequest(details, 'app://bundle')
+    const headers = policy.allowResponse(details).responseHeaders
+    assert.deepEqual(headers['cache-control'], ['no-store'])
+    assert.deepEqual(headers['access-control-allow-origin'], ['app://bundle'])
+  }
+  const { policy, details } = fixture()
+  details.responseHeaders['Cache-Control'] = ['public, max-age=3600']
+  policy.rememberRequest(details)
+  assert.deepEqual(policy.allowResponse(details).responseHeaders['cache-control'], ['public, max-age=3600'])
+})
