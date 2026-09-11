@@ -14,13 +14,17 @@ const hooks = registerHooks({
     if (specifier.endsWith('/datastores/handlers/base.js')) {
       return { shortCircuit: true, url: 'data:text/javascript,' + encodeURIComponent(`
         export const settings = { _findOne: async () => null };
-        export const tabSession = { save: async () => {} };
+        export const tabSession = {
+          saved: null,
+          async save(id, data) { this.saved = structuredClone(data); }
+        };
       `) }
     }
     return nextResolve(specifier, context)
   }
 })
 const { TabManager } = await import('../../src/main/tabs/TabManager.js')
+const { tabSession } = await import('../../src/datastores/handlers/base.js')
 hooks.deregister()
 const { createTabAvatarFileName } = await import('../../src/main/tabs/tabPreviewCache.js')
 
@@ -122,6 +126,52 @@ test('restored background pages do not compete with the initial selected page mo
   assert.deepEqual([...manager.tabs.values()].filter(tab => tab.loadState === 'mounting' && !tab.mountDeferred).map(tab => tab.id), ['tab-9'])
   assert.ok(manager.getSyncSession().tabs.every(tab => !tab.isUnloaded), 'queued tabs keep their saved loaded state')
 })
+
+for (const persistence of ['disk', 'sync']) {
+  test(`restarting from ${persistence} while the selected video loads preserves background video load state`, async t => {
+    const manager = createManager(t)
+    const saved = session(4)
+    saved.tabs[0].url = 'app://bundle/index.html#/watch/background'
+    saved.tabs[2].url = 'app://bundle/index.html#/watch/unloaded'
+    saved.tabs[2].isUnloaded = true
+    saved.tabs[3].url = 'app://bundle/index.html#/watch/selected'
+    await manager.restoreFromData(saved, { restoreTabLoadState: true })
+    await manager._saveSession()
+    const snapshot = persistence === 'disk' ? tabSession.saved : manager.getSyncSession()
+    assert.deepEqual(snapshot.tabs.map(tab => tab.isUnloaded), [false, false, true, false])
+    const restarted = createManager(t)
+    await restarted.restoreFromData(snapshot, { restoreTabLoadState: true })
+    restarted.setTabLoading('tab-3', true)
+    restarted.setTabLoading('tab-3', false)
+    await new Promise(setImmediate)
+    assert.notEqual(restarted.tabs.get('tab-0').loadState, 'unloaded')
+    assert.equal(restarted.tabs.get('tab-2').loadState, 'unloaded')
+  })
+}
+
+for (const action of ['unload', 'load', 'reload']) {
+  test(`${action} overrides a deferred startup video's saved load state`, async t => {
+    const manager = createManager(t)
+    const saved = session(2)
+    for (const tab of saved.tabs) tab.url = `app://bundle/index.html#/watch/${tab.id}`
+    await manager.restoreFromData(saved, { restoreTabLoadState: true })
+    if (action === 'unload') {
+      assert.equal(await manager.unloadTab('tab-0'), true)
+    } else {
+      if (action === 'load') manager.loadTab('tab-0')
+      else manager.reloadTab('tab-0')
+      const tab = manager.tabs.get('tab-0')
+      manager.markTabMountFailed(tab.id, tab.mountRevision)
+    }
+    manager.setTabLoading('tab-1', true)
+    manager.setTabLoading('tab-1', false)
+    await new Promise(setImmediate)
+    assert.equal(manager.tabs.get('tab-0').loadState, 'unloaded')
+    await manager._saveSession()
+    assert.equal(tabSession.saved.tabs[0].isUnloaded, true)
+    assert.equal(manager.getSyncSession().tabs[0].isUnloaded, true)
+  })
+}
 
 async function tick(t, milliseconds = 50) {
   t.mock.timers.tick(milliseconds)
