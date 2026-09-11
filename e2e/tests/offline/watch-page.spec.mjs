@@ -692,7 +692,7 @@ test('keeps stacked watch cards separated in the Capacitor phone layout', async 
   })
 
   const cards = page.locator('.watchVideoInfo:visible, .videoDescription:visible, .watchVideoRecommendations:visible, .commentsArea > .watchVideo:visible')
-  await expect(cards).not.toHaveCount(0)
+  await expect(cards).toHaveCount(3)
 
   const geometry = await cards.evaluateAll((elements) => elements.map((element) => {
     const bounds = element.getBoundingClientRect()
