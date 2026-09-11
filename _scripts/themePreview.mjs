@@ -83,7 +83,8 @@ export function moderateDiscussion(repository, number, query = graphql) {
   const withoutExternalLinks = removeExternalDiscussionLinks(discussion.body)
   const body = limitThemeDescription(withoutExternalLinks)
   if (body === discussion.body) return null
-  // A queued edit will be checked by its own run. Do not overwrite newer text.
+  // Best-effort guard: skip edits observed since the first read. GitHub has no
+  // conditional updateDiscussion mutation, so a later edit can still race this write.
   const latest = loadDiscussion(repository, number, query)
   if (latest?.body !== discussion.body || latest.category?.slug !== 'themes' || latest.closed || latest.locked) return null
   query(`mutation($id:ID!, $body:String!) {
