@@ -1073,6 +1073,8 @@ Channel:
   Search Result Types: Bilaketa-emaitzen motak
   All Results: Guztiak
 Video:
+  Move Queue Item Up: "Eraman {title} gora"
+  Move Queue Item Down: "Eraman {title} behera"
   Includes paid promotion: Ordainpeko sustapena du
   Age Restricted Badge: Adin-muga du
   Queue: Ilara
@@ -1475,6 +1477,7 @@ Comments:
   Translating comment, please wait: Iruzkina itzultzen; itxaron
   Comment translation failed: Ezin izan da iruzkina itzuli
 Description:
+  Title: Deskribapena
   Copy Description: Kopiatu deskribapena
   Description Copied: Deskribapena arbelean kopiatu da
   Video Category: 'Bideoaren kategoria:'

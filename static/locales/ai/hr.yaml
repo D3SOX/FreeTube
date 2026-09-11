@@ -1073,6 +1073,8 @@ Channel:
   Search Result Types: Vrste rezultata pretraživanja
   All Results: Sve
 Video:
+  Move Queue Item Up: "Pomakni {title} gore"
+  Move Queue Item Down: "Pomakni {title} dolje"
   Includes paid promotion: Sadržava plaćenu promociju
   Age Restricted Badge: Dobno ograničeno
   Queue: Red čekanja
@@ -1470,6 +1472,7 @@ Comments:
   Translating comment, please wait: Pričekajte, komentar se prevodi
   Comment translation failed: Prevođenje komentara nije uspjelo
 Description:
+  Title: Opis
   Copy Description: Kopiraj opis
   Description Copied: Opis je kopiran u međuspremnik
   Video Category: 'Kategorija videozapisa:'

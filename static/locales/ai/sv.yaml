@@ -1073,6 +1073,8 @@ Channel:
   Search Result Types: Typer av sökresultat
   All Results: Alla
 Video:
+  Move Queue Item Up: "Flytta {title} uppåt"
+  Move Queue Item Down: "Flytta {title} nedåt"
   Includes paid promotion: Innehåller betald marknadsföring
   Age Restricted Badge: Åldersbegränsad
   Queue: Kö
@@ -1466,6 +1468,7 @@ Comments:
   Translating comment, please wait: Översätter kommentaren, vänta
   Comment translation failed: Kommentaröversättningen misslyckades
 Description:
+  Title: Beskrivning
   Copy Description: Kopiera beskrivning
   Description Copied: Beskrivningen har kopierats till urklipp
   Video Category: 'Videokategori:'

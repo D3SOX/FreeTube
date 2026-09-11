@@ -1099,6 +1099,8 @@ Channel:
   All Results: Alles
   View All: Alles bekijken
 Video:
+  Move Queue Item Up: "Verplaats {title} omhoog"
+  Move Queue Item Down: "Verplaats {title} omlaag"
   Includes paid promotion: Bevat betaalde promotie
   Age Restricted Badge: Leeftijdsbeperking
   Queue: Wachtrij
@@ -1501,6 +1503,7 @@ Comments:
   Translating comment, please wait: Reactie vertalen, even geduld
   Comment translation failed: Vertalen van reactie mislukt
 Description:
+  Title: Beschrijving
   Copy Description: Beschrijving kopiëren
   Description Copied: Beschrijving naar klembord gekopieerd
   Video Category: 'Videocategorie:'

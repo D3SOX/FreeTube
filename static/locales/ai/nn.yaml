@@ -1327,6 +1327,8 @@ Channel:
     Hide Answers: Gøym svar
     Video hidden by OpenTubeX: Videoen er gøymd av OpenTubeX
 Video:
+  Move Queue Item Up: "Flytt {title} opp"
+  Move Queue Item Down: "Flytt {title} ned"
   Includes paid promotion: Inneheld betalt marknadsføring
   Age Restricted Badge: Aldersgrense
   Queue: Kø
@@ -1791,6 +1793,7 @@ Comments:
   Translating comment, please wait: Omset kommentaren, vent litt
   Comment translation failed: Klarte ikkje å omsetje kommentaren
 Description:
+  Title: Skildring
   Expand Description: ...meir
   Collapse Description: Vis mindre
   Copy Description: Kopier skildringa

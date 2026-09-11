@@ -1317,6 +1317,8 @@ Channel:
     Hide Answers: Ocultar las respuestas
     Video hidden by OpenTubeX: Video oculto por OpenTubeX
 Video:
+  Move Queue Item Up: "Mover {title} hacia arriba"
+  Move Queue Item Down: "Mover {title} hacia abajo"
   Includes paid promotion: Incluye promoción pagada
   Age Restricted Badge: Restricción de edad
   Queue: Cola
@@ -1790,6 +1792,7 @@ Comments:
   Translating comment, please wait: Traduciendo comentario; espera
   Comment translation failed: No se pudo traducir el comentario
 Description:
+  Title: Descripción
   Expand Description: ...más
   Collapse Description: Mostrar menos
   Copy Description: Copiar descripción
