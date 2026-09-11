@@ -94,6 +94,7 @@ import {
 } from '../../helpers/player/ytDlpPlaybackPreload'
 import { getMusicTrackArtist, MUSIC_MEDIA_TYPE } from '../../helpers/player/musicMediaType'
 import { resolveAndroidBackgroundPlaybackFormat } from '../../helpers/player/androidBackgroundPlayback'
+import { getCompatibleAdaptiveFormats } from '../../helpers/player/compatibleAdaptiveFormats'
 import { selectSponsorBlockFullVideoLabel } from '../../helpers/player/sponsorBlockFullVideo'
 import {
   buildSubscriptionShortsFeed,
@@ -5504,7 +5505,9 @@ export default defineComponent({
      * @param {boolean} includeThumbnails
      */
     createLocalDashManifest: async function (videoInfo, includeThumbnails = false) {
+      const formats = new Set(getCompatibleAdaptiveFormats(videoInfo.streaming_data.adaptive_formats))
       const xmlData = await videoInfo.toDash({
+        format_filter: format => format.has_video && !format.has_audio && !formats.has(format),
         manifest_options: {
           include_thumbnails: includeThumbnails,
         },
@@ -5526,7 +5529,8 @@ export default defineComponent({
       // needs its own scheme so one SABR player cannot replace or unregister
       // another player's request handler.
       const scheme = `sabr${nextSabrSchemeId++}`
-      const formatDurationsMs = videoInfo.streaming_data.adaptive_formats
+      const formats = getCompatibleAdaptiveFormats(videoInfo.streaming_data.adaptive_formats)
+      const formatDurationsMs = formats
         .map(format => format.approx_duration_ms)
         .filter(Number.isFinite)
       const fallbackDurationSeconds = Number.isFinite(videoInfo.basic_info.duration)
@@ -5549,7 +5553,7 @@ export default defineComponent({
         duration: formatDurationsMs.length > 0
           ? Math.min(...formatDurationsMs) / 1000
           : fallbackDurationSeconds,
-        formats: videoInfo.streaming_data.adaptive_formats.map((format) => ({
+        formats: formats.map((format) => ({
           itag: format.itag,
           lastModified: format.last_modified_ms,
           mimeType: format.mime_type,
