@@ -72,9 +72,37 @@ function create(initialization) {
     optimizeBodyScrollbarDrag(instance)
   } else if (initialization.elements?.viewport instanceof HTMLElement) {
     reconcileScrollbarOnResize(initialization.elements.viewport, instance)
+    synchronizeSheetScrollbarPosition(initialization.elements.viewport, instance)
   }
 
   return instance
+}
+
+/** Keep a panel's scrollbar track fixed during compositor-driven touch scrolling. */
+function synchronizeSheetScrollbarPosition(element, instance) {
+  if (!window.ScrollTimeline || !element.closest('.mobileSheetEnabled')) return
+  const timeline = new window.ScrollTimeline({ source: element, axis: 'y' })
+  const { scrollbarVertical, scrollbarHorizontal } = instance.elements()
+  let animations = []
+  let previousRange = -1
+  const update = () => {
+    const { overflowAmount } = instance.state()
+    // The library still handles two-axis scrollers and older WebViews.
+    if (overflowAmount.x > 1) {
+      animations.forEach(animation => animation.cancel())
+      animations = []
+      previousRange = -1
+      return
+    }
+    if (overflowAmount.y === previousRange) return
+    previousRange = overflowAmount.y
+    const frames = { transform: ['translateY(0px)', `translateY(${previousRange}px)`] }
+    if (animations.length) animations.forEach(animation => animation.effect.setKeyframes(frames))
+    else animations = [scrollbarVertical, scrollbarHorizontal].map(({ scrollbar }) => scrollbar.animate(frames, { timeline }))
+  }
+  update()
+  instance.on('updated', update)
+  instance.on('destroyed', () => animations.forEach(animation => animation.cancel()))
 }
 
 /**

@@ -544,6 +544,7 @@ for (const native of [false, true]) {
     const sheet = page.locator('.mobileSheet[open]')
     await expect(sheet).toBeVisible()
     await expect(sheet).not.toHaveClass(/dockedSheet/)
+    expect(await sheet.evaluate(el => el.matches(':modal'))).toBe(true)
     await expect(player).not.toHaveAttribute('data-phone-panel-video')
     await expect(sheet).toHaveCSS('transform', 'none')
     const bounds = await sheet.boundingBox()

@@ -60,6 +60,7 @@
 <script setup>
 import { FtIcon } from '@opentubex/icons'
 import { computed, inject, nextTick, onBeforeUnmount, onUpdated, ref, shallowRef, useTemplateRef, watch } from 'vue'
+import { usePhoneLayout } from '../../composables/usePhoneLayout'
 import { applyAnimationSpeed } from '../../helpers/animationSpeed'
 import { lockBodyScroll, unlockBodyScroll } from '../FtPrompt/scrollLock'
 
@@ -78,6 +79,7 @@ let previousFocus = null
 const getPlayer = inject('phonePanelPlayer', null)
 const preparePanel = inject('preparePhonePanel', null)
 const expandPanel = inject('expandPhonePanel', null)
+const landscape = usePhoneLayout('(orientation: landscape)')
 const expanded = ref(false)
 const dragOffset = ref(0)
 const visibleTop = computed(() => Math.max(0, (expanded.value ? 0 : sheetTop.value) + Math.min(0, dragOffset.value)))
@@ -101,6 +103,7 @@ function updatePresentation() {
   }
   playerCoversWindow.value = player?.matches('[data-native-player-screen], .fullWindow') ?? false
 }
+updatePresentation()
 // Options API $refs are not reactive; refresh the observed player when opening.
 watch([dialog, () => props.open], updatePresentation, { flush: 'post' })
 onUpdated(updatePresentation)
@@ -117,9 +120,10 @@ let drag = null
 let animation
 let closing = false
 let resumePlayback = null
+let openingSequence = 0
 
 function restorePlayback() {
-  resumePlayback?.()
+  if (!landscape.value) resumePlayback?.()
   resumePlayback = null
 }
 
@@ -138,6 +142,7 @@ function measurePlayer() {
 }
 
 watch([dialog, () => props.enabled, () => props.open, docked, fullscreenElement], async ([element, enabled, open], previous) => {
+  const sequence = ++openingSequence
   if (!element) return
   if (element.open && (docked.value !== previous[3] || fullscreenElement.value !== previous[4])) {
     element.close()
@@ -153,7 +158,7 @@ watch([dialog, () => props.enabled, () => props.open, docked, fullscreenElement]
       const player = getPlayer?.()
       player?.setAttribute('data-phone-panel-video', '')
       await preparePanel?.()
-      if (!props.enabled || !props.open || dialog.value !== element) {
+      if (sequence !== openingSequence || !docked.value || !props.enabled || !props.open || dialog.value !== element) {
         player?.removeAttribute('data-phone-panel-video')
         return
       }
@@ -165,6 +170,7 @@ watch([dialog, () => props.enabled, () => props.open, docked, fullscreenElement]
           window.scrollBy({ top: bounds.top - toolbarBottom, behavior: 'instant' })
         }
       }
+      expanded.value = landscape.value
       measurePlayer()
       element.show()
       animation = applyAnimationSpeed(element.animate([
@@ -204,6 +210,12 @@ watch([dialog, () => props.enabled, () => props.open, docked, fullscreenElement]
   }
 }, { flush: 'post' })
 
+watch(landscape, (value) => {
+  if (value && props.open && docked.value && !expanded.value) {
+    expanded.value = true
+  }
+})
+
 function startDrag(event) {
   if (!docked.value || event.button !== 0 || event.target.closest('button, input, a, [role="button"]')) return
   animation?.cancel()
@@ -231,7 +243,7 @@ function endDrag(event) {
   const before = element.getBoundingClientRect()
   if (expand) {
     expanded.value = true
-    resumePlayback = expandPanel?.()
+    if (!landscape.value) resumePlayback = expandPanel?.()
   } else if (collapse) {
     expanded.value = false
     restorePlayback()
@@ -274,6 +286,7 @@ function release() {
   if (!anotherPanelOpen && previousFocus?.isConnected) previousFocus.focus({ preventScroll: true })
 }
 onBeforeUnmount(() => {
+  openingSequence++
   document.removeEventListener('fullscreenchange', updatePresentation)
   presentationObserver?.disconnect()
   dialog.value?.close()

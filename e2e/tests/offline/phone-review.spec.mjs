@@ -107,3 +107,34 @@ test('player options stop updating their scrollbars when idle', async ({ app, pa
   }))
   expect(mutations.count, JSON.stringify(mutations.targets)).toBeLessThan(20)
 })
+
+for (const panel of ['description', 'comments', 'chapters', 'transcript', 'queue']) {
+  test(`landscape ${panel} panel opens maximized`, async ({ app, page }) => {
+    await mockPlayableWatchPage(app, page, { captionTranslations: true })
+    await openMockedVideo(page)
+    await setWindowSize(app, page, { width: 1000, height: 480 })
+    const video = page.locator('video')
+    await video.evaluate(el => el.play())
+    const watch = await watchViewHandle(page)
+    await watch.evaluate((vm, panel) => vm.openPhonePanel(panel), panel)
+    const sheet = page.locator('.mobileSheet[open]')
+    await sheet.evaluate(el => Promise.all(el.getAnimations().map(animation => animation.finished)))
+    expect((await sheet.boundingBox()).y).toBeLessThan(5)
+    expect((await sheet.boundingBox()).height).toBeGreaterThan(450)
+    expect(await video.evaluate(el => el.paused)).toBe(false)
+    await sheet.press('Escape')
+    await expect(sheet).toHaveCount(0)
+    expect(await video.evaluate(el => el.paused)).toBe(false)
+  })
+}
+
+test('panel scrollbar positioning follows the compositor scroll timeline', async ({ app, page }) => {
+  await mockPlayableWatchPage(app, page, { captionTranslations: true })
+  await openMockedVideo(page)
+  await setWindowSize(app, page, { width: 480, height: 800 })
+  const watch = await watchViewHandle(page)
+  await watch.evaluate(vm => vm.openPhonePanel('transcript'))
+  const track = page.locator('.mobileSheet[open] .os-scrollbar-vertical').last()
+  await expect(track).toBeAttached()
+  expect(await track.evaluate(el => el.getAnimations().some(animation => animation.timeline?.constructor.name === 'ScrollTimeline'))).toBe(true)
+})
