@@ -16,7 +16,7 @@
             <span
               class="valueNumber"
               :style="{ minInlineSize: `${valueWidth}ch` }"
-            >{{ currentValue }}</span>{{ valueExtension }}
+            >{{ displayValue }}</span>{{ valueExtension }}
           </span>
         </template>
       </I18nT>
@@ -110,10 +110,17 @@ watch(() => props.defaultValue, (value) => {
   }
 }, { flush: 'post' })
 
+const valuePrecision = computed(() => {
+  const [coefficient, exponent = '0'] = String(props.step).split('e')
+  return Math.max(0, (coefficient.split('.')[1]?.length ?? 0) - Number(exponent))
+})
+
+const displayValue = computed(() => currentValue.value.toFixed(valuePrecision.value))
+
 // Reserve digit width without relying on a font's figure-space glyph.
 const valueWidth = computed(() => Math.max(
-  String(props.minValue).length,
-  String(props.maxValue).length
+  props.minValue.toFixed(valuePrecision.value).length,
+  props.maxValue.toFixed(valuePrecision.value).length
 ))
 
 function change() {
