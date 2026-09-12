@@ -14,6 +14,7 @@ const config = {
     main: path.join(__dirname, '../src/main/index.js'),
   },
   module: {
+    parser: { javascript: { createRequire: false } },
     rules: [
       {
         test: /\.js$/,

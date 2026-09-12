@@ -1264,6 +1264,26 @@ test('animates the fullscreen title when the Android status-bar inset changes', 
 })
 
 test.describe('scroll mini player', () => {
+  test('a stationary touch reveals hidden mini-player controls without pausing', async ({ app, page }) => {
+    const video = await openDemoVideo({ app, page })
+    const player = page.locator('.ftVideoPlayer')
+    await video.evaluate(element => element.play())
+    await scrollBelowPlayer(player)
+    await expect(player).toHaveClass(/scrollMiniPlayer/)
+    await page.mouse.move(0, 0)
+    const button = player.locator('.scrollMiniPlayPause')
+    await expect(button).toHaveClass(/isHidden/, { timeout: 6000 })
+    await expect(button).toHaveCSS('opacity', '0')
+    const bounds = await player.boundingBox()
+    const session = await page.context().newCDPSession(page)
+    const point = { x: bounds.x + bounds.width / 2, y: bounds.y + bounds.height / 2 }
+    await session.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [point] })
+    await session.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] })
+    await session.detach()
+    await expect(button).not.toHaveClass(/isHidden/)
+    await expect.poll(() => video.evaluate(element => element.paused)).toBe(false)
+  })
+
   test('keeps a phone mini player above the bottom navigation', async ({ app, page }) => {
     const video = await openDemoVideo({ app, page })
     await video.evaluate(element => element.pause())

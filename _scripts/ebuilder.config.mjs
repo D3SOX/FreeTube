@@ -5,7 +5,7 @@ import { patchLinuxMprisName } from './patchLinuxMprisName.mjs'
 export default {
   appId: `io.opentubex.${packageDetails.name}`,
   copyright: 'Copyleft © 2020-2026',
-  // asar: false,
+  asarUnpack: ['dist/windows_share.node'],
   // compression: 'store',
   productName: packageDetails.productName,
   directories: {

@@ -342,6 +342,10 @@ async function start() {
   loadWebpackConfigs()
 
   if (!web) {
+    if (process.platform === 'win32') {
+      const { prepareWindowsShare } = await import('./windowsShare.mjs')
+      await prepareWindowsShare()
+    }
     startRenderer(devServerPort => {
       if (worktree) {
         process.env.OPENTUBEX_DEV_SERVER_PORT = String(devServerPort)

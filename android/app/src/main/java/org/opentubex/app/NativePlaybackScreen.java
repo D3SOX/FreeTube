@@ -57,6 +57,9 @@ final class NativePlaybackScreen extends FrameLayout implements TextureView.Surf
     private boolean miniPlayer;
     private float miniRadius;
     private boolean scrollingPage;
+    private android.graphics.Bitmap miniControlsImage;
+    private final android.graphics.Paint miniControlsPaint = new android.graphics.Paint(android.graphics.Paint.FILTER_BITMAP_FLAG);
+
     private boolean gestureActive;
     private boolean scrollEndRequested;
     private boolean pageTouchDown;
@@ -283,6 +286,9 @@ final class NativePlaybackScreen extends FrameLayout implements TextureView.Surf
             canvas.clipPath(clip);
             canvas.drawColor(Color.BLACK);
             boolean drawn = super.drawChild(canvas, child, drawingTime);
+            if (miniControlsImage != null && !gestureActive && videoAnimation == null) {
+                canvas.drawBitmap(miniControlsImage, null, transitionBounds, miniControlsPaint);
+            }
             canvas.restoreToCount(save);
             return drawn;
         }
@@ -386,7 +392,7 @@ final class NativePlaybackScreen extends FrameLayout implements TextureView.Surf
     void setMiniPlayer(boolean enabled, float radius) {
         miniPlayer = enabled;
         miniRadius = radius;
-        if (!enabled) setGestureActive(false);
+        if (!enabled) { setGestureActive(false); clearMiniControlsImage(); }
         if (!enabled && scrollingPage) {
             scrollingPage = false;
             pageTouchDown = false;
@@ -428,6 +434,33 @@ final class NativePlaybackScreen extends FrameLayout implements TextureView.Surf
         }
     }
 
+    void setMiniControlsImage(String image) {
+        if (image == null) { clearMiniControlsImage(); return; }
+        String prefix = "data:image/png;base64,";
+        if (!image.startsWith(prefix) || image.length() > 1000000) return;
+        try {
+            byte[] encoded = android.util.Base64.decode(image.substring(prefix.length()), android.util.Base64.DEFAULT);
+            android.graphics.BitmapFactory.Options options = new android.graphics.BitmapFactory.Options();
+            options.inJustDecodeBounds = true;
+            android.graphics.BitmapFactory.decodeByteArray(encoded, 0, encoded.length, options);
+            if (options.outWidth <= 0 || options.outHeight <= 0 || options.outWidth > 2048 || options.outHeight > 2048 ||
+                (long) options.outWidth * options.outHeight > 2097152) return;
+            android.graphics.Bitmap bitmap = android.graphics.BitmapFactory.decodeByteArray(encoded, 0, encoded.length);
+            if (bitmap == null) return;
+            clearMiniControlsImage();
+            miniControlsImage = bitmap;
+            invalidate();
+        } catch (IllegalArgumentException ignored) {
+            // Ignore malformed images without replacing the last usable controls.
+        }
+    }
+
+    private void clearMiniControlsImage() {
+        if (miniControlsImage == null) return;
+        miniControlsImage.recycle();
+        miniControlsImage = null;
+        invalidate();
+    }
     private void beginPageScroll() {
         if (!miniPlayer || fullscreen || pictureInPicture || !inlineVisible || videoBounds == null) return;
         lastPageScroll = android.os.SystemClock.uptimeMillis();
@@ -689,6 +722,7 @@ final class NativePlaybackScreen extends FrameLayout implements TextureView.Surf
     }
 
     void close() {
+        clearMiniControlsImage();
         for (Runnable callback : new java.util.ArrayList<>(pendingWebFrames)) callback.run();
         pendingWebFrames.clear();
         afterWebDraw.clear();

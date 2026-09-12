@@ -38,3 +38,6 @@ locale-errors.json
 e2e/results/
 e2e/report/
 dist-e2e/
+
+# Local Windows share addon output
+_scripts/windows-share/build/

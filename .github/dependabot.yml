@@ -42,6 +42,7 @@ updates:
       - dependency-name: "eld"
       - dependency-name: "entities"
       - dependency-name: "font-list"
+      - dependency-name: "node-gyp"
       - dependency-name: "overlayscrollbars"
       - dependency-name: "qr-scanner"
       - dependency-name: "qrcode"

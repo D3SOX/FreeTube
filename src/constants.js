@@ -7,6 +7,7 @@ const IpcChannels = {
   GET_DEVICE_INFO: 'get-device-info',
   GET_SYSTEM_LOCALE: 'get-system-locale',
   GET_SYSTEM_FONTS: 'get-system-fonts',
+  SHARE_LINK: 'share-link',
   READ_CLIPBOARD: 'read-clipboard',
   GET_NAVIGATION_HISTORY: 'get-navigation-history',
   IS_WAYLAND_PLATFORM: 'is-wayland-platform',

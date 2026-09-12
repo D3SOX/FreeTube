@@ -21,6 +21,7 @@ import org.junit.runner.RunWith;
 public class NativePlaybackScreenTest {
     private static class TouchWebView extends WebView {
         int downs;
+        java.util.concurrent.CountDownLatch pageLoaded;
         final java.util.List<Integer> actions = new java.util.ArrayList<>();
         VisualStateCallback heldVisualState;
         long heldVisualStateId;
@@ -72,6 +73,10 @@ public class NativePlaybackScreenTest {
                     checks[0].run(screen, controls, web, engine);
                 });
                 for (int index = 1; index < checks.length; index++) {
+                    if (webRef[0].pageLoaded != null) {
+                        try { assertTrue("The scrolling document must load", webRef[0].pageLoaded.await(5, java.util.concurrent.TimeUnit.SECONDS)); }
+                        catch (InterruptedException error) { Thread.currentThread().interrupt(); throw new AssertionError(error); }
+                    }
                     InstrumentationRegistry.getInstrumentation().waitForIdleSync();
                     java.util.concurrent.CountDownLatch frame = new java.util.concurrent.CountDownLatch(1);
                     scenario.onActivity(activity -> screenRef[0].postOnAnimation(() ->
@@ -193,6 +198,88 @@ public class NativePlaybackScreenTest {
             assertNotEquals("Video cannot paint over the app header or status bar", android.graphics.Color.MAGENTA, image.getPixel(200, 40));
             image.recycle();
         });
+    }
+
+    private String miniControlsPng() {
+        android.graphics.Bitmap image = android.graphics.Bitmap.createBitmap(400, 225, android.graphics.Bitmap.Config.ARGB_8888);
+        android.graphics.Canvas canvas = new android.graphics.Canvas(image);
+        android.graphics.Paint paint = new android.graphics.Paint();
+        paint.setColor(android.graphics.Color.BLUE);
+        canvas.drawRect(100, 50, 150, 100, paint);
+        java.io.ByteArrayOutputStream output = new java.io.ByteArrayOutputStream();
+        image.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, output);
+        image.recycle();
+        return "data:image/png;base64," + android.util.Base64.encodeToString(output.toByteArray(), android.util.Base64.NO_WRAP);
+    }
+
+    private void assertMiniControlsAboveVideo(NativePlaybackScreen screen) {
+        android.graphics.Bitmap image = android.graphics.Bitmap.createBitmap(screen.getWidth(), screen.getHeight(), android.graphics.Bitmap.Config.ARGB_8888);
+        screen.draw(new android.graphics.Canvas(image));
+        float scale = screen.getWidth() / 1000f;
+        assertEquals("The control remains above the raised live video", android.graphics.Color.BLUE,
+            image.getPixel((int) (325 * scale), (int) (275 * scale)));
+        assertEquals("Transparent control surroundings preserve the live video", android.graphics.Color.MAGENTA,
+            image.getPixel((int) (400 * scale), (int) (350 * scale)));
+        image.recycle();
+    }
+
+    @Test public void pageScrollRetainsTransparentMiniControls() {
+        withScreen((screen, controls, web, engine) -> {
+            screen.setFullscreen(false);
+            screen.setInlineVisible(true);
+            screen.setControlsVisible(false);
+            screen.layoutVideo(200, 200, 400, 225, 1000);
+            screen.setMiniPlayer(true, 12);
+            ViewGroup frame = (ViewGroup) screen.getChildAt(0);
+            frame.setBackgroundColor(android.graphics.Color.MAGENTA);
+            frame.getChildAt(0).setVisibility(View.INVISIBLE);
+            web.setBackgroundColor(android.graphics.Color.RED);
+            screen.setMiniControlsImage(miniControlsPng());
+            swipePage(screen);
+        }, (screen, controls, web, engine) -> {
+            for (int frame = 0; frame < 4; frame++) assertMiniControlsAboveVideo(screen);
+            screen.setMiniControlsImage("data:image/png;base64,invalid");
+            assertMiniControlsAboveVideo(screen);
+        });
+    }
+
+    @Test public void miniControlsCanArriveAfterScrollingCreatesTheMiniPlayer() {
+        assertControlsArriveDuringScroll(true);
+    }
+
+    @Test public void miniControlsCanArriveDuringWheelScrolling() {
+        assertControlsArriveDuringScroll(false);
+    }
+
+    private void assertControlsArriveDuringScroll(boolean startInline) {
+        withScreen((screen, controls, web, engine) -> {
+            screen.setFullscreen(false);
+            screen.setInlineVisible(true);
+            screen.setControlsVisible(false);
+            screen.layoutVideo(200, 200, 400, 225, 1000);
+            screen.setMiniPlayer(!startInline, 12);
+            ViewGroup frame = (ViewGroup) screen.getChildAt(0);
+            frame.setBackgroundColor(android.graphics.Color.MAGENTA);
+            frame.getChildAt(0).setVisibility(View.INVISIBLE);
+            web.pageLoaded = new java.util.concurrent.CountDownLatch(1);
+            web.setWebViewClient(new android.webkit.WebViewClient() {
+                @Override public void onPageFinished(WebView view, String url) { web.pageLoaded.countDown(); }
+            });
+            web.loadData("<html><body style='height:10000px;background:red'></body></html>", "text/html", "UTF-8");
+        }, (screen, controls, web, engine) -> {
+            if (startInline) {
+                MotionEvent down = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 100, 500, 0);
+                screen.dispatchTouchEvent(down);
+                down.recycle();
+                screen.setMiniPlayer(true, 12);
+            }
+            web.scrollTo(0, 120);
+        }, (screen, controls, web, engine) -> {
+            assertTrue("The WebView must actually scroll", web.getScrollY() > 0);
+            screen.setMiniControlsImage(miniControlsPng());
+            assertMiniControlsAboveVideo(screen);
+            web.scrollTo(0, 160);
+        }, (screen, controls, web, engine) -> assertMiniControlsAboveVideo(screen));
     }
 
     @Test public void pageScrollCannotCoverAStationaryMiniPlayer() {

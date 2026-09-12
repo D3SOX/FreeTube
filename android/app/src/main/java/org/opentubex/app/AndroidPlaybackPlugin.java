@@ -88,6 +88,11 @@ public class AndroidPlaybackPlugin extends Plugin {
         mainHandler.post(() -> {
             if (!checkOwner(call)) return;
             if (screen != null) {
+                if (call.getData().has("miniControlsImage")) {
+                    screen.setMiniControlsImage(call.getString("miniControlsImage"));
+                    call.resolve();
+                    return;
+                }
                 if (call.getBoolean("endScroll", false)) {
                     screen.finishPageScroll();
                     call.resolve();

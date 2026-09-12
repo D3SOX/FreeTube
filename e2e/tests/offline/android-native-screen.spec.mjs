@@ -10,6 +10,7 @@ const inlineHelper = async name => (await readFile(new URL(name, helperRoot), 'u
   .replace(/^import .*\n/gm, '').replace(/^export function /gm, 'function ')
 const screenSource = await inlineHelper('androidNativeScreen.js')
 const overrideSource = await inlineHelper('overrideShakaMethods.js')
+const snapshotSource = await inlineHelper('miniControlsSnapshot.js')
 const mediaElementSource = await inlineHelper('androidMediaElement.js')
 const screenCss = await readFile(new URL('androidNativeScreen.css', helperRoot), 'utf8')
 
@@ -17,7 +18,7 @@ test.use({ seed: { settings: { videoPlaybackEngine: 'built-in', ytDlpPlaybackEng
 
 async function openNativeScreen(page, fullscreen = true) {
   await page.addStyleTag({ content: screenCss })
-  await page.addScriptTag({ content: `{const requestAnimationFrame = callback => window.requestAnimationFrame(time => { if (!window.holdNativeLayout) callback(time) });${overrideSource}\n${screenSource}\nwindow.createNativeScreenTest = createAndroidNativeScreen}` })
+  await page.addScriptTag({ content: `{const requestAnimationFrame = callback => window.requestAnimationFrame(time => { if (!window.holdNativeLayout) callback(time) });${overrideSource}\n${snapshotSource}\n${screenSource}\nwindow.createNativeScreenTest = createAndroidNativeScreen}` })
   await page.evaluate(fullscreen => {
     const createScreen = window.createNativeScreenTest
     const element = document.querySelector('.ftVideoPlayer video')
@@ -419,11 +420,14 @@ for (const uiScale of [100, 125]) {
       await player.evaluate(element => document.querySelector('#cross-tab-mini-player-layer').append(element))
       await expect(page.locator('[data-native-player-backdrop]')).toBeAttached()
       await expect.poll(() => page.evaluate(() => window.nativeLayoutTest.miniPlayer)).toBe(true)
-      const result = await page.evaluate(() => {
+      const result = await page.evaluate(async () => {
         window.nativeScreenTest.action('scroll-start')
         const player = document.querySelector('.ftVideoPlayer')
-        const hidden = getComputedStyle(player.querySelector('.scrollMiniPlayerControls')).visibility
+        const beforeScroll = window.scrollY
         window.scrollBy(0, 180)
+        await new Promise(resolve => requestAnimationFrame(resolve))
+        const scrolled = window.scrollY > beforeScroll
+        const duringScroll = getComputedStyle(player.querySelector('.scrollMiniPlayerControls')).visibility
         const calls = []
         window.nativeScreenTestController.layout = async value => calls.push(value)
         window.nativeScreenTest.action('scroll-end')
@@ -433,14 +437,15 @@ for (const uiScale of [100, 125]) {
         const origin = content.getBoundingClientRect()
         const context = document.createElement('canvas').getContext('2d')
         return {
-          hidden,
+          duringScroll,
+          scrolled,
           restored: getComputedStyle(player.querySelector('.scrollMiniPlayerControls')).visibility,
           occluded: context.isPointInPath(new Path2D(clip), bounds.x + bounds.width / 2 - origin.x,
             bounds.y + bounds.height / 2 - origin.y, 'evenodd'),
           refreshedBeforeHandoff: calls[0].miniPlayer && calls[1].endScroll,
         }
       })
-      expect(result).toEqual({ hidden: 'hidden', restored: 'visible', occluded: false, refreshedBeforeHandoff: true })
+      expect(result).toEqual({ duringScroll: 'visible', scrolled: true, restored: 'visible', occluded: false, refreshedBeforeHandoff: true })
       await page.evaluate(() => window.nativeScreenTest.destroy())
     })
     test('keeps a transparent rounded video window and an opaque themed page', async ({ app, page }) => {
@@ -1651,4 +1656,151 @@ for (const gesture of ['drag', 'resize']) {
     await expect(page.locator('body')).not.toHaveClass(/scroll-mini-player-grabbing/)
     await page.evaluate(() => window.nativeScreenTest.destroy())
   })
+}
+
+test('mini control snapshots preserve transparency and cache scrolling frames', async ({ page }) => {
+  await page.addScriptTag({ content: `${snapshotSource}\nwindow.createSnapshotTest = createMiniControlsSnapshot` })
+  const result = await page.evaluate(async () => {
+    const root = document.createElement('div')
+    root.innerHTML = '<button class="scrollMiniPointerLayer"></button><div class="snapshotHandle"></div><div class="snapshotButton" style="position:absolute;left:80px;top:20px;width:52px;height:52px;border-radius:50%;background:rgba(0,0,0,.55)"><svg width="20" height="20" viewBox="0 0 20 20"><path fill="white" d="M3 2h4v16H3zm10 0h4v16h-4z"/></svg></div>'
+    root.style.cssText = 'position:relative;width:200px;height:100px'
+    const style = document.createElement('style')
+    style.textContent = '.snapshotHandle::after { content:"";position:absolute;left:10px;top:10px;width:36px;height:4px;background:rgba(255,255,255,.7) }'
+    document.body.append(style, root)
+    const images = []
+    let resolveImage
+    let rejectImage
+    const snapshot = window.createSnapshotTest(image => { images.push(image); resolveImage?.(image) }, error => rejectImage?.(error))
+    const next = () => new Promise((resolve, reject) => { resolveImage = resolve; rejectImage = reject })
+    root.style.visibility = 'hidden'
+    snapshot.update(root, 200, 100, false)
+    await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))
+    const hiddenCount = images.length
+    root.style.visibility = 'visible'
+    root.style.opacity = '0'
+    snapshot.update(root, 200, 100, true)
+    await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))
+    const transparentCount = images.length
+    root.style.opacity = '1'
+    const first = next()
+    snapshot.update(root, 200, 100, true)
+    const data = await first
+    const image = new Image()
+    image.src = data
+    await image.decode()
+    const canvas = document.createElement('canvas')
+    canvas.width = image.width
+    canvas.height = image.height
+    const context = canvas.getContext('2d')
+    context.drawImage(image, 0, 0)
+    const scale = image.width / 200
+    const alpha = (x, y) => context.getImageData(Math.floor(x * scale), Math.floor(y * scale), 1, 1).data[3]
+    const pixels = [alpha(0, 0), alpha(20, 11), alpha(90, 60)]
+    for (let index = 0; index < 30; index++) snapshot.update(root, 200, 100, true)
+    const frozenCount = images.length
+    root.querySelector('.snapshotButton').style.backgroundColor = 'red'
+    snapshot.invalidate()
+    snapshot.update(root, 200, 100, true)
+    const changedWhileFrozen = images.length
+    const second = next()
+    snapshot.invalidate(true)
+    snapshot.update(root, 200, 100, true)
+    await second
+    const changedCount = images.length
+    snapshot.update(root, 200, 100, false)
+    snapshot.invalidate()
+    snapshot.update(root, 200, 100, false)
+    const unchangedCount = images.length
+    // Leaving mini-player mode cancels an outstanding rasterization.
+    root.querySelector('.snapshotButton').style.backgroundColor = 'blue'
+    snapshot.invalidate()
+    snapshot.update(root, 200, 100, false)
+    snapshot.update(null, 0, 0, false)
+    await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))
+    const cleared = images.at(-1)
+    snapshot.destroy()
+    root.remove()
+    style.remove()
+    return { pixels, hiddenCount, transparentCount, frozenCount, changedWhileFrozen, changedCount, unchangedCount, cleared }
+  })
+  expect(result.pixels).toEqual([0, 179, 140])
+  expect(result.hiddenCount).toBe(0)
+  expect(result.transparentCount).toBe(0)
+  expect(result.frozenCount).toBe(1)
+  expect(result.changedWhileFrozen).toBe(1)
+  expect(result.changedCount).toBe(2)
+  expect(result.unchangedCount).toBe(2)
+  expect(result.cleared).toBeNull()
+})
+
+for (const iconPack of ['material', 'remix']) {
+  for (const uiScale of [100, 125]) {
+    test.describe(`native snapshot glyph ${iconPack} ${uiScale}%`, () => {
+      test.use({ seed: { settings: { videoPlaybackEngine: 'built-in', ytDlpPlaybackEngineDefaultMigration: true, iconPack, uiScale } } })
+      test('keeps the actual pause glyph aligned with the shared control', async ({ app, page }) => {
+        await mockPlayableWatchPage(app, page)
+        await openMockedVideo(page)
+        await openNativeScreen(page, false)
+        await page.evaluate(() => document.querySelector('.ftVideoPlayer video').play())
+        const player = page.locator('.ftVideoPlayer')
+        await player.evaluate(element => window.scrollTo(0, scrollY + element.getBoundingClientRect().bottom + 200))
+        await expect(player).toHaveClass(/scrollMiniPlayer/)
+        await expect(player).not.toHaveClass(/scrollMiniPlayerAnimating/)
+        const button = player.locator('.scrollMiniPlayPause')
+        await button.evaluate(element => {
+          element.classList.remove('isHidden')
+          element.style.setProperty('opacity', '1', 'important')
+          element.style.setProperty('transition', 'none', 'important')
+          element.closest('.scrollMiniPlayerControls').style.background = 'black'
+        })
+        await expect(button.locator('[data-icon="pause"]')).toBeAttached()
+        await page.addScriptTag({ content: `${snapshotSource}\nwindow.createSnapshotTest = createMiniControlsSnapshot` })
+        const snapshot = await page.evaluate(() => new Promise((resolve, reject) => {
+          const root = document.querySelector('.scrollMiniPlayerControls')
+          const bounds = root.getBoundingClientRect()
+          const button = root.querySelector('.scrollMiniPlayPause').getBoundingClientRect()
+          const snapshot = window.createSnapshotTest(image => {
+            snapshot.destroy()
+            resolve({ image, width: bounds.width, height: bounds.height, button: { x: button.x - bounds.x, y: button.y - bounds.y, width: button.width, height: button.height } })
+          }, reject)
+          snapshot.update(root, bounds.width, bounds.height, false)
+        }))
+        const reference = await button.screenshot()
+        const positions = await page.evaluate(async ({ snapshot, reference }) => {
+          async function centroid(data, crop) {
+            const image = new Image()
+            image.src = data
+            await image.decode()
+            const canvas = document.createElement('canvas')
+            canvas.width = image.width
+            canvas.height = image.height
+            const context = canvas.getContext('2d')
+            context.drawImage(image, 0, 0)
+            const pixels = context.getImageData(0, 0, image.width, image.height).data
+            const scale = crop ? image.width / snapshot.width : image.width / snapshot.button.width
+            const left = crop ? crop.x * scale : 0
+            const top = crop ? crop.y * scale : 0
+            const right = crop ? (crop.x + crop.width) * scale : image.width
+            const bottom = crop ? (crop.y + crop.height) * scale : image.height
+            let sum = 0
+            let count = 0
+            for (let y = Math.ceil(top); y < Math.floor(bottom); y++) {
+              for (let x = Math.ceil(left); x < Math.floor(right); x++) {
+                const offset = (y * image.width + x) * 4
+                if (pixels[offset] > 230 && pixels[offset + 1] > 230 && pixels[offset + 2] > 230 && pixels[offset + 3] > 200) {
+                  sum += (x + 0.5 - left) / scale
+                  count++
+                }
+              }
+            }
+            if (!count) throw new Error('Pause glyph has no opaque white pixels')
+            return sum / count
+          }
+          return { dom: await centroid(reference), snapshot: await centroid(snapshot.image, snapshot.button) }
+        }, { snapshot, reference: `data:image/png;base64,${reference.toString('base64')}` })
+        expect(Math.abs(positions.dom - positions.snapshot), JSON.stringify(positions)).toBeLessThan(0.75)
+        await page.evaluate(() => window.nativeScreenTest.destroy())
+      })
+    })
+  }
 }

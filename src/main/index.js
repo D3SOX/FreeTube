@@ -2,11 +2,12 @@ import {
   app, BrowserWindow, dialog, Menu, ipcMain,
   powerSaveBlocker, screen, session,
   nativeTheme, net, protocol, clipboard,
-  shell, Tray, Notification
+  shell, Tray, Notification, ShareMenu
 } from 'electron'
 import './applicationDataBootstrap'
 import { isPortableBuild } from './applicationDataPaths'
 import path from 'path'
+import { createDesktopShareHandler, loadWindowsShare } from './desktopShare'
 import cp from 'child_process'
 import { randomUUID } from 'crypto'
 import { load as loadYaml } from 'js-yaml'
@@ -3384,6 +3385,14 @@ function runApp() {
       event.reply(IpcChannels.OPEN_URL, pendingOpenUrl)
     }
   }
+
+  ipcMain.handle(IpcChannels.SHARE_LINK, createDesktopShareHandler({
+    platform: process.platform,
+    isTrustedSender: event => event.senderFrame === event.sender.mainFrame && isOpenTubeXUrl(event.senderFrame.url),
+    getWindow: event => BrowserWindow.fromWebContents(event.sender),
+    ShareMenu,
+    loadWindowsShare: () => loadWindowsShare(__dirname, process.env.NODE_ENV === 'development')
+  }))
 
   ipcMain.on(IpcChannels.APP_READY, (event) => {
     openPendingUrlForReadyWebContents(event)

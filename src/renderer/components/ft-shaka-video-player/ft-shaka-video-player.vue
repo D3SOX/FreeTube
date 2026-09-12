@@ -1312,9 +1312,9 @@
           class="scrollMiniPointerLayer"
           :aria-label="scrollMiniPlayerStashed ? $t('Video.Player.Scroll Mini Player.Back to Top') : undefined"
           :tabindex="scrollMiniPlayerStashed ? 0 : -1"
-          @pointerdown.stop.prevent="restoreStashedScrollMiniPlayer"
-          @click.stop.prevent="restoreStashedScrollMiniPlayer"
-          @keydown.enter.space.stop.prevent="restoreStashedScrollMiniPlayer"
+          @pointerdown.stop.prevent="revealScrollMiniPlayerControls"
+          @click.stop.prevent="revealScrollMiniPlayerControls"
+          @keydown.enter.space.stop.prevent="revealScrollMiniPlayerControls"
           @pointermove="handleScrollMiniControlsPointerMove"
           @wheel.passive="suppressScrollMiniPlayPausePointerReveal"
         />
@@ -1363,7 +1363,7 @@
           <ft-icon :icon="['fas', scrollMiniIsPaused ? 'play' : 'pause']" />
         </button>
         <div
-          v-if="!scrollMiniPlayerStashed"
+          v-if="!useNativePlayback && !scrollMiniPlayerStashed"
           class="scrollMiniVolume"
           :class="{ isExpanded: scrollMiniVolumeExpanded }"
           @mouseenter="handleScrollMiniVolumeMouseEnter"
