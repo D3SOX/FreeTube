@@ -1,10 +1,19 @@
 import { DBHistoryHandlers } from '../../../datastores/handlers/index'
+import { parseSubscriptionSeenVideos } from '../../../subscriptionSeenVideos.js'
 import {
   canMarkHistoryEntryAsWatched,
   migrateLegacyHistoryRecord,
 } from '../../helpers/history'
 
 const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000
+
+async function supersedeUnseenMarks(dispatch, rootGetters, records) {
+  const watchedRecords = new Map(records.filter(record => record.isWatched === true).map(record => [record.videoId, record]))
+  const videos = parseSubscriptionSeenVideos(rootGetters?.getSubscriptionSeenVideos)
+    .filter(mark => watchedRecords.has(mark.videoId) && mark.unseenAt >= mark.seenAt)
+    .map(mark => ({ videoId: mark.videoId, isMembersOnly: watchedRecords.get(mark.videoId).isMembersOnly === true }))
+  if (videos.length > 0) await dispatch('mergeSubscriptionSeenVideos', { videos })
+}
 
 function getRetentionCutoff(days) {
   const parsedDays = Number(days)
@@ -55,10 +64,11 @@ const actions = {
     }
   },
 
-  async updateHistory({ commit }, record) {
+  async updateHistory({ commit, dispatch, rootGetters }, record) {
     try {
       await DBHistoryHandlers.upsert(record)
       commit('upsertToHistoryCache', record)
+      if (record.isWatched === true) await supersedeUnseenMarks(dispatch, rootGetters, [record])
     } catch (errMessage) {
       console.error(errMessage)
     }
@@ -83,8 +93,10 @@ const actions = {
 
       commit('setHistoryCacheSorted', sortedRecords)
       commit('setHistoryCacheById', Object.fromEntries(migratedHistoryItems))
+      return true
     } catch (errMessage) {
       console.error(errMessage)
+      return false
     }
   },
 
@@ -102,7 +114,7 @@ const actions = {
     }
   },
 
-  async markAllHistoryAsWatched({ dispatch, state }) {
+  async markAllHistoryAsWatched({ dispatch, state, rootGetters }) {
     let markedCount = 0
     const records = state.historyCacheSorted.map(record => {
       if (record.isWatched === true || !canMarkHistoryEntryAsWatched(record)) {
@@ -115,7 +127,9 @@ const actions = {
 
     if (markedCount > 0) {
       const recordsById = new Map(records.map(record => [record.videoId, record]))
-      await dispatch('overwriteHistory', recordsById)
+      if (await dispatch('overwriteHistory', recordsById)) {
+        await supersedeUnseenMarks(dispatch, rootGetters, records)
+      }
     }
 
     return markedCount

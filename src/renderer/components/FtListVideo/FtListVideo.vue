@@ -923,7 +923,7 @@ const videoMenuOptions = computed(() => {
           icon: ['fas', 'check']
         }]
       : [],
-    ...inSubscriptions.value
+    ...inSubscriptions.value && typeof props.data.isNewInSubscriptionFeed === 'boolean'
       ? [{
           label: t('Subscriptions.Mark as Unseen'),
           value: 'markAsUnseen',

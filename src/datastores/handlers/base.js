@@ -4,7 +4,7 @@ import { PlaylistVideoAddResult } from '../../constants'
 import { hasReachedWatchedThreshold, migrateLegacyHistoryRecord } from '../../history'
 import { resolveSearchHistoryEntry } from '../../search-history'
 import { createRecommendationStore } from '../recommendations'
-import { mergeSubscriptionSeenVideos, parseSubscriptionSeenVideos } from '../../subscriptionSeenVideos'
+import { mergeSubscriptionSeenVideos, parseSubscriptionSeenVideos, nextSubscriptionSeenTimestamp } from '../../subscriptionSeenVideos'
 
 const recommendations = createRecommendationStore(db.recommendations)
 
@@ -13,13 +13,23 @@ const HISTORY_WATCHED_STATUS_MIGRATION_ID = 'historyWatchedStatusMigrated'
 class Settings {
   static pendingSeenVideosUpdate = Promise.resolve()
 
-  static mergeSeenVideos(entries) {
+  static mergeSeenVideos(update) {
     // Electron windows share this queue in the main process. Read the saved
     // marks inside it so concurrent windows cannot replace each other's marks.
     this.pendingSeenVideosUpdate = this.pendingSeenVideosUpdate.catch(() => {}).then(async () => {
       const saved = await db.settings.findOneAsync({ _id: 'subscriptionSeenVideos' })
       const local = parseSubscriptionSeenVideos(saved?.value)
-      const incoming = parseSubscriptionSeenVideos(entries)
+      // Allocate local action timestamps inside the shared queue. Renderers
+      // may still have identical stale getters while another write is pending.
+      const timestamp = nextSubscriptionSeenTimestamp(local)
+      const incoming = parseSubscriptionSeenVideos(Array.isArray(update?.videos)
+        ? update.videos.map(video => ({
+            videoId: video.videoId,
+            isMembersOnly: video.isMembersOnly,
+            seenAt: timestamp,
+            ...(update.isUnseen === true ? { unseenAt: timestamp } : {})
+          }))
+        : update)
       const videoIds = [...new Set([...local, ...incoming].map(entry => entry.videoId))]
       await db.history.ensureIndexAsync({ fieldName: 'videoId' })
       const historyById = {}

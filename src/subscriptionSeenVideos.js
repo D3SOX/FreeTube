@@ -18,8 +18,6 @@ export function parseSubscriptionSeenVideos(value) {
 export function mergeSubscriptionSeenVideos(local, remote, historyById = {}) {
   const byId = new Map()
   for (const entry of [...parseSubscriptionSeenVideos(local), ...parseSubscriptionSeenVideos(remote)]) {
-    // Watch history already excludes these videos from the new feed and badges.
-    if (isHistoryEntryWatched(historyById[entry.videoId])) continue
     const previous = byId.get(entry.videoId)
     // Retain the reverse action so an older synced seen mark cannot undo it.
     const unseenAt = Math.max(previous?.unseenAt ?? 0,
@@ -36,6 +34,9 @@ export function mergeSubscriptionSeenVideos(local, remote, historyById = {}) {
   // Evict oldest marks only after removing watched videos. Break timestamp ties
   // by ID so devices retain the same set regardless of merge order.
   return [...byId.values()]
+    // Merge both halves before pruning: a reverse mark still needs to clear
+    // older watched history on other devices, even after another seen action.
+    .filter(entry => entry.unseenAt > 0 || !isHistoryEntryWatched(historyById[entry.videoId]))
     .sort((a, b) => Math.max(b.seenAt, b.unseenAt ?? 0) - Math.max(a.seenAt, a.unseenAt ?? 0) || byVideoId(a, b))
     .slice(0, MAX_SUBSCRIPTION_SEEN_VIDEOS)
     .sort(byVideoId)

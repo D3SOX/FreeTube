@@ -445,6 +445,27 @@ test.describe('new subscriptions feed', () => {
     await expect(relaunched.page.getByText('Previously seen video', { exact: true })).toHaveCount(0)
   })
 
+  test('marking an unseen video watched again supersedes its reverse mark without changing progress', async ({ page }) => {
+    await goTo(page, 'subscriptions')
+    const card = page.locator('.ft-list-video').filter({ hasText: 'Watched new video' })
+    await card.locator('.title').click({ button: 'right' })
+    await page.getByRole('menuitem', { name: 'Mark as unseen', exact: true }).click()
+    await expect(card).not.toHaveClass(/watched/)
+    await card.locator('.title').click({ button: 'right' })
+    await page.getByRole('menuitem', { name: 'Mark As Watched', exact: true }).click()
+    await expect(card).toHaveClass(/watched/)
+    await expect.poll(() => page.evaluate(() => {
+      const store = document.querySelector('#app').__vue_app__.config.globalProperties.$store
+      const mark = JSON.parse(store.getters.getSubscriptionSeenVideos).find(entry => entry.videoId === 'watched-new')
+      return mark?.seenAt > mark?.unseenAt
+    })).toBe(true)
+    const history = await page.evaluate(() => (
+      document.querySelector('#app').__vue_app__.config.globalProperties.$store.getters.getHistoryCacheById['watched-new']
+    ))
+    expect(history.watchProgress).toBe(watchedVideo.lengthSeconds)
+    expect(history.timeWatched).toBe(now)
+  })
+
   for (const [tab, title] of [['shorts', 'New short'], ['live', 'New live stream']]) {
     test(`marks seen ${tab} unseen in the open feed`, async ({ page }) => {
       await goTo(page, 'subscriptions')
@@ -932,6 +953,16 @@ test.describe('new feed settings and seen state', () => {
 
     expect(layout.textTop).toBeGreaterThanOrEqual(layout.authorBottom)
     expect(layout.textWidth).toBeGreaterThan(layout.postWidth * 0.8)
+  })
+
+  test('omits Mark as unseen from videos attached to subscription posts', async ({ page }) => {
+    await goTo(page, 'subscriptions')
+    await page.locator('[data-subscription-feed-tab="posts"]').click()
+
+    const attachedVideo = page.locator('.ft-list-post .ft-list-video').filter({ hasText: 'Attached video' })
+    await attachedVideo.locator('.title').click({ button: 'right' })
+    await expect(page.getByRole('menuitem', { name: 'Open in a New Window', exact: true })).toBeVisible()
+    await expect(page.getByRole('menuitem', { name: 'Mark as unseen', exact: true })).toHaveCount(0)
   })
 
   test('keeps an attached video inside a post as a full width card in list display mode', async ({ page }) => {
