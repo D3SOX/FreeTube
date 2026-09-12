@@ -29,7 +29,7 @@ const source = (await readFile(new URL('../../src/renderer/helpers/subscriptions
 
 // Exercise the real refresh, fallback, cache, and notification paths with fake
 // platform APIs. Webpack-only imports are supplied in the isolated context.
-function createRefresh({ online = true, feed = 'Shorts', error = new TypeError('Failed to fetch'), webCors = false, backend = 'local', fallbackWorks = false, rssStatus = 200, channelInfo = { has_shorts: true, getShorts: async () => ({ videos: [] }) }, playlistError = null, stallChannelProbe = false, channelStatus = rssStatus, scraperError = null, shortPublishDate = '2026-09-06T12:00:00Z', beforeShortMetadata = async () => {} } = {}) {
+function createRefresh({ online = true, feed = 'Shorts', error = new TypeError('Failed to fetch'), webCors = false, backend = 'local', fallbackWorks = false, rssStatus = 200, channelInfo = { has_shorts: true, getShorts: async () => ({ videos: [] }) }, playlistError = null, stallChannelProbe = false, channelStatus = rssStatus, scraperError = null, shortPublishDate = '2026-09-06T12:00:00Z', beforeShortMetadata = async () => {}, finishNative = async () => {} } = {}) {
   const window = new EventTarget()
   const navigator = { onLine: online }
   const toasts = []
@@ -86,6 +86,7 @@ function createRefresh({ online = true, feed = 'Shorts', error = new TypeError('
     mapConcurrently, buildRequestDiagnostic, classifyRequestFailure, formatRequestDiagnostic, getSubscriptionsForFeed,
     reconcileFetchedSubscriptionEntries, extractAssignedJsonObject, getSubscriptionVideoSortTimestamp, updateUpcomingPremiereState,
     isAndroidSubscriptionRefreshActive: async () => false,
+    finishAndroidSubscriptionRefresh: finishNative,
     includeAutomaticDownloadChannels: channels => channels,
     startAutomaticDownloadsForChannel: async () => {},
     getChannelPlaylistId: id => id,
@@ -144,6 +145,27 @@ function createRefresh({ online = true, feed = 'Shorts', error = new TypeError('
 }
 
 const settle = () => new Promise(resolve => setTimeout(resolve, 30))
+
+test('a mobile feed does not release its refresh promise until native finishing completes', async () => {
+  const finishing = Promise.withResolvers()
+  const release = Promise.withResolvers()
+  const app = createRefresh({ finishNative: async () => { finishing.resolve(); await release.promise } })
+  app.reconnect()
+  let completed = false
+  const refresh = app.refresh({ t: key => key }).then(() => { completed = true })
+  try {
+    await finishing.promise
+    await settle()
+    assert.equal(completed, false)
+    release.resolve()
+    await refresh
+    assert.equal(completed, true)
+  } finally {
+    release.resolve()
+    app.cancelSubscriptionRefresh()
+    await refresh
+  }
+})
 
 test('mobile Shorts refresh waits offline without requests or error toasts, then resumes', async () => {
   const app = createRefresh({ online: false })

@@ -7,6 +7,7 @@ const SubscriptionRefresh = process.env.IS_CAPACITOR
   : null
 
 const startController = createSubscriptionRefreshStartController()
+let batchNotificationsDenied = null
 
 export async function requestAndroidSubscriptionRefreshNotificationPermission() {
   try {
@@ -26,7 +27,9 @@ export async function startAndroidSubscriptionRefresh(refreshId, title, cancelLa
 
   let notificationsDenied = false
   const start = startController.begin(refreshId, () => (
-    requestAndroidSubscriptionRefreshNotificationPermission()
+    (batchNotificationsDenied === null
+      ? requestAndroidSubscriptionRefreshNotificationPermission()
+      : Promise.resolve(batchNotificationsDenied))
       .then(denied => {
         notificationsDenied = denied
         return SubscriptionRefresh.start({ title, cancelLabel })
@@ -59,7 +62,7 @@ export function finishAndroidSubscriptionRefresh(refreshId) {
   const start = startController.finish(refreshId)
   if (!start) return
 
-  start.then(token => token === null ? null : SubscriptionRefresh.finish({ token })).catch(error => {
+  return start.then(token => token === null ? null : SubscriptionRefresh.finish({ token })).catch(error => {
     console.error('Failed to finish Android subscription refresh work', error)
   })
 }
@@ -91,4 +94,27 @@ export async function addAndroidSubscriptionRefreshCancelledListener(listener) {
   if (!SubscriptionRefresh) return () => {}
   const handle = await SubscriptionRefresh.addListener('cancelled', listener)
   return () => handle.remove()
+}
+
+export async function withAndroidSubscriptionRefreshBatch(refresh, notification) {
+  if (!SubscriptionRefresh) return refresh()
+  try {
+    // Ask while the activity is available, before the batch can outlive it.
+    const notificationsDenied = await requestAndroidSubscriptionRefreshNotificationPermission()
+    const { acquired } = await SubscriptionRefresh.beginBatch(notification)
+    if (!acquired) return
+    batchNotificationsDenied = notificationsDenied
+  } catch (error) {
+    console.error('Failed to begin Android subscription refresh batch', error)
+    return
+  }
+  try {
+    return await refresh()
+  } finally {
+    try {
+      await SubscriptionRefresh.endBatch()
+    } finally {
+      batchNotificationsDenied = null
+    }
+  }
 }

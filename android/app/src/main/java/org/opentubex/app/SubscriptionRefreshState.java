@@ -1,5 +1,7 @@
 package org.opentubex.app;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
 
@@ -25,15 +27,15 @@ final class SubscriptionRefreshState {
     private final SubscriptionRefreshNotificationProgress notificationProgress =
         new SubscriptionRefreshNotificationProgress();
     private CountDownLatch completion = new CountDownLatch(0);
-    private Consumer<Boolean> activeListener;
+    private final List<Consumer<Boolean>> activeListeners = new ArrayList<>();
 
     synchronized void observeActive(Consumer<Boolean> listener) {
-        activeListener = listener;
+        activeListeners.add(listener);
         listener.accept(token != null);
     }
 
     synchronized void removeActiveListener(Consumer<Boolean> listener) {
-        if (activeListener == listener) activeListener = null;
+        activeListeners.remove(listener);
     }
 
     synchronized void begin(String nextToken, String nextTitle, String nextCancelLabel) {
@@ -44,7 +46,17 @@ final class SubscriptionRefreshState {
         progress = 0;
         notificationProgress.reset();
         completion = new CountDownLatch(1);
-        if (activeListener != null) activeListener.accept(true);
+        for (Consumer<Boolean> listener : new ArrayList<>(activeListeners)) listener.accept(true);
+    }
+
+    synchronized Snapshot nextFeed(String expectedToken, String nextTitle, String nextCancelLabel) {
+        if (!isCurrent(expectedToken)) return null;
+        title = nextTitle;
+        cancelLabel = nextCancelLabel;
+        progress = 0;
+        notificationProgress.reset();
+        // Keep the worker's completion latch while advancing the batch.
+        return snapshot(expectedToken);
     }
 
     synchronized boolean update(String expectedToken, int nextProgress) {
@@ -80,7 +92,7 @@ final class SubscriptionRefreshState {
         progress = 0;
         notificationProgress.reset();
         completion.countDown();
-        if (activeListener != null) activeListener.accept(false);
+        for (Consumer<Boolean> listener : new ArrayList<>(activeListeners)) listener.accept(false);
         return true;
     }
 

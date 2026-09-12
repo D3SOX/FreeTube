@@ -42,6 +42,19 @@ public class SubscriptionRefreshStateTest {
     }
 
     @Test
+    public void reopeningAppDoesNotDisconnectRetainedRenderer() {
+        SubscriptionRefreshState state = new SubscriptionRefreshState();
+        List<Boolean> retained = new ArrayList<>();
+        state.observeActive(retained::add);
+        state.begin("current", "Refreshing", "Cancel");
+        List<Boolean> reopened = new ArrayList<>();
+        state.observeActive(reopened::add);
+        state.finish("current");
+        assertEquals(Arrays.asList(false, true, false), retained);
+        assertEquals(Arrays.asList(true, false), reopened);
+    }
+
+    @Test
     public void onlyCurrentRefreshCanUpdateOrFinish() {
         SubscriptionRefreshState state = new SubscriptionRefreshState();
         state.begin("current", "Refreshing subscriptions", "Cancel");

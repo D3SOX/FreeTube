@@ -59,10 +59,12 @@ for (const eventFirst of [false, true]) {
       async allowSleep() { wakeCalls.push(false) },
     })
     playbackScreenWake.bindVideo(Object.assign(new EventTarget(), { paused: false, ended: false }), () => true)
+    const window = new EventTarget()
     let listener
     let pauses = 0
     let backPresses = 0
     const enable = vm.runInNewContext(`${integration}\nenableCapacitorIntegrations`, {
+      window,
       Capacitor: { getPlatform: () => 'android' },
       handleAndroidBack: () => { backPresses++ },
       CapacitorApp: {
@@ -96,7 +98,11 @@ for (const eventFirst of [false, true]) {
     assert.equal(backPresses, 1, 'native back events reach the existing app navigation handler')
     await setImmediate()
     assert.equal(wakeCalls.at(-1), !eventFirst, 'wake follows the newest native app lifecycle state')
+    window.dispatchEvent(new Event('opentubex:android-task-removed'))
+    assert.equal(pauses, eventFirst ? 2 : 1, 'task removal pauses playback while refresh continues')
     cleanup()
+    window.dispatchEvent(new Event('opentubex:android-task-removed'))
+    assert.equal(pauses, eventFirst ? 2 : 1, 'cleanup removes the task removal listener')
     await setImmediate()
     assert.equal(wakeCalls.at(-1), false, 'app teardown releases screen wake')
     assert.equal(changes.at(-1), null)
@@ -110,6 +116,7 @@ test('Capacitor integrations do not register the Android back button on iOS', as
   const integration = source.slice(start, source.indexOf('\nconst windowTitle', start))
   const listeners = []
   const enable = vm.runInNewContext(`${integration}\nenableCapacitorIntegrations`, {
+    window: new EventTarget(),
     Capacitor: { getPlatform: () => 'ios' },
     playbackScreenWake: createPlaybackScreenWake({ async keepAwake() {}, async allowSleep() {} }),
     AppShortcuts: { addListener: async () => ({ remove() {} }) },

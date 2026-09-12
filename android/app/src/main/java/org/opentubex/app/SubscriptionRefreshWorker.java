@@ -34,6 +34,10 @@ public final class SubscriptionRefreshWorker extends Worker {
     private static final long MAXIMUM_BATCH_MILLIS = 5 * 60 * 1000;
     private static final SubscriptionRefreshState STATE = new SubscriptionRefreshState();
 
+    static boolean isRendererActive(String token) {
+        return STATE.snapshot(token) != null;
+    }
+
     static void observeRendererActive(Consumer<Boolean> listener) {
         STATE.observeActive(listener);
     }
@@ -69,21 +73,33 @@ public final class SubscriptionRefreshWorker extends Worker {
         return true;
     }
 
+    static boolean startNextFeed(Context context, String token, String title, String cancelLabel) {
+        if (SubscriptionRefreshCoordinator.isCancelled(token)) return false;
+        SubscriptionRefreshState.Snapshot snapshot = STATE.nextFeed(token, title, cancelLabel);
+        if (snapshot == null) return false;
+        publishNotification(context, snapshot);
+        return true;
+    }
+
     static boolean update(Context context, String token, int progress) {
         if (!STATE.update(token, progress)) return false;
         SubscriptionRefreshState.Snapshot snapshot = STATE.takeNotificationSnapshot(token);
         if (snapshot == null) return true;
+        publishNotification(context, snapshot);
+        return true;
+    }
+
+    private static void publishNotification(Context context, SubscriptionRefreshState.Snapshot snapshot) {
         context.getSystemService(NotificationManager.class).notify(
             SubscriptionRefreshNotification.NOTIFICATION_ID,
             SubscriptionRefreshNotification.build(
                 context,
-                token,
+                snapshot.token,
                 snapshot.title,
                 snapshot.cancelLabel,
                 snapshot.progress
             )
         );
-        return true;
     }
 
     static boolean finish(Context context, String token) {
