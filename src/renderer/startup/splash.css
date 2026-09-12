@@ -57,15 +57,6 @@
   block-size: 100%;
 }
 
-.startupLabel {
-  position: absolute;
-  inset-block-end: 22px;
-  inline-size: 100%;
-  text-align: center;
-  color: var(--splash-foreground);
-  font-size: 12px;
-}
-
 .startupTrack {
   position: absolute;
   inset-block-end: 0;

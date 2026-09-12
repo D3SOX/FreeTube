@@ -531,7 +531,7 @@ import {
 } from './helpers/mobileLinkActions'
 import { startProgressBarOperation } from './helpers/progressBar'
 import { initializePlatformInfo, isLinuxWayland } from './helpers/platform'
-import { revealStartupSplash, updateStartupSplashLabel } from './helpers/startupSplash'
+import { revealStartupSplash } from './helpers/startupSplash'
 import {
   shouldShowProgressStartToast,
   shouldUseProgressToast,
@@ -1416,8 +1416,6 @@ onMounted(async () => {
     updateTheme()
   })
   updateTheme()
-
-  if (isElectron) updateStartupSplashLabel(t('Theme Discovery.Loading'))
 
   if (defaultInvidiousInstance.value === '') {
     await store.dispatch('setRandomCurrentInvidiousInstance')
