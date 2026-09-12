@@ -1085,8 +1085,15 @@ export function useScrollMiniPlayer({ container, fullWindowEnabled, getUi, isAct
     event.preventDefault()
   }
 
-  function restoreStashedScrollMiniPlayer(event) {
-    if (!scrollMiniPlayerStashed.value) return
+  function revealScrollMiniPlayerControls(event) {
+    if (!scrollMiniPlayerActive.value) return
+    if (!scrollMiniPlayerStashed.value) {
+      // Reveal after the tap ends so its click cannot hit the newly visible
+      // play/pause button underneath the finger.
+      if (event?.type === 'pointerdown') return
+      showScrollMiniPlayPause(true)
+      return
+    }
 
     event?.preventDefault()
     event?.stopPropagation()
@@ -1268,7 +1275,7 @@ export function useScrollMiniPlayer({ container, fullWindowEnabled, getUi, isAct
     scrollMiniScrollToTop,
     restoreInlinePlayer,
     scrollMiniTogglePlayPause,
-    restoreStashedScrollMiniPlayer,
+    revealScrollMiniPlayerControls,
     scrollMiniVolume,
     scrollMiniVolumeExpanded,
     scrollMiniVolumeIcon,

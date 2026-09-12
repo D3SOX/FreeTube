@@ -1732,3 +1732,75 @@ test('mini control snapshots preserve transparency and cache scrolling frames', 
   expect(result.unchangedCount).toBe(2)
   expect(result.cleared).toBeNull()
 })
+
+for (const iconPack of ['material', 'remix']) {
+  for (const uiScale of [100, 125]) {
+    test.describe(`native snapshot glyph ${iconPack} ${uiScale}%`, () => {
+      test.use({ seed: { settings: { videoPlaybackEngine: 'built-in', ytDlpPlaybackEngineDefaultMigration: true, iconPack, uiScale } } })
+      test('keeps the actual pause glyph aligned with the shared control', async ({ app, page }) => {
+        await mockPlayableWatchPage(app, page)
+        await openMockedVideo(page)
+        await openNativeScreen(page, false)
+        await page.evaluate(() => document.querySelector('.ftVideoPlayer video').play())
+        const player = page.locator('.ftVideoPlayer')
+        await player.evaluate(element => window.scrollTo(0, scrollY + element.getBoundingClientRect().bottom + 200))
+        await expect(player).toHaveClass(/scrollMiniPlayer/)
+        await expect(player).not.toHaveClass(/scrollMiniPlayerAnimating/)
+        const button = player.locator('.scrollMiniPlayPause')
+        await button.evaluate(element => {
+          element.classList.remove('isHidden')
+          element.style.setProperty('opacity', '1', 'important')
+          element.style.setProperty('transition', 'none', 'important')
+          element.closest('.scrollMiniPlayerControls').style.background = 'black'
+        })
+        await expect(button.locator('[data-icon="pause"]')).toBeAttached()
+        await page.addScriptTag({ content: `${snapshotSource}\nwindow.createSnapshotTest = createMiniControlsSnapshot` })
+        const snapshot = await page.evaluate(() => new Promise((resolve, reject) => {
+          const root = document.querySelector('.scrollMiniPlayerControls')
+          const bounds = root.getBoundingClientRect()
+          const button = root.querySelector('.scrollMiniPlayPause').getBoundingClientRect()
+          const snapshot = window.createSnapshotTest(image => {
+            snapshot.destroy()
+            resolve({ image, width: bounds.width, height: bounds.height, button: { x: button.x - bounds.x, y: button.y - bounds.y, width: button.width, height: button.height } })
+          }, reject)
+          snapshot.update(root, bounds.width, bounds.height, false)
+        }))
+        const reference = await button.screenshot()
+        const positions = await page.evaluate(async ({ snapshot, reference }) => {
+          async function centroid(data, crop) {
+            const image = new Image()
+            image.src = data
+            await image.decode()
+            const canvas = document.createElement('canvas')
+            canvas.width = image.width
+            canvas.height = image.height
+            const context = canvas.getContext('2d')
+            context.drawImage(image, 0, 0)
+            const pixels = context.getImageData(0, 0, image.width, image.height).data
+            const scale = crop ? image.width / snapshot.width : image.width / snapshot.button.width
+            const left = crop ? crop.x * scale : 0
+            const top = crop ? crop.y * scale : 0
+            const right = crop ? (crop.x + crop.width) * scale : image.width
+            const bottom = crop ? (crop.y + crop.height) * scale : image.height
+            let sum = 0
+            let count = 0
+            for (let y = Math.ceil(top); y < Math.floor(bottom); y++) {
+              for (let x = Math.ceil(left); x < Math.floor(right); x++) {
+                const offset = (y * image.width + x) * 4
+                if (pixels[offset] > 230 && pixels[offset + 1] > 230 && pixels[offset + 2] > 230 && pixels[offset + 3] > 200) {
+                  sum += (x + 0.5 - left) / scale
+                  count++
+                }
+              }
+            }
+            if (!count) throw new Error('Pause glyph has no opaque white pixels')
+            return sum / count
+          }
+          return { dom: await centroid(reference), snapshot: await centroid(snapshot.image, snapshot.button) }
+        }, { snapshot, reference: `data:image/png;base64,${reference.toString('base64')}` })
+        expect(Math.abs(positions.dom - positions.snapshot), JSON.stringify(positions)).toBeLessThan(0.75)
+        await page.evaluate(() => window.nativeScreenTest.destroy())
+      })
+    })
+  }
+}
