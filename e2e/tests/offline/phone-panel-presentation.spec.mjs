@@ -88,3 +88,33 @@ test('comments retain their inner scroll position through fullscreen rotation an
   await expect.poll(() => viewport.evaluate(el => el.scrollTop)).toBe(0)
   await expect(viewport.locator('.os-scrollbar-vertical')).toHaveClass(/os-scrollbar-unusable/)
 })
+
+for (const mode of ['native', 'browser']) {
+  test(`fullscreen playlist action opens above a suspended phone panel (${mode})`, async ({ app, page }) => {
+    await mockPlayableWatchPage(app, page)
+    await openMockedVideo(page)
+    await setWindowSize(app, page, { width: 480, height: 800 })
+    if (mode === 'browser') await page.setViewportSize({ width: 480, height: 800 })
+    const watch = await watchViewHandle(page)
+    await watch.evaluate(vm => vm.openPhonePanel('description'))
+    const panel = page.locator('.dockedSheet[open]')
+    await expect(panel).toBeVisible()
+    const player = page.locator('.ftVideoPlayer')
+    await player.evaluate((el, mode) => mode === 'native'
+      ? el.setAttribute('data-native-player-screen', '')
+      : el.requestFullscreen(), mode)
+    await expect(panel).toHaveCount(0)
+    await player.locator('.fullscreenPlaylistAction > button').click({ force: true })
+    const picker = page.locator('.mobileSheet[open]')
+    await expect(picker.locator('.playlistSearch')).toBeVisible()
+    expect(await picker.evaluate(el => el.matches(':modal'))).toBe(true)
+    await picker.getByRole('button', { name: 'Close', exact: true }).click()
+    await expect(picker).toHaveCount(0)
+    await player.evaluate((el, mode) => mode === 'native'
+      ? el.removeAttribute('data-native-player-screen')
+      : document.exitFullscreen(), mode)
+    await expect(panel).toBeVisible()
+    await expect(panel).toContainText('Description')
+    await expect(page.locator('.playlistSearch')).toHaveCount(0)
+  })
+}

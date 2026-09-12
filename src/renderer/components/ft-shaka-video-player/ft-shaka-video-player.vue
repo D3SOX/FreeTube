@@ -544,7 +544,10 @@
           dropdown-position-x="left"
           dropdown-position-y="top"
         >
-          <FtAddToPlaylistDropdown :video-data="playlistVideoData" />
+          <FtAddToPlaylistDropdown
+            :video-data="playlistVideoData"
+            :below-player="false"
+          />
         </FtIconButton>
         <button
           v-if="quickBookmarkEnabled"
