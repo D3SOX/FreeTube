@@ -32,7 +32,7 @@ export function useTabTitle() {
       return
     }
     if (watchNavigation?.detached.value) {
-      watchNavigation.setTitle(title)
+      watchNavigation.setTitle(title, options)
       return
     }
 

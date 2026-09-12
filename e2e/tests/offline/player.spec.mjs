@@ -2302,6 +2302,43 @@ test.describe('navigation playback lifecycle', () => {
     await expect(page.locator('.ftVideoPlayer')).toHaveCount(0)
   })
 
+  test('returning during retained-player disposal mounts fresh playable video', async ({ app, page }) => {
+    await openDemoVideo({ app, page })
+    const component = await page.evaluateHandle(findWatchComponent)
+    const original = await page.locator('.ftVideoPlayer video').elementHandle()
+    await page.getByRole('button', { name: 'Expand side navigation', exact: true }).click()
+    await goTo(page, 'history')
+    const disposal = await component.evaluateHandle(component => {
+      const watch = component.proxy
+      const originalRouteChange = watch.handleRouteChange
+      let release
+      const gate = new Promise(resolve => { release = resolve })
+      const state = { release, started: false, returned: false }
+      watch.handleRouteChange = async (...args) => {
+        state.started = true
+        await gate
+        return originalRouteChange(...args)
+      }
+      return state
+    })
+    try {
+      await component.evaluate(component => component.proxy.$store.dispatch('updateKeepPlayingOnNavigation', false))
+      await expect.poll(() => disposal.evaluate(state => state.started)).toBe(true)
+      await component.evaluate((component, state) => {
+        component.proxy.tabRouter.push('/watch/jNQXAC9IVRw').then(() => { state.returned = true })
+      }, disposal)
+      await expect(page).toHaveURL(/#\/history$/)
+      expect(await disposal.evaluate(state => state.returned)).toBe(false)
+    } finally {
+      await disposal.evaluate(state => state.release())
+    }
+    await expect(page).toHaveURL(/#\/watch\/jNQXAC9IVRw/)
+    const video = page.locator('.ftVideoPlayer video')
+    await expect(video).toBeVisible()
+    expect(await video.evaluate((element, old) => element === old, original)).toBe(false)
+    await expect.poll(() => video.evaluate(element => !element.paused && element.readyState >= 2)).toBe(true)
+  })
+
   test('replaces retained playback when opening another video', async ({ app, page }) => {
     await openDemoVideo({ app, page })
     await page.getByRole('button', { name: 'Expand side navigation', exact: true }).click()
@@ -2346,5 +2383,17 @@ test.describe('retained navigation player across tabs', () => {
     await page.getByRole('link', { name: 'Go to Subscriptions', exact: true }).click()
     await page.locator('.tabBar .tab').first().getByRole('button', { name: 'Close Tab', exact: true }).click()
     await expect(page.locator('.ftVideoPlayer')).toHaveCount(0)
+  })
+})
+
+test.describe('navigation playback with automatic tab picture-in-picture enabled', () => {
+  test.use({ seed: { settings: { ...PLAYER_SEED, keepPlayingOnNavigation: true, autoPictureInPictureTriggers: ['tab'] } } })
+
+  test('keeps the outgoing video in the mini player', async ({ app, page }) => {
+    const { firstVideo, firstPlayer } = await openCrossTabMiniPlayerOverWatchTab({ app, page })
+    await expect(firstPlayer).toBeVisible()
+    await expect(firstPlayer).toHaveClass(/scrollMiniPlayer/)
+    await expect.poll(() => firstVideo.evaluate(element => element.paused)).toBe(false)
+    expect(await page.evaluate(() => document.pictureInPictureElement === null)).toBe(true)
   })
 })

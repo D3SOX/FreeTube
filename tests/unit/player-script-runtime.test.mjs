@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import test from 'node:test'
+import vm from 'node:vm'
 import { gunzipSync } from 'node:zlib'
 import { Player, Platform } from 'youtubei.js'
 
@@ -70,4 +71,27 @@ test('recovers after memory exhaustion with objects retained on the global objec
     memoryLimitBytes: 2 * 1024 * 1024
   }), /out of memory/)
   assert.equal(await evaluatePlayerCode('return 42'), 42)
+})
+
+test('retries WASM initialization after a transient failure', async () => {
+  let attempts = 0
+  const source = readFileSync(new URL('../../src/renderer/helpers/api/player-script-runtime.js', import.meta.url), 'utf8')
+    .replace(/^import .*$/gm, '').replace('export async function', 'async function')
+  const runtime = {
+    setMemoryLimit() {}, setMaxStackSize() {}, setInterruptHandler() {}, dispose() {},
+    newContext: () => ({
+      evalCode: () => ({ dispose() {} }), unwrapResult: value => value,
+      dump: () => 42, dispose() {}
+    })
+  }
+  const evaluate = vm.runInNewContext(`${source}; evaluatePlayerCode`, {
+    variant: {},
+    newQuickJSWASMModuleFromVariant: async () => {
+      if (++attempts === 1) throw new Error('temporary initialization failure')
+      return { newRuntime: () => runtime }
+    }
+  })
+  await assert.rejects(evaluate('return 42'), /temporary initialization failure/)
+  assert.equal(await evaluate('return 42'), 42)
+  assert.equal(attempts, 2)
 })

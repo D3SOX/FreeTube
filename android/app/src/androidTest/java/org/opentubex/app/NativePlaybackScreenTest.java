@@ -283,7 +283,7 @@ public class NativePlaybackScreenTest {
             android.graphics.Bitmap image = android.graphics.Bitmap.createBitmap(screen.getWidth(), screen.getHeight(), android.graphics.Bitmap.Config.ARGB_8888);
             screen.draw(new android.graphics.Canvas(image));
             assertEquals("The resized video must cover page content outside its old cutout", android.graphics.Color.MAGENTA,
-                image.getPixel((int) (150 * screen.getWidth() / 1000f), (int) (250 * screen.getWidth() / 1000f)));
+                image.getPixel((int) (120 * screen.getWidth() / 1000f), (int) (250 * screen.getWidth() / 1000f)));
             image.recycle();
             screen.setGestureActive(false);
             assertNotNull(web.heldVisualState);

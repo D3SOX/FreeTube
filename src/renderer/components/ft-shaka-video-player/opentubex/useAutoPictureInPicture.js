@@ -59,7 +59,7 @@ export function useAutoPictureInPicture({
   const autoPictureInPictureTriggers = computed(() => store.getters.getAutoPictureInPictureTriggers)
   const androidAutoPictureInPicture = computed(() => store.getters.getAndroidAutoPictureInPicture)
 
-  const triggerOnTabChange = computed(() => autoPictureInPictureTriggers.value.includes('tab'))
+  const triggerOnTabChange = computed(() => !store.getters.getKeepPlayingOnNavigation && autoPictureInPictureTriggers.value.includes('tab'))
   const triggerOnMinimize = computed(() => autoPictureInPictureTriggers.value.includes('minimize'))
   const triggerOnBlur = computed(() => autoPictureInPictureTriggers.value.includes('blur'))
   const autoPipEnabled = computed(() => autoPictureInPictureTriggers.value.length > 0)
@@ -335,7 +335,7 @@ export function useAutoPictureInPicture({
     stopActiveTabWatch = null
   }
 
-  watch(autoPictureInPictureTriggers, updateAutoPip)
+  watch([autoPictureInPictureTriggers, triggerOnTabChange], updateAutoPip)
   watch(androidAutoPictureInPicture, updateAutoPip)
   watch(isAndroidPictureInPictureTarget, updateAutoPip)
 

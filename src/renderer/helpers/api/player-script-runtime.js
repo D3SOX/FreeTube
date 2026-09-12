@@ -11,7 +11,10 @@ let modulePromise
  * @returns {Promise<unknown>}
  */
 export async function evaluatePlayerCode(code, { timeoutMs = 5000, memoryLimitBytes = 64 * 1024 * 1024 } = {}) {
-  modulePromise ??= newQuickJSWASMModuleFromVariant(variant)
+  modulePromise ??= newQuickJSWASMModuleFromVariant(variant).catch(error => {
+    modulePromise = undefined
+    throw error
+  })
   const quickjs = await modulePromise
   const runtime = quickjs.newRuntime()
   runtime.setMemoryLimit(memoryLimitBytes)

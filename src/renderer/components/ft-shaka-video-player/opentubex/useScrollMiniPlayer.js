@@ -73,7 +73,8 @@ export function useScrollMiniPlayer({ container, fullWindowEnabled, getUi, isAct
   const scrollMiniPlayerEnabled = computed(() => store.getters.getScrollMiniPlayerEnabled)
   const scrollMiniPlayerOnAllTabs = computed(() => store.getters.getKeepPlayingOnNavigation || store.getters.getScrollMiniPlayerOnAllTabs)
   const autoPictureInPictureOnTabChange = computed(
-    () => !(watchNavigation?.detached.value && watchNavigation.tabPresented.value) &&
+    () => !store.getters.getKeepPlayingOnNavigation &&
+      !(watchNavigation?.detached.value && watchNavigation.tabPresented.value) &&
       store.getters.getAutoPictureInPictureTriggers.includes('tab')
   )
   const scrollMiniPlayerActive = ref(false)
@@ -740,11 +741,11 @@ export function useScrollMiniPlayer({ container, fullWindowEnabled, getUi, isAct
     scrollMiniResizeHandleOnLightBg.value = false
     scrollMiniPlayPauseHiddenByTimer = false
     clearScrollMiniPlayPauseHideTimeout()
-    clearScrollMiniVolumeHideTimeout()
-    scrollMiniVolumeExpanded.value = false
 
     cancelScrollMiniPlayerBounce()
     endScrollMiniPointerSession()
+    clearScrollMiniVolumeHideTimeout()
+    scrollMiniVolumeExpanded.value = false
 
     if (previousRect) {
       animateScrollMiniPlayerLayout(previousRect, false, animationSequence)
@@ -974,9 +975,12 @@ export function useScrollMiniPlayer({ container, fullWindowEnabled, getUi, isAct
   }
 
   function endScrollMiniPointerSession() {
+    if (scrollMiniPointerSession?.type === 'volume') scheduleScrollMiniVolumeHide()
     scrollMiniPointerSession = null
     syncNativeMiniPlayerGesture()
     document.body.classList.remove('scroll-mini-player-grabbing')
+    window.removeEventListener('pointerup', handleScrollMiniVolumePointerUpWindow)
+    window.removeEventListener('pointercancel', handleScrollMiniVolumePointerUpWindow)
     window.removeEventListener('pointermove', handleScrollMiniPointerMoveWindow)
     window.removeEventListener('pointerup', handleScrollMiniPointerUpWindow)
     window.removeEventListener('pointercancel', handleScrollMiniPointerUpWindow)
@@ -1149,13 +1153,13 @@ export function useScrollMiniPlayer({ container, fullWindowEnabled, getUi, isAct
     }
 
     clearScrollMiniPlayPauseHideTimeout()
-    clearScrollMiniVolumeHideTimeout()
 
     cancelScrollMiniPlayerBounce()
     cancelScrollMiniPlayerLayoutAnimation()
     cancelPendingScrollMiniScrollFrame()
 
     endScrollMiniPointerSession()
+    clearScrollMiniVolumeHideTimeout()
     window.removeEventListener('pointerup', handleScrollMiniVolumePointerUpWindow)
     window.removeEventListener('pointercancel', handleScrollMiniVolumePointerUpWindow)
     window.removeEventListener('scroll', handleScrollMiniWindowScroll)

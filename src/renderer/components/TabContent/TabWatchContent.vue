@@ -14,7 +14,7 @@
 </template>
 
 <script setup>
-import { computed, onBeforeUnmount, provide, reactive, ref, shallowRef, useTemplateRef, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, provide, reactive, ref, shallowRef, useTemplateRef, watch } from 'vue'
 import { routeLocationKey, routerKey } from 'vue-router'
 import store from '../../store/index'
 import { resolveRouteComponent } from '../../router/index'
@@ -43,6 +43,8 @@ const injectedRoute = reactive({})
 const hooks = new Set()
 let disposed = false
 let watchTitle = ''
+let watchTitleOptions
+let disposalPromise = null
 
 async function run(name, context) {
   for (const entry of [...hooks]) {
@@ -54,22 +56,26 @@ async function run(name, context) {
   }
 }
 
-async function dispose(context) {
-  if (disposed || !watchRoute.value) return
+function dispose(context) {
+  if (disposed || !watchRoute.value) return disposalPromise
   disposed = true
-  await run('beforeDispose', context)
+  disposalPromise = run('beforeDispose', context)
+  return disposalPromise
 }
 
 const unregister = tabLifecycleService.register(props.tabId, {
   async beforeNavigate(context) {
+    await disposalPromise
     if (!isWatchRoute.value) return
     // Android teleports even the scrolling mini player outside this view.
     const player = watchView.value?.$refs.player
     retained.value = enabled.value && !context.to.path.startsWith('/watch/') &&
       player?.hasLoaded === true && !player.isPaused()
     if (retained.value) {
-      watchTitle = store.getters.getTabById(props.tabId)?.history
-        .findLast(entry => entry.route.fullPath === watchRoute.value.fullPath)?.title || ''
+      const tab = store.getters.getTabById(props.tabId)
+      const entry = tab?.history[tab.historyIndex]
+      watchTitle = entry?.title || ''
+      watchTitleOptions = { resolveHistoryEntry: entry?.titlePending !== true }
       await run('deactivate', context)
     } else {
       await dispose(context)
@@ -77,7 +83,7 @@ const unregister = tabLifecycleService.register(props.tabId, {
   },
   async afterNavigate(context) {
     if (isWatchRoute.value) {
-      if (retained.value && watchTitle) navigation.setTitle(props.tabId, watchTitle)
+      if (retained.value && watchTitle) navigation.setTitle(props.tabId, watchTitle, watchTitleOptions)
       retained.value = false
       await run('activate', context)
     }
@@ -105,7 +111,10 @@ provide(routerKey, watchRouter)
 provide(watchNavigationKey, {
   detached,
   tabPresented: computed(() => props.presented),
-  setTitle: title => { watchTitle = title },
+  setTitle: (title, options) => {
+    watchTitle = title
+    watchTitleOptions = options
+  },
   returnToVideo: () => navigation.push(props.tabId, watchRoute.value.fullPath)
 })
 
@@ -123,15 +132,16 @@ watch(() => props.route, route => {
   }
 }, { immediate: true })
 
-watch(enabled, async value => {
+watch(enabled, value => {
   if (!value && detached.value) {
-    await dispose()
-    if (!isWatchRoute.value) {
+    // Finish cleanup and unmount before a return can mount a fresh Watch.
+    disposalPromise = dispose().then(async () => {
       retained.value = false
       watchRoute.value = null
-    }
+      await nextTick()
+    })
   }
-})
+}, { flush: 'sync' })
 
 onBeforeUnmount(() => {
   unregister()
