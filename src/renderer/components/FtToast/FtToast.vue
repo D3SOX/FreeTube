@@ -484,6 +484,7 @@ function open(event) {
     startTimeout(nextTime) {
       if (!Number.isFinite(nextTime) || !liveToasts.includes(id)) return
 
+      indefiniteToastIds.delete(id)
       time = nextTime
       state.duration = nextTime
       sonner.custom(toastItem, {
