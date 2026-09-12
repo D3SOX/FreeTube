@@ -1463,6 +1463,16 @@ Context Menu:
   Search With Multiple: Шукаць праз...
   Selection Too Long: Вылучаны тэкст задоўгі для пошуку (> {count} знакаў)
 Tab Organizer:
+  Icon Labels:
+    Folder: Папка
+    Bookmark: Закладка
+    Favorites: Абранае
+    Videos: Відэа
+    Gaming: Гульні
+    Research: Даследаванні
+    Art: Мастацтва
+    Travel: Падарожжы
+  Group Icon: Значок групы
   Title: Арганізатар укладак
   Open Tab Count: '{count} адкрытая ўкладка | {count} адкрытыя ўкладкі | {count} адкрытых укладак'
   Search Label: Шукаць укладкі

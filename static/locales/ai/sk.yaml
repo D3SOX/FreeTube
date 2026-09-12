@@ -1384,6 +1384,16 @@ Context Menu:
   Search With Multiple: Vyhľadať cez…
   Selection Too Long: Označený text je príliš dlhý na vyhľadanie (> {count} znakov)
 Tab Organizer:
+  Icon Labels:
+    Folder: Priečinok
+    Bookmark: Záložka
+    Favorites: Obľúbené
+    Videos: Videá
+    Gaming: Hry
+    Research: Výskum
+    Art: Umenie
+    Travel: Cestovanie
+  Group Icon: Ikona skupiny
   Title: Usporiadanie kariet
   Open Tab Count: '{count} otvorená karta | {count} otvorené karty | {count} otvorených kariet'
   Search Label: Hľadať karty

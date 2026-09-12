@@ -1426,6 +1426,16 @@ Context Menu:
   Search With Multiple: இதன் மூலம் தேடு...
   Selection Too Long: தேடுவதற்குத் தேர்வு மிக நீளமாக உள்ளது (> {count} எழுத்துகள்)
 Tab Organizer:
+  Icon Labels:
+    Folder: கோப்புறை
+    Bookmark: புக்மார்க்
+    Favorites: பிடித்தவை
+    Videos: காணொளிகள்
+    Gaming: விளையாட்டுகள்
+    Research: ஆராய்ச்சி
+    Art: கலை
+    Travel: பயணம்
+  Group Icon: குழு சின்னம்
   Title: தாவல் ஒருங்கிணைப்பான்
   Open Tab Count: '{count} திறந்த தாவல் | {count} திறந்த தாவல்கள்'
   Search Label: தாவல்களைத் தேடு

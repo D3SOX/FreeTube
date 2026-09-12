@@ -283,6 +283,7 @@
   box-sizing: border-box;
 }
 
+.groupIconButton,
 .groupColorButton {
   aspect-ratio: 1;
   background: transparent !important;
@@ -294,15 +295,19 @@
   place-items: center;
 }
 
+.groupIconButton:hover,
+.groupIconButton:focus-visible,
 .groupColorButton:hover,
 .groupColorButton:focus-visible {
   background: var(--side-nav-hover-color) !important;
 }
 
+.groupIconEditor,
 .groupColorEditor {
   position: relative;
 }
 
+.groupIconPicker,
 .groupColorPicker {
   background: var(--card-bg-color);
   border: 1px solid var(--divider-color);
@@ -317,6 +322,7 @@
   z-index: 3;
 }
 
+.groupIconPicker button,
 .groupColorPicker button {
   aspect-ratio: 1;
   background: transparent;
@@ -328,9 +334,15 @@
   place-items: center;
 }
 
+.groupIconPicker button[aria-pressed='true'],
 .groupColorPicker button[aria-selected='true'] {
   background: var(--side-nav-hover-color);
   border-color: var(--accent-color);
+}
+
+.groupIconPicker {
+  display: grid;
+  grid-template-columns: repeat(3, 34px);
 }
 
 .groupNameButton {

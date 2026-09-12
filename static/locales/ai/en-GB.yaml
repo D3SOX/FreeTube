@@ -1364,6 +1364,16 @@ Context Menu:
   Search With Multiple: Search with...
   Selection Too Long: Selection is too long for search (> {count} characters)
 Tab Organizer:
+  Icon Labels:
+    Folder: Folder
+    Bookmark: Bookmark
+    Favorites: Favourites
+    Videos: Videos
+    Gaming: Gaming
+    Research: Research
+    Art: Art
+    Travel: Travel
+  Group Icon: Group icon
   Title: Tab Organiser
   Open Tab Count: "{count} open tab | {count} open tabs"
   Search Label: Search tabs

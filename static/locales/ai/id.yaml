@@ -1415,6 +1415,16 @@ Context Menu:
   Search With Multiple: Cari dengan...
   Selection Too Long: Pilihan terlalu panjang untuk dicari (> {count} karakter)
 Tab Organizer:
+  Icon Labels:
+    Folder: Folder
+    Bookmark: Markah
+    Favorites: Favorit
+    Videos: Video
+    Gaming: Gim
+    Research: Riset
+    Art: Seni
+    Travel: Perjalanan
+  Group Icon: Ikon grup
   Title: Pengelola Tab
   Open Tab Count: '{count} tab terbuka'
   Search Label: Cari tab

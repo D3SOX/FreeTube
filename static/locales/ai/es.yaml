@@ -1411,6 +1411,16 @@ Context Menu:
   Search With Multiple: Buscar con...
   Selection Too Long: La selección es demasiado larga para buscarla (> {count} caracteres)
 Tab Organizer:
+  Icon Labels:
+    Folder: Carpeta
+    Bookmark: Marcador
+    Favorites: Favoritos
+    Videos: Vídeos
+    Gaming: Videojuegos
+    Research: Investigación
+    Art: Arte
+    Travel: Viajes
+  Group Icon: Icono del grupo
   Title: Organizador de pestañas
   Open Tab Count: '{count} pestaña abierta | {count} pestañas abiertas | {count} pestañas abiertas'
   Search Label: Buscar pestañas

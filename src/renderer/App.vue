@@ -3190,6 +3190,16 @@ function handleKeyboardShortcuts(event) {
     return
   }
 
+  if (isElectron && !commandPaletteOpen.value &&
+    matchesKeyboardShortcut(event, shortcuts.OPEN_TAB_ORGANIZER) &&
+    (tabOrganizerOpen.value || !isTypingTarget(event.target))) {
+    event.preventDefault()
+    if (event.repeat) return
+    if (tabOrganizerOpen.value) closeTabOrganizer()
+    else openTabOrganizer()
+    return
+  }
+
   if (commandPaletteOpen.value || tabOrganizerOpen.value) return
 
   if (matchesKeyboardShortcut(event, shortcuts.FIND_IN_PAGE)) {
@@ -3251,13 +3261,6 @@ function handleKeyboardShortcuts(event) {
           return
         }
       }
-    }
-
-    // Open the tab organizer with its optional user-assigned shortcut
-    if (matchesKeyboardShortcut(event, shortcuts.OPEN_TAB_ORGANIZER) && !isTypingTarget(event.target)) {
-      event.preventDefault()
-      openTabOrganizer()
-      return
     }
 
     // F1: Toggle between horizontal and vertical tabs

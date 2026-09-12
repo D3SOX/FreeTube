@@ -1423,6 +1423,16 @@ Context Menu:
   Search With Multiple: חיפוש באמצעות...
   Selection Too Long: הטקסט שנבחר ארוך מדי לחיפוש (מעל {count} תווים)
 Tab Organizer:
+  Icon Labels:
+    Folder: תיקייה
+    Bookmark: סימנייה
+    Favorites: מועדפים
+    Videos: סרטונים
+    Gaming: משחקים
+    Research: מחקר
+    Art: אמנות
+    Travel: טיולים
+  Group Icon: סמל הקבוצה
   Title: ארגון כרטיסיות
   Open Tab Count: '{count} כרטיסייה פתוחה | {count} כרטיסיות פתוחות | {count} כרטיסיות פתוחות'
   Search Label: חיפוש בכרטיסיות

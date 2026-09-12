@@ -679,6 +679,16 @@ Context Menu:
   Search With: Wyszukaj za pomocą {engine}
   Search With Multiple: Wyszukaj za pomocą...
 Tab Organizer:
+  Icon Labels:
+    Folder: Folder
+    Bookmark: Zakładka
+    Favorites: Ulubione
+    Videos: Filmy
+    Gaming: Gry
+    Research: Badania
+    Art: Sztuka
+    Travel: Podróże
+  Group Icon: Ikona grupy
   Title: Organizator kart
   Open Tab Count: '{count} otwarta karta | {count} otwarte karty | {count} otwartych kart'
   Search Label: Wyszukaj karty

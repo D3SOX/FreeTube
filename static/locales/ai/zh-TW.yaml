@@ -1395,6 +1395,16 @@ Context Menu:
   Search With Multiple: 搜尋工具...
   Selection Too Long: 選取內容過長，無法搜尋（> {count} 個字元）
 Tab Organizer:
+  Icon Labels:
+    Folder: 資料夾
+    Bookmark: 書籤
+    Favorites: 收藏
+    Videos: 影片
+    Gaming: 遊戲
+    Research: 研究
+    Art: 藝術
+    Travel: 旅行
+  Group Icon: 群組圖示
   Title: 分頁整理器
   Open Tab Count: '目前開啟 {count} 個分頁'
   Search Label: 搜尋分頁

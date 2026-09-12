@@ -107,3 +107,33 @@ test('retained startup clicks and running-app clicks navigate and update localiz
   assert.equal(stopped, true)
   assert.equal(listeners.size, 0)
 })
+
+test('tab organizer shortcut opens and closes it again with its search focused', async () => {
+  const source = await readFile(new URL('../../src/renderer/App.vue', import.meta.url), 'utf8')
+  const start = source.indexOf('function handleKeyboardShortcuts(event) {')
+  const handlerSource = source.slice(start, source.indexOf('\n/**', start))
+  const tabOrganizerOpen = { value: false }
+  const handler = vm.runInNewContext(`${handlerSource}\nhandleKeyboardShortcuts`, {
+    showTutorial: { value: false },
+    commandPaletteOpen: { value: false },
+    tabOrganizerOpen,
+    findbarVisible: { value: false },
+    tabSwitcherVisible: { value: false },
+    process: { env: { IS_ELECTRON: true } },
+    isElectron: true,
+    KeyboardShortcuts: { APP: { GENERAL: { OPEN_TAB_ORGANIZER: 'organizer' } } },
+    matchesKeyboardShortcut: (_event, shortcut) => shortcut === 'organizer',
+    isTypingTarget: () => tabOrganizerOpen.value,
+    openTabOrganizer: () => { tabOrganizerOpen.value = true },
+    closeTabOrganizer: () => { tabOrganizerOpen.value = false },
+  })
+  const event = { key: 'o', preventDefault() {} }
+  handler(event)
+  assert.equal(tabOrganizerOpen.value, true)
+  handler({ ...event, repeat: true })
+  assert.equal(tabOrganizerOpen.value, true, 'holding the shortcut must not close the organizer')
+  handler(event)
+  assert.equal(tabOrganizerOpen.value, false)
+  handler({ ...event, repeat: true })
+  assert.equal(tabOrganizerOpen.value, false, 'holding the shortcut must not reopen the organizer')
+})

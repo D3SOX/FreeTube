@@ -206,6 +206,14 @@
               @drop.prevent="dropTabsOnGroup(section.id)"
             >
               <header class="tabGroupHeader">
+                <FtCheckboxList
+                  class="tabSelection groupSelection"
+                  :model-value="section.allTabs.length > 0 && section.allTabs.every(tab => selectedTabIds.has(tab.id)) ? ['group'] : []"
+                  :labels="[`${t('Tab Organizer.Select All')}: ${section.name}`]"
+                  :values="['group']"
+                  :disabled="section.allTabs.length === 0"
+                  @update:model-value="toggleGroupSelection(section, $event.includes('group'))"
+                />
                 <button
                   v-if="section.id"
                   type="button"
@@ -219,6 +227,47 @@
                     aria-hidden="true"
                   />
                 </button>
+                <div
+                  v-if="section.id"
+                  class="groupIconEditor"
+                  @focusout="handleIconPickerFocusOut($event, section.id)"
+                  @keydown.esc="closeIconPicker"
+                >
+                  <button
+                    type="button"
+                    class="groupIconButton"
+                    :aria-label="t('Tab Organizer.Group Icon')"
+                    :title="t('Tab Organizer.Group Icon')"
+                    :aria-expanded="editingIconGroupId === section.id"
+                    @click="toggleIconPicker(section.id)"
+                  >
+                    <FtIcon
+                      :icon="['fas', normalizeTabGroupIcon(section.icon)]"
+                      aria-hidden="true"
+                    />
+                  </button>
+                  <div
+                    v-if="editingIconGroupId === section.id"
+                    class="groupIconPicker"
+                    role="group"
+                    :aria-label="t('Tab Organizer.Group Icon')"
+                  >
+                    <button
+                      v-for="(icon, index) in groupIconValues"
+                      :key="icon"
+                      type="button"
+                      :aria-pressed="normalizeTabGroupIcon(section.icon) === icon"
+                      :aria-label="groupIconNames[index]"
+                      :title="groupIconNames[index]"
+                      @click="updateGroupIcon(section.id, icon)"
+                    >
+                      <FtIcon
+                        :icon="['fas', icon]"
+                        aria-hidden="true"
+                      />
+                    </button>
+                  </div>
+                </div>
                 <div
                   v-if="section.id"
                   class="groupColorEditor"
@@ -633,6 +682,7 @@ import { FtIcon } from '@opentubex/icons'
 import { computed, nextTick, onBeforeMount, onBeforeUnmount, onMounted, ref, useId, useTemplateRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
+import { TAB_GROUP_ICONS, normalizeTabGroupIcon } from '../../../tabGroupIcons'
 import { getTabAccentColor } from '../../constants/tabColors'
 import { clampOverlayScrollTop, restoreOverlayScrollTop } from '../../helpers/overlayScrollbars'
 import { formatDeviceSessionLabel, getSyncTabRoute, shouldShowOtherDeviceSessions } from '../../helpers/sync-sessions'
@@ -647,6 +697,18 @@ import FtSelect from '../FtSelect/FtSelect.vue'
 
 const emit = defineEmits(['close'])
 const { locale, t } = useI18n()
+const groupIconValues = TAB_GROUP_ICONS
+const groupIconNames = computed(() => [
+  t('Tab Organizer.Title'),
+  t('Tab Organizer.Icon Labels.Folder'),
+  t('Tab Organizer.Icon Labels.Bookmark'),
+  t('Tab Organizer.Icon Labels.Favorites'),
+  t('Tab Organizer.Icon Labels.Videos'),
+  t('Tab Organizer.Icon Labels.Gaming'),
+  t('Tab Organizer.Icon Labels.Research'),
+  t('Tab Organizer.Icon Labels.Art'),
+  t('Tab Organizer.Icon Labels.Travel')
+])
 const titleId = `tab-organizer-title-${useId().replaceAll(':', '')}`
 const promptId = `tab-organizer-${useId().replaceAll(':', '')}`
 const syncedSessionIdPrefix = `tab-organizer-synced-session-${useId().replaceAll(':', '')}`
@@ -663,6 +725,7 @@ const dragTargetGroupId = ref(undefined)
 const editingNameGroupId = ref(null)
 const editingGroupName = ref('')
 const editingColorGroupId = ref(null)
+const editingIconGroupId = ref(null)
 const failedTabAvatarUrls = ref({})
 const sessionToDelete = ref(null)
 const sessionToOpen = ref(null)
@@ -927,6 +990,16 @@ function activateTab(tabId) {
   store.dispatch('activateTab', tabId)
 }
 
+function toggleGroupSelection(section, checked) {
+  selectionAnchorId = null
+  const next = new Set(selectedTabIds.value)
+  for (const tab of section.allTabs) {
+    if (checked) next.add(tab.id)
+    else next.delete(tab.id)
+  }
+  store.dispatch('setTabSelection', [...next])
+}
+
 function toggleTabSelection(tabId, checked) {
   const next = new Set(selectedTabIds.value)
   if (checked) next.add(tabId)
@@ -1028,6 +1101,7 @@ async function moveSelectedTabsToWindow(value) {
 }
 
 async function startGroupRename(group) {
+  editingIconGroupId.value = null
   editingColorGroupId.value = null
   editingNameGroupId.value = group.id
   editingGroupName.value = group.name
@@ -1054,7 +1128,33 @@ function cancelGroupRename() {
   editingGroupName.value = ''
 }
 
+function toggleIconPicker(groupId) {
+  cancelGroupRename()
+  editingColorGroupId.value = null
+  editingIconGroupId.value = editingIconGroupId.value === groupId ? null : groupId
+}
+
+function closeIconPicker(event) {
+  if (editingIconGroupId.value === null) return
+  event.stopPropagation()
+  event.preventDefault()
+  editingIconGroupId.value = null
+  event.currentTarget.querySelector('.groupIconButton')?.focus()
+}
+
+async function updateGroupIcon(groupId, icon) {
+  dialogRef.value?.querySelector('.groupIconEditor:focus-within .groupIconButton')?.focus()
+  editingIconGroupId.value = null
+  await store.dispatch('updateTabGroup', { groupId, changes: { icon } })
+}
+
+function handleIconPickerFocusOut(event, groupId) {
+  if (event.currentTarget.contains(event.relatedTarget)) return
+  if (editingIconGroupId.value === groupId) editingIconGroupId.value = null
+}
+
 function toggleColorPicker(groupId) {
+  editingIconGroupId.value = null
   cancelGroupRename()
   editingColorGroupId.value = editingColorGroupId.value === groupId ? null : groupId
 }

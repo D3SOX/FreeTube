@@ -1406,6 +1406,16 @@ Context Menu:
   Search With Multiple: Chwilio gyda...
   Selection Too Long: Mae'r dewis yn rhy hir i'w chwilio (> {count} nod)
 Tab Organizer:
+  Icon Labels:
+    Folder: Ffolder
+    Bookmark: Nod tudalen
+    Favorites: Ffefrynnau
+    Videos: Fideos
+    Gaming: Gemau
+    Research: Ymchwil
+    Art: Celf
+    Travel: Teithio
+  Group Icon: Eicon grŵp
   Title: Trefnydd tabiau
   Open Tab Count: '{count} o dabiau agored | {count} tab agored | {count} dab agored | {count} thab agored | {count} thab agored | {count} o dabiau agored'
   Search Label: Chwilio tabiau

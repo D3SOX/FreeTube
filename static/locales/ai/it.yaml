@@ -1384,6 +1384,16 @@ Context Menu:
   Search With Multiple: Cerca con...
   Selection Too Long: La selezione è troppo lunga per la ricerca (> {count} caratteri)
 Tab Organizer:
+  Icon Labels:
+    Folder: Cartella
+    Bookmark: Segnalibro
+    Favorites: Preferiti
+    Videos: Video
+    Gaming: Videogiochi
+    Research: Ricerca
+    Art: Arte
+    Travel: Viaggi
+  Group Icon: Icona del gruppo
   Title: Organizza schede
   Open Tab Count: '{count} scheda aperta | {count} schede aperte | {count} schede aperte'
   Search Label: Cerca schede

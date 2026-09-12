@@ -2397,6 +2397,16 @@ Context Menu:
   Selection Too Long: 'Selection is too long for search (> {count} characters)'
 
 Tab Organizer:
+  Icon Labels:
+    Folder: Folder
+    Bookmark: Bookmark
+    Favorites: Favorites
+    Videos: Videos
+    Gaming: Gaming
+    Research: Research
+    Art: Art
+    Travel: Travel
+  Group Icon: Group icon
   Title: Tab Organizer
   Open Tab Count: '{count} open tab | {count} open tabs'
   Search Label: Search tabs

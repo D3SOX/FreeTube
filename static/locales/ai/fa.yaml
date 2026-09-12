@@ -1457,6 +1457,16 @@ Context Menu:
   Search With Multiple: جست‌وجو با...
   Selection Too Long: متن انتخاب‌شده برای جست‌وجو بیش از حد بلند است (> {count} نویسه)
 Tab Organizer:
+  Icon Labels:
+    Folder: پوشه
+    Bookmark: نشانک
+    Favorites: علاقه‌مندی‌ها
+    Videos: ویدیوها
+    Gaming: بازی
+    Research: پژوهش
+    Art: هنر
+    Travel: سفر
+  Group Icon: نماد گروه
   Title: سامان‌دهندهٔ زبانه‌ها
   Open Tab Count: '{count} زبانهٔ باز | {count} زبانهٔ باز'
   Search Label: جست‌وجوی زبانه‌ها

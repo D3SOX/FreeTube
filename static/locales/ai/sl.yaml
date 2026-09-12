@@ -1857,6 +1857,16 @@ Context Menu:
   Search With Multiple: Poišči z …
   Selection Too Long: Izbrano besedilo je predolgo za iskanje (> {count} znakov)
 Tab Organizer:
+  Icon Labels:
+    Folder: Mapa
+    Bookmark: Zaznamek
+    Favorites: Priljubljeno
+    Videos: Videoposnetki
+    Gaming: Igre
+    Research: Raziskave
+    Art: Umetnost
+    Travel: Potovanja
+  Group Icon: Ikona skupine
   Title: Organizator zavihkov
   Open Tab Count: '{count} odprt zavihek | {count} odprta zavihka | {count} odprti zavihki | {count} odprtih zavihkov'
   Search Label: Išči po zavihkih

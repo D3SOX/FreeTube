@@ -1384,6 +1384,16 @@ Context Menu:
   Search With Multiple: 検索サービスを選択…
   Selection Too Long: 選択範囲が検索には長すぎます（{count}文字超）
 Tab Organizer:
+  Icon Labels:
+    Folder: フォルダー
+    Bookmark: ブックマーク
+    Favorites: お気に入り
+    Videos: 動画
+    Gaming: ゲーム
+    Research: 研究
+    Art: アート
+    Travel: 旅行
+  Group Icon: グループアイコン
   Title: タブ整理
   Open Tab Count: '開いているタブ: {count}個'
   Search Label: タブを検索

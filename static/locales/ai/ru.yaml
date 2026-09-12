@@ -1393,6 +1393,16 @@ Context Menu:
   Search With Multiple: Искать с помощью...
   Selection Too Long: Выделенный текст слишком длинный для поиска (> {count} символов)
 Tab Organizer:
+  Icon Labels:
+    Folder: Папка
+    Bookmark: Закладка
+    Favorites: Избранное
+    Videos: Видео
+    Gaming: Игры
+    Research: Исследования
+    Art: Искусство
+    Travel: Путешествия
+  Group Icon: Значок группы
   Title: Организатор вкладок
   Open Tab Count: '{count} открытая вкладка | {count} открытые вкладки | {count} открытых вкладок'
   Search Label: Поиск вкладок

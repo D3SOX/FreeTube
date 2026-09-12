@@ -1386,6 +1386,16 @@ Context Menu:
   Search With Multiple: Otsi otsingumootoriga...
   Selection Too Long: Valik on otsimiseks liiga pikk (> {count} märki)
 Tab Organizer:
+  Icon Labels:
+    Folder: Kaust
+    Bookmark: Järjehoidja
+    Favorites: Lemmikud
+    Videos: Videod
+    Gaming: Mängud
+    Research: Uurimistöö
+    Art: Kunst
+    Travel: Reisimine
+  Group Icon: Rühma ikoon
   Title: Vahekaartide korraldaja
   Open Tab Count: '{count} avatud vahekaart | {count} avatud vahekaarti'
   Search Label: Otsi vahekaarte

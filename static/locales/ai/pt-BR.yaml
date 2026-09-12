@@ -1384,6 +1384,16 @@ Context Menu:
   Search With Multiple: Pesquisar com...
   Selection Too Long: A seleção é demasiado longa para pesquisar (> {count} caracteres)
 Tab Organizer:
+  Icon Labels:
+    Folder: Pasta
+    Bookmark: Marcador
+    Favorites: Favoritos
+    Videos: Vídeos
+    Gaming: Jogos
+    Research: Pesquisa
+    Art: Arte
+    Travel: Viagens
+  Group Icon: Ícone do grupo
   Title: Organizador de guias
   Open Tab Count: '{count} guia aberta | {count} guias abertas | {count} guias abertas'
   Search Label: Pesquisar guias

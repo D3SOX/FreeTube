@@ -1396,6 +1396,16 @@ Context Menu:
   Search With Multiple: Bununla axtar...
   Selection Too Long: Seçim axtarış üçün çox uzundur (> {count} simvol)
 Tab Organizer:
+  Icon Labels:
+    Folder: Qovluq
+    Bookmark: Əlfəcin
+    Favorites: Sevimlilər
+    Videos: Videolar
+    Gaming: Oyunlar
+    Research: Araşdırma
+    Art: İncəsənət
+    Travel: Səyahət
+  Group Icon: Qrup nişanı
   Title: Vərəq təşkilatçısı
   Open Tab Count: '{count} açıq vərəq | {count} açıq vərəq'
   Search Label: Vərəqləri axtar

@@ -1421,6 +1421,16 @@ Context Menu:
   Search With Multiple: Hae hakukoneella...
   Selection Too Long: Valinta on liian pitkä haettavaksi (> {count} merkkiä)
 Tab Organizer:
+  Icon Labels:
+    Folder: Kansio
+    Bookmark: Kirjanmerkki
+    Favorites: Suosikit
+    Videos: Videot
+    Gaming: Pelit
+    Research: Tutkimus
+    Art: Taide
+    Travel: Matkailu
+  Group Icon: Ryhmän kuvake
   Title: Välilehtien järjestely
   Open Tab Count: '{count} avoin välilehti | {count} avointa välilehteä'
   Search Label: Hae välilehtiä

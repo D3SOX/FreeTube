@@ -35,7 +35,7 @@
         <span class="tabTitle">
           <FtIcon
             v-if="group"
-            :icon="['fas', 'layer-group']"
+            :icon="['fas', group.icon || 'layer-group']"
             class="groupBadge"
             aria-hidden="true"
           />

@@ -1397,6 +1397,16 @@ Context Menu:
   Search With Multiple: Sök med…
   Selection Too Long: Markeringen är för lång för en sökning (> {count} tecken)
 Tab Organizer:
+  Icon Labels:
+    Folder: Mapp
+    Bookmark: Bokmärke
+    Favorites: Favoriter
+    Videos: Videor
+    Gaming: Spel
+    Research: Forskning
+    Art: Konst
+    Travel: Resor
+  Group Icon: Gruppikon
   Title: Flikorganisatör
   Open Tab Count: '{count} öppen flik | {count} öppna flikar'
   Search Label: Sök bland flikar

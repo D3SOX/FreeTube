@@ -1413,6 +1413,16 @@ Context Menu:
   Search With Multiple: Tìm bằng...
   Selection Too Long: Phần đã chọn quá dài để tìm kiếm (> {count} ký tự)
 Tab Organizer:
+  Icon Labels:
+    Folder: Thư mục
+    Bookmark: Dấu trang
+    Favorites: Yêu thích
+    Videos: Video
+    Gaming: Trò chơi
+    Research: Nghiên cứu
+    Art: Nghệ thuật
+    Travel: Du lịch
+  Group Icon: Biểu tượng nhóm
   Title: Trình sắp xếp thẻ
   Open Tab Count: '{count} thẻ đang mở'
   Search Label: Tìm thẻ

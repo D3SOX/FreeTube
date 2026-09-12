@@ -1416,6 +1416,16 @@ Context Menu:
   Search With Multiple: ابحث مع...
   Selection Too Long: التحديد طويل جدًا للبحث (> {count} حرفًا)
 Tab Organizer:
+  Icon Labels:
+    Folder: مجلد
+    Bookmark: إشارة مرجعية
+    Favorites: المفضلة
+    Videos: فيديوهات
+    Gaming: ألعاب
+    Research: بحث
+    Art: فن
+    Travel: سفر
+  Group Icon: أيقونة المجموعة
   Title: منظم علامات التبويب
   Open Tab Count: 'لا توجد علامات تبويب مفتوحة ({count}) | علامة تبويب مفتوحة واحدة ({count}) | علامتا تبويب مفتوحتان ({count}) | {count} علامات تبويب مفتوحة | {count} علامة تبويب مفتوحة | {count} علامة تبويب مفتوحة'
   Search Label: علامات تبويب البحث
