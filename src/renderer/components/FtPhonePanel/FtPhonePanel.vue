@@ -10,6 +10,8 @@
       below-player
       @close="emit('close')"
       @closed="handleClosed"
+      @suspend="suspendReadingPosition"
+      @resume="resumeReadingPosition"
     >
       <template
         v-if="customHeader"
@@ -41,7 +43,7 @@
 import { computed, nextTick, provide, ref, useTemplateRef, watch } from 'vue'
 import FtMobileSheet from '../FtMobileSheet/FtMobileSheet.vue'
 import { useScrollClamp } from '../../composables/useScrollClamp'
-import { restoreOverlayScrollTop } from '../../helpers/overlayScrollbars'
+import { clampOverlayScrollTop, restoreOverlayScrollTop } from '../../helpers/overlayScrollbars'
 
 const props = defineProps({
   enabled: { type: Boolean, default: false },
@@ -70,6 +72,24 @@ watch(() => props.open, async (open) => {
     clamp()
   }
 }, { flush: 'pre' })
+
+let suspendedScrollPositions = []
+function suspendReadingPosition() {
+  const element = scroller.value
+  if (!element) return
+  suspendedScrollPositions = [element, ...element.querySelectorAll('[data-overlayscrollbars-viewport]')]
+    .map(viewport => [viewport, viewport.scrollTop])
+}
+
+function resumeReadingPosition() {
+  for (const [element, position] of suspendedScrollPositions) {
+    if (!element.isConnected) continue
+    restoreOverlayScrollTop(element, position)
+    clampOverlayScrollTop(element, element === scroller.value ? content.value : null)
+  }
+  suspendedScrollPositions = []
+  clamp()
+}
 
 function handleClosed() {
   panelRendered.value = false

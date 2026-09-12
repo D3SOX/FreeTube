@@ -15,6 +15,12 @@
   overscroll-behavior: contain;
 }
 
+/* Restore explicit reading positions across fullscreen/PiP orientation reflow. */
+.phonePanelScroller,
+.phonePanelContent :deep([data-overlayscrollbars-viewport]) {
+  overflow-anchor: none;
+}
+
 .phonePanelContent {
   display: flow-root;
 }
