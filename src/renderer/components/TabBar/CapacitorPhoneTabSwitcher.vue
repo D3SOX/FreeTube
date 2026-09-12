@@ -275,7 +275,7 @@
                         @click="openOtherDeviceSession({ ...activeOtherDeviceSession, tabs: [tab] })"
                       >
                         <CapacitorTabPreview :tab="tab" />
-                        <span dir="auto">{{ tab.title || tab.url }}</span>
+                        <span dir="auto">{{ formatTabTitle(tab.title) || tab.url }}</span>
                       </button>
                     </div>
                   </article>
@@ -351,6 +351,7 @@ import { formatDeviceSessionLabel, shouldShowOtherDeviceSessions } from '../../h
 import { showToast } from '../../helpers/utils'
 import { getCapacitorTabService } from '../../tabs/CapacitorTabService'
 import { getSyncedTabPreview } from '../../tabs/tabPreview'
+import { formatTabTitle } from '../../tabs/tabTitle'
 import FtPrompt from '../FtPrompt/FtPrompt.vue'
 import { captureBeforeTabOrganizer } from '../../tabs/capacitorTabPreviews'
 import CapacitorTabPreview from './CapacitorTabPreview.vue'
