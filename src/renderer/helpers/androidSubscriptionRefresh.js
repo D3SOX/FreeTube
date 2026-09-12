@@ -59,7 +59,7 @@ export function finishAndroidSubscriptionRefresh(refreshId) {
   const start = startController.finish(refreshId)
   if (!start) return
 
-  start.then(token => token === null ? null : SubscriptionRefresh.finish({ token })).catch(error => {
+  return start.then(token => token === null ? null : SubscriptionRefresh.finish({ token })).catch(error => {
     console.error('Failed to finish Android subscription refresh work', error)
   })
 }
@@ -91,4 +91,15 @@ export async function addAndroidSubscriptionRefreshCancelledListener(listener) {
   if (!SubscriptionRefresh) return () => {}
   const handle = await SubscriptionRefresh.addListener('cancelled', listener)
   return () => handle.remove()
+}
+
+export async function withAndroidSubscriptionRefreshBatch(refresh) {
+  if (!SubscriptionRefresh) return refresh()
+  const { acquired } = await SubscriptionRefresh.beginBatch()
+  if (!acquired) return
+  try {
+    return await refresh()
+  } finally {
+    await SubscriptionRefresh.endBatch()
+  }
 }

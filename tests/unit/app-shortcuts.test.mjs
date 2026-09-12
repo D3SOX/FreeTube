@@ -39,6 +39,7 @@ test('retained startup clicks and running-app clicks navigate and update localiz
   let stopped = false
   const locale = { value: 'en-US' }
   const enable = vm.runInNewContext(`${integration}\nenableCapacitorIntegrations`, {
+    window: new EventTarget(),
     Capacitor: { getPlatform: () => 'android' },
     handleAndroidBack() {},
     CapacitorApp: {

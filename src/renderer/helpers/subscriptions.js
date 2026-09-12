@@ -40,7 +40,7 @@ import { extractAssignedJsonObject } from './assigned-json'
 import { getLocalPremiereState } from './premiere'
 import { getInvidiousSubscriptionPremiereUpdate, getLocalSubscriptionPremiereUpdate, shouldRefreshSubscriptionPremiere } from './subscription-premieres'
 import { shouldShowProgressStartToast } from './progressPresentation'
-import { isAndroidSubscriptionRefreshActive } from './androidSubscriptionRefresh'
+import { finishAndroidSubscriptionRefresh, isAndroidSubscriptionRefreshActive } from './androidSubscriptionRefresh'
 import { isRecoverableNetworkError } from './networkRecovery'
 import { createSubscriptionNetworkRecovery, SubscriptionNetworkError } from './subscriptionNetworkRecovery'
 import { buildRequestDiagnostic, formatRequestDiagnostic } from './api/requestDiagnostics'
@@ -243,6 +243,10 @@ async function runWithSubscriptionRefreshLock(tab, profileId, refresh, t) {
       window.dispatchEvent(new CustomEvent(SUBSCRIPTION_REFRESH_FINISHED_EVENT, {
         detail: { tab, profileId, refreshId }
       }))
+      if (process.env.IS_CAPACITOR) {
+        // Finish native ownership before the next feed checks whether work is busy.
+        await finishAndroidSubscriptionRefresh(refreshId)
+      }
     }
   }
 

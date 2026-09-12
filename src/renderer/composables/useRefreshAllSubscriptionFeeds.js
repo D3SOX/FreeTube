@@ -9,6 +9,7 @@ import {
   refreshSubscriptionShortsFromRemote,
   refreshSubscriptionVideosFromRemote
 } from '../helpers/subscriptions'
+import { withAndroidSubscriptionRefreshBatch } from '../helpers/androidSubscriptionRefresh'
 import { getEnabledSubscriptionFeedSources } from '../helpers/newSubscriptionFeed'
 
 const LARGE_SUBSCRIPTION_COUNT = 125
@@ -59,15 +60,17 @@ export function useRefreshAllSubscriptionFeeds() {
     const cancelCountAtStart = getSubscriptionRefreshCancelCount()
 
     try {
-      for (const feed of enabledFeeds.value) {
-        // Also covers a cancellation between two feeds, when no feed refresh
-        // was running to receive it
-        if (getSubscriptionRefreshCancelCount() !== cancelCountAtStart) {
-          break
-        }
+      await withAndroidSubscriptionRefreshBatch(async () => {
+        for (const feed of enabledFeeds.value) {
+          // Also covers a cancellation between two feeds, when no feed refresh
+          // was running to receive it
+          if (getSubscriptionRefreshCancelCount() !== cancelCountAtStart) {
+            break
+          }
 
-        await feed.refresh({ t, errorChannels: errorChannels.value })
-      }
+          await feed.refresh({ t, errorChannels: errorChannels.value })
+        }
+      })
     } finally {
       isRefreshing.value = false
     }

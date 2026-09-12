@@ -1,0 +1,84 @@
+import assert from 'node:assert/strict'
+import { readFile } from 'node:fs/promises'
+import test from 'node:test'
+import vm from 'node:vm'
+
+import { createSubscriptionRefreshStartController } from '../../src/renderer/helpers/androidSubscriptionRefreshData.js'
+
+async function loadHelpers(native) {
+  const source = await readFile(new URL('../../src/renderer/helpers/androidSubscriptionRefresh.js', import.meta.url), 'utf8')
+  return vm.runInNewContext(`${source.replace(/^import .*$/gm, '').replaceAll('export ', '')}
+    ({ startAndroidSubscriptionRefresh, finishAndroidSubscriptionRefresh, withAndroidSubscriptionRefreshBatch })`, {
+    process: { env: { IS_CAPACITOR: true } },
+    registerPlugin: () => native,
+    LocalNotifications: { checkPermissions: async () => ({ display: 'granted' }) },
+    createSubscriptionRefreshStartController,
+    console,
+  })
+}
+
+test('Refresh All holds its native batch until every feed and its native finish settle', async () => {
+  const firstFinish = Promise.withResolvers()
+  const finishing = Promise.withResolvers()
+  const ended = Promise.withResolvers()
+  const events = []
+  let starts = 0
+  const helpers = await loadHelpers({
+    async beginBatch() { events.push('begin'); return { acquired: true } },
+    async start() { events.push(`start${++starts}`); return { acquired: true, token: `token${starts}` } },
+    async finish({ token }) {
+      events.push(`finish:${token}`)
+      if (token === 'token1') {
+        finishing.resolve()
+        await firstFinish.promise
+      }
+    },
+    async endBatch() { events.push('end'); ended.resolve() },
+  })
+  const refreshFeed = id => async () => {
+    await helpers.startAndroidSubscriptionRefresh(id, 'Refresh', 'Cancel')
+    await helpers.finishAndroidSubscriptionRefresh(id)
+  }
+  const source = await readFile(new URL('../../src/renderer/composables/useRefreshAllSubscriptionFeeds.js', import.meta.url), 'utf8')
+  const useRefreshAll = vm.runInNewContext(`${source.slice(source.indexOf('const LARGE_SUBSCRIPTION_COUNT')).replace('export ', '')}
+    useRefreshAllSubscriptionFeeds`, {
+    computed: get => ({ get value() { return get() } }),
+    ref: value => ({ value }),
+    useI18n: () => ({ t: value => value }),
+    store: { getters: { getActiveProfile: { subscriptions: [] }, getUseRssFeeds: true } },
+    getEnabledSubscriptionFeedSources: () => [{ category: 'videos' }, { category: 'shorts' }],
+    getSubscriptionRefreshCancelCount: () => 0,
+    refreshSubscriptionVideosFromRemote: refreshFeed(1),
+    refreshSubscriptionShortsFromRemote: refreshFeed(2),
+    refreshSubscriptionLiveFromRemote() {},
+    refreshSubscriptionPostsFromRemote() {},
+    withAndroidSubscriptionRefreshBatch: helpers.withAndroidSubscriptionRefreshBatch,
+  })
+  const refresh = useRefreshAll()
+  refresh.refresh()
+  await finishing.promise
+  assert.deepEqual(events, ['begin', 'start1', 'finish:token1'])
+  assert.equal(refresh.isRefreshing.value, true)
+  firstFinish.resolve()
+  await ended.promise
+  assert.deepEqual(events, ['begin', 'start1', 'finish:token1', 'start2', 'finish:token2', 'end'])
+})
+
+test('failed batch acquisition does not run or release another refresh', async () => {
+  const { withAndroidSubscriptionRefreshBatch } = await loadHelpers({
+    async beginBatch() { return { acquired: false } },
+    endBatch() { assert.fail('must not release another batch') },
+  })
+  await withAndroidSubscriptionRefreshBatch(() => assert.fail('must not start overlapping work'))
+})
+
+test('empty and failed queues release their acquired batch', async () => {
+  let ended = 0
+  const { withAndroidSubscriptionRefreshBatch } = await loadHelpers({
+    async beginBatch() { return { acquired: true } },
+    async endBatch() { ended++ },
+  })
+  await withAndroidSubscriptionRefreshBatch(async () => {})
+  await assert.rejects(withAndroidSubscriptionRefreshBatch(async () => { throw new Error('refresh failed') }), /refresh failed/)
+  assert.equal(ended, 2)
+})
