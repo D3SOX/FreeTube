@@ -1,9 +1,10 @@
 <template>
   <FtFlexBox
     class="sideNav"
-    :class="[{ opened: isOpen, expanded: isOpen || props.forceExpanded }, applyHiddenLabels]"
+    :class="[{ opened: isOpen, expanded: isOpen || props.forceExpanded, scrollHidden }, applyHiddenLabels]"
     data-tutorial="navigation"
     role="navigation"
+    @focusin="resetScrollVisibility"
   >
     <div
       ref="innerRef"
@@ -116,6 +117,7 @@ import { filterAvailableNavigationItems } from '../../../navigationAvailability'
 import { deepCopy, localizeAndAddKeyboardShortcutToActionTitle } from '../../helpers/utils'
 import { getConfiguredKeyboardShortcuts } from '../../../constants'
 import { NAVIGATION_ITEM_DEFINITIONS } from '../../../navigationItems'
+import { createMobileNavigationScroll } from '../../helpers/mobileNavigationScroll'
 
 const { locale, t } = useI18n()
 const appKeyboardShortcuts = computed(() => getConfiguredKeyboardShortcuts(
@@ -269,6 +271,25 @@ const historyTitle = computed(() => {
 // ===== Sliding active-route indicator =====
 const route = useRoute()
 const innerRef = useTemplateRef('innerRef')
+const scrollHidden = ref(false)
+const navigationScroll = createMobileNavigationScroll()
+
+function resetScrollVisibility() {
+  navigationScroll.reset(window.scrollY)
+  scrollHidden.value = false
+}
+
+function updateScrollVisibility() {
+  const nav = innerRef.value?.closest('.sideNav')
+  // Check the rendered layout, including Android's phone/tablet overrides.
+  if (!nav || getComputedStyle(nav).getPropertyValue('--hide-on-scroll').trim() !== '1' ||
+    nav.querySelector(':focus-visible, [aria-expanded="true"]')) {
+    resetScrollVisibility()
+    return
+  }
+  const page = document.scrollingElement
+  scrollHidden.value = navigationScroll.update(window.scrollY, page.scrollHeight - page.clientHeight)
+}
 /** @type {import('vue').Ref<Record<string, string> | null>} */
 const indicatorStyle = ref(null)
 
@@ -328,7 +349,10 @@ function updateIndicatorAfterResize() {
   remeasureTimeoutId = setTimeout(updateIndicator, 200)
 }
 
-watch(() => route.fullPath, () => nextTick(updateIndicator))
+watch(() => route.fullPath, () => {
+  resetScrollVisibility()
+  nextTick(updateIndicator)
+})
 watch([
   () => activeProfile.value._id,
   () => activeProfile.value.subscriptions.length
@@ -342,6 +366,9 @@ watch([isOpen, hideText, displayedActiveSubscriptions], () => {
 })
 
 onMounted(() => {
+  resetScrollVisibility()
+  window.addEventListener('scroll', updateScrollVisibility, { passive: true })
+  window.addEventListener('resize', resetScrollVisibility)
   updateIndicator()
   navMutationObserver = new MutationObserver(() => nextTick(updateIndicator))
   navMutationObserver.observe(innerRef.value, { childList: true, subtree: true })
@@ -349,6 +376,8 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
+  window.removeEventListener('scroll', updateScrollVisibility)
+  window.removeEventListener('resize', resetScrollVisibility)
   clearTimeout(remeasureTimeoutId)
   navMutationObserver?.disconnect()
   window.removeEventListener('resize', updateIndicatorAfterResize)
