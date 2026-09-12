@@ -142,6 +142,7 @@ Home Page:
   All sections hidden: すべてのセクションが非表示です
   All sections hidden description: ホームをカスタマイズして、セクションを再表示してください。
 Subscriptions:
+  Mark as Unseen: 未視聴にする
   Copy Error Details: "技術的な詳細をコピー"
   Refresh Errors: "更新できなかったチャンネル: {channels}。クリックして詳細を表示します。"
   Refresh Error Channels More: "{channels} ほか{count}件"

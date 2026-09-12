@@ -99,6 +99,10 @@ const actions = {
 
       const toBeRemovedChannelIds = []
       const subscribedChannelIdSet = rootGetters.getSubscribedChannelIdSet
+      const withFeedState = entries => entries.map(entry => ({
+        ...entry,
+        isNewInSubscriptionFeed: entry.isNewInSubscriptionFeed === true
+      }))
 
       for (const dataEntry of payload) {
         const channelId = dataEntry._id
@@ -112,15 +116,15 @@ const actions = {
         let hasData = false
 
         if (Array.isArray(dataEntry.videos)) {
-          videos[channelId] = { videos: dataEntry.videos, timestamp: toDate(dataEntry.videosTimestamp) }
+          videos[channelId] = { videos: withFeedState(dataEntry.videos), timestamp: toDate(dataEntry.videosTimestamp) }
           hasData = true
         }
         if (Array.isArray(dataEntry.liveStreams)) {
-          liveStreams[channelId] = { videos: dataEntry.liveStreams, timestamp: toDate(dataEntry.liveStreamsTimestamp) }
+          liveStreams[channelId] = { videos: withFeedState(dataEntry.liveStreams), timestamp: toDate(dataEntry.liveStreamsTimestamp) }
           hasData = true
         }
         if (Array.isArray(dataEntry.shorts)) {
-          shorts[channelId] = { videos: dataEntry.shorts, timestamp: toDate(dataEntry.shortsTimestamp) }
+          shorts[channelId] = { videos: withFeedState(dataEntry.shorts), timestamp: toDate(dataEntry.shortsTimestamp) }
           hasData = true
         }
         if (Array.isArray(dataEntry.communityPosts)) {
@@ -213,7 +217,7 @@ const actions = {
     }
   },
 
-  async markSubscriptionEntriesAsSeen({ commit, dispatch, state }, {
+  async markSubscriptionEntriesAsSeen({ commit, dispatch, state, rootGetters }, {
     tab,
     tabs = [tab],
     channelIds = [],
@@ -221,17 +225,17 @@ const actions = {
   }) {
     const cacheConfigs = {
       videos: {
-        cache: state.videoCache,
+        cache: applySubscriptionSeenVideosToCache(state.videoCache, rootGetters?.getSubscriptionSeenVideos),
         entriesKey: 'videos',
         updateEntries: DBSubscriptionCacheHandlers.updateVideosByChannelId
       },
       shorts: {
-        cache: state.shortsCache,
+        cache: applySubscriptionSeenVideosToCache(state.shortsCache, rootGetters?.getSubscriptionSeenVideos),
         entriesKey: 'videos',
         updateEntries: DBSubscriptionCacheHandlers.updateShortsByChannelId
       },
       live: {
-        cache: state.liveCache,
+        cache: applySubscriptionSeenVideosToCache(state.liveCache, rootGetters?.getSubscriptionSeenVideos),
         entriesKey: 'videos',
         updateEntries: DBSubscriptionCacheHandlers.updateLiveStreamsByChannelId
       },
@@ -244,7 +248,6 @@ const actions = {
 
     const writes = []
     const seenVideos = []
-    const seenAt = Date.now()
 
     for (const feedTab of tabs) {
       const channelIdSet = new Set(channelIdsByTab[feedTab] ?? channelIds)
@@ -274,7 +277,7 @@ const actions = {
             if (await config.updateEntries(channelId, seenEntries, timestamp) === false) return null
             if (feedTab !== 'posts') {
               seenVideos.push(...entries.filter(entry => entry.isNewInSubscriptionFeed === true)
-                .map(entry => ({ videoId: entry.videoId, seenAt, isMembersOnly: entry.isMembersOnly === true })))
+                .map(entry => ({ videoId: entry.videoId, isMembersOnly: entry.isMembersOnly === true })))
             }
             return { tab: feedTab, channelId, timestamp }
           } catch (errMessage) {
@@ -290,24 +293,24 @@ const actions = {
     commit('markSubscriptionEntriesAsSeenInCache', (await runSubscriptionCacheWrites(writes))
       .filter(cacheEntry => cacheEntry != null))
     if (seenVideos.length > 0) {
-      await dispatch('mergeSubscriptionSeenVideos', seenVideos).catch(error => console.error(error))
+      await dispatch('mergeSubscriptionSeenVideos', { videos: seenVideos }).catch(error => console.error(error))
     }
   },
 
-  async markSubscriptionVideoAsSeen({ commit, dispatch, state }, videoId) {
+  async markSubscriptionVideoAsSeen({ commit, dispatch, state, rootGetters }, videoId) {
     const cacheConfigs = [
       {
-        cache: state.videoCache,
+        cache: applySubscriptionSeenVideosToCache(state.videoCache, rootGetters?.getSubscriptionSeenVideos),
         tab: 'videos',
         updateEntries: DBSubscriptionCacheHandlers.updateVideosByChannelId
       },
       {
-        cache: state.shortsCache,
+        cache: applySubscriptionSeenVideosToCache(state.shortsCache, rootGetters?.getSubscriptionSeenVideos),
         tab: 'shorts',
         updateEntries: DBSubscriptionCacheHandlers.updateShortsByChannelId
       },
       {
-        cache: state.liveCache,
+        cache: applySubscriptionSeenVideosToCache(state.liveCache, rootGetters?.getSubscriptionSeenVideos),
         tab: 'live',
         updateEntries: DBSubscriptionCacheHandlers.updateLiveStreamsByChannelId
       }
@@ -315,7 +318,6 @@ const actions = {
 
     const writes = []
     const seenVideos = []
-    const seenAt = Date.now()
     for (const { cache, tab, updateEntries } of cacheConfigs) {
       for (const [channelId, cacheEntry] of Object.entries(cache)) {
         const entry = cacheEntry?.videos?.find(video => video.videoId === videoId)
@@ -331,7 +333,7 @@ const actions = {
         writes.push(async () => {
           try {
             if (await updateEntries(channelId, seenEntries, timestamp) === false) return
-            seenVideos.push({ videoId, seenAt, isMembersOnly: entry.isMembersOnly === true })
+            seenVideos.push({ videoId, isMembersOnly: entry.isMembersOnly === true })
             commit('markSubscriptionVideoAsSeenByChannel', { tab, channelId, videoId, timestamp })
           } catch (errMessage) {
             console.error(errMessage)
@@ -341,8 +343,20 @@ const actions = {
     }
     await runSubscriptionCacheWrites(writes)
     if (seenVideos.length > 0) {
-      await dispatch('mergeSubscriptionSeenVideos', seenVideos).catch(error => console.error(error))
+      await dispatch('mergeSubscriptionSeenVideos', { videos: seenVideos }).catch(error => console.error(error))
     }
+  },
+
+  async markSubscriptionVideoAsUnseen({ dispatch, state }, videoId) {
+    const video = [state.videoCache, state.shortsCache, state.liveCache]
+      .flatMap(cache => Object.values(cache))
+      .flatMap(entry => entry?.videos ?? [])
+      .find(video => video.videoId === videoId)
+    if (!video) return
+
+    await dispatch('updateSubscriptionHistory', {
+      unseenVideo: { videoId, isMembersOnly: video.isMembersOnly === true }
+    }).catch(error => console.error(error))
   },
 
   async markSubscriptionPostAsSeen({ commit, state }, postId) {

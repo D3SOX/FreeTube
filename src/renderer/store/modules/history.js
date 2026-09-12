@@ -55,10 +55,20 @@ const actions = {
     }
   },
 
-  async updateHistory({ commit }, record) {
+  async updateSubscriptionHistory({ commit, dispatch }, update) {
+    const result = await DBHistoryHandlers.updateSubscriptionState(update)
+    if (result.records.length === 1) {
+      commit('upsertToHistoryCache', result.records[0])
+    } else if (result.records.length > 1) {
+      commit('applyHistorySyncChanges', { insertions: [], updates: result.records, deletions: [] })
+    }
+    if (result.seenVideos != null) await dispatch('applySubscriptionSeenVideos', result.seenVideos)
+    return result.records.length
+  },
+
+  async updateHistory({ dispatch }, record) {
     try {
-      await DBHistoryHandlers.upsert(record)
-      commit('upsertToHistoryCache', record)
+      await dispatch('updateSubscriptionHistory', { records: [record] })
     } catch (errMessage) {
       console.error(errMessage)
     }
@@ -83,8 +93,10 @@ const actions = {
 
       commit('setHistoryCacheSorted', sortedRecords)
       commit('setHistoryCacheById', Object.fromEntries(migratedHistoryItems))
+      return true
     } catch (errMessage) {
       console.error(errMessage)
+      return false
     }
   },
 
@@ -103,22 +115,16 @@ const actions = {
   },
 
   async markAllHistoryAsWatched({ dispatch, state }) {
-    let markedCount = 0
-    const records = state.historyCacheSorted.map(record => {
-      if (record.isWatched === true || !canMarkHistoryEntryAsWatched(record)) {
-        return record
-      }
-
-      markedCount++
-      return { ...record, isWatched: true }
-    })
-
-    if (markedCount > 0) {
-      const recordsById = new Map(records.map(record => [record.videoId, record]))
-      await dispatch('overwriteHistory', recordsById)
+    const records = state.historyCacheSorted
+      .filter(record => record.isWatched !== true && canMarkHistoryEntryAsWatched(record))
+      .map(record => ({ ...record, isWatched: true }))
+    if (records.length === 0) return 0
+    try {
+      return await dispatch('updateSubscriptionHistory', { records })
+    } catch (errMessage) {
+      console.error(errMessage)
+      return 0
     }
-
-    return markedCount
   },
 
   async removeFromHistory({ commit }, videoId) {
@@ -305,11 +311,16 @@ const mutations = {
 
   applyHistorySyncChanges(state, { insertions, updates, deletions }) {
     const upserts = [...insertions, ...updates]
-    const changedIds = new Set([...deletions, ...upserts.map(record => record.videoId)])
+    const deletedIds = new Set(deletions)
+    const upsertsById = new Map(upserts.map(record => [record.videoId, record]))
+    const retained = state.historyCacheSorted
+      .filter(record => !deletedIds.has(record.videoId))
+      .map(record => upsertsById.get(record.videoId) ?? record)
+    const retainedIds = new Set(retained.map(record => record.videoId))
 
-    state.historyCacheSorted = state.historyCacheSorted
-      .filter(record => !changedIds.has(record.videoId))
-      .concat(upserts)
+    // Replace existing entries in place so stable sorting preserves timestamp ties.
+    state.historyCacheSorted = retained
+      .concat(upserts.filter(record => !retainedIds.has(record.videoId)))
       .sort((a, b) => b.timeWatched - a.timeWatched)
 
     for (const videoId of deletions) {

@@ -5,6 +5,7 @@ import vm from 'node:vm'
 import Datastore from '@seald-io/nedb'
 import * as seenSync from '../../src/renderer/helpers/subscription-seen-videos.js'
 import * as seenData from '../../src/subscriptionSeenVideos.js'
+import * as historyHelpers from '../../src/history.js'
 import { EncryptedSyncAdapter, createEmptySyncDocument } from '../../src/renderer/helpers/sync-server-privacy.js'
 
 const source = await readFile(new URL('../../src/renderer/store/modules/subscription-cache.js', import.meta.url), 'utf8')
@@ -17,9 +18,9 @@ async function settingsFixture(history = []) {
     history: new Datastore({ inMemoryOnly: true }),
   }
   if (history.length > 0) await db.history.insertAsync(history)
-  const Settings = vm.runInNewContext(baseSource.slice(baseSource.indexOf('class Settings {'),
-    baseSource.indexOf('\nclass History {')) + '\nSettings', { db, ...seenVideos })
-  return { db, Settings }
+  const { Settings, History } = vm.runInNewContext(baseSource.slice(baseSource.indexOf('class Settings {'),
+    baseSource.indexOf('\nclass WatchStats {')) + '\n({ Settings, History })', { db, ...seenVideos, ...historyHelpers })
+  return { db, Settings, History }
 }
 
 function cacheFixture(applied = true, logger = console) {
@@ -65,8 +66,10 @@ test('marking a subscription video as seen records it for history sync without w
   await fixture.actions.markSubscriptionVideoAsSeen(fixture.context, 'videoCache')
   assert.equal(fixture.recorded.length, 1)
   assert.equal(fixture.recorded[0][0], 'mergeSubscriptionSeenVideos')
-  assert.equal(fixture.recorded[0][1][0].videoId, 'videoCache')
-  assert.ok(Number.isFinite(fixture.recorded[0][1][0].seenAt))
+  const { Settings } = await settingsFixture()
+  const marks = JSON.parse(await Settings.mergeSeenVideos(fixture.recorded[0][1]))
+  assert.equal(marks[0].videoId, 'videoCache')
+  assert.ok(Number.isFinite(marks[0].seenAt))
 })
 
 test('rejected cache writes do not record seen videos', async () => {
@@ -159,15 +162,17 @@ test('two windows persist both marks and delayed replies cannot overwrite newer 
     vm.runInContext(settingsSource.slice(
       settingsSource.indexOf('const customActions ='),
       settingsSource.indexOf('  recordSyncSettingEdit:'),
-    ) + '\n}\nglobalThis.merge = customActions.mergeSubscriptionSeenVideos', context)
+    ) + '\n}\nglobalThis.actions = customActions', context)
     const state = { subscriptionSeenVideos: '[]' }
+    const actionContext = {
+      state,
+      rootGetters: { getHistoryCacheById: {} },
+      commit(type, value) { state.subscriptionSeenVideos = value },
+      dispatch: (type, value) => context.actions[type](actionContext, value),
+    }
     return {
       state,
-      mark: entry => context.merge({
-        state,
-        rootGetters: { getHistoryCacheById: {} },
-        commit(type, value) { state.subscriptionSeenVideos = value },
-      }, [entry]),
+      mark: entry => actionContext.dispatch('mergeSubscriptionSeenVideos', [entry]),
     }
   }
   const first = makeWindow(true)
@@ -192,7 +197,7 @@ test('mark all records videos, Shorts and live streams, excluding community post
   })
   assert.equal(fixture.recorded.length, 1)
   assert.equal(fixture.recorded[0][0], 'mergeSubscriptionSeenVideos')
-  assert.deepEqual(fixture.recorded[0][1].map(entry => entry.videoId).sort(),
+  assert.deepEqual(fixture.recorded[0][1].videos.map(entry => entry.videoId).sort(),
     ['liveCache', 'shortsCache', 'videoCache'])
 })
 
@@ -307,4 +312,187 @@ test('failed seen-mark persistence stops sync before uploading stale state', asy
     dispatch: async () => { throw failure },
   }), failure)
   assert.equal(uploads, 0)
+})
+
+for (const cache of ['videoCache', 'shortsCache', 'liveCache']) {
+  test(`marking ${cache} unseen preserves watch progress and restores a seen video`, async () => {
+    const fixture = cacheFixture()
+    fixture.state[cache].channel.videos[0].isNewInSubscriptionFeed = false
+    const history = { videoId: cache, isWatched: true, watchProgress: 123, lengthSeconds: 200 }
+    fixture.context.rootGetters = { getHistoryCacheById: { [cache]: history }, getSubscriptionSeenVideos: [] }
+    await fixture.actions.markSubscriptionVideoAsUnseen(fixture.context, cache)
+    assert.equal(fixture.recorded.length, 1)
+    const [action, update] = fixture.recorded[0]
+    assert.equal(action, 'updateSubscriptionHistory')
+    const { History } = await settingsFixture([history])
+    const result = await History.updateSubscriptionState(update)
+    assert.equal(result.records[0].isWatched, false)
+    assert.equal(result.records[0].watchProgress, 123)
+    const restored = seenVideos.applySubscriptionSeenVideosToCache(fixture.state[cache], result.seenVideos)
+    assert.equal(restored.channel.videos[0].isNewInSubscriptionFeed, true)
+  })
+}
+
+test('unseen marks survive stale sync, cache refresh and a later mark as seen', () => {
+  const cache = { channel: { videos: [{ videoId: 'video', isNewInSubscriptionFeed: false }] } }
+  const old = { videoId: 'video', seenAt: 1000 }
+  const unseen = { videoId: 'video', seenAt: 1000, unseenAt: 2000 }
+  for (const [local, remote] of [[[old], [unseen]], [[unseen], [old]]]) {
+    const marks = seenVideos.mergeSubscriptionSeenVideos(local, remote)
+    assert.equal(seenVideos.applySubscriptionSeenVideosToCache(cache, marks).channel.videos[0].isNewInSubscriptionFeed, true)
+    const seen = seenVideos.mergeSubscriptionSeenVideos(marks, [{ videoId: 'video', seenAt: 3000 }])
+    assert.equal(seenVideos.applySubscriptionSeenVideosToCache(cache, seen).channel.videos[0].isNewInSubscriptionFeed, false)
+  }
+})
+
+for (const bulk of [false, true]) {
+  test(`${bulk ? 'bulk' : 'individual'} marking handles unseen overrides on previously seen caches`, async () => {
+    const fixture = cacheFixture()
+    fixture.state.videoCache.channel.videos[0].isNewInSubscriptionFeed = false
+    const timestamp = Date.now() + 1000
+    const unseen = [{ videoId: 'videoCache', seenAt: timestamp, unseenAt: timestamp }]
+    fixture.context.rootGetters = { getSubscriptionSeenVideos: unseen }
+    if (bulk) {
+      await fixture.actions.markSubscriptionEntriesAsSeen(fixture.context, { tab: 'videos', channelIds: ['channel'] })
+    } else {
+      await fixture.actions.markSubscriptionVideoAsSeen(fixture.context, 'videoCache')
+    }
+    assert.equal(fixture.recorded.length, 1)
+    const { Settings } = await settingsFixture()
+    await Settings.mergeSeenVideos(unseen)
+    const marks = JSON.parse(await Settings.mergeSeenVideos(fixture.recorded[0][1]))
+    assert.ok(marks[0].seenAt > timestamp)
+    assert.equal(seenVideos.applySubscriptionSeenVideosToCache(fixture.state.videoCache, marks).channel.videos[0].isNewInSubscriptionFeed, false)
+  })
+}
+
+test('unseen marks persist without creating history for an unwatched video', async () => {
+  const fixture = cacheFixture()
+  fixture.context.rootGetters = { getHistoryCacheById: {}, getSubscriptionSeenVideos: [] }
+  await fixture.actions.markSubscriptionVideoAsUnseen(fixture.context, 'videoCache')
+  assert.equal(fixture.recorded.length, 1)
+  assert.equal(fixture.recorded[0][0], 'updateSubscriptionHistory')
+  const { Settings, History, db } = await settingsFixture()
+  await History.updateSubscriptionState(fixture.recorded[0][1])
+  assert.equal(await db.history.countAsync({}), 0)
+  const saved = await Settings.mergeSeenVideos([{ videoId: 'videoCache', seenAt: 1 }])
+  assert.equal(seenVideos.applySubscriptionSeenVideosToCache({ channel: {
+    videos: [{ videoId: 'videoCache', isNewInSubscriptionFeed: false }],
+  } }, saved).channel.videos[0].isNewInSubscriptionFeed, true)
+})
+
+test('concurrent windows marking unseen then seen in one millisecond keep the last persisted action', async (t) => {
+  t.mock.method(Date, 'now', () => 2000)
+  const { db, Settings, History } = await settingsFixture()
+  const first = cacheFixture()
+  const second = cacheFixture()
+  for (const fixture of [first, second]) {
+    fixture.context.rootGetters = { getHistoryCacheById: {}, getSubscriptionSeenVideos: [] }
+    fixture.context.dispatch = async (type, update) => {
+      if (type === 'updateSubscriptionHistory') return History.updateSubscriptionState(update)
+      assert.equal(type, 'mergeSubscriptionSeenVideos')
+      return Settings.mergeSeenVideos(update)
+    }
+  }
+  await Promise.all([
+    first.actions.markSubscriptionVideoAsUnseen(first.context, 'videoCache'),
+    second.actions.markSubscriptionVideoAsSeen(second.context, 'videoCache'),
+  ])
+  const saved = await db.settings.findOneAsync({ _id: 'subscriptionSeenVideos' })
+  const marks = JSON.parse(saved.value)
+  assert.ok(marks[0].seenAt > marks[0].unseenAt)
+  assert.equal(seenVideos.applySubscriptionSeenVideosToCache(first.state.videoCache, marks)
+    .channel.videos[0].isNewInSubscriptionFeed, false)
+})
+
+test('watched history does not prune reverse marks or their newer seen half', async () => {
+  const unseen = { videoId: 'video', seenAt: 2000, unseenAt: 2000 }
+  const laterSeen = { videoId: 'video', seenAt: 3000 }
+  const history = { videoId: 'video', isWatched: true, timeWatched: 1000 }
+  for (const [local, remote] of [[[unseen], [laterSeen]], [[laterSeen], [unseen]]]) {
+    assert.deepEqual(seenVideos.mergeSubscriptionSeenVideos(local, remote, { video: history }), [{
+      videoId: 'video', seenAt: 3000, unseenAt: 2000, isMembersOnly: false,
+    }])
+  }
+  const { Settings } = await settingsFixture([history])
+  const saved = JSON.parse(await Settings.mergeSeenVideos([unseen]))
+  assert.equal(saved[0]?.unseenAt, 2000)
+  assert.deepEqual(seenVideos.mergeSubscriptionSeenVideos([], [{
+    videoId: 'video', seenAt: 2000, unseenAt: 'invalid',
+  }], { video: history }), [])
+})
+
+for (const timeWatched of [1000, 2000, 3000]) {
+  test(`unseen sync reconciles watched history at ${timeWatched} without changing progress`, async () => {
+    const document = createEmptySyncDocument()
+    const client = new EncryptedSyncAdapter(document)
+    document.seenVideos = [{ videoId: 'video', seenAt: 2000, unseenAt: 2000 }]
+    document.history = [{
+      video: { id: 'video' },
+      metadata: { added_date: timeWatched, watched_state: 'completed', position_millis: 123000 },
+    }]
+    // Model history sync running first and importing an older completed record.
+    const history = { videoId: 'video', isWatched: true, timeWatched, watchProgress: 123, lengthSeconds: 200 }
+    const { Settings } = await settingsFixture([history])
+    const store = {
+      state: {
+        settings: { subscriptionSeenVideos: '[]' },
+        history: { historyCacheSorted: [history] },
+      },
+      async dispatch(type, value) {
+        if (type === 'mergeSubscriptionSeenVideos') {
+          this.state.settings.subscriptionSeenVideos = await Settings.mergeSeenVideos(value)
+        } else {
+          assert.equal(type, 'updateHistory')
+          this.state.history.historyCacheSorted = [value]
+        }
+      },
+    }
+    await seenVideos.syncSubscriptionSeenVideos(client, store)
+    assert.equal(JSON.parse(store.state.settings.subscriptionSeenVideos)[0]?.unseenAt, 2000)
+    assert.equal(store.state.history.historyCacheSorted[0].isWatched, timeWatched >= 2000)
+    assert.equal(store.state.history.historyCacheSorted[0].watchProgress, 123)
+    assert.equal(store.state.history.historyCacheSorted[0].timeWatched, timeWatched)
+    assert.equal(document.history[0].metadata.watched_state, timeWatched >= 2000 ? 'completed' : 'watching')
+    assert.equal(document.history[0].metadata.position_millis, 123000)
+    assert.equal(document.history[0].metadata.added_date, timeWatched)
+
+    // A device that has not received the reverse mark can upload completed
+    // history again; the persisted marker must still correct that replay.
+    document.history[0].metadata.watched_state = 'completed'
+    store.state.history.historyCacheSorted = [history]
+    await seenVideos.syncSubscriptionSeenVideos(client, store)
+    assert.equal(store.state.history.historyCacheSorted[0].isWatched, timeWatched >= 2000)
+    assert.equal(document.history[0].metadata.watched_state, timeWatched >= 2000 ? 'completed' : 'watching')
+  })
+}
+
+test('a later seen action prevents an old reverse mark from clearing watched history', async () => {
+  const document = createEmptySyncDocument()
+  const client = new EncryptedSyncAdapter(document)
+  document.seenVideos = [{ videoId: 'video', seenAt: 2000, unseenAt: 2000 }]
+  document.history = [{
+    video: { id: 'video' },
+    metadata: { added_date: 1000, watched_state: 'completed', position_millis: 123000 },
+  }]
+  const history = { videoId: 'video', timeWatched: 1000, isWatched: true, watchProgress: 123 }
+  const store = {
+    state: {
+      settings: { subscriptionSeenVideos: JSON.stringify([{ videoId: 'video', seenAt: 3000 }]) },
+      history: { historyCacheSorted: [history] },
+    },
+    async dispatch(type, value) {
+      assert.equal(type, 'mergeSubscriptionSeenVideos')
+      this.state.settings.subscriptionSeenVideos = JSON.stringify(seenVideos.mergeSubscriptionSeenVideos(
+        this.state.settings.subscriptionSeenVideos, value, { video: history }
+      ))
+    },
+  }
+  await seenVideos.syncSubscriptionSeenVideos(client, store)
+  assert.equal(store.state.history.historyCacheSorted[0].isWatched, true)
+  assert.equal(store.state.history.historyCacheSorted[0].watchProgress, 123)
+  assert.equal(document.history[0].metadata.watched_state, 'completed')
+  assert.equal(document.history[0].metadata.position_millis, 123000)
+  assert.equal(document.seenVideos[0].seenAt, 3000)
+  assert.equal(document.seenVideos[0].unseenAt, 2000)
 })

@@ -142,6 +142,7 @@ Home Page:
   All sections hidden: Tüm bölümler gizli
   All sections hidden description: Bir bölümü yeniden göstermek için Ana Sayfayı özelleştirin.
 Subscriptions:
+  Mark as Unseen: Görülmedi olarak işaretle
   Copy Error Details: "Teknik ayrıntıları kopyala"
   Refresh Errors: "Yenilenemeyen kanallar: {channels}. Ayrıntıları görmek için tıklayın."
   Refresh Error Channels More: "{channels} ve {count} kanal daha | {channels} ve {count} kanal daha"

@@ -142,6 +142,7 @@ Home Page:
   All sections hidden: Kõik jaotised on peidetud
   All sections hidden description: Kohanda avalehte, et mõni jaotis uuesti kuvada.
 Subscriptions:
+  Mark as Unseen: Märgi mittenähtuks
   Copy Error Details: "Kopeeri tehnilised üksikasjad"
   Refresh Errors: "Kanalid, mida ei saanud värskendada: {channels}. Klõpsa üksikasjade vaatamiseks."
   Refresh Error Channels More: "{channels} ja veel {count} | {channels} ja veel {count}"

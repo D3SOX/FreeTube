@@ -171,6 +171,7 @@ Home Page:
   All sections hidden: Vsi razdelki so skriti
   All sections hidden description: Prilagodite domačo stran, da znova prikažete razdelek.
 Subscriptions:
+  Mark as Unseen: Označi kot nevideno
   Copy Error Details: "Kopiraj tehnične podrobnosti"
   Refresh Errors: "Kanali, ki jih ni bilo mogoče osvežiti: {channels}. Kliknite za ogled podrobnosti."
   Refresh Error Channels More: "{channels} in še {count} | {channels} in še {count} | {channels} in še {count} | {channels} in še {count}"

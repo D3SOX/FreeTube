@@ -142,6 +142,7 @@ Home Page:
   All sections hidden: Semua bagian disembunyikan
   All sections hidden description: Sesuaikan Beranda untuk menampilkan kembali bagian.
 Subscriptions:
+  Mark as Unseen: Tandai sebagai belum dilihat
   Copy Error Details: "Salin detail teknis"
   Refresh Errors: "Channel yang tidak dapat diperbarui: {channels}. Klik untuk melihat detail."
   Refresh Error Channels More: "{channels} dan {count} lainnya"

@@ -141,6 +141,7 @@ Home Page:
   All sections hidden description: Passe die Startseite an, um wieder einen Bereich anzuzeigen.
 
 Subscriptions:
+  Mark as Unseen: Als ungesehen markieren
   Copy Error Details: "Technische Details kopieren"
   Refresh Errors: "Nicht aktualisierte Kanäle: {channels}. Klicken, um Details anzuzeigen."
   Refresh Error Channels More: "{channels} und {count} weiterer | {channels} und {count} weitere"

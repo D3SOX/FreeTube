@@ -142,6 +142,7 @@ Home Page:
   All sections hidden: Всички раздели са скрити
   All sections hidden description: Персонализирайте началната страница, за да покажете отново раздел.
 Subscriptions:
+  Mark as Unseen: Отбележи като невидяно
   Copy Error Details: "Копиране на техническите подробности"
   Refresh Errors: "Канали, които не можаха да се обновят: {channels}. Натиснете, за да видите подробностите."
   Refresh Error Channels More: "{channels} и още {count} | {channels} и още {count}"

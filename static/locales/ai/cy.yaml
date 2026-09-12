@@ -142,6 +142,7 @@ Home Page:
   All sections hidden: Mae pob adran wedi'i chuddio
   All sections hidden description: Addaswch yr hafan i ddangos adran eto.
 Subscriptions:
+  Mark as Unseen: Marcio fel heb ei weld
   Copy Error Details: "Copïo manylion technegol"
   Refresh Errors: "Sianeli na ellid eu hadnewyddu: {channels}. Cliciwch i weld y manylion."
   Refresh Error Channels More: "{channels} a {count} arall | {channels} a {count} arall | {channels} a {count} arall | {channels} a {count} arall | {channels} a {count} arall | {channels} a {count} arall"

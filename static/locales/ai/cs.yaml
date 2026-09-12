@@ -142,6 +142,7 @@ Home Page:
   All sections hidden: Všechny sekce jsou skryté
   All sections hidden description: Přizpůsobte domovskou stránku a některou sekci znovu zobrazte.
 Subscriptions:
+  Mark as Unseen: Označit jako neviděné
   Copy Error Details: "Kopírovat technické podrobnosti"
   Refresh Errors: "Kanály, které se nepodařilo obnovit: {channels}. Kliknutím zobrazíte podrobnosti."
   Refresh Error Channels More: "{channels} a {count} další | {channels} a {count} další | {channels} a {count} další"

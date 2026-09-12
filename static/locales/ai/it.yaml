@@ -142,6 +142,7 @@ Home Page:
   All sections hidden: Tutte le sezioni sono nascoste
   All sections hidden description: Personalizza Home per mostrare di nuovo una sezione.
 Subscriptions:
+  Mark as Unseen: Segna come non visto
   Copy Error Details: "Copia dettagli tecnici"
   Refresh Errors: "Canali che non è stato possibile aggiornare: {channels}. Fai clic per vedere i dettagli."
   Refresh Error Channels More: "{channels} e {count} altro | {channels} e altri {count} | {channels} e altri {count}"

@@ -142,6 +142,7 @@ Home Page:
   All sections hidden: Toate secțiunile sunt ascunse
   All sections hidden description: Personalizează pagina principală pentru a afișa din nou o secțiune.
 Subscriptions:
+  Mark as Unseen: Marchează ca nevăzut
   Copy Error Details: "Copiază detaliile tehnice"
   Refresh Errors: "Canale care nu au putut fi actualizate: {channels}. Faceți clic pentru a vedea detaliile."
   Refresh Error Channels More: "{channels} și încă {count} | {channels} și încă {count} | {channels} și încă {count}"

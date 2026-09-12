@@ -149,6 +149,7 @@ Home Page:
   All sections hidden: 모든 섹션이 숨겨져 있습니다
   All sections hidden description: 홈을 맞춤 설정하여 섹션을 다시 표시하세요.
 Subscriptions:
+  Mark as Unseen: 보지 않음으로 표시
   Copy Error Details: "기술 세부 정보 복사"
   Refresh Errors: "새로고침하지 못한 채널: {channels}. 클릭하여 세부 정보를 확인하세요."
   Refresh Error Channels More: "{channels} 외 {count}개"

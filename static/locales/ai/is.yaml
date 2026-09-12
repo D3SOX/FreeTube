@@ -142,6 +142,7 @@ Home Page:
   All sections hidden: Allir hlutar eru faldir
   All sections hidden description: Sérsníddu heimasíðuna til að sýna hluta aftur.
 Subscriptions:
+  Mark as Unseen: Merkja sem óséð
   Copy Error Details: "Afrita tæknilegar upplýsingar"
   Refresh Errors: "Rásir sem ekki tókst að uppfæra: {channels}. Smelltu til að sjá upplýsingar."
   Refresh Error Channels More: "{channels} og {count} til viðbótar | {channels} og {count} til viðbótar"

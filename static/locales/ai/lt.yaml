@@ -164,6 +164,7 @@ Home Page:
   All sections hidden: Visi skyriai paslėpti
   All sections hidden description: Tinkinkite pradžios puslapį, kad vėl būtų rodomas skyrius.
 Subscriptions:
+  Mark as Unseen: Pažymėti kaip nematytą
   Copy Error Details: "Kopijuoti techninę informaciją"
   Refresh Errors: "Kanalai, kurių nepavyko atnaujinti: {channels}. Spustelėkite, kad peržiūrėtumėte išsamią informaciją."
   Refresh Error Channels More: "{channels} ir dar {count} | {channels} ir dar {count} | {channels} ir dar {count}"

@@ -142,6 +142,7 @@ Home Page:
   All sections hidden: Kaikki osiot on piilotettu
   All sections hidden description: Mukauta etusivua, jotta voit näyttää osion uudelleen.
 Subscriptions:
+  Mark as Unseen: Merkitse näkemättömäksi
   Copy Error Details: "Kopioi tekniset tiedot"
   Refresh Errors: "Kanavat, joita ei voitu päivittää: {channels}. Näytä tiedot napsauttamalla."
   Refresh Error Channels More: "{channels} ja {count} muuta | {channels} ja {count} muuta"

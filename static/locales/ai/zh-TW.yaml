@@ -142,6 +142,7 @@ Home Page:
   All sections hidden: 所有區塊均已隱藏
   All sections hidden description: 自訂首頁以重新顯示區塊。
 Subscriptions:
+  Mark as Unseen: 標記為未看過
   Copy Error Details: "複製技術詳細資訊"
   Refresh Errors: "無法重新整理的頻道：{channels}。點擊查看詳細資訊。"
   Refresh Error Channels More: "{channels} 以及其他 {count} 個頻道"
