@@ -741,11 +741,11 @@ export function useScrollMiniPlayer({ container, fullWindowEnabled, getUi, isAct
     scrollMiniResizeHandleOnLightBg.value = false
     scrollMiniPlayPauseHiddenByTimer = false
     clearScrollMiniPlayPauseHideTimeout()
-    clearScrollMiniVolumeHideTimeout()
-    scrollMiniVolumeExpanded.value = false
 
     cancelScrollMiniPlayerBounce()
     endScrollMiniPointerSession()
+    clearScrollMiniVolumeHideTimeout()
+    scrollMiniVolumeExpanded.value = false
 
     if (previousRect) {
       animateScrollMiniPlayerLayout(previousRect, false, animationSequence)
@@ -975,6 +975,7 @@ export function useScrollMiniPlayer({ container, fullWindowEnabled, getUi, isAct
   }
 
   function endScrollMiniPointerSession() {
+    if (scrollMiniPointerSession?.type === 'volume') scheduleScrollMiniVolumeHide()
     scrollMiniPointerSession = null
     syncNativeMiniPlayerGesture()
     document.body.classList.remove('scroll-mini-player-grabbing')
@@ -1152,13 +1153,13 @@ export function useScrollMiniPlayer({ container, fullWindowEnabled, getUi, isAct
     }
 
     clearScrollMiniPlayPauseHideTimeout()
-    clearScrollMiniVolumeHideTimeout()
 
     cancelScrollMiniPlayerBounce()
     cancelScrollMiniPlayerLayoutAnimation()
     cancelPendingScrollMiniScrollFrame()
 
     endScrollMiniPointerSession()
+    clearScrollMiniVolumeHideTimeout()
     window.removeEventListener('pointerup', handleScrollMiniVolumePointerUpWindow)
     window.removeEventListener('pointercancel', handleScrollMiniVolumePointerUpWindow)
     window.removeEventListener('scroll', handleScrollMiniWindowScroll)

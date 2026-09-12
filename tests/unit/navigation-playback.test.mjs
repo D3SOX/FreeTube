@@ -127,3 +127,18 @@ test('return navigation waits for disabled retained playback to finish disposal'
   assert.equal(mounted.disposals(), 1)
   assert.equal(mounted.provides.get('navigation').detached.value, false)
 })
+
+test('retains the current history title when a later entry repeats the watch URL', async t => {
+  const mounted = mountWatch(t)
+  mounted.getters.getTabById = () => ({
+    historyIndex: 0,
+    history: [
+      { route: { fullPath: '/watch/video' }, title: 'Watch', titlePending: true },
+      { route: { fullPath: '/watch/video' }, title: 'Later title', titlePending: false }
+    ]
+  })
+  await mounted.navigate('/subscriptions')
+  await mounted.navigate('/watch/video')
+  assert.equal(mounted.titles.at(-1)[1], 'Watch')
+  assert.equal(mounted.titles.at(-1)[2].resolveHistoryEntry, false)
+})

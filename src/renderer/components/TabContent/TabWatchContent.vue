@@ -72,8 +72,8 @@ const unregister = tabLifecycleService.register(props.tabId, {
     retained.value = enabled.value && !context.to.path.startsWith('/watch/') &&
       player?.hasLoaded === true && !player.isPaused()
     if (retained.value) {
-      const entry = store.getters.getTabById(props.tabId)?.history
-        .findLast(entry => entry.route.fullPath === watchRoute.value.fullPath)
+      const tab = store.getters.getTabById(props.tabId)
+      const entry = tab?.history[tab.historyIndex]
       watchTitle = entry?.title || ''
       watchTitleOptions = { resolveHistoryEntry: entry?.titlePending !== true }
       await run('deactivate', context)
