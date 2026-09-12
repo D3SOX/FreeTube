@@ -5008,6 +5008,25 @@ test.describe('synced setting indicators', () => {
     }
   })
 
+  test('shares the subscription settings sync toggle between its button and subpage', async ({ page }) => {
+    const section = await goToSettingsSection(page, 'subscription')
+    const manager = section.locator('.manageButton').filter({ hasText: 'Subscription settings' })
+    await manager.getByRole('button', { name: 'Stop syncing this setting' }).click()
+    await expect(manager.getByRole('button', { name: 'Sync this setting' })).toHaveAttribute('aria-pressed', 'false')
+    await manager.getByRole('button', { name: 'Subscription settings', exact: true }).click()
+    const enable = page.getByRole('button', { name: 'Sync this setting', exact: true })
+    await expect(enable).toBeVisible()
+    await enable.click()
+    await expect.poll(() => page.evaluate(() => {
+      const store = document.querySelector('#app').__vue_app__.config.globalProperties.$store
+      return store.state.settings.syncServerSettingsExcluded
+    })).not.toContain('subscriptionChannelSettings')
+    await page.reload()
+    const reloaded = await goToSettingsSection(page, 'subscription')
+    await expect(reloaded.locator('.manageButton').filter({ hasText: 'Subscription settings' })
+      .getByRole('button', { name: 'Stop syncing this setting' })).toBeVisible()
+  })
+
   test('allows account sync to be disabled per setting', async ({ page }) => {
     await goTo(page, 'settings')
 

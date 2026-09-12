@@ -1,3 +1,4 @@
+import * as subscriptionSettingsSync from '../../src/renderer/helpers/subscription-settings-sync.js'
 import assert from 'node:assert/strict'
 import { readFile } from 'node:fs/promises'
 import test from 'node:test'
@@ -45,6 +46,7 @@ function fixture (overrides = {}, { encrypted = false, respond } = {}) {
     ...overrides,
   }
   const common = {
+    ...subscriptionSettingsSync,
     ...errors,
     showToast: options => notifications.push(options),
     showToastOnAllTabs: (message, time, icon, buttonAction) => notifications.push({

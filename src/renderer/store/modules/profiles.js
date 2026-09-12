@@ -3,6 +3,8 @@ import { DBProfileHandlers } from '../../../datastores/handlers/index'
 import { deepCopy } from '../../helpers/utils'
 import { getProfileWithUpdatedSubscriptionDetails } from '../../helpers/subscription-profile-details'
 
+import { SUBSCRIPTION_CHANNEL_SETTINGS_SYNC_KEY } from '../../helpers/subscription-settings-sync'
+
 const state = {
   profileList: [{
     _id: MAIN_PROFILE_ID,
@@ -171,7 +173,7 @@ const actions = {
     }
   },
 
-  async updateChannelSettings({ commit, state }, { channelId, settings }) {
+  async updateChannelSettings({ commit, dispatch, state }, { channelId, settings }) {
     const primarySubscription = state.profileList[0].subscriptions
       .find(channel => channel.id === channelId)
     if (primarySubscription === undefined) return false
@@ -204,6 +206,7 @@ const actions = {
       if (!Array.isArray(updatedProfileIds)) return false
 
       if (updatedProfileIds.length > 0) {
+        await dispatch('recordSyncSettingEdit', SUBSCRIPTION_CHANNEL_SETTINGS_SYNC_KEY)
         commit('updateChannelSettings', { channel, profileIds: updatedProfileIds })
       }
       return updatedProfileIds.length === profileIds.length

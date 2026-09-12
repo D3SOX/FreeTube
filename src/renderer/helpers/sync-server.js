@@ -14,7 +14,7 @@ import {
   isExpiredSessionReauthentication,
   isSessionExpiredError,
 } from './sync-server-errors'
-import { getSyncableSettingKeys } from '../store/modules/settings'
+import { getSyncableSettingKeys, isSettingSyncEnabled } from '../store/modules/settings'
 import { deepCopy } from './utils'
 import { replaceCustomThemes } from './customTheme'
 import { repairSystemThemeSettings } from './customThemeSync'
@@ -32,6 +32,13 @@ import { isValidSyncServerDeviceId } from './sync-server-sessions'
 import { mergeSettingEntry, resolveMergedThemeEntry } from './sync-settings-conflict'
 import { getCapacitorTabService } from '../tabs/CapacitorTabService'
 import { capacitorHttpFetch } from './api/capacitor-http'
+
+import {
+  SUBSCRIPTION_CHANNEL_SETTINGS_SYNC_KEY,
+  getSubscriptionSettingsForSync,
+  mergeSubscriptionSettingsEntry,
+  applySubscriptionSettingsSync
+} from './subscription-settings-sync'
 
 const LEGACY_HISTORY_PAGE_SIZE = 50
 const BULK_SYNC_CHUNK_SIZE = 100
@@ -1234,10 +1241,17 @@ export async function syncSettings(client, store, previous = {}) {
     )),
   ])
 
+  if (isSettingSyncEnabled(store.state.settings, SUBSCRIPTION_CHANNEL_SETTINGS_SYNC_KEY)) {
+    local[SUBSCRIPTION_CHANNEL_SETTINGS_SYNC_KEY] = getSubscriptionSettingsForSync(store)
+  }
+
   for (const [key, value] of Object.entries(local)) {
     const old = previous[key]
     const remoteEntry = remote[key]
-    let entry = mergeSettingEntry({
+    const mergeEntry = key === SUBSCRIPTION_CHANNEL_SETTINGS_SYNC_KEY
+      ? mergeSubscriptionSettingsEntry
+      : mergeSettingEntry
+    let entry = mergeEntry({
       key,
       value,
       old,
@@ -1255,9 +1269,13 @@ export async function syncSettings(client, store, previous = {}) {
       entry = { key, value: MAIN_PROFILE_ID, updatedAt: now }
       merged[key] = entry
     }
-    const currentValue = key === CUSTOM_THEMES_SYNC_KEY ? value : store.state.settings[key]
+    const currentValue = key === CUSTOM_THEMES_SYNC_KEY || key === SUBSCRIPTION_CHANNEL_SETTINGS_SYNC_KEY
+      ? value
+      : store.state.settings[key]
     if (!metadataEquals(currentValue, entry.value)) {
-      if (key === CUSTOM_THEMES_SYNC_KEY) {
+      if (key === SUBSCRIPTION_CHANNEL_SETTINGS_SYNC_KEY) {
+        await applySubscriptionSettingsSync(store, entry.value)
+      } else if (key === CUSTOM_THEMES_SYNC_KEY) {
         const previousThemes = store.state.utils.customThemes
         const themes = await replaceCustomThemes(entry.value)
         store.commit('setCustomThemes', themes)

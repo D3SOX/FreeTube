@@ -1,15 +1,21 @@
 <template>
-  <FtButton
-    :label="t('Channel.Subscription settings')"
-    :icon="['fas', 'sliders-h']"
-    @click="showManager = true"
-  />
+  <div class="manageButton">
+    <FtButton
+      :label="t('Channel.Subscription settings')"
+      :icon="['fas', 'sliders-h']"
+      @click="showManager = true"
+    />
+    <FtSyncedSettingIndicator :setting-keys="[SUBSCRIPTION_CHANNEL_SETTINGS_SYNC_KEY]" />
+  </div>
   <FtSettingsSubpage
     :open="showManager"
     :title="t('Channel.Subscription settings')"
     :icon="['fas', 'sliders-h']"
     @close="showManager = false"
   >
+    <template #breadcrumb-action>
+      <FtSyncedSettingIndicator :setting-keys="[SUBSCRIPTION_CHANNEL_SETTINGS_SYNC_KEY]" />
+    </template>
     <div class="channelSettingsHeader">
       <FtInput
         input-type="search"
@@ -295,6 +301,8 @@ import { FtIcon } from '@opentubex/icons'
 import { computed, nextTick, onBeforeUnmount, ref, shallowRef, useId, useTemplateRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
+import FtSyncedSettingIndicator from '../FtSyncedSettingIndicator/FtSyncedSettingIndicator.vue'
+import { SUBSCRIPTION_CHANNEL_SETTINGS_SYNC_KEY } from '../../helpers/subscription-settings-sync'
 import FtButton from '../FtButton/FtButton.vue'
 import FtAutoLoadNextPageWrapper from '../FtAutoLoadNextPageWrapper.vue'
 import { useListPagination } from '../../composables/useListPagination'
