@@ -342,7 +342,7 @@ test.describe('video downloads', () => {
     )
     await expect(page.getByText(/then try switching the yt-dlp channel to Nightly or Master/)).toBeVisible()
     await expect(page.locator('.downloadProgressBarTrack')).toHaveCount(0)
-    const separatorSpacing = await page.locator('.downloadPromptContent').evaluate(prompt => ({
+    const separatorSpacing = await page.locator('.downloadPromptCard').evaluate(prompt => ({
       above: Number.parseFloat(getComputedStyle(prompt.querySelector('.downloadProgress')).paddingBottom),
       below: Number.parseFloat(getComputedStyle(prompt.querySelector('.downloadFooter')).paddingTop)
     }))
@@ -1681,6 +1681,7 @@ test.describe('list video actions', () => {
       await expect.poll(() => locator.evaluate(element => element.scrollWidth - element.clientWidth)).toBe(0)
     }
 
+    await page.locator('.advancedDownloadOptions > summary').click()
     const templateSection = page.locator('.fixedTemplateSection')
     await page.waitForTimeout(200)
     const templateTop = await templateSection.evaluate(element => element.getBoundingClientRect().top)

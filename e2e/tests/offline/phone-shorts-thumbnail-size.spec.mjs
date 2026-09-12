@@ -74,7 +74,7 @@ for (const listType of ['grid', 'list']) {
       await expect.poll(columns).toBe(1)
 
       if (listType === 'list') {
-        await page.locator('.profileTrigger').click()
+        await page.locator('.mobileSheetHeader').getByRole('button', { name: 'Close', exact: true }).click()
         await page.locator('[data-subscription-feed-tab="videos"]').click()
         await page.locator('.profileTrigger').click()
         await expect(slider).toHaveAttribute('max', '180')
