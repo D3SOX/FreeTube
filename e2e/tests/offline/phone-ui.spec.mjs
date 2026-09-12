@@ -147,6 +147,43 @@ for (const uiScale of [100, 95]) {
       await expect(page).toHaveURL(/watch/)
     })
 
+    test('aligns transcript language labels and keeps the checkmark at the row end', async ({ app, page, attachScreenshot }) => {
+      await page.evaluate(() => document.querySelector('#app').__vue_app__.config.globalProperties.$store.dispatch('updatePreferredCaptionLocale', 'de'))
+      await mockPlayableWatchPage(app, page, { captionTranslations: true })
+      await openMockedVideo(page)
+      await setWindowSize(app, page, { width: 375, height: 760 })
+      await page.locator('.videoOptions').getByRole('button', { name: /transcript/i }).click()
+      const languageButton = page.locator('.mobileSheetHeader').getByRole('button', { name: 'Transcript language', exact: true })
+      await languageButton.click()
+      const menu = page.locator('.transcriptLanguageMenu')
+      await expect(menu.locator('button')).toHaveCount(2)
+      await attachScreenshot('transcript language alignment')
+      for (const direction of ['ltr', 'rtl']) {
+        await menu.evaluate((element, direction) => { element.dir = direction }, direction)
+        const offsets = await menu.locator('button').evaluateAll(buttons => buttons.map(button => {
+          const row = button.getBoundingClientRect()
+          const label = button.querySelector('span').getBoundingClientRect()
+          const check = button.querySelector('svg')?.getBoundingClientRect()
+          const rtl = getComputedStyle(button).direction === 'rtl'
+          return {
+            label: rtl ? row.right - label.right : label.left - row.left,
+            check: check ? (rtl ? check.left - row.left : row.right - check.right) : null
+          }
+        }))
+        for (const offset of offsets) {
+          expect(offset.label).toBeGreaterThan(0)
+          expect(offset.label).toBeLessThan(16)
+          if (offset.check !== null) expect(offset.check).toBeLessThan(16)
+        }
+        expect(Math.abs(offsets[0].label - offsets[1].label)).toBeLessThan(1)
+      }
+      const nextLanguage = await menu.locator('button:not(.selected)').textContent()
+      await menu.locator('button:not(.selected)').click()
+      await expect(menu).toHaveCount(0)
+      await languageButton.click()
+      await expect(menu.locator('.selected')).toHaveText(nextLanguage)
+    })
+
     test('clears transcript state through the shared Close button', async ({ app, page }) => {
       await mockPlayableWatchPage(app, page, { captionTranslations: true })
       await openMockedVideo(page)
