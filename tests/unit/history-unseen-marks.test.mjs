@@ -10,6 +10,10 @@ const source = await readFile(new URL('../../src/renderer/store/modules/history.
 function fixture(fail = false) {
   const writes = []
   const marks = []
+  const savedMarks = [
+    { videoId: 'unseen', seenAt: 100, unseenAt: 100, isMembersOnly: true },
+    { videoId: 'seen', seenAt: 200, unseenAt: 100 },
+  ]
   const persist = async value => {
     if (fail) throw new Error('history persistence failed')
     writes.push(structuredClone(value))
@@ -18,6 +22,7 @@ function fixture(fail = false) {
     ...historyHelpers,
     parseSubscriptionSeenVideos,
     DBHistoryHandlers: { upsert: persist, overwrite: persist },
+    DBSettingHandlers: { mergeSeenVideos: async () => JSON.stringify(savedMarks) },
     console: { error() {} },
   }
   const module = compileFunction(source.replace(/^import[\s\S]*? from ['"][^'"]+['"]\n/gm, '')
@@ -34,7 +39,7 @@ function fixture(fail = false) {
       else return module.actions[type](context, payload)
     },
   }
-  return { context, writes, marks }
+  return { context, writes, marks, savedMarks, handlers: dependencies.DBHistoryHandlers }
 }
 
 const record = videoId => ({ videoId, isWatched: false, isMembersOnly: false, watchProgress: 123, lengthSeconds: 200, timeWatched: 1 })
@@ -50,7 +55,7 @@ for (const bulk of [false, true]) {
       for (const entry of records) await f.context.dispatch('updateHistory', { ...entry, isWatched: true })
     }
     // The previously members-only upload is public when it is marked watched.
-    assert.deepEqual(f.marks, [{ videos: [{ videoId: 'unseen', isMembersOnly: false }] }])
+    assert.deepEqual(f.marks, [{ videos: [{ videoId: 'unseen', isMembersOnly: false, expectedUnseenAt: 100 }] }])
     assert.deepEqual(f.writes.flat(), records.map(entry => ({ ...entry, isWatched: true })))
   })
 
@@ -70,4 +75,40 @@ test('saving an unwatched history record preserves active unseen marks', async (
   const f = fixture()
   await f.context.dispatch('updateHistory', record('unseen'))
   assert.deepEqual(f.marks, [])
+})
+
+test('bulk mark as watched still reports persisted history when saving seen marks fails', async () => {
+  const f = fixture()
+  f.context.state.historyCacheSorted = [record('unseen')]
+  const dispatch = f.context.dispatch
+  f.context.dispatch = async (type, payload) => {
+    if (type === 'mergeSubscriptionSeenVideos') throw new Error('seen persistence failed')
+    return dispatch(type, payload)
+  }
+  assert.equal(await f.context.dispatch('markAllHistoryAsWatched'), 1)
+  assert.equal(f.context.state.historyCacheById.unseen.isWatched, true)
+  assert.equal(f.writes.length, 1)
+})
+
+test('watched actions use saved reverse marks even when the renderer getter is stale', async () => {
+  const f = fixture()
+  f.context.rootGetters.getSubscriptionSeenVideos = []
+  await f.context.dispatch('updateHistory', { ...record('unseen'), isWatched: true })
+  assert.equal(f.marks[0]?.videos[0].videoId, 'unseen')
+})
+
+test('a delayed watched write only supersedes the reverse marker it started with', async () => {
+  const f = fixture()
+  let started
+  let release
+  const waiting = new Promise(resolve => { started = resolve })
+  const resume = new Promise(resolve => { release = resolve })
+  f.handlers.upsert = async () => { started(); await resume }
+  const update = f.context.dispatch('updateHistory', { ...record('unseen'), isWatched: true })
+  await waiting
+  f.savedMarks[0] = { videoId: 'unseen', seenAt: 200, unseenAt: 200 }
+  f.context.rootGetters.getSubscriptionSeenVideos = structuredClone(f.savedMarks)
+  release()
+  await update
+  assert.equal(f.marks[0]?.videos[0].expectedUnseenAt, 100)
 })

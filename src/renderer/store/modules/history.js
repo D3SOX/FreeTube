@@ -1,4 +1,4 @@
-import { DBHistoryHandlers } from '../../../datastores/handlers/index'
+import { DBHistoryHandlers, DBSettingHandlers } from '../../../datastores/handlers/index'
 import { parseSubscriptionSeenVideos } from '../../../subscriptionSeenVideos.js'
 import {
   canMarkHistoryEntryAsWatched,
@@ -7,12 +7,24 @@ import {
 
 const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000
 
-async function supersedeUnseenMarks(dispatch, rootGetters, records) {
+async function getUnseenMarksToSupersede(records) {
   const watchedRecords = new Map(records.filter(record => record.isWatched === true).map(record => [record.videoId, record]))
-  const videos = parseSubscriptionSeenVideos(rootGetters?.getSubscriptionSeenVideos)
-    .filter(mark => watchedRecords.has(mark.videoId) && mark.unseenAt >= mark.seenAt)
-    .map(mark => ({ videoId: mark.videoId, isMembersOnly: watchedRecords.get(mark.videoId).isMembersOnly === true }))
-  if (videos.length > 0) await dispatch('mergeSubscriptionSeenVideos', { videos })
+  if (watchedRecords.size === 0) return []
+  try {
+    // Read the shared persisted state before starting the history write. A
+    // renderer getter may not have received another window's latest edit yet.
+    const saved = await DBSettingHandlers.mergeSeenVideos([])
+    return parseSubscriptionSeenVideos(saved)
+      .filter(mark => watchedRecords.has(mark.videoId) && mark.unseenAt >= mark.seenAt)
+      .map(mark => ({
+        videoId: mark.videoId,
+        isMembersOnly: watchedRecords.get(mark.videoId).isMembersOnly === true,
+        expectedUnseenAt: mark.unseenAt
+      }))
+  } catch (error) {
+    console.error(error)
+    return []
+  }
 }
 
 function getRetentionCutoff(days) {
@@ -64,11 +76,12 @@ const actions = {
     }
   },
 
-  async updateHistory({ commit, dispatch, rootGetters }, record) {
+  async updateHistory({ commit, dispatch }, record) {
+    const videos = await getUnseenMarksToSupersede([record])
     try {
       await DBHistoryHandlers.upsert(record)
       commit('upsertToHistoryCache', record)
-      if (record.isWatched === true) await supersedeUnseenMarks(dispatch, rootGetters, [record])
+      if (videos.length > 0) await dispatch('mergeSubscriptionSeenVideos', { videos })
     } catch (errMessage) {
       console.error(errMessage)
     }
@@ -114,7 +127,7 @@ const actions = {
     }
   },
 
-  async markAllHistoryAsWatched({ dispatch, state, rootGetters }) {
+  async markAllHistoryAsWatched({ dispatch, state }) {
     let markedCount = 0
     const records = state.historyCacheSorted.map(record => {
       if (record.isWatched === true || !canMarkHistoryEntryAsWatched(record)) {
@@ -126,9 +139,14 @@ const actions = {
     })
 
     if (markedCount > 0) {
+      const videos = await getUnseenMarksToSupersede(records)
       const recordsById = new Map(records.map(record => [record.videoId, record]))
       if (await dispatch('overwriteHistory', recordsById)) {
-        await supersedeUnseenMarks(dispatch, rootGetters, records)
+        try {
+          if (videos.length > 0) await dispatch('mergeSubscriptionSeenVideos', { videos })
+        } catch (errMessage) {
+          console.error(errMessage)
+        }
       }
     }
 

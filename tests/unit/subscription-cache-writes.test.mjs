@@ -106,3 +106,36 @@ for (const delayDatabaseReply of [false, true]) {
     assert.equal(new Date(persisted.videosTimestamp).getTime(), 2000)
   })
 }
+
+test('loading persisted video caches supplies feed markers without changing known seen state or embedded videos', async () => {
+  const entries = [
+    { videoId: 'unmarked' },
+    { videoId: 'seen', isNewInSubscriptionFeed: false },
+    { videoId: 'new', isNewInSubscriptionFeed: true },
+  ]
+  const embedded = { videoId: 'embedded' }
+  const context = vm.createContext({
+    console,
+    DBSubscriptionCacheHandlers: {
+      find: async () => [{
+        _id: 'channel',
+        videos: entries,
+        shorts: entries,
+        liveStreams: entries,
+        communityPosts: [{ postId: 'post', postContent: { type: 'video', content: embedded } }],
+      }],
+    },
+  })
+  vm.runInContext(moduleSource, context)
+  const { actions, mutations, state } = context.cacheModule
+  await actions.grabAllSubscriptions({
+    rootGetters: { getSubscribedChannelIdSet: new Set(['channel']) },
+    commit: (type, payload) => mutations[type](state, payload),
+  })
+  for (const key of ['videoCache', 'shortsCache', 'liveCache']) {
+    assert.deepEqual(structuredClone(state[key].channel.videos), [
+      { videoId: 'unmarked', isNewInSubscriptionFeed: false }, entries[1], entries[2],
+    ])
+  }
+  assert.equal(state.postsCache.channel.posts[0].postContent.content.isNewInSubscriptionFeed, undefined)
+})

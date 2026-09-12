@@ -490,3 +490,17 @@ test('a later seen action prevents an old reverse mark from clearing watched his
   assert.equal(document.seenVideos[0].seenAt, 3000)
   assert.equal(document.seenVideos[0].unseenAt, 2000)
 })
+
+test('a conditional watched update cannot supersede a newer unseen action', async () => {
+  const { Settings } = await settingsFixture()
+  await Settings.mergeSeenVideos([{ videoId: 'video', seenAt: 200, unseenAt: 200 }])
+  const saved = JSON.parse(await Settings.mergeSeenVideos({
+    videos: [{ videoId: 'video', expectedUnseenAt: 100 }],
+  }))
+  assert.equal(saved[0].seenAt, 200)
+  assert.equal(saved[0].unseenAt, 200)
+  const updated = JSON.parse(await Settings.mergeSeenVideos({
+    videos: [{ videoId: 'video', expectedUnseenAt: 200 }],
+  }))
+  assert.ok(updated[0].seenAt > updated[0].unseenAt)
+})

@@ -99,6 +99,10 @@ const actions = {
 
       const toBeRemovedChannelIds = []
       const subscribedChannelIdSet = rootGetters.getSubscribedChannelIdSet
+      const withFeedState = entries => entries.map(entry => ({
+        ...entry,
+        isNewInSubscriptionFeed: entry.isNewInSubscriptionFeed === true
+      }))
 
       for (const dataEntry of payload) {
         const channelId = dataEntry._id
@@ -112,15 +116,15 @@ const actions = {
         let hasData = false
 
         if (Array.isArray(dataEntry.videos)) {
-          videos[channelId] = { videos: dataEntry.videos, timestamp: toDate(dataEntry.videosTimestamp) }
+          videos[channelId] = { videos: withFeedState(dataEntry.videos), timestamp: toDate(dataEntry.videosTimestamp) }
           hasData = true
         }
         if (Array.isArray(dataEntry.liveStreams)) {
-          liveStreams[channelId] = { videos: dataEntry.liveStreams, timestamp: toDate(dataEntry.liveStreamsTimestamp) }
+          liveStreams[channelId] = { videos: withFeedState(dataEntry.liveStreams), timestamp: toDate(dataEntry.liveStreamsTimestamp) }
           hasData = true
         }
         if (Array.isArray(dataEntry.shorts)) {
-          shorts[channelId] = { videos: dataEntry.shorts, timestamp: toDate(dataEntry.shortsTimestamp) }
+          shorts[channelId] = { videos: withFeedState(dataEntry.shorts), timestamp: toDate(dataEntry.shortsTimestamp) }
           hasData = true
         }
         if (Array.isArray(dataEntry.communityPosts)) {

@@ -22,8 +22,14 @@ class Settings {
       // Allocate local action timestamps inside the shared queue. Renderers
       // may still have identical stale getters while another write is pending.
       const timestamp = nextSubscriptionSeenTimestamp(local)
+      const byId = new Map(local.map(mark => [mark.videoId, mark]))
       const incoming = parseSubscriptionSeenVideos(Array.isArray(update?.videos)
-        ? update.videos.map(video => ({
+        ? update.videos.filter(video => {
+            if (video.expectedUnseenAt === undefined) return true
+            const current = byId.get(video.videoId)
+            // A newer unseen action must win over a delayed history write.
+            return current?.unseenAt === video.expectedUnseenAt && current.unseenAt >= current.seenAt
+          }).map(video => ({
             videoId: video.videoId,
             isMembersOnly: video.isMembersOnly,
             seenAt: timestamp,
