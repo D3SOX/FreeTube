@@ -1,31 +1,10 @@
-import { DBHistoryHandlers, DBSettingHandlers } from '../../../datastores/handlers/index'
-import { parseSubscriptionSeenVideos } from '../../../subscriptionSeenVideos.js'
+import { DBHistoryHandlers } from '../../../datastores/handlers/index'
 import {
   canMarkHistoryEntryAsWatched,
   migrateLegacyHistoryRecord,
 } from '../../helpers/history'
 
 const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000
-
-async function getUnseenMarksToSupersede(records) {
-  const watchedRecords = new Map(records.filter(record => record.isWatched === true).map(record => [record.videoId, record]))
-  if (watchedRecords.size === 0) return []
-  try {
-    // Read the shared persisted state before starting the history write. A
-    // renderer getter may not have received another window's latest edit yet.
-    const saved = await DBSettingHandlers.mergeSeenVideos([])
-    return parseSubscriptionSeenVideos(saved)
-      .filter(mark => watchedRecords.has(mark.videoId) && mark.unseenAt >= mark.seenAt)
-      .map(mark => ({
-        videoId: mark.videoId,
-        isMembersOnly: watchedRecords.get(mark.videoId).isMembersOnly === true,
-        expectedUnseenAt: mark.unseenAt
-      }))
-  } catch (error) {
-    console.error(error)
-    return []
-  }
-}
 
 function getRetentionCutoff(days) {
   const parsedDays = Number(days)
@@ -76,12 +55,16 @@ const actions = {
     }
   },
 
-  async updateHistory({ commit, dispatch }, record) {
-    const videos = await getUnseenMarksToSupersede([record])
+  async updateSubscriptionHistory({ commit, dispatch }, update) {
+    const result = await DBHistoryHandlers.updateSubscriptionState(update)
+    for (const record of result.records) commit('upsertToHistoryCache', record)
+    if (result.seenVideos != null) await dispatch('applySubscriptionSeenVideos', result.seenVideos)
+    return result.records.length
+  },
+
+  async updateHistory({ dispatch }, record) {
     try {
-      await DBHistoryHandlers.upsert(record)
-      commit('upsertToHistoryCache', record)
-      if (videos.length > 0) await dispatch('mergeSubscriptionSeenVideos', { videos })
+      await dispatch('updateSubscriptionHistory', { records: [record] })
     } catch (errMessage) {
       console.error(errMessage)
     }
@@ -128,29 +111,16 @@ const actions = {
   },
 
   async markAllHistoryAsWatched({ dispatch, state }) {
-    let markedCount = 0
-    const records = state.historyCacheSorted.map(record => {
-      if (record.isWatched === true || !canMarkHistoryEntryAsWatched(record)) {
-        return record
-      }
-
-      markedCount++
-      return { ...record, isWatched: true }
-    })
-
-    if (markedCount > 0) {
-      const videos = await getUnseenMarksToSupersede(records)
-      const recordsById = new Map(records.map(record => [record.videoId, record]))
-      if (await dispatch('overwriteHistory', recordsById)) {
-        try {
-          if (videos.length > 0) await dispatch('mergeSubscriptionSeenVideos', { videos })
-        } catch (errMessage) {
-          console.error(errMessage)
-        }
-      }
+    const records = state.historyCacheSorted
+      .filter(record => record.isWatched !== true && canMarkHistoryEntryAsWatched(record))
+      .map(record => ({ ...record, isWatched: true }))
+    if (records.length === 0) return 0
+    try {
+      return await dispatch('updateSubscriptionHistory', { records })
+    } catch (errMessage) {
+      console.error(errMessage)
+      return 0
     }
-
-    return markedCount
   },
 
   async removeFromHistory({ commit }, videoId) {

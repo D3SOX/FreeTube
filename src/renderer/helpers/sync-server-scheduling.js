@@ -23,6 +23,7 @@ export const SYNC_ACTION_REASONS = new Map([
   ['removeVideo', 'playlists'],
   ['removeVideos', 'playlists'],
   ['updateHistory', 'history'],
+  ['updateSubscriptionHistory', 'history'],
   ['updateCustomThemes', 'settings'],
   ['updatePlaylist', 'playlists'],
   ['savePlaylistBookmark', 'playlists'],

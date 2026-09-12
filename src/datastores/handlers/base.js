@@ -13,52 +13,52 @@ const HISTORY_WATCHED_STATUS_MIGRATION_ID = 'historyWatchedStatusMigrated'
 class Settings {
   static pendingSeenVideosUpdate = Promise.resolve()
 
-  static mergeSeenVideos(update) {
-    // Electron windows share this queue in the main process. Read the saved
-    // marks inside it so concurrent windows cannot replace each other's marks.
-    this.pendingSeenVideosUpdate = this.pendingSeenVideosUpdate.catch(() => {}).then(async () => {
-      const saved = await db.settings.findOneAsync({ _id: 'subscriptionSeenVideos' })
-      const local = parseSubscriptionSeenVideos(saved?.value)
-      // Allocate local action timestamps inside the shared queue. Renderers
-      // may still have identical stale getters while another write is pending.
-      const timestamp = nextSubscriptionSeenTimestamp(local)
-      const byId = new Map(local.map(mark => [mark.videoId, mark]))
-      const incoming = parseSubscriptionSeenVideos(Array.isArray(update?.videos)
-        ? update.videos.filter(video => {
-            if (video.expectedUnseenAt === undefined) return true
-            const current = byId.get(video.videoId)
-            // A newer unseen action must win over a delayed history write.
-            return current?.unseenAt === video.expectedUnseenAt && current.unseenAt >= current.seenAt
-          }).map(video => ({
-            videoId: video.videoId,
-            isMembersOnly: video.isMembersOnly,
-            seenAt: timestamp,
-            ...(update.isUnseen === true ? { unseenAt: timestamp } : {})
-          }))
-        : update)
-      const videoIds = [...new Set([...local, ...incoming].map(entry => entry.videoId))]
-      await db.history.ensureIndexAsync({ fieldName: 'videoId' })
-      const historyById = {}
-      // NeDB checks each candidate against every ID in $in. Small indexed
-      // batches avoid quadratic work when merging thousands of seen marks.
-      const batchSize = 250
-      for (let index = 0; index < videoIds.length; index += batchSize) {
-        const history = await db.history.findAsync({ videoId: { $in: videoIds.slice(index, index + batchSize) } }, {
-          videoId: 1,
-          isWatched: 1,
-          isLive: 1,
-          isUpcoming: 1,
-          premiereTimestamp: 1,
-          watchProgress: 1,
-          lengthSeconds: 1,
-        })
-        for (const entry of history) historyById[entry.videoId] = entry
-      }
-      const value = JSON.stringify(mergeSubscriptionSeenVideos(local, incoming, historyById))
-      if (value !== saved?.value) await this.upsert('subscriptionSeenVideos', value)
-      return value
-    })
+  static runSeenVideosUpdate(operation) {
+    // Share one queue for complete history-status and subscription-mark edits
+    // across Electron windows, so another action cannot split their writes.
+    this.pendingSeenVideosUpdate = this.pendingSeenVideosUpdate.catch(() => {}).then(operation)
     return this.pendingSeenVideosUpdate
+  }
+
+  static mergeSeenVideos(update) {
+    return this.runSeenVideosUpdate(() => this._mergeSeenVideos(update))
+  }
+
+  static async _mergeSeenVideos(update) {
+    const saved = await db.settings.findOneAsync({ _id: 'subscriptionSeenVideos' })
+    const local = parseSubscriptionSeenVideos(saved?.value)
+    // Allocate local action timestamps inside the shared queue. Renderers
+    // may still have identical stale getters while another write is pending.
+    const timestamp = nextSubscriptionSeenTimestamp(local)
+    const incoming = parseSubscriptionSeenVideos(Array.isArray(update?.videos)
+      ? update.videos.map(video => ({
+          videoId: video.videoId,
+          isMembersOnly: video.isMembersOnly,
+          seenAt: timestamp,
+          ...(update.isUnseen === true ? { unseenAt: timestamp } : {})
+        }))
+      : update)
+    const videoIds = [...new Set([...local, ...incoming].map(entry => entry.videoId))]
+    await db.history.ensureIndexAsync({ fieldName: 'videoId' })
+    const historyById = {}
+    // NeDB checks each candidate against every ID in $in. Small indexed
+    // batches avoid quadratic work when merging thousands of seen marks.
+    const batchSize = 250
+    for (let index = 0; index < videoIds.length; index += batchSize) {
+      const history = await db.history.findAsync({ videoId: { $in: videoIds.slice(index, index + batchSize) } }, {
+        videoId: 1,
+        isWatched: 1,
+        isLive: 1,
+        isUpcoming: 1,
+        premiereTimestamp: 1,
+        watchProgress: 1,
+        lengthSeconds: 1,
+      })
+      for (const entry of history) historyById[entry.videoId] = entry
+    }
+    const value = JSON.stringify(mergeSubscriptionSeenVideos(local, incoming, historyById))
+    if (value !== saved?.value) await this.upsert('subscriptionSeenVideos', value)
+    return value
   }
 
   static async find() {
@@ -167,6 +167,54 @@ class History {
   static async find() {
     await this.migrateWatchedStatus()
     return db.history.findAsync({}).sort({ timeWatched: -1 })
+  }
+
+  static updateSubscriptionState({ records = [], unseenVideo }) {
+    return Settings.runSeenVideosUpdate(async () => {
+      const updatedRecords = []
+      if (unseenVideo) {
+        const { affectedDocuments } = await db.history.updateAsync(
+          { videoId: unseenVideo.videoId },
+          { $set: { isWatched: false } },
+          { returnUpdatedDocs: true }
+        )
+        if (affectedDocuments) updatedRecords.push(affectedDocuments)
+      } else {
+        for (const record of records) {
+          const migratedRecord = migrateLegacyHistoryRecord(record)
+          const { affectedDocuments } = await db.history.updateAsync(
+            { videoId: migratedRecord.videoId }, migratedRecord,
+            { upsert: true, returnUpdatedDocs: true }
+          )
+          updatedRecords.push(affectedDocuments)
+        }
+      }
+
+      let seenVideos = null
+      try {
+        if (unseenVideo) {
+          seenVideos = await Settings._mergeSeenVideos({ videos: [unseenVideo], isUnseen: true })
+        } else {
+          const watchedById = new Map(updatedRecords.filter(record => record.isWatched === true)
+            .map(record => [record.videoId, record]))
+          if (watchedById.size > 0) {
+            const saved = await db.settings.findOneAsync({ _id: 'subscriptionSeenVideos' })
+            const videos = parseSubscriptionSeenVideos(saved?.value)
+              .filter(mark => watchedById.has(mark.videoId) && mark.unseenAt >= mark.seenAt)
+              .map(mark => ({
+                videoId: mark.videoId,
+                isMembersOnly: watchedById.get(mark.videoId).isMembersOnly === true
+              }))
+            if (videos.length > 0) seenVideos = await Settings._mergeSeenVideos({ videos })
+          }
+        }
+      } catch (error) {
+        // History already persisted. Return it even if the subscription mark
+        // fails, so caches and bulk-action results still reflect the write.
+        console.error(error)
+      }
+      return { records: updatedRecords, seenVideos }
+    })
   }
 
   static upsert(record) {

@@ -4743,6 +4743,22 @@ function runApp() {
 
     try {
       switch (action) {
+        case DBActions.HISTORY.UPDATE_SUBSCRIPTION_STATE: {
+          const result = await baseHandlers.history.updateSubscriptionState(data)
+          for (const record of result.records) {
+            syncOtherWindows(IpcChannels.SYNC_HISTORY, event, {
+              event: SyncEvents.GENERAL.UPSERT, data: record
+            })
+          }
+          if (result.seenVideos != null) {
+            syncOtherWindows(IpcChannels.SYNC_SETTINGS, event, {
+              event: SyncEvents.GENERAL.UPSERT,
+              data: { _id: 'subscriptionSeenVideos', value: result.seenVideos }
+            })
+          }
+          return result
+        }
+
         case DBActions.GENERAL.FIND:
           return await baseHandlers.history.find()
 

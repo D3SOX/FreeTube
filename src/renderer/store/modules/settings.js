@@ -1009,8 +1009,11 @@ const customActions = {
       commit(defaultMutationId(settingId), settings[settingId])
     }
   },
-  async mergeSubscriptionSeenVideos({ commit, state, rootGetters }, update) {
+  async mergeSubscriptionSeenVideos({ dispatch }, update) {
     const saved = await DBSettingHandlers.mergeSeenVideos(update)
+    await dispatch('applySubscriptionSeenVideos', saved)
+  },
+  applySubscriptionSeenVideos({ commit, state, rootGetters }, saved) {
     // Another window's newer update may arrive before this request's reply.
     const value = JSON.stringify(mergeSubscriptionSeenVideos(
       state.subscriptionSeenVideos, saved, rootGetters.getHistoryCacheById

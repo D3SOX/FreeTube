@@ -347,21 +347,16 @@ const actions = {
     }
   },
 
-  async markSubscriptionVideoAsUnseen({ dispatch, state, rootGetters }, videoId) {
+  async markSubscriptionVideoAsUnseen({ dispatch, state }, videoId) {
     const video = [state.videoCache, state.shortsCache, state.liveCache]
       .flatMap(cache => Object.values(cache))
       .flatMap(entry => entry?.videos ?? [])
       .find(video => video.videoId === videoId)
     if (!video) return
 
-    const history = rootGetters.getHistoryCacheById[videoId]
-    // Explicitly unset watched status without resetting the playback position,
-    // including when the watched threshold is zero.
-    if (history) await dispatch('updateHistory', { ...history, isWatched: false })
-    await dispatch('mergeSubscriptionSeenVideos', {
-      videos: [{ videoId, isMembersOnly: video.isMembersOnly === true }],
-      isUnseen: true
-    })
+    await dispatch('updateSubscriptionHistory', {
+      unseenVideo: { videoId, isMembersOnly: video.isMembersOnly === true }
+    }).catch(error => console.error(error))
   },
 
   async markSubscriptionPostAsSeen({ commit, state }, postId) {

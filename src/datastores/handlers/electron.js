@@ -48,6 +48,10 @@ class Settings {
 }
 
 class History {
+  static updateSubscriptionState(update) {
+    return dbHistory(DBActions.HISTORY.UPDATE_SUBSCRIPTION_STATE, update)
+  }
+
   static find() {
     return dbHistory(DBActions.GENERAL.FIND)
   }
