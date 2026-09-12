@@ -80,7 +80,13 @@ for (const uiScale of [100, 95]) {
       document.addEventListener('scroll', suppressScroll, { capture: true })
       return () => document.removeEventListener('scroll', suppressScroll, { capture: true })
     })
-    const initial = await scrollbar.boundingBox()
+    // The dialog itself can still move during its opening animation. Compare
+    // the track with its viewport in the same frame, not with the screen.
+    const trackOffset = () => scroller.evaluate(element => {
+      const track = element.querySelector(':scope > .os-scrollbar-vertical')
+      return track.getBoundingClientRect().top - element.getBoundingClientRect().top
+    })
+    const initialOffset = await trackOffset()
     const box = await scroller.boundingBox()
     const session = await page.context().newCDPSession(page)
     await session.send('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 1 })
@@ -91,7 +97,7 @@ for (const uiScale of [100, 95]) {
     }
     await session.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] })
     await expect.poll(() => scroller.evaluate(element => element.scrollTop)).toBeGreaterThan(50)
-    await expect.poll(async () => Math.abs((await scrollbar.boundingBox()).y - initial.y)).toBeLessThanOrEqual(1)
+    await expect.poll(async () => Math.abs(await trackOffset() - initialOffset)).toBeLessThanOrEqual(1)
     await resumeScrollEvents.evaluate(resume => resume())
     await resumeScrollEvents.dispose()
     await session.detach()
