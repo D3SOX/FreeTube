@@ -273,17 +273,24 @@ const route = useRoute()
 const innerRef = useTemplateRef('innerRef')
 const scrollHidden = ref(false)
 const navigationScroll = createMobileNavigationScroll()
+let hideOnScroll = false
 
 function resetScrollVisibility() {
   navigationScroll.reset(window.scrollY)
   scrollHidden.value = false
 }
 
-function updateScrollVisibility() {
+function updateScrollLayout() {
   const nav = innerRef.value?.closest('.sideNav')
-  // Check the rendered layout, including Android's phone/tablet overrides.
-  if (!nav || getComputedStyle(nav).getPropertyValue('--hide-on-scroll').trim() !== '1' ||
-    nav.querySelector(':focus-visible, [aria-expanded="true"]')) {
+  // Resolve the CSS layout on mount/resize, not on every page scroll.
+  hideOnScroll = nav != null && getComputedStyle(nav).getPropertyValue('--hide-on-scroll').trim() === '1'
+  resetScrollVisibility()
+}
+
+function updateScrollVisibility() {
+  if (!hideOnScroll) return
+  const nav = innerRef.value?.closest('.sideNav')
+  if (!nav || nav.querySelector(':focus-visible, [aria-expanded="true"]')) {
     resetScrollVisibility()
     return
   }
@@ -366,9 +373,9 @@ watch([isOpen, hideText, displayedActiveSubscriptions], () => {
 })
 
 onMounted(() => {
-  resetScrollVisibility()
+  updateScrollLayout()
   window.addEventListener('scroll', updateScrollVisibility, { passive: true })
-  window.addEventListener('resize', resetScrollVisibility)
+  window.addEventListener('resize', updateScrollLayout)
   updateIndicator()
   navMutationObserver = new MutationObserver(() => nextTick(updateIndicator))
   navMutationObserver.observe(innerRef.value, { childList: true, subtree: true })
@@ -377,7 +384,7 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   window.removeEventListener('scroll', updateScrollVisibility)
-  window.removeEventListener('resize', resetScrollVisibility)
+  window.removeEventListener('resize', updateScrollLayout)
   clearTimeout(remeasureTimeoutId)
   navMutationObserver?.disconnect()
   window.removeEventListener('resize', updateIndicatorAfterResize)

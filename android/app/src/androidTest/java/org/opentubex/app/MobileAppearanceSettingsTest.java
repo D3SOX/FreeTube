@@ -32,6 +32,15 @@ public class MobileAppearanceSettingsTest {
                         const content = document.createElement('div');
                         content.id = 'mobile-navigation-scroll-fixture';
                         content.style.height = '4000px';
+                        // A native test viewport exercises real DOM scroll events.
+                        const nested = document.createElement('div');
+                        nested.id = 'mobile-navigation-nested-fixture';
+                        nested.style.cssText = 'height:100px;overflow:auto';
+                        const inner = document.createElement('div');
+                        inner.style.height = '1000px';
+                        nested.append(inner);
+                        nested.addEventListener('scroll', () => { nested.dataset.scrolled = 'true'; });
+                        content.append(nested);
                         document.querySelector('.routerView').append(content);
                     })()
                     """);
@@ -40,9 +49,12 @@ public class MobileAppearanceSettingsTest {
                     awaitCondition(view, "Math.abs(window.visualViewport.scale - " + scale / 100.0 + ") < 0.01");
                     evaluate(view, "window.scrollTo(0, 0)");
                     awaitCondition(view, "window.scrollY === 0 && !document.querySelector('.sideNav').classList.contains('scrollHidden')");
-                    evaluate(view, "document.querySelector('#mobile-navigation-scroll-fixture').dispatchEvent(new Event('scroll'))");
+                    evaluate(view, "document.querySelector('#mobile-navigation-nested-fixture').scrollTop = 0");
+                    awaitCondition(view, "document.querySelector('#mobile-navigation-nested-fixture').scrollTop === 0");
+                    evaluate(view, "(() => { const nested = document.querySelector('#mobile-navigation-nested-fixture'); delete nested.dataset.scrolled; nested.scrollTop = 400; })()");
+                    awaitCondition(view, "(() => { const nested = document.querySelector('#mobile-navigation-nested-fixture'); return nested.scrollTop === 400 && nested.dataset.scrolled === 'true'; })()");
                     assertEquals("Nested scrolling leaves the navigation visible", "true", evaluate(view,
-                        "!document.querySelector('.sideNav').classList.contains('scrollHidden')"));
+                        "!document.querySelector('.sideNav').classList.contains('scrollHidden') && window.scrollY === 0"));
                     evaluate(view, "window.__navigationPageHeight = document.scrollingElement.scrollHeight; window.scrollTo(0, 400)");
                     awaitCondition(view, "document.querySelector('.sideNav').getBoundingClientRect().top >= window.innerHeight - 1");
                     assertEquals("Hiding keeps the page height and scroll position stable", "true", evaluate(view,
