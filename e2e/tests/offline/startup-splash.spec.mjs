@@ -28,7 +28,7 @@ for (const [theme, background, zoom] of [
         await expect(page.locator('.topNav')).toHaveCount(0)
         await expect(page.locator('#app')).toHaveAttribute('inert', '')
         expect(await page.locator('.startupCurtain').first().evaluate(element => getComputedStyle(element).backgroundColor)).toBe(background)
-        await expect(page.locator('.startupLabel')).toHaveText('Wird geladen…')
+        await expect(page.locator('.startupLabel')).toHaveCount(0)
         const geometry = await page.locator('#startup-splash').evaluate(element => {
           const bounds = element.getBoundingClientRect()
           const logo = element.querySelector('.startupLogo').getBoundingClientRect()
@@ -59,7 +59,6 @@ for (const [theme, background, zoom] of [
             window.__startupColors.push(getComputedStyle(curtain).backgroundColor)
             window.__startupPalettes.push(JSON.stringify({
               folds: getComputedStyle(curtain).backgroundImage,
-              label: getComputedStyle(document.querySelector('.startupLabel')).color,
               progress: getComputedStyle(document.querySelector('.startupProgress')).backgroundImage
             }))
             requestAnimationFrame(sampleColors)

@@ -24,9 +24,8 @@ test('all fabric leaves the viewport within the shortened reveal', () => {
   }
 })
 
-test('the initial splash uses native appearance and cached plain-text localization without the renderer', async () => {
+test('the initial splash uses native appearance without the renderer', async () => {
   const properties = new Map()
-  const label = { textContent: 'OpenTubeX' }
   const script = await readFile(new URL('../../src/renderer/startup/boot.js', import.meta.url), 'utf8')
   let presented = false
   let paint
@@ -37,20 +36,15 @@ test('the initial splash uses native appearance and cached plain-text localizati
     } },
     requestAnimationFrame: callback => { paint = callback },
     document: {
-      documentElement: { style: { setProperty: (name, value) => properties.set(name, value) } },
-      querySelector: () => label
-    },
-    localStorage: { getItem: () => 'Wird geladen…' }
+      documentElement: { style: { setProperty: (name, value) => properties.set(name, value) } }
+    }
   }
   vm.runInNewContext(script, context)
   assert.equal(properties.get('--startup-background'), '#1e1e2e')
   assert.equal(properties.get('--startup-foreground'), '#eeeeee')
-  assert.equal(label.textContent, 'Wird geladen…')
   assert.equal(presented, false)
   paint()
   assert.equal(presented, true)
-  context.localStorage.getItem = () => { throw new Error('Storage unavailable') }
-  assert.doesNotThrow(() => vm.runInNewContext(script, context))
 })
 
 for (const hideSplash of [true, false, undefined]) {
@@ -59,7 +53,6 @@ for (const hideSplash of [true, false, undefined]) {
     let removed = false
     let inert = true
     let presented = false
-    const label = { textContent: 'OpenTubeX' }
     vm.runInNewContext(script, {
       window: { ftElectron: {
         startupAppearance: { hideSplash },
@@ -69,10 +62,8 @@ for (const hideSplash of [true, false, undefined]) {
         documentElement: {},
         getElementById: id => id === 'startup-splash'
           ? { remove: () => { removed = true } }
-          : { removeAttribute: name => { if (name === 'inert') inert = false } },
-        querySelector: () => removed ? null : label
+          : { removeAttribute: name => { if (name === 'inert') inert = false } }
       },
-      localStorage: { getItem: () => 'Loading…' },
       requestAnimationFrame: callback => callback()
     })
     assert.equal(removed, hideSplash === true)

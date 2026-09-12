@@ -15,16 +15,6 @@ export function curtainExtent(elapsedMs, depth) {
   return Math.max(0, Math.min(1, 0.08 + 0.92 * response - 0.15 * exit * exit * (3 - 2 * exit)))
 }
 
-export function updateStartupSplashLabel(label) {
-  const element = document.querySelector('#startup-splash .startupLabel')
-  if (element) element.textContent = label
-  try {
-    localStorage.setItem('startup-loading-label', label)
-  } catch {
-    // Storage is optional; the current window still has its translated label.
-  }
-}
-
 export function revealStartupSplash() {
   const splash = document.getElementById('startup-splash')
   if (!splash || splash.dataset.revealing) return
@@ -104,7 +94,7 @@ export function revealStartupSplash() {
     draw(0)
     canvas.hidden = false
     splash.querySelectorAll('.startupCurtain').forEach(element => { element.hidden = true })
-    for (const element of splash.querySelectorAll('.startupLogo, .startupLabel, .startupTrack')) {
+    for (const element of splash.querySelectorAll('.startupLogo, .startupTrack')) {
       animations.push(element.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 120, fill: 'forwards' }))
     }
     const start = performance.now()

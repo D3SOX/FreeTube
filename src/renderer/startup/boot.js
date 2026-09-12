@@ -11,13 +11,6 @@
     document.getElementById('startup-splash')?.remove()
     document.getElementById('app')?.removeAttribute('inert')
   }
-  try {
-    const label = localStorage.getItem('startup-loading-label')
-    const element = document.querySelector('#startup-splash .startupLabel')
-    if (label && element) element.textContent = label
-  } catch {
-    // A fresh profile or unavailable storage still has the logo and progress bar.
-  }
   // Electron's ready-to-show can wait for deferred scripts. Announce the
   // splash's own frame so the native window need not wait for the main bundle.
   requestAnimationFrame(() => window.ftElectron?.startupSplashReady())
