@@ -97,4 +97,7 @@ test('assigns and runs a shortcut for the tab organizer', async ({ page }) => {
   await page.keyboard.press('Control+Shift+o')
 
   await expect(page.getByRole('dialog', { name: 'Tab Organizer' })).toBeVisible()
+  await expect(page.getByRole('searchbox', { name: 'Search tabs' })).toBeFocused()
+  await page.keyboard.press('Control+Shift+o')
+  await expect(page.getByRole('dialog', { name: 'Tab Organizer' })).toBeHidden()
 })

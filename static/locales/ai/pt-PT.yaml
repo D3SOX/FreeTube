@@ -1413,6 +1413,16 @@ Context Menu:
   Search With Multiple: Pesquisar com...
   Selection Too Long: A seleção é demasiado longa para pesquisar (> {count} caracteres)
 Tab Organizer:
+  Icon Labels:
+    Folder: Pasta
+    Bookmark: Marcador
+    Favorites: Favoritos
+    Videos: Vídeos
+    Gaming: Jogos
+    Research: Investigação
+    Art: Arte
+    Travel: Viagens
+  Group Icon: Ícone do grupo
   Title: Organizador de separadores
   Open Tab Count: '{count} separador aberto | {count} separadores abertos | {count} separadores abertos'
   Search Label: Pesquisar separadores

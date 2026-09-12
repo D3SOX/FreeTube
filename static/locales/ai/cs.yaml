@@ -1384,6 +1384,16 @@ Context Menu:
   Search With Multiple: Hledat pomocí…
   Selection Too Long: Výběr je pro vyhledávání příliš dlouhý (> {count} znaků)
 Tab Organizer:
+  Icon Labels:
+    Folder: Složka
+    Bookmark: Záložka
+    Favorites: Oblíbené
+    Videos: Videa
+    Gaming: Hry
+    Research: Výzkum
+    Art: Umění
+    Travel: Cestování
+  Group Icon: Ikona skupiny
   Title: Správce karet
   Open Tab Count: '{count} otevřená karta | {count} otevřené karty | {count} otevřených karet'
   Search Label: Hledat v kartách

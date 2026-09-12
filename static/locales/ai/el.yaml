@@ -1421,6 +1421,16 @@ Context Menu:
   Search With Multiple: Αναζήτηση με...
   Selection Too Long: Η επιλογή είναι πολύ μεγάλη για αναζήτηση (> {count} χαρακτήρες)
 Tab Organizer:
+  Icon Labels:
+    Folder: Φάκελος
+    Bookmark: Σελιδοδείκτης
+    Favorites: Αγαπημένα
+    Videos: Βίντεο
+    Gaming: Παιχνίδια
+    Research: Έρευνα
+    Art: Τέχνη
+    Travel: Ταξίδια
+  Group Icon: Εικονίδιο ομάδας
   Title: Οργάνωση καρτελών
   Open Tab Count: '{count} ανοιχτή καρτέλα | {count} ανοιχτές καρτέλες'
   Search Label: Αναζήτηση καρτελών

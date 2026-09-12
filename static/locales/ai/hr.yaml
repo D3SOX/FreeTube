@@ -1401,6 +1401,16 @@ Context Menu:
   Search With Multiple: Pretraži s pomoću…
   Selection Too Long: Odabir je predug za pretraživanje (> {count} znakova)
 Tab Organizer:
+  Icon Labels:
+    Folder: Mapa
+    Bookmark: Oznaka
+    Favorites: Favoriti
+    Videos: Videozapisi
+    Gaming: Igre
+    Research: Istraživanje
+    Art: Umjetnost
+    Travel: Putovanja
+  Group Icon: Ikona grupe
   Title: Organizator kartica
   Open Tab Count: '{count} otvorena kartica | {count} otvorene kartice | {count} otvorenih kartica'
   Search Label: Pretraži kartice

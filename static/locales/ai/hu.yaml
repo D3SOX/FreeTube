@@ -1384,6 +1384,16 @@ Context Menu:
   Search With Multiple: Keresés ezzel...
   Selection Too Long: A kijelölt szöveg túl hosszú a kereséshez (> {count} karakter)
 Tab Organizer:
+  Icon Labels:
+    Folder: Mappa
+    Bookmark: Könyvjelző
+    Favorites: Kedvencek
+    Videos: Videók
+    Gaming: Játékok
+    Research: Kutatás
+    Art: Művészet
+    Travel: Utazás
+  Group Icon: Csoportikon
   Title: Lapok rendezése
   Open Tab Count: '{count} nyitott lap | {count} nyitott lap'
   Search Label: Keresés a lapok között

@@ -2,6 +2,7 @@ import { BrowserWindow, ipcMain, app, nativeImage, shell } from 'electron'
 import { randomUUID } from 'crypto'
 import { mkdir, readdir, readFile, rename, unlink, writeFile } from 'fs/promises'
 import { join } from 'path'
+import { normalizeTabGroupIcon } from '../../tabGroupIcons.js'
 import {
   DEFAULT_LANDING_PAGE,
   IpcChannels,
@@ -760,7 +761,7 @@ export class TabManager {
     this.selectionRevision = 0
     /** @type {Array<{ id: string, url: string, title?: string, isPinned?: boolean, color?: string | null, groupId?: string | null, history?: object[] | null, historyIndex?: number, tabIndex: number }>} */
     this.closedTabs = []
-    /** @type {Map<string, {id: string, name: string, color: string | null, isCollapsed: boolean}>} */
+    /** @type {Map<string, {id: string, name: string, color: string | null, icon: string, isCollapsed: boolean}>} */
     this.tabGroups = new Map()
     this.tabBarScrollPosition = 0
     this.contextMenuTabId = null
@@ -1874,8 +1875,8 @@ export class TabManager {
   }
 
   /**
-   * @param {{name?: unknown, color?: unknown}} group
-   * @returns {{id: string, name: string, color: string | null, isCollapsed: boolean} | null}
+   * @param {{name?: unknown, icon?: unknown, color?: unknown}} group
+   * @returns {{id: string, name: string, color: string | null, icon: string, isCollapsed: boolean} | null}
    */
   createTabGroup(group = {}) {
     const name = TabManager.normalizeTabGroupName(group.name)
@@ -1885,6 +1886,7 @@ export class TabManager {
       id: randomUUID(),
       name,
       color: TabManager.normalizeTabColor(group.color),
+      icon: normalizeTabGroupIcon(group.icon),
       isCollapsed: false
     }
     this.tabGroups.set(tabGroup.id, tabGroup)
@@ -1895,7 +1897,7 @@ export class TabManager {
 
   /**
    * @param {string} groupId
-   * @param {{name?: unknown, color?: unknown, isCollapsed?: unknown}} changes
+   * @param {{name?: unknown, icon?: unknown, color?: unknown, isCollapsed?: unknown}} changes
    * @returns {boolean}
    */
   updateTabGroup(groupId, changes = {}) {
@@ -1910,18 +1912,23 @@ export class TabManager {
     const nextColor = Object.hasOwn(changes, 'color')
       ? TabManager.normalizeTabColor(changes.color)
       : group.color
+    const nextIcon = Object.hasOwn(changes, 'icon')
+      ? normalizeTabGroupIcon(changes.icon)
+      : normalizeTabGroupIcon(group.icon)
     const nextCollapsed = Object.hasOwn(changes, 'isCollapsed')
       ? changes.isCollapsed === true
       : group.isCollapsed
     if (
       nextName === group.name &&
       nextColor === group.color &&
+      nextIcon === group.icon &&
       nextCollapsed === group.isCollapsed
     ) {
       return false
     }
 
     group.name = nextName
+    group.icon = nextIcon
     group.color = nextColor
     group.isCollapsed = nextCollapsed
     this._broadcastStateUpdate()
@@ -1990,6 +1997,7 @@ export class TabManager {
           id,
           name,
           color: TabManager.normalizeTabColor(candidate.color),
+          icon: normalizeTabGroupIcon(candidate.icon),
           isCollapsed: candidate.isCollapsed === true
         })
       }
@@ -2812,6 +2820,7 @@ export class TabManager {
         id: snapshot.groupId,
         name: groupName,
         color: TabManager.normalizeTabColor(snapshot.group.color),
+        icon: normalizeTabGroupIcon(snapshot.group.icon),
         isCollapsed: snapshot.group.isCollapsed === true
       })
     }

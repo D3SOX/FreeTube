@@ -1416,6 +1416,16 @@ Context Menu:
   Search With Multiple: Шукати через...
   Selection Too Long: Вибраний текст задовгий для пошуку (> {count} символів)
 Tab Organizer:
+  Icon Labels:
+    Folder: Тека
+    Bookmark: Закладка
+    Favorites: Улюблене
+    Videos: Відео
+    Gaming: Ігри
+    Research: Дослідження
+    Art: Мистецтво
+    Travel: Подорожі
+  Group Icon: Значок групи
   Title: Упорядкування вкладок
   Open Tab Count: '{count} відкрита вкладка | {count} відкриті вкладки | {count} відкритих вкладок'
   Search Label: Шукати вкладки

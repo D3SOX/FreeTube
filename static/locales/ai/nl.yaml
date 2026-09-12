@@ -1432,6 +1432,16 @@ Context Menu:
   Search With Multiple: Zoeken met...
   Selection Too Long: Selectie is te lang om te zoeken (> {count} tekens)
 Tab Organizer:
+  Icon Labels:
+    Folder: Map
+    Bookmark: Bladwijzer
+    Favorites: Favorieten
+    Videos: Video's
+    Gaming: Games
+    Research: Onderzoek
+    Art: Kunst
+    Travel: Reizen
+  Group Icon: Groepspictogram
   Title: Tabbladen beheren
   Open Tab Count: '{count} open tabblad | {count} open tabbladen'
   Search Label: Tabbladen zoeken

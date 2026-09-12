@@ -1384,6 +1384,16 @@ Context Menu:
   Search With Multiple: Şununla ara...
   Selection Too Long: Seçim arama için çok uzun (> {count} karakter)
 Tab Organizer:
+  Icon Labels:
+    Folder: Klasör
+    Bookmark: Yer imi
+    Favorites: Favoriler
+    Videos: Videolar
+    Gaming: Oyun
+    Research: Araştırma
+    Art: Sanat
+    Travel: Seyahat
+  Group Icon: Grup simgesi
   Title: Sekme Düzenleyici
   Open Tab Count: '{count} açık sekme | {count} açık sekme'
   Search Label: Sekmelerde ara

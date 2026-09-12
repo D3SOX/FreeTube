@@ -30,7 +30,7 @@
           :style="{ '--tab-group-color': getTabAccentColor(group.color) || 'var(--secondary-text-color)' }"
         >
           <FtIcon
-            :icon="['fas', 'layer-group']"
+            :icon="['fas', group.icon || 'layer-group']"
             class="tabTooltipGroupIcon"
             aria-hidden="true"
           />

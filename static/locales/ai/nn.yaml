@@ -1716,6 +1716,16 @@ Context Menu:
   Search With Multiple: Søk med …
   Selection Too Long: Utvalet er for langt til å søkje etter (> {count} teikn)
 Tab Organizer:
+  Icon Labels:
+    Folder: Mappe
+    Bookmark: Bokmerke
+    Favorites: Favorittar
+    Videos: Videoar
+    Gaming: Spel
+    Research: Forsking
+    Art: Kunst
+    Travel: Reiser
+  Group Icon: Gruppeikon
   Title: Organiser faner
   Open Tab Count: '{count} open fane | {count} opne faner'
   Search Label: Søk i faner

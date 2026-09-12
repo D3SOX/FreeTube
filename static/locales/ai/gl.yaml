@@ -1425,6 +1425,16 @@ Context Menu:
   Search With Multiple: Buscar con…
   Selection Too Long: A selección é demasiado longa para a busca (> {count} caracteres)
 Tab Organizer:
+  Icon Labels:
+    Folder: Cartafol
+    Bookmark: Marcador
+    Favorites: Favoritos
+    Videos: Vídeos
+    Gaming: Videoxogos
+    Research: Investigación
+    Art: Arte
+    Travel: Viaxes
+  Group Icon: Icona do grupo
   Title: Organizador de lapelas
   Open Tab Count: '{count} lapela aberta | {count} lapelas abertas'
   Search Label: Buscar lapelas

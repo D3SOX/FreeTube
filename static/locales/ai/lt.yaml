@@ -1779,6 +1779,16 @@ Context Menu:
   Search With Multiple: Ieškoti naudojant...
   Selection Too Long: Pažymėtas tekstas per ilgas paieškai (> {count} simbolių)
 Tab Organizer:
+  Icon Labels:
+    Folder: Aplankas
+    Bookmark: Žymelė
+    Favorites: Mėgstamiausi
+    Videos: Vaizdo įrašai
+    Gaming: Žaidimai
+    Research: Tyrimai
+    Art: Menas
+    Travel: Kelionės
+  Group Icon: Grupės piktograma
   Title: Kortelių tvarkytuvė
   Open Tab Count: '{count} atverta kortelė | {count} atvertos kortelės | {count} atvertų kortelių'
   Search Label: Ieškoti kortelių

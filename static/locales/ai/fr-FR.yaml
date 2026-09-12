@@ -1383,6 +1383,16 @@ Context Menu:
   Search With Multiple: Rechercher avec...
   Selection Too Long: La sélection est trop longue pour la recherche (> {count} caractères)
 Tab Organizer:
+  Icon Labels:
+    Folder: Dossier
+    Bookmark: Marque-page
+    Favorites: Favoris
+    Videos: Vidéos
+    Gaming: Jeux vidéo
+    Research: Recherche
+    Art: Art
+    Travel: Voyages
+  Group Icon: Icône du groupe
   Title: Organisateur d’onglets
   Open Tab Count: '{count} onglet ouvert | {count} onglets ouverts | {count} onglets ouverts'
   Search Label: Rechercher dans les onglets

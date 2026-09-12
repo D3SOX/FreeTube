@@ -1398,6 +1398,16 @@ Context Menu:
   Search With Multiple: "Klask gant…"
   Selection Too Long: "Re hir eo an diuzadenn evit klask (> {count} arouezenn)"
 Tab Organizer:
+  Icon Labels:
+    Folder: Teuliad
+    Bookmark: Sined
+    Favorites: Ma re well
+    Videos: Videoioù
+    Gaming: C'hoarioù
+    Research: Enklask
+    Art: Arz
+    Travel: Beajoù
+  Group Icon: Arlun ar strollad
   Title: "Aozer ivinelloù"
   Open Tab Count: "{count} ivinell digor | {count} ivinell digor | {count} ivinell digor | {count} ivinell digor | {count} ivinell digor"
   Search Label: "Klask en ivinelloù"

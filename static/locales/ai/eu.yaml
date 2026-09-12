@@ -1406,6 +1406,16 @@ Context Menu:
   Search With Multiple: Bilatu honekin...
   Selection Too Long: Hautapena luzeegia da bilatzeko (> {count} karaktere)
 Tab Organizer:
+  Icon Labels:
+    Folder: Karpeta
+    Bookmark: Laster-marka
+    Favorites: Gogokoak
+    Videos: Bideoak
+    Gaming: Jokoak
+    Research: Ikerketa
+    Art: Artea
+    Travel: Bidaiak
+  Group Icon: Taldearen ikonoa
   Title: Fitxen antolatzailea
   Open Tab Count: 'Fitxa ireki {count} | {count} fitxa ireki'
   Search Label: Bilatu fitxak

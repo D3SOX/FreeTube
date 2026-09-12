@@ -1422,6 +1422,16 @@ Context Menu:
   Search With Multiple: Leita með...
   Selection Too Long: Valið er of langt fyrir leit (> {count} stafir)
 Tab Organizer:
+  Icon Labels:
+    Folder: Mappa
+    Bookmark: Bókamerki
+    Favorites: Eftirlæti
+    Videos: Myndskeið
+    Gaming: Leikir
+    Research: Rannsóknir
+    Art: List
+    Travel: Ferðalög
+  Group Icon: Hóptákn
   Title: Flipaskipuleggjari
   Open Tab Count: '{count} opinn flipi | {count} opnir flipar'
   Search Label: Leita í flipum

@@ -1882,6 +1882,16 @@ Context Menu:
   Search With Multiple: Cerca amb…
   Selection Too Long: La selecció és massa llarga per cercar-la (> {count} caràcters)
 Tab Organizer:
+  Icon Labels:
+    Folder: Carpeta
+    Bookmark: Marcador
+    Favorites: Preferits
+    Videos: Vídeos
+    Gaming: Jocs
+    Research: Recerca
+    Art: Art
+    Travel: Viatges
+  Group Icon: Icona del grup
   Title: Organitzador de pestanyes
   Open Tab Count: '{count} pestanya oberta | {count} pestanyes obertes | {count} pestanyes obertes'
   Search Label: Cerca pestanyes

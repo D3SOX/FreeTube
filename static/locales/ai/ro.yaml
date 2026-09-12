@@ -1420,6 +1420,16 @@ Context Menu:
   Search With Multiple: Caută cu...
   Selection Too Long: Selecția este prea lungă pentru căutare (> {count} caractere)
 Tab Organizer:
+  Icon Labels:
+    Folder: Dosar
+    Bookmark: Marcaj
+    Favorites: Favorite
+    Videos: Videoclipuri
+    Gaming: Jocuri
+    Research: Cercetare
+    Art: Artă
+    Travel: Călătorii
+  Group Icon: Pictograma grupului
   Title: Organizator de file
   Open Tab Count: '{count} filă deschisă | {count} file deschise | {count} de file deschise'
   Search Label: Caută file

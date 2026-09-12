@@ -1397,6 +1397,16 @@ Context Menu:
   Search With Multiple: Търсене с...
   Selection Too Long: Избраният текст е твърде дълъг за търсене (> {count} знака)
 Tab Organizer:
+  Icon Labels:
+    Folder: Папка
+    Bookmark: Отметка
+    Favorites: Любими
+    Videos: Видеоклипове
+    Gaming: Игри
+    Research: Изследвания
+    Art: Изкуство
+    Travel: Пътувания
+  Group Icon: Икона на групата
   Title: Организатор на раздели
   Open Tab Count: '{count} отворен раздел | {count} отворени раздела'
   Search Label: Търсене в разделите

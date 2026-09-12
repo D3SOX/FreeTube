@@ -76,7 +76,7 @@
                 @click="expandTabGroup(item.group.id)"
               >
                 <FtIcon
-                  :icon="['fas', 'layer-group']"
+                  :icon="['fas', item.group.icon || 'layer-group']"
                   aria-hidden="true"
                 />
                 <span class="collapsedTabGroupName">

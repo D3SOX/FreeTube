@@ -1744,6 +1744,16 @@ Context Menu:
   Search With Multiple: 검색 엔진 선택...
   Selection Too Long: 선택한 텍스트가 너무 길어 검색할 수 없습니다. {count}자 이하여야 합니다
 Tab Organizer:
+  Icon Labels:
+    Folder: 폴더
+    Bookmark: 북마크
+    Favorites: 즐겨찾기
+    Videos: 동영상
+    Gaming: 게임
+    Research: 연구
+    Art: 예술
+    Travel: 여행
+  Group Icon: 그룹 아이콘
   Title: 탭 정리
   Open Tab Count: '열린 탭 {count}개'
   Search Label: 탭 검색

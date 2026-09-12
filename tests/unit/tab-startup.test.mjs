@@ -342,3 +342,15 @@ test('landing-page startup selects only the first matching tab', async t => {
   assert.equal(manager.tabs.size, 3)
   assert.deepEqual([...manager.tabs.values()].map(tab => tab.loadState), ['mounting', 'unloaded', 'unloaded'])
 })
+
+test('group icons are validated, updated and restored from session metadata', t => {
+  const manager = createManager(t)
+  const group = manager.createTabGroup({ name: 'Research', icon: 'bookmark' })
+  assert.equal(group.icon, 'bookmark')
+  assert.equal(manager.updateTabGroup(group.id, { icon: 'flask' }), true)
+  assert.equal(manager.tabGroups.get(group.id).icon, 'flask')
+  manager._restoreTabGroups([...manager.tabGroups.values()])
+  assert.equal(manager.tabGroups.get(group.id).icon, 'flask')
+  manager.updateTabGroup(group.id, { icon: '../invalid.svg' })
+  assert.equal(manager.tabGroups.get(group.id).icon, 'layer-group')
+})

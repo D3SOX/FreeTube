@@ -2625,6 +2625,16 @@ Context Menu:
   Selection Too Long: 'Auswahl ist zu lang für die Suche (> {count} Zeichen)'
   Cancel Refresh: Aktualisierung abbrechen
 Tab Organizer:
+  Icon Labels:
+    Folder: Ordner
+    Bookmark: Lesezeichen
+    Favorites: Favoriten
+    Videos: Videos
+    Gaming: Gaming
+    Research: Recherche
+    Art: Kunst
+    Travel: Reisen
+  Group Icon: Gruppensymbol
   Title: Tab-Organizer
   Open Tab Count: '{count} offener Tab | {count} offene Tabs'
   Search Label: Tabs durchsuchen
