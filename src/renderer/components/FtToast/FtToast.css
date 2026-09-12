@@ -733,7 +733,18 @@ body:has(.app.capacitorPhoneLayout) {
   }
 }
 
-body:has(.app) :fullscreen .connection-status-holder,
+/* Fullscreen hides app headers and navigation. Keep only the toast's normal
+   edge inset and the device safe area, regardless of phone/tablet layout. */
+body:has(.app) :is(:fullscreen, [data-native-player-screen]) .toast-holder[data-sonner-toaster] {
+  /* stylelint-disable-next-line length-zero-no-unit -- added to lengths inside calc() */
+  --mobile-toast-inset: 0px;
+}
+
+body:has(.app) :is(:fullscreen, [data-native-player-screen]) .toast-holder[data-sonner-toaster]:is(.position-top-left, .position-top-center, .position-top-right) {
+  inset-block: calc(var(--offset-top) + var(--safe-area-inset-top, env(safe-area-inset-top, 0px))) auto;
+}
+
+body:has(.app) :is(:fullscreen, [data-native-player-screen]) .connection-status-holder,
 body:has(.mobileSheet[open]) .connection-status-holder,
 body:has(.app .settingsWindow.maximized) .connection-status-holder {
   inset-block-end: var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0));

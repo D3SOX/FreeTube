@@ -1652,3 +1652,52 @@ for (const gesture of ['drag', 'resize']) {
     await page.evaluate(() => window.nativeScreenTest.destroy())
   })
 }
+
+test.describe('native fullscreen toast positions', () => {
+  test.use({ seed: { settings: { videoPlaybackEngine: 'built-in', ytDlpPlaybackEngineDefaultMigration: true, uiScale: 95 } } })
+
+  for (const layout of ['capacitorPhoneLayout', 'capacitorTabletLayout']) {
+    test(`fullscreen toasts use the selected screen edge in ${layout}`, async ({ app, page }) => {
+      await mockPlayableWatchPage(app, page)
+      await openMockedVideo(page)
+      await setWindowSize(app, page, { width: 1000, height: 480 })
+      await openNativeScreen(page)
+      await page.evaluate(layout => {
+        const app = document.querySelector('.app')
+        const keepLayout = () => {
+          if (!app.classList.contains(layout)) app.classList.add(layout)
+        }
+        new MutationObserver(keepLayout).observe(app, { attributeFilter: ['class'] })
+        keepLayout()
+        document.documentElement.style.setProperty('--safe-area-inset-top', '13px')
+        document.documentElement.style.setProperty('--safe-area-inset-bottom', '17px')
+        window.ftElectron.showToastOnAllTabs('Fullscreen position test', 120000)
+      }, layout)
+      const toast = page.locator('.toast', { hasText: 'Fullscreen position test' })
+      await expect(toast).toBeVisible()
+      for (const size of [{ width: 480, height: 800 }, { width: 1000, height: 480 }]) {
+        await setWindowSize(app, page, size)
+        for (const position of ['top-left', 'top-center', 'top-right', 'bottom-left', 'bottom-center', 'bottom-right']) {
+          await page.evaluate(position => document.querySelector('#app').__vue_app__.config.globalProperties.$store.commit('setToastPosition', position), position)
+          await expect.poll(() => toast.evaluate((element, position) => {
+            const bounds = element.getBoundingClientRect()
+            const holder = element.closest('[data-sonner-toaster]')
+            const style = getComputedStyle(holder)
+            const top = position.startsWith('top')
+            const expected = parseFloat(style.getPropertyValue(top ? '--offset-top' : '--offset-bottom')) + (top ? 13 : 17)
+            const actual = top ? bounds.top : innerHeight - bounds.bottom
+            const horizontal = position.endsWith('center')
+              ? Math.abs(bounds.left + bounds.width / 2 - innerWidth / 2)
+              : position.endsWith('left')
+                ? Math.abs(bounds.left - parseFloat(style.getPropertyValue('--offset-left')))
+                : Math.abs(innerWidth - bounds.right - parseFloat(style.getPropertyValue('--offset-right')))
+            return Math.max(Math.abs(actual - expected), horizontal)
+          }, position), { message: `${layout} ${position} must use fullscreen edge insets` }).toBeLessThan(1)
+        }
+      }
+      await page.evaluate(() => window.nativeScreenTest.hide())
+      await expect(page.locator('[data-native-player-screen] .toast')).toHaveCount(0)
+      await expect(toast).toBeVisible()
+    })
+  }
+})
