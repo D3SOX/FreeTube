@@ -795,10 +795,14 @@
 }
 
 .commentThread:has(> .commentThreadLineToggle:enabled:is(:hover, :focus-visible))::before,
-.commentThreadLineToggle:enabled:is(:hover, :focus-visible) ~ .commentReplyRootToggle::before {
+.commentThreadLineToggle:enabled:is(:hover, :focus-visible) ~ .commentReplyRootToggle::before,
+/* Match only this thread's connectors, excluding deeper reply threads. */
+/* stylelint-disable-next-line selector-max-compound-selectors */
+.commentThread:has(> .commentReplies > .commentReplyBranchRoot > .commentReplyConnectorToggle:is(:hover, :focus-visible))::before {
   border-color: currentcolor;
 }
 
+.commentReplies:has(> .commentReplyBranchRoot > .commentReplyConnectorToggle:is(:hover, :focus-visible)),
 .commentThreadLineToggle:enabled:is(:hover, :focus-visible) ~ .commentReplies {
   --comment-parent-thread-line-color: currentcolor;
 }
