@@ -1,6 +1,6 @@
 <template>
   <FtMobileSheet
-    below-player
+    :below-player="belowPlayer"
     :enabled="phoneLayout"
     :open="sheetOpen"
     :title="t('User Playlists.Save to')"
@@ -89,6 +89,7 @@ import { getVideoThumbnailUrl, showToast } from '../../helpers/utils'
 import thumbnailPlaceholder from '../../assets/img/thumbnail_placeholder.svg'
 
 const props = defineProps({
+  belowPlayer: { type: Boolean, default: true },
   videoData: {
     type: Object,
     required: true

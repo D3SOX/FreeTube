@@ -89,6 +89,7 @@ for (const mode of ['native', 'browser']) {
     await mockPlayableWatchPage(app, page)
     await openMockedVideo(page)
     await setWindowSize(app, page, { width: 480, height: 800 })
+    if (mode === 'browser') await page.setViewportSize({ width: 480, height: 800 })
     const watch = await watchViewHandle(page)
     await watch.evaluate(vm => vm.openPhonePanel('description'))
     const sheet = page.locator('.mobileSheet[open]')
@@ -99,7 +100,7 @@ for (const mode of ['native', 'browser']) {
       ? el.setAttribute('data-native-player-screen', '')
       : el.requestFullscreen(), mode)
     await watch.evaluate(vm => vm.openPhonePanel('description'))
-    await expect(sheet).not.toHaveClass(/dockedSheet/)
+    await expect(sheet).toHaveCount(0)
     await page.locator('.ftVideoPlayer').evaluate((el, mode) => mode === 'native'
       ? el.removeAttribute('data-native-player-screen')
       : document.exitFullscreen(), mode)

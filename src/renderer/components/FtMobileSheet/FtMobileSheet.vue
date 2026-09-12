@@ -1,6 +1,6 @@
 <template>
   <Teleport
-    :to="teleportTarget"
+    to=".app"
     :disabled="!docked"
   >
     <dialog
@@ -61,6 +61,7 @@
 import { FtIcon } from '@opentubex/icons'
 import { computed, inject, nextTick, onBeforeUnmount, onUpdated, ref, shallowRef, useTemplateRef, watch } from 'vue'
 import { usePhoneLayout } from '../../composables/usePhoneLayout'
+import { isAppHidden } from '../../helpers/appVisibility'
 import { applyAnimationSpeed } from '../../helpers/animationSpeed'
 import { lockBodyScroll, unlockBodyScroll } from '../FtPrompt/scrollLock'
 
@@ -71,7 +72,7 @@ const props = defineProps({
   back: { type: Boolean, default: false },
   belowPlayer: { type: Boolean, default: false }
 })
-const emit = defineEmits(['close', 'back', 'closed'])
+const emit = defineEmits(['close', 'back', 'closed', 'suspend', 'resume'])
 const dialog = useTemplateRef('dialog')
 let locked = false
 let previousFocus = null
@@ -85,13 +86,22 @@ const dragOffset = ref(0)
 const visibleTop = computed(() => Math.max(0, (expanded.value ? 0 : sheetTop.value) + Math.min(0, dragOffset.value)))
 const fullscreenElement = shallowRef(document.fullscreenElement)
 const playerCoversWindow = ref(false)
-const docked = computed(() => props.enabled && props.belowPlayer && getPlayer !== null &&
-  !fullscreenElement.value && !playerCoversWindow.value)
-const teleportTarget = computed(() => fullscreenElement.value ?? '.app')
+const appHidden = ref(isAppHidden())
+const pictureInPicture = ref(document.body.classList.contains('androidPictureInPicture'))
+const docked = computed(() => props.enabled && props.belowPlayer && getPlayer !== null)
+const suspended = computed(() => docked.value &&
+  (!!fullscreenElement.value || playerCoversWindow.value || appHidden.value || pictureInPicture.value))
+function updateVisibility() {
+  appHidden.value = isAppHidden()
+}
+document.addEventListener('visibilitychange', updateVisibility)
+const pictureInPictureObserver = new MutationObserver(updatePresentation)
+pictureInPictureObserver.observe(document.body, { attributes: true, attributeFilter: ['class'] })
 let observedPlayer = null
 let presentationObserver = null
 function updatePresentation() {
   fullscreenElement.value = document.fullscreenElement
+  pictureInPicture.value = document.body.classList.contains('androidPictureInPicture')
   const player = getPlayer?.() ?? null
   if (player !== observedPlayer) {
     presentationObserver?.disconnect()
@@ -121,6 +131,7 @@ let animation
 let closing = false
 let resumePlayback = null
 let openingSequence = 0
+let presentationSuspended = false
 
 function restorePlayback() {
   if (!landscape.value) resumePlayback?.()
@@ -128,7 +139,7 @@ function restorePlayback() {
 }
 
 function measurePlayer() {
-  if (!docked.value || !props.open) return
+  if (!docked.value || !props.open || suspended.value) return
   const player = getPlayer?.()
   if (!player) return
   let bounds = player.getBoundingClientRect()
@@ -141,9 +152,24 @@ function measurePlayer() {
   sheetTop.value = Math.max(0, bounds.bottom)
 }
 
-watch([dialog, () => props.enabled, () => props.open, docked, fullscreenElement], async ([element, enabled, open], previous) => {
+watch([dialog, () => props.enabled, () => props.open, docked, fullscreenElement, suspended], async ([element, enabled, open], previous) => {
   const sequence = ++openingSequence
   if (!element) return
+  if (suspended.value && enabled && open) {
+    if (element.open) {
+      emit('suspend')
+      element.close()
+      release(true)
+      presentationSuspended = true
+    }
+    return
+  }
+  if (presentationSuspended && (!enabled || !open)) {
+    presentationSuspended = false
+    expanded.value = false
+    restorePlayback()
+    emit('closed')
+  }
   if (element.open && (docked.value !== previous[3] || fullscreenElement.value !== previous[4])) {
     element.close()
     release()
@@ -162,7 +188,7 @@ watch([dialog, () => props.enabled, () => props.open, docked, fullscreenElement]
       const player = getPlayer?.()
       player?.setAttribute('data-phone-panel-video', '')
       await preparePanel?.()
-      if (sequence !== openingSequence || !docked.value || !props.enabled || !props.open || dialog.value !== element) {
+      if (sequence !== openingSequence || !docked.value || suspended.value || !props.enabled || !props.open || dialog.value !== element) {
         player?.removeAttribute('data-phone-panel-video')
         return
       }
@@ -174,7 +200,7 @@ watch([dialog, () => props.enabled, () => props.open, docked, fullscreenElement]
           window.scrollBy({ top: bounds.top - toolbarBottom, behavior: 'instant' })
         }
       }
-      expanded.value = landscape.value
+      if (!presentationSuspended) expanded.value = landscape.value
       measurePlayer()
       element.show()
       animation = applyAnimationSpeed(element.animate([
@@ -196,6 +222,11 @@ watch([dialog, () => props.enabled, () => props.open, docked, fullscreenElement]
     lockBodyScroll()
     locked = true
     await nextTick()
+    if (sequence !== openingSequence || !element.open) return
+    if (presentationSuspended) {
+      presentationSuspended = false
+      emit('resume')
+    }
     if (docked.value) element.querySelector('button')?.focus({ preventScroll: true })
   } else if ((!enabled || !open) && element.open) {
     if (!closing) {
@@ -215,7 +246,7 @@ watch([dialog, () => props.enabled, () => props.open, docked, fullscreenElement]
 }, { flush: 'post' })
 
 watch(landscape, (value) => {
-  if (value && props.open && docked.value && !expanded.value) {
+  if (value && props.open && docked.value && !suspended.value && !expanded.value) {
     expanded.value = true
   }
 })
@@ -272,7 +303,7 @@ function dismiss() {
   emit(props.back ? 'back' : 'close')
 }
 
-function release() {
+function release(preservePresentation = false) {
   closing = false
   if (!locked) return
   const anotherPanelOpen = document.querySelector('.dockedSheet[open]') !== null
@@ -282,16 +313,20 @@ function release() {
   window.removeEventListener('scroll', measurePlayer, true)
   window.visualViewport?.removeEventListener('resize', measurePlayer)
   animation?.cancel()
-  expanded.value = false
-  restorePlayback()
+  if (!preservePresentation) {
+    expanded.value = false
+    restorePlayback()
+  }
   cancelDrag()
   unlockBodyScroll()
   locked = false
-  if (!anotherPanelOpen && previousFocus?.isConnected) previousFocus.focus({ preventScroll: true })
+  if (!preservePresentation && !anotherPanelOpen && previousFocus?.isConnected) previousFocus.focus({ preventScroll: true })
 }
 onBeforeUnmount(() => {
   openingSequence++
   document.removeEventListener('fullscreenchange', updatePresentation)
+  document.removeEventListener('visibilitychange', updateVisibility)
+  pictureInPictureObserver.disconnect()
   presentationObserver?.disconnect()
   dialog.value?.close()
   release()
