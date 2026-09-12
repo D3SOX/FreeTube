@@ -111,3 +111,13 @@ test('bulk watched action reports saved history when writing the seen marker fai
   }
   assert.deepEqual(f.appliedMarks, [])
 })
+
+test('bulk watched updates preserve the order of entries with equal history timestamps', async () => {
+  const f = await fixture()
+  const middle = f.context.state.historyCacheById.seen
+  middle.isWatched = true
+  await f.db.history.updateAsync({ videoId: 'seen' }, { $set: { isWatched: true } })
+  const before = f.context.state.historyCacheSorted.map(entry => entry.videoId)
+  assert.equal(await f.context.dispatch('markAllHistoryAsWatched'), 2)
+  assert.deepEqual(f.context.state.historyCacheSorted.map(entry => entry.videoId), before)
+})

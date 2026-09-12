@@ -311,11 +311,16 @@ const mutations = {
 
   applyHistorySyncChanges(state, { insertions, updates, deletions }) {
     const upserts = [...insertions, ...updates]
-    const changedIds = new Set([...deletions, ...upserts.map(record => record.videoId)])
+    const deletedIds = new Set(deletions)
+    const upsertsById = new Map(upserts.map(record => [record.videoId, record]))
+    const retained = state.historyCacheSorted
+      .filter(record => !deletedIds.has(record.videoId))
+      .map(record => upsertsById.get(record.videoId) ?? record)
+    const retainedIds = new Set(retained.map(record => record.videoId))
 
-    state.historyCacheSorted = state.historyCacheSorted
-      .filter(record => !changedIds.has(record.videoId))
-      .concat(upserts)
+    // Replace existing entries in place so stable sorting preserves timestamp ties.
+    state.historyCacheSorted = retained
+      .concat(upserts.filter(record => !retainedIds.has(record.videoId)))
       .sort((a, b) => b.timeWatched - a.timeWatched)
 
     for (const videoId of deletions) {
