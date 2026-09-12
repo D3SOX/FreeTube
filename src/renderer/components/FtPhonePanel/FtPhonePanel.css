@@ -114,6 +114,10 @@
   inset-inline-end: 0;
 }
 
+.phonePanelHeaderContent :deep(.transcriptLanguageMenu button) {
+  justify-content: space-between;
+}
+
 .phonePanelContent :deep(.chaptersWrapper) {
   max-block-size: none !important;
 }
