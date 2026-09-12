@@ -106,10 +106,14 @@
   margin-inline-start: 45px;
 }
 
-.commentReplyLineToggle:is(:hover, :focus-visible) ~ .commentReplyContent > .commentReplyChildStem {
+.commentReplyLineToggle:is(:hover, :focus-visible) ~ .commentReplyContent > .commentReplyChildStem,
+/* Limit the highlight to the connectors belonging to this reply. */
+/* stylelint-disable-next-line selector-max-compound-selectors */
+.commentReplyBranch:has(> .commentReplyChildren > .commentReplyBranch > .commentReplyConnectorToggle:is(:hover, :focus-visible)) > .commentReplyContent > .commentReplyChildStem {
   border-color: currentcolor;
 }
 
-.commentReplyLineToggle:is(:hover, :focus-visible) ~ .commentReplyChildren {
+.commentReplyLineToggle:is(:hover, :focus-visible) ~ .commentReplyChildren,
+.commentReplyChildren:has(> .commentReplyBranch > .commentReplyConnectorToggle:is(:hover, :focus-visible)) {
   --comment-parent-thread-line-color: currentcolor;
 }

@@ -242,7 +242,7 @@
         </div>
       </template>
       <div
-        v-if="!filtering"
+        v-if="!filtering && !showReplyChildren"
         class="commentReplyContinuation"
       >
         <button
