@@ -16,20 +16,24 @@ export function getSubscriptionSettingsForSync(store) {
 }
 
 export function mergeSubscriptionSettingsEntry(options) {
-  // Subscription sync can be disabled independently. Compare only channels
-  // present locally, so remote-only edits do not count as local changes.
-  const subscribedEntry = entry => entry && ({
-    ...entry,
-    value: Object.fromEntries(Object.entries(entry.value ?? {})
-      .filter(([channelId]) => Object.hasOwn(options.value, channelId)))
-  })
-  const merged = mergeSettingEntry({
-    ...options,
-    old: subscribedEntry(options.old),
-    remoteEntry: subscribedEntry(options.remoteEntry)
-  })
-  // This device cannot edit settings for channels it is not subscribed to.
-  return { ...merged, value: { ...options.remoteEntry?.value, ...merged.value } }
+  const remote = options.remoteEntry?.value ?? {}
+  // Keep channels absent from this device, and merge each subscribed channel
+  // independently so edits to different channels never overwrite one another.
+  const value = { ...remote }
+  let updatedAt = options.remoteEntry?.updatedAt ?? options.old?.updatedAt ?? 0
+  for (const [channelId, settings] of Object.entries(options.value)) {
+    const entry = mergeSettingEntry({
+      key: channelId,
+      value: settings,
+      old: options.old?.value?.[channelId],
+      remoteEntry: remote[channelId],
+      localUpdatedAt: options.localUpdatedAt?.[channelId],
+      now: options.now
+    })
+    value[channelId] = { value: entry.value, updatedAt: entry.updatedAt }
+    updatedAt = Math.max(updatedAt, entry.updatedAt)
+  }
+  return { key: options.key, value, updatedAt }
 }
 
 export async function applySubscriptionSettingsSync(store, value) {
@@ -37,9 +41,9 @@ export async function applySubscriptionSettingsSync(store, value) {
 
   for (const channel of store.state.profiles.profileList[0].subscriptions) {
     if (!Object.hasOwn(value, channel.id)) continue
-    const settings = normalizeSubscriptionChannelSettings(value[channel.id])
+    const settings = normalizeSubscriptionChannelSettings(value[channel.id].value)
     if (areJsonValuesEqual(normalizeSubscriptionChannelSettings(channel), settings)) continue
-    const saved = await store.dispatch('updateChannelSettings', { channelId: channel.id, settings })
+    const saved = await store.dispatch('updateChannelSettings', { channelId: channel.id, settings, fromSync: true })
     if (!saved) throw new Error('Failed to apply synced subscription settings')
   }
 }

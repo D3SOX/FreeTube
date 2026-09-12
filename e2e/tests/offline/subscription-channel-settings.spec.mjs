@@ -449,3 +449,21 @@ test('clamps the channel list after searching', async ({ page }) => {
   await expect.poll(() => scroller.evaluate(element => element.scrollTop)).toBe(0)
   await expect(scrollbar).toHaveClass(/os-scrollbar-unusable/)
 })
+
+test('records edit times per channel and does not retimestamp received settings', async ({ page }) => {
+  const result = await page.evaluate(async (channelId) => {
+    const store = document.querySelector('#app').__vue_app__.config.globalProperties.$store
+    const secondChannelId = store.state.profiles.profileList[0].subscriptions[1].id
+    const timestamps = () => ({ ...store.state.settings.syncServerSettingUpdatedAt.subscriptionChannelSettings })
+    await store.dispatch('updateChannelSettings', { channelId, settings: { dailyVideoLimit: 2 } })
+    const firstEdit = timestamps()
+    await store.dispatch('updateChannelSettings', { channelId: secondChannelId, settings: { dailyVideoLimit: 3 } })
+    const secondEdit = timestamps()
+    await store.dispatch('updateChannelSettings', { channelId, settings: { dailyVideoLimit: 4 }, fromSync: true })
+    return { firstEdit, secondEdit, afterSync: timestamps(), secondChannelId }
+  }, CHANNEL_ID)
+  expect(result.firstEdit[CHANNEL_ID]).toBeGreaterThan(0)
+  expect(result.secondEdit[CHANNEL_ID]).toBe(result.firstEdit[CHANNEL_ID])
+  expect(result.secondEdit[result.secondChannelId]).toBeGreaterThan(0)
+  expect(result.afterSync).toEqual(result.secondEdit)
+})

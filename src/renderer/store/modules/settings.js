@@ -852,7 +852,7 @@ export function getSyncableSettingKeys(settings) {
 
 let settingSyncTimestampWrite = Promise.resolve()
 
-function recordSettingSyncTimestamp(commit, settings, settingId) {
+function recordSettingSyncTimestamp(commit, settings, settingId, channelId) {
   if (!isSettingSyncable(settingId) && settingId !== CUSTOM_THEMES_SYNC_KEY) return
 
   settingSyncTimestampWrite = settingSyncTimestampWrite.then(async () => {
@@ -863,7 +863,9 @@ function recordSettingSyncTimestamp(commit, settings, settingId) {
       : {}
     const updatedAt = {
       ...current,
-      [settingId]: Date.now(),
+      [settingId]: channelId === undefined
+        ? Date.now()
+        : { ...current[settingId], [channelId]: Date.now() },
     }
     await DBSettingHandlers.upsert('syncServerSettingUpdatedAt', updatedAt)
     commit('setSyncServerSettingUpdatedAt', updatedAt)
@@ -1019,6 +1021,9 @@ const customActions = {
     ))
     if (value !== state.subscriptionSeenVideos) commit('setSubscriptionSeenVideos', value)
   },
+  recordSubscriptionSettingsEdit: ({ commit, state }, channelId) => (
+    recordSettingSyncTimestamp(commit, state, SUBSCRIPTION_CHANNEL_SETTINGS_SYNC_KEY, channelId)
+  ),
   recordSyncSettingEdit: ({ commit, state }, settingId) => (
     recordSettingSyncTimestamp(commit, state, settingId)
   ),
