@@ -120,12 +120,18 @@
         </h1>
       </template>
       <div
-        v-safer-html.lenient="updateChangelog"
+        ref="changeLogScroller"
         v-overlay-scrollbars
         class="changeLogText"
         dir="ltr"
         lang="en"
-      />
+      >
+        <div
+          ref="changeLogContent"
+          v-safer-html.lenient="updateChangelog"
+          class="changeLogContent"
+        />
+      </div>
       <FtFlexBox>
         <FtButton
           :label="t('Download From Site')"
@@ -490,6 +496,7 @@ import { App as CapacitorApp } from '@capacitor/app'
 import { Capacitor, SystemBars, SystemBarsStyle } from '@capacitor/core'
 import { clampOverlayScrollTop, restoreOverlayScrollTop } from './helpers/overlayScrollbars'
 import { computed, defineAsyncComponent, nextTick, onBeforeUnmount, onMounted, provide, ref, shallowRef, unref, useId, useTemplateRef, watch } from 'vue'
+import { useScrollClamp } from './composables/useScrollClamp'
 import { useI18n } from 'vue-i18n'
 import { routerKey, useRoute, useRouter } from 'vue-router'
 
@@ -2830,6 +2837,7 @@ updateThumbnailListSize()
 const showReleaseNotes = ref(false)
 const changeLogTitle = ref('')
 const updateChangelog = ref('')
+useScrollClamp(useTemplateRef('changeLogScroller'), useTemplateRef('changeLogContent'))
 const DISMISSED_UPDATE_VERSION_STORAGE_KEY = 'opentubex-dismissed-update-version'
 /** @type {{ tagName: string, versionNumber: string } | null} */
 let availableUpdate = null

@@ -350,6 +350,11 @@
   overflow-wrap: break-word;
 }
 
+.changeLogContent {
+  /* Include the first and last Markdown block margins in scroll clamping. */
+  display: flow-root;
+}
+
 .changeLogText :deep(img) {
   display: block;
   max-inline-size: 100%;

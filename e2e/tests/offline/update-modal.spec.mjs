@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs'
 
-import { test, expect, goTo, waitForAppReady } from '../../helpers/app.mjs'
+import { test, expect, goTo, waitForAppReady, setWindowSize } from '../../helpers/app.mjs'
 
 const RELEASES_URL = /^https:\/\/api\.github\.com\/repos\/OpenTubeX\/OpenTubeX\/releases/
 const COMMIT_HASH = '3904e64f503cde6be8793606a04ad69c5d57cef0'
@@ -58,6 +58,69 @@ async function showUpdatePrompt(page, releases) {
   const notification = await showUpdateNotification(page, releases)
   await notification.getByRole('button', { name: 'See changes and update' }).click()
   await expect(page.locator('.changeLogTitle')).toBeVisible()
+}
+
+for (const uiScale of [100, 95]) {
+  test(`release-note scrollbar stays anchored during touch scrolling without scroll callbacks at ${uiScale}%`, async ({ app, page }) => {
+    await showUpdatePrompt(page, [
+      release(`OpenTubeX ${newestUpdateVersion}`, `v${newestUpdateVersion}-beta`,
+        `<details open><summary>Show changes</summary>\n\n${Array.from({ length: 60 }, (_, index) => `- Release note ${index + 1}: scrolling through the latest improvements and fixes on a phone.`).join('\n')}\n\n</details>`)
+    ])
+    await page.evaluate(scale => window.ftElectron.setZoomFactor(scale / 100), uiScale)
+    await setWindowSize(app, page, { width: 480, height: 800 })
+    const scroller = page.locator('.changeLogText')
+    const scrollbar = scroller.locator(':scope > .os-scrollbar-vertical')
+    await expect(scrollbar).toBeAttached()
+    // Touch scrolling can advance on the compositor before JS scroll listeners
+    // run. Suppress those callbacks to check the scrollbar in that exact state.
+    const resumeScrollEvents = await scroller.evaluateHandle(element => {
+      const suppressScroll = event => {
+        if (event.target === element) event.stopImmediatePropagation()
+      }
+      document.addEventListener('scroll', suppressScroll, { capture: true })
+      return () => document.removeEventListener('scroll', suppressScroll, { capture: true })
+    })
+    const initial = await scrollbar.boundingBox()
+    const box = await scroller.boundingBox()
+    const session = await page.context().newCDPSession(page)
+    await session.send('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 1 })
+    const point = { x: box.x + box.width / 2, y: box.y + box.height - 30 }
+    await session.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [point] })
+    for (const distance of [30, 60, 90, 120, 150, 180]) {
+      await session.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ ...point, y: point.y - distance }] })
+    }
+    await session.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] })
+    await expect.poll(() => scroller.evaluate(element => element.scrollTop)).toBeGreaterThan(50)
+    await expect.poll(async () => Math.abs((await scrollbar.boundingBox()).y - initial.y)).toBeLessThanOrEqual(1)
+    await resumeScrollEvents.evaluate(resume => resume())
+    await resumeScrollEvents.dispose()
+    await session.detach()
+
+    await scroller.evaluate(element => { element.scrollTop = element.scrollHeight })
+    await expect.poll(() => scroller.evaluate(element => element.scrollTop)).toBeGreaterThan(50)
+    for (const size of [{ width: 481, height: 1000 }, { width: 1000, height: 900 }]) {
+      await scroller.evaluate(element => { element.scrollTop = element.scrollHeight })
+      await setWindowSize(app, page, size)
+      await expect.poll(() => scroller.evaluate(element => {
+        const content = element.firstElementChild
+        const end = content.getBoundingClientRect().bottom - element.getBoundingClientRect().top +
+          element.scrollTop - element.clientTop - element.clientHeight
+        return Math.abs(element.scrollTop - Math.max(0, end))
+      })).toBeLessThanOrEqual(1)
+      await expect.poll(() => scrollbar.evaluate(element => {
+        const track = element.querySelector('.os-scrollbar-track').getBoundingClientRect()
+        const handle = element.querySelector('.os-scrollbar-handle').getBoundingClientRect()
+        return Math.abs(handle.bottom - track.bottom)
+      })).toBeLessThanOrEqual(1)
+    }
+
+    await scroller.locator('summary').evaluate(element => element.click())
+    await expect.poll(() => scroller.evaluate(element => ({
+      scrollTop: element.scrollTop,
+      hasScrollbar: !element.querySelector('.os-scrollbar-vertical').classList.contains('os-scrollbar-unusable'),
+      overflows: element.scrollHeight > element.clientHeight + 1,
+    }))).toEqual({ scrollTop: 0, hasScrollbar: false, overflows: false })
+  })
 }
 
 test('the update notification stays dismissed for the current app session', async ({ page }) => {
