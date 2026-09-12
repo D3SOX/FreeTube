@@ -171,7 +171,7 @@ const actions = {
     }
   },
 
-  async updateChannelSettings({ commit, state }, { channelId, settings }) {
+  async updateChannelSettings({ commit, dispatch, state }, { channelId, settings, fromSync = false }) {
     const primarySubscription = state.profileList[0].subscriptions
       .find(channel => channel.id === channelId)
     if (primarySubscription === undefined) return false
@@ -204,6 +204,7 @@ const actions = {
       if (!Array.isArray(updatedProfileIds)) return false
 
       if (updatedProfileIds.length > 0) {
+        if (!fromSync) await dispatch('recordSubscriptionSettingsEdit', channelId)
         commit('updateChannelSettings', { channel, profileIds: updatedProfileIds })
       }
       return updatedProfileIds.length === profileIds.length

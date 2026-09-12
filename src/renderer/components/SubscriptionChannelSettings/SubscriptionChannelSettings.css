@@ -1,3 +1,20 @@
+.manageButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  max-inline-size: 100%;
+}
+
+.manageButton :deep(.btn) {
+  min-inline-size: 0;
+  white-space: normal;
+}
+
+.manageButton :deep(.syncedSettingIndicator) {
+  font-size: 0.8em;
+  margin-inline-start: 0;
+}
+
 .channelSettingsHeader {
   flex: none;
   padding-block: 16px 8px;

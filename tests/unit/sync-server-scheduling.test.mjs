@@ -29,6 +29,8 @@ test('maps local actions to their affected sync collection', () => {
   assert.equal(SYNC_ACTION_REASONS.get('addVideo'), 'playlists')
   assert.equal(SYNC_ACTION_REASONS.has('updateChannelPlaybackSpeeds'), false)
   assert.equal(SYNC_ACTION_REASONS.get('updateCustomThemes'), 'settings')
+  assert.equal(SYNC_ACTION_REASONS.get('updateChannelSettings'), 'settings')
+  assert.equal(SYNC_MUTATION_REASONS.get('updateChannelSettings'), 'settings')
   assert.equal(SYNC_ACTION_REASONS.get('createProfile'), 'profiles')
   assert.equal(SYNC_ACTION_REASONS.get('addChannelToProfiles'), 'profilesOrSubscriptions')
   assert.equal(SYNC_MUTATION_REASONS.get('setTabsState'), 'sessions')

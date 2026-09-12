@@ -42,6 +42,7 @@ import {
 import { terminateCommentTranslationLanguageDetector } from '../../helpers/comment-translations'
 import { DEFAULT_HOME_SECTION_LAYOUT } from '../../helpers/homeSections.js'
 import { isSettingSyncableOnPlatform } from '../../helpers/platformSettings.js'
+import { SUBSCRIPTION_CHANNEL_SETTINGS_SYNC_KEY } from '../../helpers/subscription-settings-sync'
 import { CUSTOM_THEMES_SYNC_KEY } from '../../../customTheme.js'
 import { DEFAULT_QUICK_SETTINGS, normalizeQuickSettings } from '../../helpers/quickSettings.js'
 import { createOptimisticSettingUpdater, createSettingUpdateQueue } from '../../helpers/settingUpdateQueue.js'
@@ -829,8 +830,9 @@ export const NON_SYNCABLE_SETTINGS = new Set([
 ])
 
 export function isSettingSyncable(settingKey) {
-  return Object.prototype.hasOwnProperty.call(state, settingKey) &&
-    !NON_SYNCABLE_SETTINGS.has(settingKey)
+  return settingKey === SUBSCRIPTION_CHANNEL_SETTINGS_SYNC_KEY ||
+    (Object.prototype.hasOwnProperty.call(state, settingKey) &&
+      !NON_SYNCABLE_SETTINGS.has(settingKey))
 }
 
 export function isSettingSyncEnabled(settings, settingKey) {
@@ -850,7 +852,7 @@ export function getSyncableSettingKeys(settings) {
 
 let settingSyncTimestampWrite = Promise.resolve()
 
-function recordSettingSyncTimestamp(commit, settings, settingId) {
+function recordSettingSyncTimestamp(commit, settings, settingId, channelId) {
   if (!isSettingSyncable(settingId) && settingId !== CUSTOM_THEMES_SYNC_KEY) return
 
   settingSyncTimestampWrite = settingSyncTimestampWrite.then(async () => {
@@ -861,7 +863,9 @@ function recordSettingSyncTimestamp(commit, settings, settingId) {
       : {}
     const updatedAt = {
       ...current,
-      [settingId]: Date.now(),
+      [settingId]: channelId === undefined
+        ? Date.now()
+        : { ...current[settingId], [channelId]: Date.now() },
     }
     await DBSettingHandlers.upsert('syncServerSettingUpdatedAt', updatedAt)
     commit('setSyncServerSettingUpdatedAt', updatedAt)
@@ -1017,6 +1021,9 @@ const customActions = {
     ))
     if (value !== state.subscriptionSeenVideos) commit('setSubscriptionSeenVideos', value)
   },
+  recordSubscriptionSettingsEdit: ({ commit, state }, channelId) => (
+    recordSettingSyncTimestamp(commit, state, SUBSCRIPTION_CHANNEL_SETTINGS_SYNC_KEY, channelId)
+  ),
   recordSyncSettingEdit: ({ commit, state }, settingId) => (
     recordSettingSyncTimestamp(commit, state, settingId)
   ),
