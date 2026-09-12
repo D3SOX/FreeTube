@@ -2612,6 +2612,8 @@ function runApp() {
         return 'text/css'
       case 'js':
         return 'text/javascript'
+      case 'wasm':
+        return 'application/wasm'
       case 'ttf':
         return 'font/ttf'
       case 'woff2':
