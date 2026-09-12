@@ -147,7 +147,7 @@ for (const uiScale of [100, 95]) {
       await expect(page).toHaveURL(/watch/)
     })
 
-    test('aligns transcript language labels and keeps the checkmark at the row end', async ({ app, page, attachScreenshot }) => {
+    test('aligns transcript language labels and keeps the checkmark at the row end', async ({ app, page }) => {
       await page.evaluate(() => document.querySelector('#app').__vue_app__.config.globalProperties.$store.dispatch('updatePreferredCaptionLocale', 'de'))
       await mockPlayableWatchPage(app, page, { captionTranslations: true })
       await openMockedVideo(page)
@@ -157,19 +157,25 @@ for (const uiScale of [100, 95]) {
       await languageButton.click()
       const menu = page.locator('.transcriptLanguageMenu')
       await expect(menu.locator('button')).toHaveCount(2)
-      await attachScreenshot('transcript language alignment')
+      await expect(menu.locator('.selected svg')).toHaveCount(1)
       for (const direction of ['ltr', 'rtl']) {
         await menu.evaluate((element, direction) => { element.dir = direction }, direction)
         const offsets = await menu.locator('button').evaluateAll(buttons => buttons.map(button => {
           const row = button.getBoundingClientRect()
-          const label = button.querySelector('span').getBoundingClientRect()
+          const labelElement = button.querySelector('span')
+          const label = labelElement.getBoundingClientRect()
+          const range = document.createRange()
+          range.selectNodeContents(labelElement)
           const check = button.querySelector('svg')?.getBoundingClientRect()
           const rtl = getComputedStyle(button).direction === 'rtl'
           return {
+            lines: range.getClientRects().length,
             label: rtl ? row.right - label.right : label.left - row.left,
             check: check ? (rtl ? check.left - row.left : row.right - check.right) : null
           }
         }))
+        expect(offsets.some(offset => offset.lines > 1)).toBe(true)
+        expect(offsets.some(offset => offset.lines === 1)).toBe(true)
         for (const offset of offsets) {
           expect(offset.label).toBeGreaterThan(0)
           expect(offset.label).toBeLessThan(16)
