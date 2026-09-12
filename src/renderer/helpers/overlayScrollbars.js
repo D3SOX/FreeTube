@@ -94,8 +94,9 @@ function synchronizeScrollbarPosition(element, instance) {
   const update = () => {
     if (suspended) return
     const { overflowAmount } = instance.state()
-    // The library still handles two-axis scrollers and older WebViews.
-    if (overflowAmount.x > 1) {
+    // Only vertical overflow needs synchronization. The library still handles
+    // two-axis scrollers and older WebViews.
+    if (overflowAmount.x > 1 || overflowAmount.y <= 0) {
       animations.forEach(animation => animation.cancel())
       animations = []
       previousRange = -1

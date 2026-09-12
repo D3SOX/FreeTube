@@ -125,7 +125,8 @@ for (const uiScale of [100, 95]) {
       scrollTop: element.scrollTop,
       hasScrollbar: !element.querySelector('.os-scrollbar-vertical').classList.contains('os-scrollbar-unusable'),
       overflows: element.scrollHeight > element.clientHeight + 1,
-    }))).toEqual({ scrollTop: 0, hasScrollbar: false, overflows: false })
+      trackAnimations: element.querySelector('.os-scrollbar-vertical').getAnimations().length,
+    }))).toEqual({ scrollTop: 0, hasScrollbar: false, overflows: false, trackAnimations: 0 })
   })
 }
 

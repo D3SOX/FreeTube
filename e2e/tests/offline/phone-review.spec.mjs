@@ -324,11 +324,21 @@ for (const panel of ['description', 'comments', 'chapters', 'transcript', 'queue
 
 test('panel scrollbar positioning follows the compositor scroll timeline', async ({ app, page }) => {
   await mockPlayableWatchPage(app, page, { captionTranslations: true })
+  const cues = Array.from({ length: 30 }, (_, index) => (
+    `00:00:${String(index).padStart(2, '0')}.000 --> 00:00:${String(index + 1).padStart(2, '0')}.000\nCaption ${index + 1}`
+  ))
+  await page.route('https://www.youtube.com/api/timedtext**', route => route.fulfill({
+    contentType: 'text/vtt',
+    body: `WEBVTT\n\n${cues.join('\n\n')}\n`,
+  }))
   await openMockedVideo(page)
   await setWindowSize(app, page, { width: 480, height: 800 })
   const watch = await watchViewHandle(page)
   await watch.evaluate(vm => vm.openPhonePanel('transcript'))
-  const track = page.locator('.mobileSheet[open] .os-scrollbar-vertical').last()
+  const segments = page.locator('.mobileSheet[open] .transcriptSegments')
+  await expect(segments.getByRole('listitem')).toHaveCount(30)
+  await expect.poll(() => segments.evaluate(el => el.scrollHeight > el.clientHeight)).toBe(true)
+  const track = segments.locator(':scope > .os-scrollbar-vertical')
   await expect(track).toBeAttached()
-  expect(await track.evaluate(el => el.getAnimations().some(animation => animation.timeline?.constructor.name === 'ScrollTimeline'))).toBe(true)
+  await expect.poll(() => track.evaluate(el => el.getAnimations().some(animation => animation.timeline?.constructor.name === 'ScrollTimeline'))).toBe(true)
 })
