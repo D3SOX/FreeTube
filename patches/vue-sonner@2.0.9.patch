@@ -2,6 +2,10 @@ diff --git a/lib/index.js b/lib/index.js
 index cd01bb1f1563571946c1470dfdea9d009655d9cd..22f0bff49fa39788c039f07d87653585c6cc7bf5 100644
 --- a/lib/index.js
 +++ b/lib/index.js
+@@ -485,0 +486,3 @@ var Toast_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineCo
++		watch(duration, (value) => {
++			remainingTime.value = value;
++		}, { flush: "sync" });
 @@ -514,6 +514,7 @@ var Toast_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineCo
  		function deleteToast() {
  			removed.value = true;

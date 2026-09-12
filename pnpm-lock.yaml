@@ -15,7 +15,7 @@ patchedDependencies:
   '@capawesome/capacitor-app-shortcuts@8.0.2': 2581c86d60ce7892c0b3136523994591d24ee7313bbc5fc9b4ad1c710719c70a
   '@capawesome/capacitor-clipboard@0.1.2': 729c6071cbf0e196e2212b015677cdd162c287dca48137c24250c0d056c9fd5b
   shaka-player@5.1.12: 17d85e267c8958999207ce9d6c29a2ddf18734d0499fb30870ac8a55d90303fa
-  vue-sonner@2.0.9: ae94d00b3ff46bede626a25ac5a36a6cd35987f33d73c14ffc73afbd5767f95c
+  vue-sonner@2.0.9: 1edf0a77b800d7b7f56694e3a77ff40dd2f7ba21658639d2ff90d5173eae26b4
   youtubei.js@18.0.0: 5939f9d50ce37ef8075961245288956568c781818db04171892485bdf96278e9
 
 importers:
@@ -141,7 +141,7 @@ importers:
         version: 5.3.1(@vue/compiler-sfc@3.5.42)(vue@3.5.42(typescript@6.0.3))(webpack@5.110.3)
       vue-sonner:
         specifier: ^2.0.9
-        version: 2.0.9(patch_hash=ae94d00b3ff46bede626a25ac5a36a6cd35987f33d73c14ffc73afbd5767f95c)
+        version: 2.0.9(patch_hash=1edf0a77b800d7b7f56694e3a77ff40dd2f7ba21658639d2ff90d5173eae26b4)
       vuex:
         specifier: ^4.1.0
         version: 4.1.0(vue@3.5.42(typescript@6.0.3))
@@ -11301,7 +11301,7 @@ snapshots:
       - unloader
       - webpack
 
-  vue-sonner@2.0.9(patch_hash=ae94d00b3ff46bede626a25ac5a36a6cd35987f33d73c14ffc73afbd5767f95c): {}
+  vue-sonner@2.0.9(patch_hash=1edf0a77b800d7b7f56694e3a77ff40dd2f7ba21658639d2ff90d5173eae26b4): {}
 
   vue@3.5.42(typescript@6.0.3):
     dependencies:

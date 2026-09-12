@@ -191,6 +191,51 @@ test.describe('invalid per-channel daily video limit', () => {
   })
 })
 
+test.describe('failed subscription refresh summary', () => {
+  test.use({
+    seed: {
+      settings: {
+        ...commonSettings,
+        backendFallback: false,
+        showToastTimeoutIndicator: true
+      },
+      profiles: [profileWith(2)],
+      subscriptionCache: [cachedChannel(0), cachedChannel(1)]
+    }
+  })
+
+  test('starts the timeout indicator when the refresh finishes and restores transient eviction', async ({ page }) => {
+    let releaseSecondFeed
+    const secondFeedBlocked = new Promise(resolve => { releaseSecondFeed = resolve })
+    await page.route(/^https?:\/\//, async (route, request) => {
+      if (request.url().includes('/feeds/videos.xml') && channelIndexFromUrl(request.url()) === 1) {
+        await secondFeedBlocked
+      }
+      await route.fulfill({ status: 500, body: 'Failed' })
+    })
+    await goTo(page, 'subscriptions')
+
+    await page.getByRole('button', { name: /Refresh Videos/ }).click()
+
+    const summary = page.locator('.toast', { hasText: 'Channels that could not be refreshed' })
+    const indicator = summary.locator('..').locator('.timeout-indicator .embeddedProgressPath')
+    await expect(summary).toBeVisible()
+    await expect(page.locator('.tab.active .loadingDot')).toBeVisible()
+    await expect(indicator).toHaveCount(0)
+
+    releaseSecondFeed()
+    await expect(indicator).toBeVisible()
+    await expect(indicator).toHaveCSS('animation-duration', '9.7s')
+
+    for (let index = 0; index < 5; index++) {
+      await page.evaluate(index => {
+        window.ftElectron.showToastOnAllTabs(`Later toast ${index}`, 10000)
+      }, index)
+    }
+    await expect(summary).toHaveCount(0, { timeout: 2000 })
+  })
+})
+
 test.describe('incremental subscription feed refresh', () => {
   test.use({
     seed: {
