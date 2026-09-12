@@ -288,6 +288,8 @@
   }
 
   .sideNav {
+    --hide-on-scroll: 1;
+
     box-sizing: border-box;
     inset-inline-start: 0;
     position: fixed;
@@ -298,6 +300,12 @@
     inset-block: auto 0;
     padding-block-end: var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0));
     overflow-y: hidden;
+    transition: transform 180ms ease;
+  }
+
+  .sideNav.scrollHidden:not(:has(:focus-visible)) {
+    transform: translateY(100%);
+    pointer-events: none;
   }
 
   .topNavOption {
@@ -326,6 +334,12 @@
 
   .hiddenLabels {
     inline-size: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sideNav {
+    transition: none;
   }
 }
 

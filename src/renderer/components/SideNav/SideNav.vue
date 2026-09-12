@@ -1,9 +1,10 @@
 <template>
   <FtFlexBox
     class="sideNav"
-    :class="[{ opened: isOpen, expanded: isOpen || props.forceExpanded }, applyHiddenLabels]"
+    :class="[{ opened: isOpen, expanded: isOpen || props.forceExpanded, scrollHidden }, applyHiddenLabels]"
     data-tutorial="navigation"
     role="navigation"
+    @focusin="resetScrollVisibility"
   >
     <div
       ref="innerRef"
@@ -116,6 +117,7 @@ import { filterAvailableNavigationItems } from '../../../navigationAvailability'
 import { deepCopy, localizeAndAddKeyboardShortcutToActionTitle } from '../../helpers/utils'
 import { getConfiguredKeyboardShortcuts } from '../../../constants'
 import { NAVIGATION_ITEM_DEFINITIONS } from '../../../navigationItems'
+import { createMobileNavigationScroll } from '../../helpers/mobileNavigationScroll'
 
 const { locale, t } = useI18n()
 const appKeyboardShortcuts = computed(() => getConfiguredKeyboardShortcuts(
@@ -269,6 +271,32 @@ const historyTitle = computed(() => {
 // ===== Sliding active-route indicator =====
 const route = useRoute()
 const innerRef = useTemplateRef('innerRef')
+const scrollHidden = ref(false)
+const navigationScroll = createMobileNavigationScroll()
+let hideOnScroll = false
+
+function resetScrollVisibility() {
+  navigationScroll.reset(window.scrollY)
+  scrollHidden.value = false
+}
+
+function updateScrollLayout() {
+  const nav = innerRef.value?.closest('.sideNav')
+  // Resolve the CSS layout on mount/resize, not on every page scroll.
+  hideOnScroll = nav != null && getComputedStyle(nav).getPropertyValue('--hide-on-scroll').trim() === '1'
+  resetScrollVisibility()
+}
+
+function updateScrollVisibility() {
+  if (!hideOnScroll) return
+  const nav = innerRef.value?.closest('.sideNav')
+  if (!nav || nav.querySelector(':focus-visible, [aria-expanded="true"]')) {
+    resetScrollVisibility()
+    return
+  }
+  const page = document.scrollingElement
+  scrollHidden.value = navigationScroll.update(window.scrollY, page.scrollHeight - page.clientHeight)
+}
 /** @type {import('vue').Ref<Record<string, string> | null>} */
 const indicatorStyle = ref(null)
 
@@ -328,7 +356,10 @@ function updateIndicatorAfterResize() {
   remeasureTimeoutId = setTimeout(updateIndicator, 200)
 }
 
-watch(() => route.fullPath, () => nextTick(updateIndicator))
+watch(() => route.fullPath, () => {
+  resetScrollVisibility()
+  nextTick(updateIndicator)
+})
 watch([
   () => activeProfile.value._id,
   () => activeProfile.value.subscriptions.length
@@ -342,6 +373,9 @@ watch([isOpen, hideText, displayedActiveSubscriptions], () => {
 })
 
 onMounted(() => {
+  updateScrollLayout()
+  window.addEventListener('scroll', updateScrollVisibility, { passive: true })
+  window.addEventListener('resize', updateScrollLayout)
   updateIndicator()
   navMutationObserver = new MutationObserver(() => nextTick(updateIndicator))
   navMutationObserver.observe(innerRef.value, { childList: true, subtree: true })
@@ -349,6 +383,8 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
+  window.removeEventListener('scroll', updateScrollVisibility)
+  window.removeEventListener('resize', updateScrollLayout)
   clearTimeout(remeasureTimeoutId)
   navMutationObserver?.disconnect()
   window.removeEventListener('resize', updateIndicatorAfterResize)

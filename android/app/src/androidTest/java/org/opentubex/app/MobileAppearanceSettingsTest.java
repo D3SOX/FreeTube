@@ -17,6 +17,80 @@ import org.junit.runner.RunWith;
 
 @RunWith(AndroidJUnit4.class)
 public class MobileAppearanceSettingsTest {
+    @Test
+    public void bottomNavigationFollowsPageScrollAtDifferentScales() throws Exception {
+        try (ActivityScenario<MainActivity> scenario = ActivityScenario.launch(MainActivity.class)) {
+            WebView view = webView(scenario);
+            // First-run tutorial makes the navigation inert and locks native scrolling.
+            awaitCondition(view, "localStorage.getItem('opentubex.tutorial.audience') === 'completed' || !!document.querySelector('.tutorialActions button')");
+            evaluate(view, "document.querySelector('.tutorialActions button')?.click()");
+            awaitCondition(view, "!document.querySelector('.tutorialOverlay')");
+            try {
+                prepare(view);
+                evaluate(view, """
+                    (() => {
+                        const content = document.createElement('div');
+                        content.id = 'mobile-navigation-scroll-fixture';
+                        content.style.height = '4000px';
+                        // A native test viewport exercises real DOM scroll events.
+                        const nested = document.createElement('div');
+                        nested.id = 'mobile-navigation-nested-fixture';
+                        nested.style.cssText = 'height:100px;overflow:auto';
+                        const inner = document.createElement('div');
+                        inner.style.height = '1000px';
+                        nested.append(inner);
+                        nested.addEventListener('scroll', () => { nested.dataset.scrolled = 'true'; });
+                        content.append(nested);
+                        document.querySelector('.routerView').append(content);
+                    })()
+                    """);
+                for (int scale : new int[] {100, 125, 150}) {
+                    evaluate(view, "document.querySelector('#app').__vue_app__.config.globalProperties.$store.commit('setUiScale', " + scale + ")");
+                    awaitCondition(view, "Math.abs(window.visualViewport.scale - " + scale / 100.0 + ") < 0.01");
+                    evaluate(view, "window.scrollTo(0, 0)");
+                    awaitCondition(view, "window.scrollY === 0 && !document.querySelector('.sideNav').classList.contains('scrollHidden')");
+                    evaluate(view, "document.querySelector('#mobile-navigation-nested-fixture').scrollTop = 0");
+                    awaitCondition(view, "document.querySelector('#mobile-navigation-nested-fixture').scrollTop === 0");
+                    evaluate(view, "(() => { const nested = document.querySelector('#mobile-navigation-nested-fixture'); delete nested.dataset.scrolled; nested.scrollTop = 400; })()");
+                    awaitCondition(view, "(() => { const nested = document.querySelector('#mobile-navigation-nested-fixture'); return nested.scrollTop === 400 && nested.dataset.scrolled === 'true'; })()");
+                    assertEquals("Nested scrolling leaves the navigation visible", "true", evaluate(view,
+                        "!document.querySelector('.sideNav').classList.contains('scrollHidden') && window.scrollY === 0"));
+                    evaluate(view, "window.__navigationPageHeight = document.scrollingElement.scrollHeight; window.scrollTo(0, 400)");
+                    awaitCondition(view, "document.querySelector('.sideNav').getBoundingClientRect().top >= window.innerHeight - 1");
+                    assertEquals("Hiding keeps the page height and scroll position stable", "true", evaluate(view,
+                        "document.scrollingElement.scrollHeight === window.__navigationPageHeight && Math.abs(window.scrollY - 400) <= 1"));
+                    evaluate(view, "window.scrollTo(0, 360)");
+                    awaitCondition(view, """
+                        (() => {
+                            const nav = document.querySelector('.sideNav');
+                            const rect = nav.getBoundingClientRect();
+                            return !nav.classList.contains('scrollHidden') && rect.top < window.innerHeight - 40 &&
+                                Math.abs(rect.bottom - window.innerHeight) <= 1;
+                        })()
+                        """);
+                    evaluate(view, "window.scrollTo(0, 600)");
+                    awaitCondition(view, "document.querySelector('.sideNav').classList.contains('scrollHidden')");
+                    evaluate(view, "document.querySelector('.sideNav .navOption').focus({ preventScroll: true })");
+                    assertEquals("Navigation receives keyboard focus: " + evaluate(view,
+                        "JSON.stringify({ active: document.activeElement.outerHTML, inert: document.querySelector('.sideNav').inert, prompts: document.querySelector('#app').__vue_app__.config.globalProperties.$store.getters.isAnyPromptOpen })"),
+                        "true", evaluate(view, "document.activeElement === document.querySelector('.sideNav .navOption')"));
+                    awaitCondition(view, "!document.querySelector('.sideNav').classList.contains('scrollHidden')");
+                    evaluate(view, "document.activeElement.blur(); window.scrollTo(0, 800)");
+                    awaitCondition(view, "document.querySelector('.sideNav').classList.contains('scrollHidden')");
+                    evaluate(view, "window.scrollTo(0, 0)");
+                    awaitCondition(view, "!document.querySelector('.sideNav').classList.contains('scrollHidden')");
+                }
+                evaluate(view, "window.scrollTo(0, 400)");
+                awaitCondition(view, "document.querySelector('.sideNav').classList.contains('scrollHidden')");
+                evaluate(view, "document.querySelector('#app').__vue_app__.config.globalProperties.$router.push('/userplaylists')");
+                awaitCondition(view, "document.querySelector('#app').__vue_app__.config.globalProperties.$route.path === '/userplaylists' && !document.querySelector('.sideNav').classList.contains('scrollHidden')");
+            } finally {
+                evaluate(view, "document.querySelector('#mobile-navigation-scroll-fixture')?.remove(); delete window.__navigationPageHeight; window.scrollTo(0, 0)");
+                restore(view);
+            }
+        }
+    }
+
     private static final String SCROLL_STATE = """
         (() => {
             const viewport = document.querySelector('.quickSettingsMenu .quickSettingsScroll');
