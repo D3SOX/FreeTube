@@ -57,7 +57,11 @@ const actions = {
 
   async updateSubscriptionHistory({ commit, dispatch }, update) {
     const result = await DBHistoryHandlers.updateSubscriptionState(update)
-    for (const record of result.records) commit('upsertToHistoryCache', record)
+    if (result.records.length === 1) {
+      commit('upsertToHistoryCache', result.records[0])
+    } else if (result.records.length > 1) {
+      commit('applyHistorySyncChanges', { insertions: [], updates: result.records, deletions: [] })
+    }
     if (result.seenVideos != null) await dispatch('applySubscriptionSeenVideos', result.seenVideos)
     return result.records.length
   },

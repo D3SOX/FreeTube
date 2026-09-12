@@ -4745,10 +4745,13 @@ function runApp() {
       switch (action) {
         case DBActions.HISTORY.UPDATE_SUBSCRIPTION_STATE: {
           const result = await baseHandlers.history.updateSubscriptionState(data)
-          for (const record of result.records) {
-            syncOtherWindows(IpcChannels.SYNC_HISTORY, event, {
-              event: SyncEvents.GENERAL.UPSERT, data: record
-            })
+          if (result.records.length > 0) {
+            syncOtherWindows(IpcChannels.SYNC_HISTORY, event, result.records.length === 1
+              ? { event: SyncEvents.GENERAL.UPSERT, data: result.records[0] }
+              : {
+                  event: SyncEvents.HISTORY.APPLY_SYNC_CHANGES,
+                  data: { insertions: [], updates: result.records, deletions: [] }
+                })
           }
           if (result.seenVideos != null) {
             syncOtherWindows(IpcChannels.SYNC_SETTINGS, event, {

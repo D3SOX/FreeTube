@@ -19,7 +19,7 @@ async function fixture(fail = false) {
   await db.settings.insertAsync({ _id: 'subscriptionSeenVideos', value: JSON.stringify(savedMarks) })
   const records = ['unseen', 'seen', 'unrelated'].map(record)
   await db.history.insertAsync(records)
-  const baseDependencies = { db, ...historyHelpers, ...seenHelpers }
+  const baseDependencies = { db, ...historyHelpers, ...seenHelpers, console: { error() {} } }
   const History = compileFunction(baseSource.slice(baseSource.indexOf('class Settings {'), baseSource.indexOf('\nclass WatchStats {'))
     + '\nreturn History', Object.keys(baseDependencies))(...Object.values(baseDependencies))
   if (fail) History.updateSubscriptionState = async () => { throw new Error('history persistence failed') }
@@ -98,4 +98,16 @@ test('marking unseen without history applies saved marks without creating a rend
   assert.equal(await f.context.dispatch('updateSubscriptionHistory', { unseenVideo: { videoId: 'no-history', isMembersOnly: false } }), 0)
   assert.equal(f.context.state.historyCacheById['no-history'], undefined)
   assert.equal(f.appliedMarks.at(-1).some(mark => mark.videoId === 'no-history'), true)
+})
+
+test('bulk watched action reports saved history when writing the seen marker fails', async () => {
+  const f = await fixture()
+  f.db.settings.updateAsync = async () => { throw new Error('Seen marker persistence failed') }
+  assert.equal(await f.context.dispatch('markAllHistoryAsWatched'), 3)
+  for (const videoId of ['unseen', 'seen', 'unrelated']) {
+    assert.equal(f.context.state.historyCacheById[videoId].isWatched, true)
+    assert.equal(f.context.state.historyCacheById[videoId].watchProgress, 123)
+    assert.equal((await f.db.history.findOneAsync({ videoId })).isWatched, true)
+  }
+  assert.deepEqual(f.appliedMarks, [])
 })

@@ -56,6 +56,7 @@ export const SYNC_MUTATION_REASONS = new Map([
   ['setPlaylistBookmarks', 'playlists'],
   ['upsertPlaylistToList', 'playlists'],
   ['upsertToHistoryCache', 'history'],
+  ['applyHistorySyncChanges', 'history'],
   ['setHistoryCacheSorted', 'history'],
   ['setHistoryCacheById', 'history'],
   ['setSubscriptionSeenVideos', 'history'],
