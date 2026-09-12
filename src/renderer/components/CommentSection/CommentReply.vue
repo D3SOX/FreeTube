@@ -255,7 +255,7 @@
         >
           <span>{{ replyToggleLabel }}</span>
           <FtIcon
-            :icon="['fas', showReplyChildren ? 'angle-up' : 'angle-down']"
+            :icon="['fas', 'angle-down']"
             aria-hidden="true"
           />
         </button>
