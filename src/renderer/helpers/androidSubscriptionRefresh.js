@@ -7,6 +7,7 @@ const SubscriptionRefresh = process.env.IS_CAPACITOR
   : null
 
 const startController = createSubscriptionRefreshStartController()
+let batchNotificationsDenied = null
 
 export async function requestAndroidSubscriptionRefreshNotificationPermission() {
   try {
@@ -26,7 +27,9 @@ export async function startAndroidSubscriptionRefresh(refreshId, title, cancelLa
 
   let notificationsDenied = false
   const start = startController.begin(refreshId, () => (
-    requestAndroidSubscriptionRefreshNotificationPermission()
+    (batchNotificationsDenied === null
+      ? requestAndroidSubscriptionRefreshNotificationPermission()
+      : Promise.resolve(batchNotificationsDenied))
       .then(denied => {
         notificationsDenied = denied
         return SubscriptionRefresh.start({ title, cancelLabel })
@@ -97,9 +100,10 @@ export async function withAndroidSubscriptionRefreshBatch(refresh, notification)
   if (!SubscriptionRefresh) return refresh()
   try {
     // Ask while the activity is available, before the batch can outlive it.
-    await requestAndroidSubscriptionRefreshNotificationPermission()
+    const notificationsDenied = await requestAndroidSubscriptionRefreshNotificationPermission()
     const { acquired } = await SubscriptionRefresh.beginBatch(notification)
     if (!acquired) return
+    batchNotificationsDenied = notificationsDenied
   } catch (error) {
     console.error('Failed to begin Android subscription refresh batch', error)
     return
@@ -107,6 +111,10 @@ export async function withAndroidSubscriptionRefreshBatch(refresh, notification)
   try {
     return await refresh()
   } finally {
-    await SubscriptionRefresh.endBatch()
+    try {
+      await SubscriptionRefresh.endBatch()
+    } finally {
+      batchNotificationsDenied = null
+    }
   }
 }

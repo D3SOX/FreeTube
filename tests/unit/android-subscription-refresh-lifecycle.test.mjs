@@ -6,13 +6,13 @@ import { setImmediate } from 'node:timers/promises'
 
 import { createSubscriptionRefreshStartController } from '../../src/renderer/helpers/androidSubscriptionRefreshData.js'
 
-async function loadHelpers(native, logger = console) {
+async function loadHelpers(native, logger = console, notifications = { checkPermissions: async () => ({ display: 'granted' }) }) {
   const source = await readFile(new URL('../../src/renderer/helpers/androidSubscriptionRefresh.js', import.meta.url), 'utf8')
   return vm.runInNewContext(`${source.replace(/^import .*$/gm, '').replaceAll('export ', '')}
     ({ startAndroidSubscriptionRefresh, finishAndroidSubscriptionRefresh, withAndroidSubscriptionRefreshBatch })`, {
     process: { env: { IS_CAPACITOR: true } },
     registerPlugin: () => native,
-    LocalNotifications: { checkPermissions: async () => ({ display: 'granted' }) },
+    LocalNotifications: notifications,
     createSubscriptionRefreshStartController,
     console: logger,
   })
@@ -94,4 +94,28 @@ test('a rejected native batch acquisition is handled without starting or releasi
   }, { error: (...args) => errors.push(args) })
   await withAndroidSubscriptionRefreshBatch(() => assert.fail('unacquired batch must not run'))
   assert.equal(errors.length, 1)
+})
+
+test('a batch reuses its permission result for every feed and clears it afterward', async () => {
+  let requests = 0
+  const helpers = await loadHelpers({
+    async beginBatch() { return { acquired: true } },
+    async start() { return { acquired: true, token: 'token' } },
+    async finish() {},
+    async endBatch() {},
+  }, console, {
+    async checkPermissions() { return { display: 'prompt-with-rationale' } },
+    async requestPermissions() { requests++; return { display: 'denied' } },
+  })
+  await helpers.withAndroidSubscriptionRefreshBatch(async () => {
+    for (const id of [1, 2]) {
+      const result = await helpers.startAndroidSubscriptionRefresh(id, 'Refresh', 'Cancel')
+      assert.equal(result.notificationsDenied, true)
+      await helpers.finishAndroidSubscriptionRefresh(id)
+    }
+  })
+  assert.equal(requests, 1)
+  await helpers.startAndroidSubscriptionRefresh(3, 'Refresh', 'Cancel')
+  await helpers.finishAndroidSubscriptionRefresh(3)
+  assert.equal(requests, 2)
 })
