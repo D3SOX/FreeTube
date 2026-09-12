@@ -7,31 +7,39 @@ import { computed, effectScope, nextTick, reactive, ref, shallowRef, watch } fro
 const source = (await readFile(new URL('../../src/renderer/components/TabContent/TabWatchContent.vue', import.meta.url), 'utf8'))
   .split('<script setup>')[1].split('</script>')[0].replace(/^import .*$/gm, '')
 
-function mountWatch(t, { paused = false } = {}) {
+const titleSource = (await readFile(new URL('../../src/renderer/tabs/TabContext.js', import.meta.url), 'utf8'))
+  .replace(/^import .*$/gm, '').replace(/^export /gm, '')
+
+function mountWatch(t, { paused = false, hasLoaded = true, mounted = true } = {}) {
   const route = { path: '/watch/video', fullPath: '/watch/video', params: { id: 'video' } }
   const props = reactive({ tabId: 'tab', route, presented: true })
   const getters = reactive({ getKeepPlayingOnNavigation: true, getTabById: () => ({ history: [] }) })
   const provides = new Map()
   const unmount = []
+  const titles = []
   const scope = effectScope()
   const video = { paused, ended: false }
   let lifecycle
   let disposals = 0
   scope.run(() => vm.runInNewContext(source, {
-    computed, reactive, ref, shallowRef, watch,
+    computed, nextTick, reactive, ref, shallowRef, watch,
     defineProps: () => props,
     // The native scroll mini player lives outside the watch view's DOM tree.
     // Its component reference must remain usable without a DOM video descendant.
-    useTemplateRef: () => ref({ $refs: { player: { hasLoaded: true, isPaused: () => video.paused } }, querySelector: () => null }),
+    useTemplateRef: () => ref(mounted ? { $refs: { player: { hasLoaded, isPaused: () => video.paused } }, querySelector: () => null } : null),
     provide: (key, value) => provides.set(key, value),
     onBeforeUnmount: callback => unmount.push(callback),
     store: { getters },
     resolveRouteComponent: () => ({}),
-    getTabNavigationService: () => ({ createRouterFacade: () => ({}), setTitle() {} }),
+    getTabNavigationService: () => ({ createRouterFacade: () => ({}), setTitle: (...args) => titles.push(args) }),
     tabLifecycleService: { register: (_id, hooks) => { lifecycle = hooks; return () => {} } },
     tabLifecycleKey: 'lifecycle', tabPresentedKey: 'presented', watchNavigationKey: 'navigation',
     routeLocationKey: 'route', routerKey: 'router', console
   }))
+  const updateTitle = vm.runInNewContext(`${titleSource}; useTabTitle()`, {
+    inject: key => key.description === 'watch-navigation' ? provides.get('navigation') : null,
+    onBeforeUnmount: callback => unmount.push(callback)
+  })
   provides.get('lifecycle').register('tab', { beforeDispose: () => { disposals++ } })
   t.after(async () => {
     unmount.forEach(callback => callback())
@@ -39,7 +47,7 @@ function mountWatch(t, { paused = false } = {}) {
     scope.stop()
   })
   return {
-    props, getters, provides, lifecycle,
+    props, getters, provides, lifecycle, titles, updateTitle,
     disposals: () => disposals,
     async navigate(path) {
       const to = { path, fullPath: path, params: {} }
@@ -80,4 +88,42 @@ test('disabling retention disposes the hidden player only once', async t => {
   await nextTick()
   await mounted.lifecycle.beforeDispose()
   assert.equal(mounted.disposals(), 1)
+})
+
+for (const options of [{ hasLoaded: false }, { mounted: false }]) {
+  test(`does not retain unavailable playback ${JSON.stringify(options)}`, async t => {
+    const mounted = mountWatch(t, options)
+    await mounted.navigate('/subscriptions')
+    assert.equal(mounted.disposals(), 1)
+    assert.equal(mounted.provides.get('navigation').detached.value, false)
+  })
+}
+
+test('restores detached title options without resolving pending metadata', async t => {
+  const mounted = mountWatch(t)
+  await mounted.navigate('/subscriptions')
+  const options = { resolveHistoryEntry: false }
+  mounted.updateTitle('Watch', options)
+  await mounted.navigate('/watch/video')
+  assert.equal(mounted.titles.at(-1)[1], 'Watch')
+  assert.equal(mounted.titles.at(-1)[2], options)
+})
+
+test('return navigation waits for disabled retained playback to finish disposal', async t => {
+  const mounted = mountWatch(t)
+  await mounted.navigate('/subscriptions')
+  let finish
+  const pending = new Promise(resolve => { finish = resolve })
+  mounted.provides.get('lifecycle').register('tab', { beforeDispose: () => pending })
+  mounted.getters.getKeepPlayingOnNavigation = false
+  await nextTick()
+  let returned = false
+  const returning = mounted.navigate('/watch/video').then(() => { returned = true })
+  await new Promise(resolve => setImmediate(resolve))
+  const returnedDuringDisposal = returned
+  finish()
+  await returning
+  assert.equal(returnedDuringDisposal, false)
+  assert.equal(mounted.disposals(), 1)
+  assert.equal(mounted.provides.get('navigation').detached.value, false)
 })

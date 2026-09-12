@@ -17,6 +17,8 @@ export class PlayerScriptEvaluator {
   evaluate(code) {
     return new Promise((resolve, reject) => {
       if (typeof code !== 'string') throw new TypeError('Player code must be a string')
+      // Bound source before structured cloning allocates another host copy.
+      if (code.length > 4 * 1024 * 1024) throw new Error('Player code is too large')
       if (!this.worker) {
         const worker = this.createWorker()
         this.worker = worker

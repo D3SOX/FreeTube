@@ -73,7 +73,8 @@ export function useScrollMiniPlayer({ container, fullWindowEnabled, getUi, isAct
   const scrollMiniPlayerEnabled = computed(() => store.getters.getScrollMiniPlayerEnabled)
   const scrollMiniPlayerOnAllTabs = computed(() => store.getters.getKeepPlayingOnNavigation || store.getters.getScrollMiniPlayerOnAllTabs)
   const autoPictureInPictureOnTabChange = computed(
-    () => !(watchNavigation?.detached.value && watchNavigation.tabPresented.value) &&
+    () => !store.getters.getKeepPlayingOnNavigation &&
+      !(watchNavigation?.detached.value && watchNavigation.tabPresented.value) &&
       store.getters.getAutoPictureInPictureTriggers.includes('tab')
   )
   const scrollMiniPlayerActive = ref(false)
@@ -977,6 +978,8 @@ export function useScrollMiniPlayer({ container, fullWindowEnabled, getUi, isAct
     scrollMiniPointerSession = null
     syncNativeMiniPlayerGesture()
     document.body.classList.remove('scroll-mini-player-grabbing')
+    window.removeEventListener('pointerup', handleScrollMiniVolumePointerUpWindow)
+    window.removeEventListener('pointercancel', handleScrollMiniVolumePointerUpWindow)
     window.removeEventListener('pointermove', handleScrollMiniPointerMoveWindow)
     window.removeEventListener('pointerup', handleScrollMiniPointerUpWindow)
     window.removeEventListener('pointercancel', handleScrollMiniPointerUpWindow)

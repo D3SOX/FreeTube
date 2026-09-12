@@ -48,3 +48,15 @@ for (const event of ['error', 'messageerror', 'timeout']) {
     assert.equal(await next, 'recovered')
   })
 }
+
+test('rejects oversized player source before copying it to a worker', async () => {
+  const worker = new FakeWorker()
+  const evaluator = new PlayerScriptEvaluator(() => worker)
+  const pending = evaluator.evaluate(' '.repeat(4 * 1024 * 1024 + 1))
+  const rejection = assert.rejects(pending, /too large/)
+  // Complete an incorrectly accepted request so the failing test leaves no timer.
+  if (worker.requests.length) worker.reply({ id: worker.requests[0].id, result: null })
+  await rejection
+  assert.equal(worker.requests.length, 0)
+  assert.equal(evaluator.requests.size, 0)
+})
