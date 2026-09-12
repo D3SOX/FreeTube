@@ -93,10 +93,17 @@ export async function addAndroidSubscriptionRefreshCancelledListener(listener) {
   return () => handle.remove()
 }
 
-export async function withAndroidSubscriptionRefreshBatch(refresh) {
+export async function withAndroidSubscriptionRefreshBatch(refresh, notification) {
   if (!SubscriptionRefresh) return refresh()
-  const { acquired } = await SubscriptionRefresh.beginBatch()
-  if (!acquired) return
+  try {
+    // Ask while the activity is available, before the batch can outlive it.
+    await requestAndroidSubscriptionRefreshNotificationPermission()
+    const { acquired } = await SubscriptionRefresh.beginBatch(notification)
+    if (!acquired) return
+  } catch (error) {
+    console.error('Failed to begin Android subscription refresh batch', error)
+    return
+  }
   try {
     return await refresh()
   } finally {

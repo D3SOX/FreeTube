@@ -29,15 +29,18 @@ public class SubscriptionRefreshPlugin extends Plugin {
     private volatile boolean rendererRetained;
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
     private final Runnable releaseRenderer = () -> {
-        synchronized (this) {
-            if (!rendererRetained || SubscriptionRefreshWorker.isRendererActive(rendererToken)) return;
-            // Close startup atomically before invoking other plugins' teardown.
-            destroyed = true;
-            rendererRetained = false;
-        }
+        if (!markRendererForDisposal()) return;
         bridge.onDestroy();
         bridge.onDetachedFromWindow();
     };
+
+    private synchronized boolean markRendererForDisposal() {
+        if (!rendererRetained || SubscriptionRefreshWorker.isRendererActive(rendererToken)) return false;
+        // Close startup atomically before invoking other plugins' teardown.
+        destroyed = true;
+        rendererRetained = false;
+        return true;
+    }
 
     // The foreground worker keeps the process alive. Retain its JS executor too,
     // since Capacitor normally destroys it with the recents task.
@@ -128,8 +131,16 @@ public class SubscriptionRefreshPlugin extends Plugin {
             call.reject("The subscription refresh renderer was destroyed");
             return;
         }
-        boolean acquired = !batchActive && !SubscriptionRefreshCoordinator.isActive();
-        if (acquired) batchActive = true;
+        String token = UUID.randomUUID().toString();
+        boolean acquired = !batchActive && SubscriptionRefreshWorker.start(
+            getContext(), token, call.getString("title", "Refreshing subscriptions"),
+            call.getString("cancelLabel", "Cancel")
+        );
+        if (acquired) {
+            rendererToken = token;
+            batchActive = true;
+            waitingForNextFeed = true;
+        }
         JSObject result = new JSObject();
         result.put("acquired", acquired);
         call.resolve(result);

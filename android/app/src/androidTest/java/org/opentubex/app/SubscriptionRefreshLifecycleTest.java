@@ -254,6 +254,34 @@ public class SubscriptionRefreshLifecycleTest {
     }
 
     @Test
+    public void batchSurvivesDismissalBeforeItsFirstFeedStarts() throws Exception {
+        AtomicReference<SubscriptionRefreshPlugin> retained = new AtomicReference<>();
+        AtomicReference<String> token = new AtomicReference<>();
+        try (ActivityScenario<MainActivity> scenario = ActivityScenario.launch(MainActivity.class)) {
+            try {
+                scenario.onActivity(activity -> {
+                    activity.getBridge().getWebView().loadUrl("about:blank");
+                    retained.set(plugin(activity));
+                    beginBatch(retained.get());
+                    activity.finishAndRemoveTask();
+                });
+                await("activity destroyed", () -> scenario.getState() == Lifecycle.State.DESTROYED);
+                assertTrue("batch owns renderer before first feed", retained.get().isRendererRetained());
+                await("batch foreground notification appears", this::hasRefreshNotification);
+                JSObject first = start(retained.get());
+                assertTrue(first.getBool("acquired"));
+                token.set(first.getString("token"));
+                finishFeed(retained.get(), token.get());
+                retained.get().endBatch(emptyCall("endBatch", new JSObject()));
+                await("completed batch releases renderer", () -> !retained.get().isRendererRetained());
+            } finally {
+                if (retained.get() != null) retained.get().endBatch(emptyCall("endBatch", new JSObject()));
+                if (token.get() != null) SubscriptionRefreshWorker.finish(context, token.get());
+            }
+        }
+    }
+
+    @Test
     public void successfulStartCannotRaceWithRendererDisposal() throws Exception {
         AtomicReference<String> token = new AtomicReference<>();
         AtomicReference<SubscriptionRefreshPlugin> retained = new AtomicReference<>();
@@ -269,8 +297,15 @@ public class SubscriptionRefreshLifecycleTest {
                 await("activity destroyed", () -> scenario.getState() == Lifecycle.State.DESTROYED);
                 synchronized (retained.get()) {
                     SubscriptionRefreshWorker.finish(context, token.get());
-                    await("cleanup waits for plugin ownership", () ->
-                        Looper.getMainLooper().getThread().getState() == Thread.State.BLOCKED);
+                    // The held monitor keeps this exact disposal gate blocked;
+                    // unrelated main-thread monitor contention cannot satisfy it.
+                    await("cleanup waits at the plugin disposal gate", () -> {
+                        Thread main = Looper.getMainLooper().getThread();
+                        return main.getState() == Thread.State.BLOCKED &&
+                            Arrays.stream(main.getStackTrace()).anyMatch(frame ->
+                                frame.getClassName().equals(SubscriptionRefreshPlugin.class.getName()) &&
+                                frame.getMethodName().equals("markRendererForDisposal"));
+                    });
                     JSObject next = start(retained.get());
                     assertTrue("next start acquires ownership", next.getBool("acquired"));
                     token.set(next.getString("token"));

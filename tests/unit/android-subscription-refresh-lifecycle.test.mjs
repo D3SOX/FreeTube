@@ -2,10 +2,11 @@ import assert from 'node:assert/strict'
 import { readFile } from 'node:fs/promises'
 import test from 'node:test'
 import vm from 'node:vm'
+import { setImmediate } from 'node:timers/promises'
 
 import { createSubscriptionRefreshStartController } from '../../src/renderer/helpers/androidSubscriptionRefreshData.js'
 
-async function loadHelpers(native) {
+async function loadHelpers(native, logger = console) {
   const source = await readFile(new URL('../../src/renderer/helpers/androidSubscriptionRefresh.js', import.meta.url), 'utf8')
   return vm.runInNewContext(`${source.replace(/^import .*$/gm, '').replaceAll('export ', '')}
     ({ startAndroidSubscriptionRefresh, finishAndroidSubscriptionRefresh, withAndroidSubscriptionRefreshBatch })`, {
@@ -13,7 +14,7 @@ async function loadHelpers(native) {
     registerPlugin: () => native,
     LocalNotifications: { checkPermissions: async () => ({ display: 'granted' }) },
     createSubscriptionRefreshStartController,
-    console,
+    console: logger,
   })
 }
 
@@ -62,6 +63,8 @@ test('Refresh All holds its native batch until every feed and its native finish 
   firstFinish.resolve()
   await ended.promise
   assert.deepEqual(events, ['begin', 'start1', 'finish:token1', 'start2', 'finish:token2', 'end'])
+  await setImmediate()
+  assert.equal(refresh.isRefreshing.value, false)
 })
 
 test('failed batch acquisition does not run or release another refresh', async () => {
@@ -81,4 +84,14 @@ test('empty and failed queues release their acquired batch', async () => {
   await withAndroidSubscriptionRefreshBatch(async () => {})
   await assert.rejects(withAndroidSubscriptionRefreshBatch(async () => { throw new Error('refresh failed') }), /refresh failed/)
   assert.equal(ended, 2)
+})
+
+test('a rejected native batch acquisition is handled without starting or releasing work', async () => {
+  const errors = []
+  const { withAndroidSubscriptionRefreshBatch } = await loadHelpers({
+    async beginBatch() { throw new Error('renderer destroyed') },
+    endBatch() { assert.fail('unacquired batch must not be released') },
+  }, { error: (...args) => errors.push(args) })
+  await withAndroidSubscriptionRefreshBatch(() => assert.fail('unacquired batch must not run'))
+  assert.equal(errors.length, 1)
 })
