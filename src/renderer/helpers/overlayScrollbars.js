@@ -29,7 +29,7 @@ const instances = new Map()
 /** @type {WeakMap<import('overlayscrollbars').OverlayScrollbars, () => void>} */
 const removeScrollSpeedHandlers = new WeakMap()
 const SCROLL_BOUNDARY_TOLERANCE = 1
-const suspendSheetScrollbars = new WeakMap()
+const suspendScrollbarPosition = new WeakMap()
 
 function scrollbarOptions(initialization) {
   const options = {
@@ -73,15 +73,19 @@ function create(initialization) {
     optimizeBodyScrollbarDrag(instance)
   } else if (initialization.elements?.viewport instanceof HTMLElement) {
     reconcileScrollbarOnResize(initialization.elements.viewport, instance)
-    synchronizeSheetScrollbarPosition(initialization.elements.viewport, instance)
+    synchronizeScrollbarPosition(initialization.elements.viewport, instance)
   }
 
   return instance
 }
 
-/** Keep a panel's scrollbar track fixed during compositor-driven touch scrolling. */
-function synchronizeSheetScrollbarPosition(element, instance) {
-  if (!window.ScrollTimeline || !element.closest('.mobileSheetEnabled')) return
+/**
+ * Keep nested scrollbar tracks fixed during compositor-driven touch scrolling.
+ * The library positions tracks inside a reused viewport from scroll events,
+ * which can arrive after Chromium has already painted the scrolled content.
+ */
+function synchronizeScrollbarPosition(element, instance) {
+  if (!window.ScrollTimeline) return
   const timeline = new window.ScrollTimeline({ source: element, axis: 'y' })
   const { scrollbarVertical, scrollbarHorizontal } = instance.elements()
   let animations = []
@@ -90,8 +94,9 @@ function synchronizeSheetScrollbarPosition(element, instance) {
   const update = () => {
     if (suspended) return
     const { overflowAmount } = instance.state()
-    // The library still handles two-axis scrollers and older WebViews.
-    if (overflowAmount.x > 1) {
+    // Only vertical overflow needs synchronization. The library still handles
+    // two-axis scrollers and older WebViews.
+    if (overflowAmount.x > 1 || overflowAmount.y <= 0) {
       animations.forEach(animation => animation.cancel())
       animations = []
       previousRange = -1
@@ -103,7 +108,7 @@ function synchronizeSheetScrollbarPosition(element, instance) {
     if (animations.length) animations.forEach(animation => animation.effect.setKeyframes(frames))
     else animations = [scrollbarVertical, scrollbarHorizontal].map(({ scrollbar }) => scrollbar.animate(frames, { timeline }))
   }
-  suspendSheetScrollbars.set(instance, () => {
+  suspendScrollbarPosition.set(instance, () => {
     suspended = true
     animations.forEach(animation => animation.cancel())
     animations = []
@@ -116,7 +121,7 @@ function synchronizeSheetScrollbarPosition(element, instance) {
   update()
   instance.on('updated', update)
   instance.on('destroyed', () => {
-    suspendSheetScrollbars.delete(instance)
+    suspendScrollbarPosition.delete(instance)
     animations.forEach(animation => animation.cancel())
   })
 }
@@ -198,31 +203,36 @@ function reconcileScrollbarOnResize(element, instance) {
 
     resizeFrame = requestAnimationFrame(() => {
       resizeFrame = null
-      const height = element.clientHeight
-      const scrollTop = element.scrollTop
-      const maximumScrollTop = Math.max(0, element.scrollHeight - height)
-      // Content can shrink (trimmed live chat) or the viewport can grow after a
-      // dock transition while an obsolete end offset is still applied — that
-      // parks the view on empty space until the user scrolls up.
-      if (scrollTop > maximumScrollTop + 1) {
-        element.scrollTop = maximumScrollTop
-        instance.update(true)
+      const resumeScrollbars = suspendScrollbarPosition.get(instance)?.()
+      try {
+        const height = element.clientHeight
+        const scrollTop = element.scrollTop
+        const maximumScrollTop = Math.max(0, element.scrollHeight - height)
+        // Content can shrink (trimmed live chat) or the viewport can grow after a
+        // dock transition while an obsolete end offset is still applied — that
+        // parks the view on empty space until the user scrolls up.
+        if (scrollTop > maximumScrollTop + 1) {
+          element.scrollTop = maximumScrollTop
+          instance.update(true)
+          previousHeight = height
+          return
+        }
+
+        const grewAtOldEnd = height > previousHeight &&
+          scrollTop > 0 &&
+          scrollTop >= maximumScrollTop - 1
         previousHeight = height
-        return
-      }
 
-      const grewAtOldEnd = height > previousHeight &&
-        scrollTop > 0 &&
-        scrollTop >= maximumScrollTop - 1
-      previousHeight = height
+        if (grewAtOldEnd) {
+          element.scrollTop = 0
+          instance.update(true)
+          element.scrollTop = Math.min(scrollTop, instance.state().overflowAmount.y)
+        }
 
-      if (grewAtOldEnd) {
-        element.scrollTop = 0
         instance.update(true)
-        element.scrollTop = Math.min(scrollTop, instance.state().overflowAmount.y)
+      } finally {
+        resumeScrollbars?.()
       }
-
-      instance.update(true)
     })
   })
 
@@ -470,7 +480,7 @@ export function clampOverlayScrollTop(element, contentElement = null) {
   const instance = OverlayScrollbars(element)
   // A compositor animation can retain the old track offset during this DOM update.
   // Remove that overflow contribution before measuring the shortened content.
-  const resumeScrollbars = suspendSheetScrollbars.get(instance)?.()
+  const resumeScrollbars = suspendScrollbarPosition.get(instance)?.()
   try {
     const scrollOffsetElement = instance?.elements().scrollOffsetElement ?? element
     instance?.update(true)
