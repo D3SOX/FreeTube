@@ -130,6 +130,10 @@ test('tab organizer shortcut opens and closes it again with its search focused',
   const event = { key: 'o', preventDefault() {} }
   handler(event)
   assert.equal(tabOrganizerOpen.value, true)
+  handler({ ...event, repeat: true })
+  assert.equal(tabOrganizerOpen.value, true, 'holding the shortcut must not close the organizer')
   handler(event)
   assert.equal(tabOrganizerOpen.value, false)
+  handler({ ...event, repeat: true })
+  assert.equal(tabOrganizerOpen.value, false, 'holding the shortcut must not reopen the organizer')
 })

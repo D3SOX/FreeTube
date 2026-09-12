@@ -110,6 +110,7 @@ test.describe('tab bar', () => {
           id: 'remote-research-group',
           name: 'Remote research',
           color: 'purple',
+          icon: 'flask',
           isCollapsed: true
         }],
         tabs: [
@@ -159,6 +160,7 @@ test.describe('tab bar', () => {
         id: 'remote-research-group',
         name: 'Remote research',
         color: 'purple',
+        icon: 'flask',
         isCollapsed: true
       }],
       groupedTabIds: [retainedTabId, 'remote-new-tab']
@@ -1254,7 +1256,7 @@ test.describe('tab bar', () => {
     })
 
     await page.locator(`.tab[data-tab-id="${setup.firstId}"]`).click({ button: 'right' })
-    const collapseGroup = page.getByRole('menuitem', { name: 'Collapse group', exact: true })
+    const collapseGroup = page.getByRole('menuitem', { name: 'Collapse Group', exact: true })
     await expect(collapseGroup.locator('[data-icon="compress"]')).toBeVisible()
     await collapseGroup.click()
 

@@ -784,7 +784,7 @@ const groupSelectColors = computed(() => [
 const groupSelectIcons = computed(() => [
   null,
   ['fas', 'link-slash'],
-  ...groups.value.map(group => ['fas', normalizeTabGroupIcon(group.icon)])
+  ...groups.value.map(() => null)
 ])
 const windowSelectNames = computed(() => [
   t('Tab Organizer.Choose Window'),
@@ -991,6 +991,7 @@ function activateTab(tabId) {
 }
 
 function toggleGroupSelection(section, checked) {
+  selectionAnchorId = null
   const next = new Set(selectedTabIds.value)
   for (const tab of section.allTabs) {
     if (checked) next.add(tab.id)

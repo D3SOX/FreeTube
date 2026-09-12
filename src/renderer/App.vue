@@ -3194,6 +3194,7 @@ function handleKeyboardShortcuts(event) {
     matchesKeyboardShortcut(event, shortcuts.OPEN_TAB_ORGANIZER) &&
     (tabOrganizerOpen.value || !isTypingTarget(event.target))) {
     event.preventDefault()
+    if (event.repeat) return
     if (tabOrganizerOpen.value) closeTabOrganizer()
     else openTabOrganizer()
     return
