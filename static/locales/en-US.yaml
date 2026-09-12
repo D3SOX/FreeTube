@@ -259,6 +259,7 @@ Home Page:
   All sections hidden description: Customize Home to show a section again.
 
 Subscriptions:
+  Mark as Unseen: Mark as unseen
   Copy Error Details: "Copy technical details"
   Refresh Errors: "Channels that could not be refreshed: {channels}. Click to view details."
   Refresh Error Channels More: "{channels} and {count} more | {channels} and {count} more"

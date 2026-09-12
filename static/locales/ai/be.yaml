@@ -148,6 +148,7 @@ Home Page:
   All sections hidden: Усе раздзелы схаваны
   All sections hidden description: Наладзьце галоўную, каб зноў паказаць раздзел.
 Subscriptions:
+  Mark as Unseen: Пазначыць як непрагледжанае
   Copy Error Details: "Скапіяваць тэхнічныя падрабязнасці"
   Refresh Errors: "Каналы, якія не ўдалося абнавіць: {channels}. Націсніце, каб праглядзець падрабязнасці."
   Refresh Error Channels More: "{channels} і яшчэ {count} | {channels} і яшчэ {count} | {channels} і яшчэ {count}"

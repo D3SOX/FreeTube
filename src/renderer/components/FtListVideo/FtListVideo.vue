@@ -923,6 +923,13 @@ const videoMenuOptions = computed(() => {
           icon: ['fas', 'check']
         }]
       : [],
+    ...inSubscriptions.value
+      ? [{
+          label: t('Subscriptions.Mark as Unseen'),
+          value: 'markAsUnseen',
+          icon: ['fas', 'eye-slash']
+        }]
+      : [],
     ...canMarkAsWatched.value
       ? [{
           label: isWatched.value
@@ -1342,6 +1349,9 @@ function handleOptionsClick(option) {
       break
     case 'addToQueue':
       addToWatchQueue(false)
+      break
+    case 'markAsUnseen':
+      store.dispatch('markSubscriptionVideoAsUnseen', id.value)
       break
     case 'markAsSeen':
       markSubscriptionVideoAsSeen()

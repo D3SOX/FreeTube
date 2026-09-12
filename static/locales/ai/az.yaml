@@ -142,6 +142,7 @@ Home Page:
   All sections hidden: Bütün bölmələr gizlədilib
   All sections hidden description: Bölməni yenidən göstərmək üçün ana səhifəni fərdiləşdirin.
 Subscriptions:
+  Mark as Unseen: Görülməmiş kimi işarələ
   Copy Error Details: "Texniki təfərrüatları kopyala"
   Refresh Errors: "Yenilənə bilməyən kanallar: {channels}. Təfərrüatlara baxmaq üçün klikləyin."
   Refresh Error Channels More: "{channels} və daha {count} kanal | {channels} və daha {count} kanal"

@@ -142,6 +142,7 @@ Home Page:
   All sections hidden: Minden szakasz el van rejtve
   All sections hidden description: Szabja testre a kezdőlapot egy szakasz újbóli megjelenítéséhez.
 Subscriptions:
+  Mark as Unseen: Megjelölés nem látottként
   Copy Error Details: "Technikai részletek másolása"
   Refresh Errors: "Nem frissíthető csatornák: {channels}. Kattintson a részletek megtekintéséhez."
   Refresh Error Channels More: "{channels} és további {count} | {channels} és további {count}"

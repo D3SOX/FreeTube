@@ -144,6 +144,7 @@ Home Page:
   All sections hidden: Сви одељци су сакривени
   All sections hidden description: Прилагодите почетну страницу да бисте поново приказали одељак.
 Subscriptions:
+  Mark as Unseen: Означи као невиђено
   Copy Error Details: "Копирај техничке детаље"
   Refresh Errors: "Канали које није било могуће освежити: {channels}. Кликните да видите детаље."
   Refresh Error Channels More: "{channels} и још {count} | {channels} и још {count} | {channels} и још {count}"

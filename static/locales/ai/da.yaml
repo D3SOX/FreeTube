@@ -144,6 +144,7 @@ Home Page:
   All sections hidden: Alle sektioner er skjult
   All sections hidden description: Tilpas startsiden for at vise en sektion igen.
 Subscriptions:
+  Mark as Unseen: Markér som ikke set
   Copy Error Details: "Kopiér tekniske detaljer"
   Refresh Errors: "Kanaler, der ikke kunne opdateres: {channels}. Klik for at se detaljer."
   Refresh Error Channels More: "{channels} og {count} mere | {channels} og {count} mere"

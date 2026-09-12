@@ -117,6 +117,7 @@ Home Page:
   All sections hidden: Все разделы скрыты
   All sections hidden description: Настройте главную, чтобы снова показать раздел.
 Subscriptions:
+  Mark as Unseen: Отметить как непросмотренное
   Copy Error Details: "Скопировать технические подробности"
   Refresh Errors: "Каналы, которые не удалось обновить: {channels}. Нажмите, чтобы посмотреть подробности."
   Refresh Error Channels More: "{channels} и ещё {count} | {channels} и ещё {count} | {channels} и ещё {count}"

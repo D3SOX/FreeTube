@@ -8,8 +8,12 @@ export function applySubscriptionSeenVideosToCache(cache, seenVideos) {
     if (!cached?.videos) return [channelId, cached]
     const videos = cached.videos.map(video => {
       const seen = byId.get(video.videoId)
+      if (!seen) return video
+      if (seen.unseenAt >= seen.seenAt) {
+        return video.isNewInSubscriptionFeed ? video : { ...video, isNewInSubscriptionFeed: true }
+      }
       // A members-only upload becoming public is new content again.
-      if (!seen || !video.isNewInSubscriptionFeed ||
+      if (!video.isNewInSubscriptionFeed ||
           (seen.isMembersOnly && video.isMembersOnly === false)) return video
       return { ...video, isNewInSubscriptionFeed: false }
     })

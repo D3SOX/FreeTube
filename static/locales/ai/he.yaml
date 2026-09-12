@@ -142,6 +142,7 @@ Home Page:
   All sections hidden: כל המקטעים מוסתרים
   All sections hidden description: התאימו אישית את דף הבית כדי להציג שוב מקטע.
 Subscriptions:
+  Mark as Unseen: סימון כלא נצפה
   Copy Error Details: "העתקת פרטים טכניים"
   Refresh Errors: "ערוצים שלא ניתן היה לרענן: {channels}. יש ללחוץ להצגת הפרטים."
   Refresh Error Channels More: "{channels} ועוד {count} | {channels} ועוד {count} | {channels} ועוד {count}"

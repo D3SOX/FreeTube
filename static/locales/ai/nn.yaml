@@ -148,6 +148,7 @@ Home Page:
   All sections hidden: Alle delar er gøymde
   All sections hidden description: Tilpass heimesida for å vise ein del igjen.
 Subscriptions:
+  Mark as Unseen: Merk som ikkje sett
   Copy Error Details: "Kopier tekniske detaljar"
   Refresh Errors: "Kanalar som ikkje kunne oppdaterast: {channels}. Klikk for å sjå detaljar."
   Refresh Error Channels More: "{channels} og {count} til | {channels} og {count} til"

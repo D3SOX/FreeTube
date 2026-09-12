@@ -308,3 +308,64 @@ test('failed seen-mark persistence stops sync before uploading stale state', asy
   }), failure)
   assert.equal(uploads, 0)
 })
+
+for (const cache of ['videoCache', 'shortsCache', 'liveCache']) {
+  test(`marking ${cache} unseen preserves watch progress and restores a seen video`, async () => {
+    const fixture = cacheFixture()
+    fixture.state[cache].channel.videos[0].isNewInSubscriptionFeed = false
+    const history = { videoId: cache, isWatched: true, watchProgress: 123, lengthSeconds: 200 }
+    fixture.context.rootGetters = { getHistoryCacheById: { [cache]: history }, getSubscriptionSeenVideos: [] }
+    await fixture.actions.markSubscriptionVideoAsUnseen(fixture.context, cache)
+    assert.equal(fixture.recorded[0][0], 'updateHistory')
+    assert.deepEqual(fixture.recorded[0][1], { ...history, isWatched: false })
+    const [action, marks] = fixture.recorded[1]
+    assert.equal(action, 'mergeSubscriptionSeenVideos')
+    const restored = seenVideos.applySubscriptionSeenVideosToCache(fixture.state[cache], marks)
+    assert.equal(restored.channel.videos[0].isNewInSubscriptionFeed, true)
+  })
+}
+
+test('unseen marks survive stale sync, cache refresh and a later mark as seen', () => {
+  const cache = { channel: { videos: [{ videoId: 'video', isNewInSubscriptionFeed: false }] } }
+  const old = { videoId: 'video', seenAt: 1000 }
+  const unseen = { videoId: 'video', seenAt: 1000, unseenAt: 2000 }
+  for (const [local, remote] of [[[old], [unseen]], [[unseen], [old]]]) {
+    const marks = seenVideos.mergeSubscriptionSeenVideos(local, remote)
+    assert.equal(seenVideos.applySubscriptionSeenVideosToCache(cache, marks).channel.videos[0].isNewInSubscriptionFeed, true)
+    const seen = seenVideos.mergeSubscriptionSeenVideos(marks, [{ videoId: 'video', seenAt: 3000 }])
+    assert.equal(seenVideos.applySubscriptionSeenVideosToCache(cache, seen).channel.videos[0].isNewInSubscriptionFeed, false)
+  }
+})
+
+for (const bulk of [false, true]) {
+  test(`${bulk ? 'bulk' : 'individual'} marking handles unseen overrides on previously seen caches`, async () => {
+    const fixture = cacheFixture()
+    fixture.state.videoCache.channel.videos[0].isNewInSubscriptionFeed = false
+    const timestamp = Date.now() + 1000
+    const unseen = [{ videoId: 'videoCache', seenAt: timestamp, unseenAt: timestamp }]
+    fixture.context.rootGetters = { getSubscriptionSeenVideos: unseen }
+    if (bulk) {
+      await fixture.actions.markSubscriptionEntriesAsSeen(fixture.context, { tab: 'videos', channelIds: ['channel'] })
+    } else {
+      await fixture.actions.markSubscriptionVideoAsSeen(fixture.context, 'videoCache')
+    }
+    assert.equal(fixture.recorded.length, 1)
+    const marks = seenVideos.mergeSubscriptionSeenVideos(unseen, fixture.recorded[0][1])
+    assert.ok(marks[0].seenAt > timestamp)
+    assert.equal(seenVideos.applySubscriptionSeenVideosToCache(fixture.state.videoCache, marks).channel.videos[0].isNewInSubscriptionFeed, false)
+  })
+}
+
+test('unseen marks persist without creating history for an unwatched video', async () => {
+  const fixture = cacheFixture()
+  fixture.context.rootGetters = { getHistoryCacheById: {}, getSubscriptionSeenVideos: [] }
+  await fixture.actions.markSubscriptionVideoAsUnseen(fixture.context, 'videoCache')
+  assert.equal(fixture.recorded.length, 1)
+  assert.equal(fixture.recorded[0][0], 'mergeSubscriptionSeenVideos')
+  const { Settings } = await settingsFixture()
+  await Settings.mergeSeenVideos(fixture.recorded[0][1])
+  const saved = await Settings.mergeSeenVideos([{ videoId: 'videoCache', seenAt: 1 }])
+  assert.equal(seenVideos.applySubscriptionSeenVideosToCache({ channel: {
+    videos: [{ videoId: 'videoCache', isNewInSubscriptionFeed: false }],
+  } }, saved).channel.videos[0].isNewInSubscriptionFeed, true)
+})

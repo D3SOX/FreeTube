@@ -250,7 +250,10 @@ watch(() => activeSubscriptionList.value.map((channel) => channel.id).join(','),
 })
 
 watch(
-  () => store.getters.getSubscriptionFeedLastRefreshTimestamp,
+  [
+    () => store.getters.getSubscriptionFeedLastRefreshTimestamp,
+    () => store.getters.getSubscriptionSeenVideos
+  ],
   () => {
     if (subscriptionCacheReady.value) {
       loadVideosFromCacheForAllActiveProfileChannels()

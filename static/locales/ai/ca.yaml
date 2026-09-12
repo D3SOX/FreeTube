@@ -172,6 +172,7 @@ Home Page:
   All sections hidden: Totes les seccions estan ocultes
   All sections hidden description: Personalitzeu l'inici per tornar a mostrar una secció.
 Subscriptions:
+  Mark as Unseen: Marca com a no vist
   Copy Error Details: "Copia els detalls tècnics"
   Refresh Errors: "Canals que no s'han pogut actualitzar: {channels}. Feu clic per veure els detalls."
   Refresh Error Channels More: "{channels} i {count} més | {channels} i {count} més | {channels} i {count} més"

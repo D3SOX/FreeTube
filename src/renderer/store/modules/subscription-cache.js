@@ -2,6 +2,7 @@ import {
   DBSubscriptionCacheHandlers,
 } from '../../../datastores/handlers/index'
 import { ensureSubscriptionFeedEntryState } from '../../helpers/subscription-entries'
+import { nextSubscriptionSeenTimestamp } from '../../../subscriptionSeenVideos'
 import { applySubscriptionSeenVideosToCache } from '../../helpers/subscription-seen-videos'
 
 const MAX_CONCURRENT_CACHE_WRITES = 8
@@ -213,7 +214,7 @@ const actions = {
     }
   },
 
-  async markSubscriptionEntriesAsSeen({ commit, dispatch, state }, {
+  async markSubscriptionEntriesAsSeen({ commit, dispatch, state, rootGetters }, {
     tab,
     tabs = [tab],
     channelIds = [],
@@ -221,17 +222,17 @@ const actions = {
   }) {
     const cacheConfigs = {
       videos: {
-        cache: state.videoCache,
+        cache: applySubscriptionSeenVideosToCache(state.videoCache, rootGetters?.getSubscriptionSeenVideos),
         entriesKey: 'videos',
         updateEntries: DBSubscriptionCacheHandlers.updateVideosByChannelId
       },
       shorts: {
-        cache: state.shortsCache,
+        cache: applySubscriptionSeenVideosToCache(state.shortsCache, rootGetters?.getSubscriptionSeenVideos),
         entriesKey: 'videos',
         updateEntries: DBSubscriptionCacheHandlers.updateShortsByChannelId
       },
       live: {
-        cache: state.liveCache,
+        cache: applySubscriptionSeenVideosToCache(state.liveCache, rootGetters?.getSubscriptionSeenVideos),
         entriesKey: 'videos',
         updateEntries: DBSubscriptionCacheHandlers.updateLiveStreamsByChannelId
       },
@@ -244,7 +245,7 @@ const actions = {
 
     const writes = []
     const seenVideos = []
-    const seenAt = Date.now()
+    const seenAt = nextSubscriptionSeenTimestamp(rootGetters?.getSubscriptionSeenVideos)
 
     for (const feedTab of tabs) {
       const channelIdSet = new Set(channelIdsByTab[feedTab] ?? channelIds)
@@ -294,20 +295,20 @@ const actions = {
     }
   },
 
-  async markSubscriptionVideoAsSeen({ commit, dispatch, state }, videoId) {
+  async markSubscriptionVideoAsSeen({ commit, dispatch, state, rootGetters }, videoId) {
     const cacheConfigs = [
       {
-        cache: state.videoCache,
+        cache: applySubscriptionSeenVideosToCache(state.videoCache, rootGetters?.getSubscriptionSeenVideos),
         tab: 'videos',
         updateEntries: DBSubscriptionCacheHandlers.updateVideosByChannelId
       },
       {
-        cache: state.shortsCache,
+        cache: applySubscriptionSeenVideosToCache(state.shortsCache, rootGetters?.getSubscriptionSeenVideos),
         tab: 'shorts',
         updateEntries: DBSubscriptionCacheHandlers.updateShortsByChannelId
       },
       {
-        cache: state.liveCache,
+        cache: applySubscriptionSeenVideosToCache(state.liveCache, rootGetters?.getSubscriptionSeenVideos),
         tab: 'live',
         updateEntries: DBSubscriptionCacheHandlers.updateLiveStreamsByChannelId
       }
@@ -315,7 +316,7 @@ const actions = {
 
     const writes = []
     const seenVideos = []
-    const seenAt = Date.now()
+    const seenAt = nextSubscriptionSeenTimestamp(rootGetters?.getSubscriptionSeenVideos)
     for (const { cache, tab, updateEntries } of cacheConfigs) {
       for (const [channelId, cacheEntry] of Object.entries(cache)) {
         const entry = cacheEntry?.videos?.find(video => video.videoId === videoId)
@@ -343,6 +344,26 @@ const actions = {
     if (seenVideos.length > 0) {
       await dispatch('mergeSubscriptionSeenVideos', seenVideos).catch(error => console.error(error))
     }
+  },
+
+  async markSubscriptionVideoAsUnseen({ dispatch, state, rootGetters }, videoId) {
+    const video = [state.videoCache, state.shortsCache, state.liveCache]
+      .flatMap(cache => Object.values(cache))
+      .flatMap(entry => entry?.videos ?? [])
+      .find(video => video.videoId === videoId)
+    if (!video) return
+
+    const history = rootGetters.getHistoryCacheById[videoId]
+    // Explicitly unset watched status without resetting the playback position,
+    // including when the watched threshold is zero.
+    if (history) await dispatch('updateHistory', { ...history, isWatched: false })
+    const timestamp = nextSubscriptionSeenTimestamp(rootGetters.getSubscriptionSeenVideos)
+    await dispatch('mergeSubscriptionSeenVideos', [{
+      videoId,
+      seenAt: timestamp,
+      unseenAt: timestamp,
+      isMembersOnly: video.isMembersOnly === true
+    }])
   },
 
   async markSubscriptionPostAsSeen({ commit, state }, postId) {

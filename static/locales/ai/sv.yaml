@@ -142,6 +142,7 @@ Home Page:
   All sections hidden: Alla avsnitt är dolda
   All sections hidden description: Anpassa startsidan för att visa ett avsnitt igen.
 Subscriptions:
+  Mark as Unseen: Markera som osedd
   Copy Error Details: "Kopiera tekniska detaljer"
   Refresh Errors: "Kanaler som inte kunde uppdateras: {channels}. Klicka för att visa detaljer."
   Refresh Error Channels More: "{channels} och {count} till | {channels} och {count} till"

@@ -142,6 +142,7 @@ Home Page:
   All sections hidden: Tất cả các mục đều bị ẩn
   All sections hidden description: Tùy chỉnh Trang chủ để hiển thị lại một mục.
 Subscriptions:
+  Mark as Unseen: Đánh dấu là chưa xem
   Copy Error Details: "Sao chép chi tiết kỹ thuật"
   Refresh Errors: "Các kênh không thể làm mới: {channels}. Nhấp để xem chi tiết."
   Refresh Error Channels More: "{channels} và {count} kênh khác"

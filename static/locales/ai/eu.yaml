@@ -142,6 +142,7 @@ Home Page:
   All sections hidden: Atal guztiak ezkutatuta daude
   All sections hidden description: Pertsonalizatu hasiera atal bat berriro erakusteko.
 Subscriptions:
+  Mark as Unseen: Markatu ikusi gabeko gisa
   Copy Error Details: "Kopiatu xehetasun teknikoak"
   Refresh Errors: "Eguneratu ezin izan diren kanalak: {channels}. Egin klik xehetasunak ikusteko."
   Refresh Error Channels More: "{channels} eta beste {count} | {channels} eta beste {count}"

@@ -142,6 +142,7 @@ Home Page:
   All sections hidden: Svi su odjeljci skriveni
   All sections hidden description: Prilagodite početnu stranicu kako biste ponovno prikazali odjeljak.
 Subscriptions:
+  Mark as Unseen: Označi kao neviđeno
   Copy Error Details: "Kopiraj tehničke pojedinosti"
   Refresh Errors: "Kanali koji se nisu mogli osvježiti: {channels}. Kliknite za prikaz pojedinosti."
   Refresh Error Channels More: "{channels} i još {count} | {channels} i još {count} | {channels} i još {count}"
