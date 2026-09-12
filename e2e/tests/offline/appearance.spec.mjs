@@ -368,8 +368,9 @@ test.describe('default appearance', () => {
       return Math.abs(dropdown.top - button.bottom - 4)
     }, [await appFont.getAttribute('id'), await fontDropdown.getAttribute('id')])).toBeLessThanOrEqual(2)
 
-    await page.setViewportSize({ width: 600, height: 320 })
-    await expect.poll(() => fontDropdown.evaluate(menu => menu.clientWidth)).toBeLessThanOrEqual(584)
+    // Keep this scroll-clamping check in desktop layout; phone pickers close on exit.
+    await page.setViewportSize({ width: 800, height: 650 })
+    await expect.poll(() => fontDropdown.evaluate(menu => menu.clientWidth)).toBeLessThanOrEqual(784)
     await appFont.evaluate(element => element.scrollIntoView({ block: 'center' }))
     await expect.poll(() => fontDropdown.evaluate(menu => menu.scrollHeight - menu.clientHeight))
       .toBeGreaterThan(0)

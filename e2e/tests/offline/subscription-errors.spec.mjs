@@ -76,7 +76,7 @@ for (const count of [2, 20]) {
         await expect(dialog.getByRole('button', { name: 'Copy technical details' })).toBeInViewport()
         await page.setViewportSize({ width: 1100, height: 1000 })
         await expect.poll(() => scroller.evaluate(element => {
-          const content = element.querySelector('.refreshErrors').getBoundingClientRect()
+          const content = element.querySelector('.promptContent').getBoundingClientRect()
           return Math.abs(content.bottom - element.getBoundingClientRect().bottom)
         })).toBeLessThan(2)
         await expect(scroller.locator(':scope > .os-scrollbar-vertical')).not.toHaveClass(/os-scrollbar-unusable/)

@@ -94,7 +94,7 @@ test.describe('subscribed channels', () => {
 
       const scrollWidthBefore = await page.evaluate(() => document.documentElement.scrollWidth)
       await dropdown.getByRole('combobox', { name: 'Videos per day' }).click()
-      const selectDropdown = page.locator('body > .selectDropdown')
+      const selectDropdown = page.getByRole('listbox', { name: 'Videos per day' })
       await expect(selectDropdown).toBeVisible()
       expect(await selectDropdown.evaluate((element, popover) => {
         const rect = element.getBoundingClientRect()

@@ -147,7 +147,7 @@ for (const uiScale of [100, 95]) {
       await expect(page).toHaveURL(/watch/)
     })
 
-    test('preserves transcript search through the shared Close button', async ({ app, page }) => {
+    test('clears transcript state through the shared Close button', async ({ app, page }) => {
       await mockPlayableWatchPage(app, page, { captionTranslations: true })
       await openMockedVideo(page)
       await setWindowSize(app, page, { width: 360, height: 760 })
@@ -158,11 +158,14 @@ for (const uiScale of [100, 95]) {
       await transcript.locator('.transcriptControls input').fill('elephant')
       await page.locator('.mobileSheetHeader').getByRole('button', { name: 'Close', exact: true }).click()
       await expect(page.locator('dialog[open]')).toHaveCount(0)
+      await expect(page.locator('.transcriptCard')).toHaveCount(0)
       await trigger.click()
-      await expect(transcript.locator('.transcriptControls input')).toHaveValue('elephant')
+      await expect(transcript).toBeVisible()
+      await page.locator('.mobileSheetHeader').getByRole('button', { name: 'Search transcript', exact: true }).click()
+      await expect(transcript.locator('.transcriptControls input')).toHaveValue('')
     })
 
-    test('opens live chat in a sheet and keeps it mounted when dismissed', async ({ app, page }) => {
+    test('opens live chat in a sheet and clears its panel state when dismissed', async ({ app, page }) => {
       await mockPlayableWatchPage(app, page)
       await openMockedVideo(page)
       const view = await watchViewHandle(page)
@@ -175,8 +178,9 @@ for (const uiScale of [100, 95]) {
           on(event, listener) { listeners.set(listener, event) },
           once(event, listener) { listeners.set(listener, event) },
           off(_event, listener) { listeners.delete(listener) },
-          start() {},
+          start() { this.emit('start', { actions: [] }) },
           stop() {},
+          seekTo() {},
           emit(event, value) {
             for (const [listener, name] of listeners) if (name === event) listener(value)
           }
@@ -212,12 +216,12 @@ for (const uiScale of [100, 95]) {
       await expect.poll(() => scroller.evaluate(element => element.scrollTop)).toBeCloseTo(180, 0)
       await page.locator('.mobileSheetHeader').getByRole('button', { name: 'Close', exact: true }).click()
       await expect(page.locator('dialog[open]')).toHaveCount(0)
-      expect(await view.evaluate(view => view.liveChatOpen)).toBe(true)
+      expect(await view.evaluate(view => view.liveChatOpen)).toBe(false)
+      await expect(page.locator('.phoneLiveChat')).toHaveCount(0)
       await trigger.click()
       await expect(chat).toBeVisible()
-      // Allow chat's debounced viewport observer to finish after reopening.
-      await page.waitForTimeout(350)
-      await expect.poll(() => scroller.evaluate(element => element.scrollTop)).toBeCloseTo(180, 0)
+      await expect(chat.locator('.chatMessage')).toHaveCount(0)
+      await expect(chat.locator('.liveChatMessage')).toBeVisible()
     })
 
     test('filters playlists and keeps Create reachable', async ({ app, page }) => {

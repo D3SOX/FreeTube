@@ -584,7 +584,7 @@ test.describe('history cleanup', () => {
 
     const dropdown = page.getByRole('listbox', { name: /Delete entries older than/i })
     await expect(dropdown).toBeVisible()
-    await expect(dropdown.locator('xpath=..')).toHaveClass(/prompt/)
+    await expect(page.locator('.prompt').getByRole('listbox', { name: /Delete entries older than/i })).toBeVisible()
     await dropdown.getByRole('option', { name: '1 month' }).click()
 
     await expect(combobox).toContainText('1 month')

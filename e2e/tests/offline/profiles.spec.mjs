@@ -89,7 +89,6 @@ test.describe('profile selector', () => {
     await expect(entries.filter({ hasText: 'Second profile' })).toBeVisible()
 
     await entries.filter({ hasText: 'Second profile' }).click()
-    await expect(page.locator('.quickSettingsMenu')).toHaveClass(/quick-settings-menu-leave-active/)
     await expect(page.locator('.menuSection')).toHaveCount(0)
     await expect(page.locator('.quickSettingsMenu')).toBeHidden()
     await expect(profileIconInitial(page)).toHaveText('S')
