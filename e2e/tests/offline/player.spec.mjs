@@ -1571,6 +1571,7 @@ test.describe('scroll mini player', () => {
       seed: {
         settings: {
           ...PLAYER_SEED,
+          keepPlayingOnNavigation: false,
           scrollMiniPlayerOnAllTabs: true,
           uiScale: 125
         }
@@ -1901,6 +1902,7 @@ test.describe('scroll mini player', () => {
           settings: {
             ...PLAYER_SEED,
             autoPictureInPictureTriggers: ['tab'],
+            keepPlayingOnNavigation: false,
             scrollMiniPlayerOnAllTabs: true,
             uiScale: 125
           }
@@ -2261,7 +2263,7 @@ for (const uiScale of [100, 125]) {
 }
 
 test.describe('navigation playback lifecycle', () => {
-  test.use({ seed: { settings: { ...PLAYER_SEED, keepPlayingOnNavigation: true } } })
+  test.use({ seed: { settings: PLAYER_SEED } })
 
   test('returns through history without restarting playback', async ({ app, page }) => {
     await openDemoVideo({ app, page })
@@ -2351,12 +2353,16 @@ test.describe('navigation playback lifecycle', () => {
   })
 })
 
-test('navigation stops playback with the setting disabled', async ({ app, page }) => {
-  await openDemoVideo({ app, page })
-  await page.getByRole('button', { name: 'Expand side navigation', exact: true }).click()
-  await goTo(page, 'history')
-  await expect(page).toHaveURL(/#\/history$/)
-  await expect(page.locator('.ftVideoPlayer')).toHaveCount(0)
+test.describe('navigation playback disabled', () => {
+  test.use({ seed: { settings: { ...PLAYER_SEED, keepPlayingOnNavigation: false } } })
+
+  test('stops playback when navigating away', async ({ app, page }) => {
+    await openDemoVideo({ app, page })
+    await page.getByRole('button', { name: 'Expand side navigation', exact: true }).click()
+    await goTo(page, 'history')
+    await expect(page).toHaveURL(/#\/history$/)
+    await expect(page.locator('.ftVideoPlayer')).toHaveCount(0)
+  })
 })
 
 test.describe('retained navigation player across tabs', () => {
