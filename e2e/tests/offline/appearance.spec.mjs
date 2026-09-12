@@ -346,6 +346,38 @@ test.describe('default appearance', () => {
       .toContain('Roboto')
   })
 
+  test('fits and scrolls the app font picker in a narrow phone layout', async ({ page }) => {
+    await page.setViewportSize({ width: 600, height: 320 })
+    await goToSettingsSection(page, 'theme')
+    const appFont = page.getByRole('combobox', { name: 'App font' })
+    await appFont.click()
+
+    const fontDropdown = page.locator(`#${await appFont.getAttribute('aria-controls')}`)
+    const sheet = page.locator('.mobileSheet[open]').filter({ has: fontDropdown })
+    await expect(sheet).toBeVisible()
+    await expect(fontDropdown).toHaveClass(/phonePicker/)
+    await expect(fontDropdown).toHaveAttribute('data-overlayscrollbars-viewport')
+    await expect.poll(() => fontDropdown.evaluate(menu => {
+      const bounds = menu.getBoundingClientRect()
+      return bounds.left >= 0 && bounds.right <= innerWidth &&
+        bounds.top >= 0 && bounds.bottom <= innerHeight && menu.scrollWidth <= menu.clientWidth
+    })).toBe(true)
+    await expect.poll(() => fontDropdown.evaluate(menu => menu.scrollHeight - menu.clientHeight)).toBeGreaterThan(0)
+    await fontDropdown.evaluate(menu => { menu.scrollTop = menu.scrollHeight })
+    await expect.poll(() => fontDropdown.evaluate(menu => menu.scrollTop)).toBeGreaterThan(0)
+    await expect(fontDropdown.getByRole('option').last()).toBeInViewport()
+
+    await page.setViewportSize({ width: 600, height: 480 })
+    await expect.poll(() => fontDropdown.evaluate(menu => {
+      const lastOption = menu.querySelector('.selectOption:last-of-type').getBoundingClientRect()
+      const padding = Number.parseFloat(getComputedStyle(menu).paddingBottom)
+      return Math.abs(lastOption.bottom + padding - menu.getBoundingClientRect().bottom)
+    })).toBeLessThanOrEqual(1)
+    await sheet.locator('.mobileSheetHeader').getByRole('button', { name: 'Close', exact: true }).click()
+    await expect(sheet).toHaveCount(0)
+    await expect(appFont).toHaveAttribute('aria-expanded', 'false')
+  })
+
   test('lists installed fonts and persists the selected app font', async ({ app, page }) => {
     await goToSettingsSection(page, 'theme')
 
