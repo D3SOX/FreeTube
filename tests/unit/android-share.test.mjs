@@ -88,8 +88,8 @@ test('long-press sharing captures the public URL before dismissing the menu', as
 const utils = readFileSync(new URL('../../src/renderer/helpers/utils.js', import.meta.url), 'utf8')
 const shareHandler = utils.match(/export async function shareLink\(url\) \{[\s\S]*?\n\}/)[0].replace('export ', '')
 function createShareLink(share, showError = assert.fail) {
-  return new Function('Share', 'showApiErrorToast', 'i18n', `${shareHandler}\nreturn shareLink`)(
-    { share }, showError, { global: { t: key => key } }
+  return new Function('process', 'Share', 'showApiErrorToast', 'i18n', `${shareHandler}\nreturn shareLink`)(
+    { env: { IS_CAPACITOR: true } }, { share }, showError, { global: { t: key => key } }
   )
 }
 

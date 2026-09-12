@@ -21,6 +21,7 @@ export function createAndroidNativeScreen({ element, container, getController, g
   const inlineOwner = { clearPageClip }
   let transitionSequence = 0
   let transitioning = false
+  let miniControls = []
   let pageScrolling = false
   let gestureActive = false
   let appChromeElements = []
@@ -250,6 +251,22 @@ export function createAndroidNativeScreen({ element, container, getController, g
         ? { x: bounds.x, y: 0, width: bounds.width, height: bounds.y + bounds.height }
         : { x: bounds.x, y: bounds.y, width: bounds.width, height: bounds.height, pageScroll: pageScroll && container.contains(menu) }
     }).filter(menu => menu.width > 0 && menu.height > 0)
+    // Button geometry stays fixed during page scrolling. Capture it only when
+    // the shared layout changes outside a scroll, preserving the fast path.
+    if (!pageScrolling || miniControls.length === 0) {
+      miniControls = container.classList.contains('scrollMiniPlayer')
+        ? [...container.querySelectorAll('.scrollMiniPlayerControls > :not(.scrollMiniPointerLayer)')]
+            .filter(control => control.checkVisibility?.({ checkOpacity: true, checkVisibilityCSS: true }) !== false)
+            .map(control => {
+              const rect = control.getBoundingClientRect()
+              const style = getComputedStyle(control)
+              const radius = style.borderTopLeftRadius.endsWith('%')
+                ? Math.min(rect.width, rect.height) * parseFloat(style.borderTopLeftRadius) / 100
+                : parseFloat(style.borderTopLeftRadius) || 0
+              return { x: rect.x, y: rect.y, width: rect.width, height: rect.height, radius }
+            })
+        : []
+    }
     const panelOpen = ['fullscreenDockLayoutOpen', 'chaptersOverlayOpen'].some(name => container.classList.contains(name))
     const layout = {
       x: bounds.x,
@@ -259,6 +276,7 @@ export function createAndroidNativeScreen({ element, container, getController, g
       viewportWidth: window.innerWidth,
       pageScroll,
       miniPlayer: container.classList.contains('scrollMiniPlayer'),
+      miniControls,
       gestureActive,
       radius: parseFloat(getComputedStyle(container).borderTopLeftRadius) || 0,
       controlsX: controlBounds.x,

@@ -35,7 +35,7 @@
 
       <div class="buttons">
         <FtButton
-          v-if="isCapacitor"
+          v-if="canShare"
           class="action"
           aria-describedby="youtubeShareImage"
           :icon="['fas', 'share-alt']"
@@ -88,7 +88,7 @@
 
         <div class="buttons">
           <FtButton
-            v-if="isCapacitor"
+            v-if="canShare"
             class="action"
             aria-describedby="invidiousShare"
             :icon="['fas', 'share-alt']"
@@ -146,7 +146,7 @@ import FtToggleSwitch from '../FtToggleSwitch/FtToggleSwitch.vue'
 import store from '../../store/index'
 
 const { t } = useI18n()
-const isCapacitor = process.env.IS_CAPACITOR
+const canShare = process.env.IS_CAPACITOR || (process.env.IS_ELECTRON && ['darwin', 'win32'].includes(process.platform))
 
 const props = defineProps({
   shareTargetType: {

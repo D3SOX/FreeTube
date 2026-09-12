@@ -81,7 +81,7 @@
 }
 
 [data-native-player-transition] > *,
-[data-native-player-scrolling] > *,
+[data-native-player-scrolling] > :not(.scrollMiniPlayerControls),
 [data-native-player-gesture] > * {
   visibility: hidden !important;
 }

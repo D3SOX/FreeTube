@@ -269,6 +269,9 @@ importers:
       mini-css-extract-plugin:
         specifier: ^2.10.2
         version: 2.10.2(webpack@5.110.3)
+      node-gyp:
+        specifier: ^12.4.0
+        version: 12.4.0
       postcss:
         specifier: ^8.5.26
         version: 8.5.26

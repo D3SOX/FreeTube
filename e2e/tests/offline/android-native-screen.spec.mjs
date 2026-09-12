@@ -422,7 +422,7 @@ for (const uiScale of [100, 125]) {
       const result = await page.evaluate(() => {
         window.nativeScreenTest.action('scroll-start')
         const player = document.querySelector('.ftVideoPlayer')
-        const hidden = getComputedStyle(player.querySelector('.scrollMiniPlayerControls')).visibility
+        const duringScroll = getComputedStyle(player.querySelector('.scrollMiniPlayerControls')).visibility
         window.scrollBy(0, 180)
         const calls = []
         window.nativeScreenTestController.layout = async value => calls.push(value)
@@ -433,14 +433,14 @@ for (const uiScale of [100, 125]) {
         const origin = content.getBoundingClientRect()
         const context = document.createElement('canvas').getContext('2d')
         return {
-          hidden,
+          duringScroll,
           restored: getComputedStyle(player.querySelector('.scrollMiniPlayerControls')).visibility,
           occluded: context.isPointInPath(new Path2D(clip), bounds.x + bounds.width / 2 - origin.x,
             bounds.y + bounds.height / 2 - origin.y, 'evenodd'),
           refreshedBeforeHandoff: calls[0].miniPlayer && calls[1].endScroll,
         }
       })
-      expect(result).toEqual({ hidden: 'hidden', restored: 'visible', occluded: false, refreshedBeforeHandoff: true })
+      expect(result).toEqual({ duringScroll: 'visible', restored: 'visible', occluded: false, refreshedBeforeHandoff: true })
       await page.evaluate(() => window.nativeScreenTest.destroy())
     })
     test('keeps a transparent rounded video window and an opaque themed page', async ({ app, page }) => {

@@ -462,12 +462,13 @@ export async function openExternalLink(url) {
 }
 
 /**
- * Opens Android's native share picker for a public link.
+ * Opens the platform's native share picker for a public link.
  * @param {string} url the URL to share
  */
 export async function shareLink(url) {
   try {
-    await Share.share({ url })
+    if (process.env.IS_ELECTRON) await window.ftElectron.shareLink(url)
+    else await Share.share({ url })
   } catch (error) {
     // The Android plugin rejects when the user dismisses the picker.
     if (error.message === 'Share canceled') return

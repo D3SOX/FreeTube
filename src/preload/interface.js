@@ -45,6 +45,7 @@ ipcRenderer.on(IpcChannels.VIDEO_METADATA_CACHE_CLEARED, () => {
 })
 
 export default {
+  shareLink: url => ipcRenderer.invoke(IpcChannels.SHARE_LINK, url),
   startupSplashReady: () => ipcRenderer.send(IpcChannels.STARTUP_SPLASH_READY),
   startupAppearance: {
     background: process.argv.find(argument => argument.startsWith('--startup-background='))?.slice('--startup-background='.length),

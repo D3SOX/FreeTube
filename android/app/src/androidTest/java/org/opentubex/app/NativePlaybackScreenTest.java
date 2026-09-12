@@ -21,10 +21,22 @@ import org.junit.runner.RunWith;
 public class NativePlaybackScreenTest {
     private static class TouchWebView extends WebView {
         int downs;
+        boolean paintMiniControl;
+        int overlayCaptures;
+        @Override public void draw(android.graphics.Canvas canvas) {
+            super.draw(canvas);
+            if (!paintMiniControl) return;
+            if (canvas.getWidth() < getWidth()) overlayCaptures++;
+            android.graphics.Paint paint = new android.graphics.Paint();
+            paint.setColor(android.graphics.Color.BLUE);
+            float scale = getWidth() / 1000f;
+            canvas.drawRect(300 * scale + getScrollX(), 250 * scale + getScrollY(), 350 * scale + getScrollX(), 300 * scale + getScrollY(), paint);
+        }
         final java.util.List<Integer> actions = new java.util.ArrayList<>();
         VisualStateCallback heldVisualState;
         long heldVisualStateId;
         boolean holdVisualState;
+        java.util.concurrent.CountDownLatch pageLoaded;
         TouchWebView(android.content.Context context) { super(context); }
         @Override public void postVisualStateCallback(long id, VisualStateCallback callback) {
             if (!holdVisualState) { super.postVisualStateCallback(id, callback); return; }
@@ -72,6 +84,10 @@ public class NativePlaybackScreenTest {
                     checks[0].run(screen, controls, web, engine);
                 });
                 for (int index = 1; index < checks.length; index++) {
+                    if (webRef[0].pageLoaded != null) {
+                        try { assertTrue("The scrolling document must load", webRef[0].pageLoaded.await(5, java.util.concurrent.TimeUnit.SECONDS)); }
+                        catch (InterruptedException error) { Thread.currentThread().interrupt(); throw new AssertionError(error); }
+                    }
                     InstrumentationRegistry.getInstrumentation().waitForIdleSync();
                     java.util.concurrent.CountDownLatch frame = new java.util.concurrent.CountDownLatch(1);
                     scenario.onActivity(activity -> screenRef[0].postOnAnimation(() ->
@@ -192,6 +208,99 @@ public class NativePlaybackScreenTest {
             assertEquals("Page content cannot occlude the moving native frame", android.graphics.Color.MAGENTA, image.getPixel(200, 150));
             assertNotEquals("Video cannot paint over the app header or status bar", android.graphics.Color.MAGENTA, image.getPixel(200, 40));
             image.recycle();
+        });
+    }
+
+    @Test public void pageScrollRetainsSharedMiniControlsWithoutCapturingEveryFrame() {
+        withScreen((screen, controls, web, engine) -> {
+            screen.setFullscreen(false);
+            screen.setInlineVisible(true);
+            screen.setControlsVisible(false);
+            screen.layoutVideo(200, 200, 400, 225, 1000);
+            screen.setMiniPlayer(true, 12);
+            ViewGroup frame = (ViewGroup) screen.getChildAt(0);
+            frame.setBackgroundColor(android.graphics.Color.MAGENTA);
+            frame.getChildAt(0).setVisibility(View.INVISIBLE);
+            web.setBackgroundColor(android.graphics.Color.RED);
+            web.paintMiniControl = true;
+            web.scrollTo(0, 120);
+            android.graphics.Path clip = new android.graphics.Path();
+            float scale = screen.getWidth() / 1000f;
+            clip.addRect(300 * scale, 250 * scale, 350 * scale, 300 * scale, android.graphics.Path.Direction.CW);
+            screen.setMiniControlClip(clip);
+            swipePage(screen);
+            assertEquals("Only the small controls overlay is captured at touch start", 1, web.overlayCaptures);
+        }, (screen, controls, web, engine) -> {
+            // Once scrolling starts Chromium's page may cover the old cutout.
+            web.paintMiniControl = false;
+            web.setBackgroundColor(android.graphics.Color.RED);
+            android.graphics.Bitmap image = android.graphics.Bitmap.createBitmap(screen.getWidth(), screen.getHeight(), android.graphics.Bitmap.Config.ARGB_8888);
+            for (int frame = 0; frame < 4; frame++) screen.draw(new android.graphics.Canvas(image));
+            float scale = screen.getWidth() / 1000f;
+            assertEquals("The shared control remains above the raised live video", android.graphics.Color.BLUE,
+                image.getPixel((int) (325 * scale), (int) (275 * scale)));
+            assertEquals("The live video remains visible around the control", android.graphics.Color.MAGENTA,
+                image.getPixel((int) (400 * scale), (int) (350 * scale)));
+            assertEquals("Scrolling reuses the overlay without further WebView capture", 1, web.overlayCaptures);
+            image.recycle();
+        });
+    }
+
+    @Test public void scrollCreatingMiniPlayerCapturesControlsAfterTheirCommittedFrame() {
+        assertScrollWithoutMiniPlayerTouchCapturesControls(true);
+    }
+
+    @Test public void wheelScrollCapturesControlsAfterTheirCommittedFrame() {
+        assertScrollWithoutMiniPlayerTouchCapturesControls(false);
+    }
+
+    private void assertScrollWithoutMiniPlayerTouchCapturesControls(boolean startInline) {
+        withScreen((screen, controls, web, engine) -> {
+            web.pageLoaded = new java.util.concurrent.CountDownLatch(1);
+            web.setWebViewClient(new android.webkit.WebViewClient() {
+                @Override public void onPageFinished(WebView view, String url) { web.pageLoaded.countDown(); }
+            });
+            web.loadData("<html><body style='height:10000px'></body></html>", "text/html", "UTF-8");
+        }, (screen, controls, web, engine) -> {
+            screen.setFullscreen(false);
+            screen.setInlineVisible(true);
+            screen.setControlsVisible(false);
+            screen.layoutVideo(200, 200, 400, 225, 1000);
+            screen.setMiniPlayer(!startInline, 12);
+            web.paintMiniControl = true;
+            web.holdVisualState = true;
+            if (startInline) {
+                MotionEvent down = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 100, 500, 0);
+                screen.dispatchTouchEvent(down);
+                down.recycle();
+                screen.setMiniPlayer(true, 12);
+            }
+            android.graphics.Path clip = new android.graphics.Path();
+            float scale = screen.getWidth() / 1000f;
+            clip.addRect(300 * scale, 250 * scale, 350 * scale, 300 * scale, android.graphics.Path.Direction.CW);
+            screen.setMiniControlClip(clip);
+            web.scrollTo(0, 120);
+        }, (screen, controls, web, engine) -> {
+            assertTrue("The WebView must actually scroll", web.getScrollY() > 0);
+            assertEquals("Capture waits for the committed buttons", 0, web.overlayCaptures);
+            assertNotNull("A scroll without a mini-player touch requests a frame", web.heldVisualState);
+            web.heldVisualState.onComplete(web.heldVisualStateId);
+            android.graphics.Bitmap image = android.graphics.Bitmap.createBitmap(screen.getWidth(), screen.getHeight(), android.graphics.Bitmap.Config.ARGB_8888);
+            screen.draw(new android.graphics.Canvas(image));
+            image.recycle();
+        }, (screen, controls, web, engine) -> {
+            // afterWebFrame captures on the vsync after the committed WebView
+            // draw. withScreen yields to that frame before inspecting pixels.
+            android.graphics.Bitmap image = android.graphics.Bitmap.createBitmap(screen.getWidth(), screen.getHeight(), android.graphics.Bitmap.Config.ARGB_8888);
+            screen.draw(new android.graphics.Canvas(image));
+            float scale = screen.getWidth() / 1000f;
+            assertEquals("Exactly one capture is taken", 1, web.overlayCaptures);
+            assertEquals("Controls are drawn above the raised video", android.graphics.Color.BLUE,
+                image.getPixel((int) (325 * scale), (int) (275 * scale)));
+            web.scrollTo(0, 160);
+            image.recycle();
+        }, (screen, controls, web, engine) -> {
+            assertEquals("Further scrolling reuses the capture", 1, web.overlayCaptures);
         });
     }
 

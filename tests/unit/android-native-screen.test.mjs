@@ -378,3 +378,45 @@ for (const fullscreen of [false, true]) {
   })
 
 }
+
+test('mini-player button shapes retain fractional bounds without remeasuring during scrolling', async () => {
+  const f = await fixture({ fullscreen: false })
+  let reads = 0
+  const button = {
+    checkVisibility: () => true,
+    getBoundingClientRect() { reads++; return { x: 210.25, y: 320.5, width: 28, height: 28 } }
+  }
+  f.container.classList.contains = name => name === 'scrollMiniPlayer'
+  f.container.querySelectorAll = selector => selector.startsWith('.scrollMiniPlayerControls') ? [button, { checkVisibility: () => false }] : []
+  f.observers[0].callback([])
+  await f.flush()
+  assert.deepEqual(JSON.parse(JSON.stringify(f.layouts.at(-1).miniControls)), [{ x: 210.25, y: 320.5, width: 28, height: 28, radius: 12 }])
+  reads = 0
+  f.screen.action('scroll-start')
+  f.observers[0].callback([])
+  await f.flush()
+  assert.equal(reads, 0)
+  assert.equal(f.layouts.at(-1).miniControls.length, 1)
+  f.screen.action('scroll-end')
+  assert.ok(reads > 0)
+})
+
+test('mini-player activated during scrolling supplies its first button geometry once', async () => {
+  const f = await fixture({ fullscreen: false })
+  f.screen.action('scroll-start')
+  let reads = 0
+  const button = {
+    checkVisibility: () => true,
+    getBoundingClientRect() { reads++; return { x: 210, y: 320, width: 28, height: 28 } }
+  }
+  f.container.classList.contains = name => name === 'scrollMiniPlayer'
+  f.container.querySelectorAll = selector => selector.startsWith('.scrollMiniPlayerControls') ? [button] : []
+  f.observers[0].callback([])
+  await f.flush()
+  assert.equal(f.layouts.at(-1).miniControls.length, 1)
+  assert.equal(reads, 1)
+  f.observers[0].callback([])
+  await f.flush()
+  assert.equal(reads, 1)
+  f.screen.destroy()
+})

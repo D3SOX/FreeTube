@@ -1,5 +1,6 @@
 import { Arch, build, Platform } from 'electron-builder'
 import config from './ebuilder.config.mjs'
+import { prepareWindowsShare } from './windowsShare.mjs'
 import { prepareWindowsInterposer } from './windowsInterposer.mjs'
 import { withWindowsPortable } from './windowsPortable.mjs'
 
@@ -20,6 +21,7 @@ if (platform === 'darwin') {
     config
   }]
 } else if (platform === 'win32') {
+  await prepareWindowsShare(args[2] === 'arm64' ? 'arm64' : 'x64')
   let arch = Arch.x64
 
   if (args[2] === 'arm64') {

@@ -57,6 +57,12 @@ final class NativePlaybackScreen extends FrameLayout implements TextureView.Surf
     private boolean miniPlayer;
     private float miniRadius;
     private boolean scrollingPage;
+    private android.graphics.Bitmap scrollControls;
+    private boolean scrollCapturePending;
+    private long scrollCaptureSequence;
+    private android.graphics.Path miniControlClip = new android.graphics.Path();
+
+    private final android.graphics.Paint scrollControlsPaint = new android.graphics.Paint(android.graphics.Paint.FILTER_BITMAP_FLAG);
     private boolean gestureActive;
     private boolean scrollEndRequested;
     private boolean pageTouchDown;
@@ -260,6 +266,7 @@ final class NativePlaybackScreen extends FrameLayout implements TextureView.Surf
             postOnAnimation(() -> {
                 if (transitionSequence != sequence) return;
                 transitioning = false;
+                clearScrollControls();
                 webOverlayHost.bringToFront();
                 controls.bringToFront();
                 refreshVideoLayout();
@@ -283,6 +290,9 @@ final class NativePlaybackScreen extends FrameLayout implements TextureView.Surf
             canvas.clipPath(clip);
             canvas.drawColor(Color.BLACK);
             boolean drawn = super.drawChild(canvas, child, drawingTime);
+            if (scrollControls != null && !gestureActive && videoAnimation == null) {
+                canvas.drawBitmap(scrollControls, null, transitionBounds, scrollControlsPaint);
+            }
             canvas.restoreToCount(save);
             return drawn;
         }
@@ -386,7 +396,7 @@ final class NativePlaybackScreen extends FrameLayout implements TextureView.Surf
     void setMiniPlayer(boolean enabled, float radius) {
         miniPlayer = enabled;
         miniRadius = radius;
-        if (!enabled) setGestureActive(false);
+        if (!enabled) { setGestureActive(false); clearScrollControls(); }
         if (!enabled && scrollingPage) {
             scrollingPage = false;
             pageTouchDown = false;
@@ -400,6 +410,7 @@ final class NativePlaybackScreen extends FrameLayout implements TextureView.Surf
         enabled = enabled && miniPlayer && !fullscreen && !pictureInPicture && inlineVisible && videoBounds != null;
         if (gestureActive == enabled) return;
         gestureActive = enabled;
+        if (enabled) clearScrollControls();
         if (!enabled) {
             finishVideoTransition();
             return;
@@ -428,6 +439,59 @@ final class NativePlaybackScreen extends FrameLayout implements TextureView.Surf
         }
     }
 
+    void setMiniControlClip(android.graphics.Path clip) {
+        miniControlClip = clip;
+        captureMissingScrollControls();
+    }
+
+    private void captureMissingScrollControls() {
+        if (!scrollingPage || scrollControls != null || scrollCapturePending || miniControlClip.isEmpty()) return;
+        scrollCapturePending = true;
+        long sequence = scrollCaptureSequence;
+        // A swipe can create the mini-player after touch-down; wheel scrolling
+        // has no touch-down at all. Wait for its buttons to reach Chromium's
+        // committed frame before taking the same single capture.
+        afterWebFrame(() -> {
+            if (sequence != scrollCaptureSequence) return;
+            scrollCapturePending = false;
+            if (scrollingPage && scrollControls == null) {
+                captureScrollControls();
+                invalidate();
+            }
+        });
+    }
+
+    private void clearScrollControls() {
+        scrollCaptureSequence++;
+        scrollCapturePending = false;
+        if (scrollControls == null) return;
+        scrollControls.recycle();
+        scrollControls = null;
+    }
+
+    private void captureScrollControls() {
+        if ((scrollingPage && scrollControls != null) || miniControlClip.isEmpty() || (transitioning && !scrollingPage) || videoAnimation != null || !miniPlayer || fullscreen || pictureInPicture || !inlineVisible || videoBounds == null || webOverlay == null) return;
+        clearScrollControls();
+        double scale = getWidth() / videoBounds[4];
+        int width = (int) Math.ceil(videoBounds[2] * scale);
+        int height = (int) Math.ceil(videoBounds[3] * scale);
+        if (width <= 0 || height <= 0 || width > getWidth() || height > getHeight()) return;
+        // Clip the WebView capture to the buttons: software drawing can flatten
+        // transparent page backgrounds. One small bitmap per touch keeps them visible while
+        // native scrolling raises the video above Chromium's moving page.
+        scrollControls = android.graphics.Bitmap.createBitmap(width, height, android.graphics.Bitmap.Config.ARGB_8888);
+        android.graphics.Canvas canvas = new android.graphics.Canvas(scrollControls);
+        int[] webOrigin = new int[2];
+        int[] screenOrigin = new int[2];
+        webOverlay.getLocationOnScreen(webOrigin);
+        getLocationOnScreen(screenOrigin);
+        canvas.translate(webOrigin[0] - screenOrigin[0] - (float) (videoBounds[0] * scale),
+            webOrigin[1] - screenOrigin[1] - (float) (videoBounds[1] * scale));
+        canvas.clipPath(miniControlClip);
+        canvas.translate(-webOverlay.getScrollX(), -webOverlay.getScrollY());
+        webOverlay.draw(canvas);
+    }
+
     private void beginPageScroll() {
         if (!miniPlayer || fullscreen || pictureInPicture || !inlineVisible || videoBounds == null) return;
         lastPageScroll = android.os.SystemClock.uptimeMillis();
@@ -439,6 +503,7 @@ final class NativePlaybackScreen extends FrameLayout implements TextureView.Surf
         if (notify) action.accept("scroll-start");
         if (scrollingPage) return;
         scrollingPage = true;
+        captureMissingScrollControls();
         transitioning = true;
         if (videoAnimation == null) updateScrollBounds();
         videoFrame.bringToFront();
@@ -578,6 +643,7 @@ final class NativePlaybackScreen extends FrameLayout implements TextureView.Surf
 
     void setPictureInPicture(boolean enabled) {
         pictureInPicture = enabled;
+        if (enabled) clearScrollControls();
         if (enabled) setGestureActive(false);
         updatePresentation();
         if (webOverlayHost != null) webOverlayHost.setAlpha(enabled ? 0 : 1);
@@ -605,6 +671,7 @@ final class NativePlaybackScreen extends FrameLayout implements TextureView.Surf
                 event.getY() <= (videoBounds[1] + videoBounds[3]) * scale;
             pageTouchDown = miniPlayer && !overVideo && !isOverMenu(event.getX(), event.getY());
             pageTouchY = event.getY();
+            if (pageTouchDown) captureScrollControls();
         } else if (event.getActionMasked() == MotionEvent.ACTION_MOVE && pageTouchDown &&
             Math.abs(event.getY() - pageTouchY) > android.view.ViewConfiguration.get(getContext()).getScaledTouchSlop()) {
             // Raise before forwarding the first scroll movement to Chromium.
@@ -689,6 +756,7 @@ final class NativePlaybackScreen extends FrameLayout implements TextureView.Surf
     }
 
     void close() {
+        clearScrollControls();
         for (Runnable callback : new java.util.ArrayList<>(pendingWebFrames)) callback.run();
         pendingWebFrames.clear();
         afterWebDraw.clear();
