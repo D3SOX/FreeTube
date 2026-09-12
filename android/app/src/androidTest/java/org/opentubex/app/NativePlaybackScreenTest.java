@@ -21,22 +21,11 @@ import org.junit.runner.RunWith;
 public class NativePlaybackScreenTest {
     private static class TouchWebView extends WebView {
         int downs;
-        boolean paintMiniControl;
-        int overlayCaptures;
-        @Override public void draw(android.graphics.Canvas canvas) {
-            super.draw(canvas);
-            if (!paintMiniControl) return;
-            if (canvas.getWidth() < getWidth()) overlayCaptures++;
-            android.graphics.Paint paint = new android.graphics.Paint();
-            paint.setColor(android.graphics.Color.BLUE);
-            float scale = getWidth() / 1000f;
-            canvas.drawRect(300 * scale + getScrollX(), 250 * scale + getScrollY(), 350 * scale + getScrollX(), 300 * scale + getScrollY(), paint);
-        }
+        java.util.concurrent.CountDownLatch pageLoaded;
         final java.util.List<Integer> actions = new java.util.ArrayList<>();
         VisualStateCallback heldVisualState;
         long heldVisualStateId;
         boolean holdVisualState;
-        java.util.concurrent.CountDownLatch pageLoaded;
         TouchWebView(android.content.Context context) { super(context); }
         @Override public void postVisualStateCallback(long id, VisualStateCallback callback) {
             if (!holdVisualState) { super.postVisualStateCallback(id, callback); return; }
@@ -211,7 +200,30 @@ public class NativePlaybackScreenTest {
         });
     }
 
-    @Test public void pageScrollRetainsSharedMiniControlsWithoutCapturingEveryFrame() {
+    private String miniControlsPng() {
+        android.graphics.Bitmap image = android.graphics.Bitmap.createBitmap(400, 225, android.graphics.Bitmap.Config.ARGB_8888);
+        android.graphics.Canvas canvas = new android.graphics.Canvas(image);
+        android.graphics.Paint paint = new android.graphics.Paint();
+        paint.setColor(android.graphics.Color.BLUE);
+        canvas.drawRect(100, 50, 150, 100, paint);
+        java.io.ByteArrayOutputStream output = new java.io.ByteArrayOutputStream();
+        image.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, output);
+        image.recycle();
+        return "data:image/png;base64," + android.util.Base64.encodeToString(output.toByteArray(), android.util.Base64.NO_WRAP);
+    }
+
+    private void assertMiniControlsAboveVideo(NativePlaybackScreen screen) {
+        android.graphics.Bitmap image = android.graphics.Bitmap.createBitmap(screen.getWidth(), screen.getHeight(), android.graphics.Bitmap.Config.ARGB_8888);
+        screen.draw(new android.graphics.Canvas(image));
+        float scale = screen.getWidth() / 1000f;
+        assertEquals("The control remains above the raised live video", android.graphics.Color.BLUE,
+            image.getPixel((int) (325 * scale), (int) (275 * scale)));
+        assertEquals("Transparent control surroundings preserve the live video", android.graphics.Color.MAGENTA,
+            image.getPixel((int) (400 * scale), (int) (350 * scale)));
+        image.recycle();
+    }
+
+    @Test public void pageScrollRetainsTransparentMiniControls() {
         withScreen((screen, controls, web, engine) -> {
             screen.setFullscreen(false);
             screen.setInlineVisible(true);
@@ -222,86 +234,52 @@ public class NativePlaybackScreenTest {
             frame.setBackgroundColor(android.graphics.Color.MAGENTA);
             frame.getChildAt(0).setVisibility(View.INVISIBLE);
             web.setBackgroundColor(android.graphics.Color.RED);
-            web.paintMiniControl = true;
-            web.scrollTo(0, 120);
-            android.graphics.Path clip = new android.graphics.Path();
-            float scale = screen.getWidth() / 1000f;
-            clip.addRect(300 * scale, 250 * scale, 350 * scale, 300 * scale, android.graphics.Path.Direction.CW);
-            screen.setMiniControlClip(clip);
+            screen.setMiniControlsImage(miniControlsPng());
             swipePage(screen);
-            assertEquals("Only the small controls overlay is captured at touch start", 1, web.overlayCaptures);
         }, (screen, controls, web, engine) -> {
-            // Once scrolling starts Chromium's page may cover the old cutout.
-            web.paintMiniControl = false;
-            web.setBackgroundColor(android.graphics.Color.RED);
-            android.graphics.Bitmap image = android.graphics.Bitmap.createBitmap(screen.getWidth(), screen.getHeight(), android.graphics.Bitmap.Config.ARGB_8888);
-            for (int frame = 0; frame < 4; frame++) screen.draw(new android.graphics.Canvas(image));
-            float scale = screen.getWidth() / 1000f;
-            assertEquals("The shared control remains above the raised live video", android.graphics.Color.BLUE,
-                image.getPixel((int) (325 * scale), (int) (275 * scale)));
-            assertEquals("The live video remains visible around the control", android.graphics.Color.MAGENTA,
-                image.getPixel((int) (400 * scale), (int) (350 * scale)));
-            assertEquals("Scrolling reuses the overlay without further WebView capture", 1, web.overlayCaptures);
-            image.recycle();
+            for (int frame = 0; frame < 4; frame++) assertMiniControlsAboveVideo(screen);
+            screen.setMiniControlsImage("data:image/png;base64,invalid");
+            assertMiniControlsAboveVideo(screen);
         });
     }
 
-    @Test public void scrollCreatingMiniPlayerCapturesControlsAfterTheirCommittedFrame() {
-        assertScrollWithoutMiniPlayerTouchCapturesControls(true);
+    @Test public void miniControlsCanArriveAfterScrollingCreatesTheMiniPlayer() {
+        assertControlsArriveDuringScroll(true);
     }
 
-    @Test public void wheelScrollCapturesControlsAfterTheirCommittedFrame() {
-        assertScrollWithoutMiniPlayerTouchCapturesControls(false);
+    @Test public void miniControlsCanArriveDuringWheelScrolling() {
+        assertControlsArriveDuringScroll(false);
     }
 
-    private void assertScrollWithoutMiniPlayerTouchCapturesControls(boolean startInline) {
+    private void assertControlsArriveDuringScroll(boolean startInline) {
         withScreen((screen, controls, web, engine) -> {
-            web.pageLoaded = new java.util.concurrent.CountDownLatch(1);
-            web.setWebViewClient(new android.webkit.WebViewClient() {
-                @Override public void onPageFinished(WebView view, String url) { web.pageLoaded.countDown(); }
-            });
-            web.loadData("<html><body style='height:10000px'></body></html>", "text/html", "UTF-8");
-        }, (screen, controls, web, engine) -> {
             screen.setFullscreen(false);
             screen.setInlineVisible(true);
             screen.setControlsVisible(false);
             screen.layoutVideo(200, 200, 400, 225, 1000);
             screen.setMiniPlayer(!startInline, 12);
-            web.paintMiniControl = true;
-            web.holdVisualState = true;
+            ViewGroup frame = (ViewGroup) screen.getChildAt(0);
+            frame.setBackgroundColor(android.graphics.Color.MAGENTA);
+            frame.getChildAt(0).setVisibility(View.INVISIBLE);
+            web.pageLoaded = new java.util.concurrent.CountDownLatch(1);
+            web.setWebViewClient(new android.webkit.WebViewClient() {
+                @Override public void onPageFinished(WebView view, String url) { web.pageLoaded.countDown(); }
+            });
+            web.loadData("<html><body style='height:10000px;background:red'></body></html>", "text/html", "UTF-8");
+        }, (screen, controls, web, engine) -> {
             if (startInline) {
                 MotionEvent down = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 100, 500, 0);
                 screen.dispatchTouchEvent(down);
                 down.recycle();
                 screen.setMiniPlayer(true, 12);
             }
-            android.graphics.Path clip = new android.graphics.Path();
-            float scale = screen.getWidth() / 1000f;
-            clip.addRect(300 * scale, 250 * scale, 350 * scale, 300 * scale, android.graphics.Path.Direction.CW);
-            screen.setMiniControlClip(clip);
             web.scrollTo(0, 120);
         }, (screen, controls, web, engine) -> {
             assertTrue("The WebView must actually scroll", web.getScrollY() > 0);
-            assertEquals("Capture waits for the committed buttons", 0, web.overlayCaptures);
-            assertNotNull("A scroll without a mini-player touch requests a frame", web.heldVisualState);
-            web.heldVisualState.onComplete(web.heldVisualStateId);
-            android.graphics.Bitmap image = android.graphics.Bitmap.createBitmap(screen.getWidth(), screen.getHeight(), android.graphics.Bitmap.Config.ARGB_8888);
-            screen.draw(new android.graphics.Canvas(image));
-            image.recycle();
-        }, (screen, controls, web, engine) -> {
-            // afterWebFrame captures on the vsync after the committed WebView
-            // draw. withScreen yields to that frame before inspecting pixels.
-            android.graphics.Bitmap image = android.graphics.Bitmap.createBitmap(screen.getWidth(), screen.getHeight(), android.graphics.Bitmap.Config.ARGB_8888);
-            screen.draw(new android.graphics.Canvas(image));
-            float scale = screen.getWidth() / 1000f;
-            assertEquals("Exactly one capture is taken", 1, web.overlayCaptures);
-            assertEquals("Controls are drawn above the raised video", android.graphics.Color.BLUE,
-                image.getPixel((int) (325 * scale), (int) (275 * scale)));
+            screen.setMiniControlsImage(miniControlsPng());
+            assertMiniControlsAboveVideo(screen);
             web.scrollTo(0, 160);
-            image.recycle();
-        }, (screen, controls, web, engine) -> {
-            assertEquals("Further scrolling reuses the capture", 1, web.overlayCaptures);
-        });
+        }, (screen, controls, web, engine) -> assertMiniControlsAboveVideo(screen));
     }
 
     @Test public void pageScrollCannotCoverAStationaryMiniPlayer() {

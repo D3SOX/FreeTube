@@ -58,7 +58,9 @@ static napi_value Share(napi_env env, napi_callback_info info) {
             data.SetText(uri.AbsoluteUri());
         });
         requests.insert_or_assign(window, std::move(request));
-        check_hresult(interop->ShowShareUIForWindow(window));
+        HRESULT result = interop->ShowShareUIForWindow(window);
+        if (FAILED(result)) requests.erase(window);
+        check_hresult(result);
     } catch (hresult_error const& error) {
         napi_throw_error(env, nullptr, to_string(error.message()).c_str());
     } catch (std::exception const& error) {

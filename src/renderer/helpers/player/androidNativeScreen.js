@@ -1,4 +1,5 @@
 import { overrideShakaMethods } from './overrideShakaMethods'
+import { createMiniControlsSnapshot } from './miniControlsSnapshot'
 
 let inlineScreenOwner = null
 let inlineBackdrop = null
@@ -21,7 +22,9 @@ export function createAndroidNativeScreen({ element, container, getController, g
   const inlineOwner = { clearPageClip }
   let transitionSequence = 0
   let transitioning = false
-  let miniControls = []
+  const miniSnapshot = createMiniControlsSnapshot(image => {
+    getController()?.layout({ miniControlsImage: image }).catch(onError)
+  }, onError)
   let pageScrolling = false
   let gestureActive = false
   let appChromeElements = []
@@ -251,22 +254,10 @@ export function createAndroidNativeScreen({ element, container, getController, g
         ? { x: bounds.x, y: 0, width: bounds.width, height: bounds.y + bounds.height }
         : { x: bounds.x, y: bounds.y, width: bounds.width, height: bounds.height, pageScroll: pageScroll && container.contains(menu) }
     }).filter(menu => menu.width > 0 && menu.height > 0)
-    // Button geometry stays fixed during page scrolling. Capture it only when
-    // the shared layout changes outside a scroll, preserving the fast path.
-    if (!pageScrolling || miniControls.length === 0) {
-      miniControls = container.classList.contains('scrollMiniPlayer')
-        ? [...container.querySelectorAll('.scrollMiniPlayerControls > :not(.scrollMiniPointerLayer)')]
-            .filter(control => control.checkVisibility?.({ checkOpacity: true, checkVisibilityCSS: true }) !== false)
-            .map(control => {
-              const rect = control.getBoundingClientRect()
-              const style = getComputedStyle(control)
-              const radius = style.borderTopLeftRadius.endsWith('%')
-                ? Math.min(rect.width, rect.height) * parseFloat(style.borderTopLeftRadius) / 100
-                : parseFloat(style.borderTopLeftRadius) || 0
-              return { x: rect.x, y: rect.y, width: rect.width, height: rect.height, radius }
-            })
-        : []
-    }
+    miniSnapshot.update(container.classList.contains('scrollMiniPlayer')
+      ? container.querySelector('.scrollMiniPlayerControls')
+      : null,
+    bounds.width, bounds.height, pageScrolling || gestureActive)
     const panelOpen = ['fullscreenDockLayoutOpen', 'chaptersOverlayOpen'].some(name => container.classList.contains(name))
     const layout = {
       x: bounds.x,
@@ -276,7 +267,6 @@ export function createAndroidNativeScreen({ element, container, getController, g
       viewportWidth: window.innerWidth,
       pageScroll,
       miniPlayer: container.classList.contains('scrollMiniPlayer'),
-      miniControls,
       gestureActive,
       radius: parseFloat(getComputedStyle(container).borderTopLeftRadius) || 0,
       controlsX: controlBounds.x,
@@ -308,8 +298,19 @@ export function createAndroidNativeScreen({ element, container, getController, g
   function scheduleLayout() {
     if ((open || attached) && frame === null) frame = requestAnimationFrame(syncLayout)
   }
+  function handleMiniControlTransition(event) {
+    if (!container.querySelector('.scrollMiniPlayerControls')?.contains(event.target)) return
+    miniSnapshot.invalidate(true)
+    scheduleLayout()
+  }
+  container.addEventListener('transitionend', handleMiniControlTransition)
+  container.addEventListener('transitioncancel', handleMiniControlTransition)
   const resize = new ResizeObserver(scheduleLayout)
   const mutations = new MutationObserver(records => {
+    const mini = container.querySelector('.scrollMiniPlayerControls')
+    if (records.some(record => mini?.contains(record.target) || record.target.contains?.(mini))) {
+      miniSnapshot.invalidate(records.some(record => mini?.contains(record.target)))
+    }
     if (records.some(record => record.type === 'childList'
       ? [...record.addedNodes, ...record.removedNodes].some(node => node.nodeType === 1)
       : ['role', 'aria-modal', 'open'].includes(record.attributeName) ||
@@ -413,6 +414,7 @@ export function createAndroidNativeScreen({ element, container, getController, g
         container.toggleAttribute('data-native-player-scrolling', true)
       } else if (action === 'scroll-end') {
         pageScrolling = false
+        miniSnapshot.invalidate()
         container.toggleAttribute('data-native-player-scrolling', false)
         lastLayout = ''
         syncLayout()
@@ -457,6 +459,7 @@ export function createAndroidNativeScreen({ element, container, getController, g
       setOpen(false)
     },
     destroy() {
+      miniSnapshot.destroy()
       attachmentSequence++
       endGesture()
       endTransition()
@@ -476,6 +479,8 @@ export function createAndroidNativeScreen({ element, container, getController, g
       container.removeEventListener('click', handleFullscreenClick, true)
       container.removeEventListener('native-player-transition', handleTransition)
       container.removeEventListener('native-player-gesture', handleGesture)
+      container.removeEventListener('transitionend', handleMiniControlTransition)
+      container.removeEventListener('transitioncancel', handleMiniControlTransition)
       if (frame !== null) cancelAnimationFrame(frame)
       restoreControls?.()
     },

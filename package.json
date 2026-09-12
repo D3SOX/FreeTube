@@ -46,7 +46,7 @@
     "lint-style-fix": "stylelint --fix \"src/**/*.{css,scss}\"",
     "lint-yml": "eslint --config eslint.config.mjs \"**/*.yml\" \"**/*.yaml\"",
     "pack": "pnpm run \"/^pack:(main|renderer|preload|botGuardScript)$/\" && node _scripts/injectAllowedPaths.mjs",
-    "pack:main": "webpack --mode=production --config-node-env=production --config _scripts/webpack.main.config.js && node _scripts/windowsShare.mjs",
+    "pack:main": "webpack --mode=production --config-node-env=production --config _scripts/webpack.main.config.js",
     "pack:renderer": "webpack --mode=production --config-node-env=production --config _scripts/webpack.renderer.config.js",
     "pack:preload": "webpack --mode=production --config-node-env=production --config _scripts/webpack.preload.config.js",
     "pack:web": "webpack --mode=production --config-node-env=production --config _scripts/webpack.web.config.js",

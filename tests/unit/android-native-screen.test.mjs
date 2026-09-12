@@ -8,6 +8,9 @@ const source = (await readFile(new URL('../../src/renderer/helpers/player/androi
   .replace(/^import .*\n/gm, '').replace('export function ', 'function ')
 
 async function fixture({ fullscreen = true, chrome = [], dialogs = [], deferTransitions = false, deferFullscreen = false } = {}) {
+  const snapshots = []
+  const snapshotInvalidations = []
+  let publishSnapshot
   const frames = new Map()
   const layouts = []
   const presentations = []
@@ -53,6 +56,10 @@ async function fixture({ fullscreen = true, chrome = [], dialogs = [], deferTran
   const create = vm.runInNewContext(`${source}\ncreateAndroidNativeScreen`, {
     document, window, Event,
     ResizeObserver: Observer, MutationObserver: Observer, overrideShakaMethods,
+    createMiniControlsSnapshot(onChange) {
+      publishSnapshot = onChange
+      return { update(...args) { snapshots.push(args) }, invalidate(value) { snapshotInvalidations.push(value) }, destroy() {} }
+    },
     getComputedStyle: () => ({ borderTopLeftRadius: '12px' }),
     requestAnimationFrame(callback) { frames.set(++id, callback); return id },
     cancelAnimationFrame(id) { frames.delete(id) },
@@ -73,7 +80,7 @@ async function fixture({ fullscreen = true, chrome = [], dialogs = [], deferTran
   if (fullscreen) await screen.show()
   else await screen.attach()
   await flush()
-  return { screen, container, layouts, presentations, completeTransitions, completeFullscreen, fullscreenEvents, bounds, observers, window, styleWrites, flush, change({ visible = shown, menuOpen = menu, panelOpen = panel, containerAnimating = animating, endedRecommendations = recommendations, playbackEnded = ended }) {
+  return { snapshotInvalidations, snapshots, publishSnapshot, screen, container, layouts, presentations, completeTransitions, completeFullscreen, fullscreenEvents, bounds, observers, window, styleWrites, flush, change({ visible = shown, menuOpen = menu, panelOpen = panel, containerAnimating = animating, endedRecommendations = recommendations, playbackEnded = ended }) {
     shown = visible; menu = menuOpen; panel = panelOpen
     recommendations = endedRecommendations
     ended = playbackEnded
@@ -379,44 +386,44 @@ for (const fullscreen of [false, true]) {
 
 }
 
-test('mini-player button shapes retain fractional bounds without remeasuring during scrolling', async () => {
+test('mini-player PNG is sent only when the snapshot changes', async () => {
   const f = await fixture({ fullscreen: false })
-  let reads = 0
-  const button = {
-    checkVisibility: () => true,
-    getBoundingClientRect() { reads++; return { x: 210.25, y: 320.5, width: 28, height: 28 } }
-  }
-  f.container.classList.contains = name => name === 'scrollMiniPlayer'
-  f.container.querySelectorAll = selector => selector.startsWith('.scrollMiniPlayerControls') ? [button, { checkVisibility: () => false }] : []
+  f.publishSnapshot('data:image/png;base64,test')
+  await f.flush()
+  assert.equal(f.layouts.at(-1).miniControlsImage, 'data:image/png;base64,test')
+  f.bounds.x++
   f.observers[0].callback([])
   await f.flush()
-  assert.deepEqual(JSON.parse(JSON.stringify(f.layouts.at(-1).miniControls)), [{ x: 210.25, y: 320.5, width: 28, height: 28, radius: 12 }])
-  reads = 0
-  f.screen.action('scroll-start')
-  f.observers[0].callback([])
+  assert.equal('miniControlsImage' in f.layouts.at(-1), false)
+  f.publishSnapshot(null)
   await f.flush()
-  assert.equal(reads, 0)
-  assert.equal(f.layouts.at(-1).miniControls.length, 1)
-  f.screen.action('scroll-end')
-  assert.ok(reads > 0)
+  assert.equal(f.layouts.at(-1).miniControlsImage, null)
+  f.screen.destroy()
 })
 
-test('mini-player activated during scrolling supplies its first button geometry once', async () => {
+test('mini-player snapshots freeze during page scrolling and resume afterward', async () => {
   const f = await fixture({ fullscreen: false })
   f.screen.action('scroll-start')
-  let reads = 0
-  const button = {
-    checkVisibility: () => true,
-    getBoundingClientRect() { reads++; return { x: 210, y: 320, width: 28, height: 28 } }
+  f.observers[0].callback([])
+  await f.flush()
+  assert.equal(f.snapshots.at(-1)[3], true)
+  f.screen.action('scroll-end')
+  assert.equal(f.snapshots.at(-1)[3], false)
+  f.screen.destroy()
+})
+
+
+test('mini control transition completion refreshes snapshots while scrolling', async () => {
+  const f = await fixture({ fullscreen: false })
+  const originalQuery = f.container.querySelector
+  const mini = { contains: () => true }
+  f.container.querySelector = selector => selector === '.scrollMiniPlayerControls' ? mini : originalQuery(selector)
+  f.screen.action('scroll-start')
+  for (const type of ['transitionend', 'transitioncancel']) {
+    f.container.dispatchEvent(new Event(type))
+    assert.equal(f.snapshotInvalidations.at(-1), true)
+    await f.flush()
+    assert.equal(f.snapshots.at(-1)[3], true)
   }
-  f.container.classList.contains = name => name === 'scrollMiniPlayer'
-  f.container.querySelectorAll = selector => selector.startsWith('.scrollMiniPlayerControls') ? [button] : []
-  f.observers[0].callback([])
-  await f.flush()
-  assert.equal(f.layouts.at(-1).miniControls.length, 1)
-  assert.equal(reads, 1)
-  f.observers[0].callback([])
-  await f.flush()
-  assert.equal(reads, 1)
   f.screen.destroy()
 })

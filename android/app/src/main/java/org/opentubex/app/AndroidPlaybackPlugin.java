@@ -88,6 +88,11 @@ public class AndroidPlaybackPlugin extends Plugin {
         mainHandler.post(() -> {
             if (!checkOwner(call)) return;
             if (screen != null) {
+                if (call.getData().has("miniControlsImage")) {
+                    screen.setMiniControlsImage(call.getString("miniControlsImage"));
+                    call.resolve();
+                    return;
+                }
                 if (call.getBoolean("endScroll", false)) {
                     screen.finishPageScroll();
                     call.resolve();
@@ -134,20 +139,6 @@ public class AndroidPlaybackPlugin extends Plugin {
                     java.util.ArrayList<android.graphics.RectF> menuBounds = new java.util.ArrayList<>();
                     java.util.ArrayList<android.graphics.RectF> scrollingMenuBounds = new java.util.ArrayList<>();
                     double scale = screen.getWidth() / viewportWidth;
-                    android.graphics.Path miniClip = new android.graphics.Path();
-                    com.getcapacitor.JSArray miniControls = call.getArray("miniControls", new com.getcapacitor.JSArray());
-                    for (int index = 0; index < miniControls.length(); index++) {
-                        org.json.JSONObject control = miniControls.optJSONObject(index);
-                        if (control == null) continue;
-                        double cx = control.optDouble("x"), cy = control.optDouble("y");
-                        double cw = control.optDouble("width"), ch = control.optDouble("height");
-                        double radius = control.optDouble("radius", 0);
-                        if (!java.util.stream.DoubleStream.of(cx, cy, cw, ch, radius).allMatch(Double::isFinite) || cw <= 0 || ch <= 0) continue;
-                        float cr = (float) (Math.max(0, Math.min(radius, Math.min(cw, ch) / 2)) * scale);
-                        miniClip.addRoundRect(new android.graphics.RectF((float) (cx * scale), (float) (cy * scale),
-                            (float) ((cx + cw) * scale), (float) ((cy + ch) * scale)), cr, cr, android.graphics.Path.Direction.CW);
-                    }
-                    screen.setMiniControlClip(miniClip);
                     for (int index = 0; index < menus.length(); index++) {
                         org.json.JSONObject menu = menus.optJSONObject(index);
                         if (menu == null) continue;
